@@ -24,12 +24,11 @@ In the application definition we provide a minimum set of description elements a
 Application Definitions
 -----------------------
 
-    :ref:`NXopt`:
+    :ref:`NXoptical_spectroscopy`:
        A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
     :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
-
+       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
 
 Base Classes
 ------------
@@ -53,7 +52,7 @@ This is the set of base classes for describing an optical experiment.
     :ref:`NXfiber`
        An optical fiber, e.g. glass fiber.
 
-    :ref:`NXlens_opt`
+    :ref:`NXoptical_lens`
        Description of an optical lens.
        
     :ref:`NXpolarizer_opt`

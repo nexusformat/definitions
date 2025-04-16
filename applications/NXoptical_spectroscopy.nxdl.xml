@@ -26,7 +26,7 @@
 Extension of the Draft Version (05/2023) of a NeXus application definition which
 serves as a template for various optical spectroscopy experiments
 TODO:
-- Add NXlens_opt and NXwaveplate to NXinstrument?
+- Add NXoptical_lens and NXwaveplate to NXinstrument?
 - Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
 - Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.
 - Make offset angles for polar and azimutal?
@@ -216,8 +216,8 @@ TODO:
             <group name="beam_TYPE" type="NXbeam" nameType="partial" minOccurs="1" maxOccurs="unbounded">
                 <doc>
                     This can be used to describe properties of a photon beam.
-                    A beam is always defined between two beam_devices, via
-                    "previous_device" and "next_device".
+                    A beam can be connected to components, via their
+                    "inputs" and "outputs".
                     
                     It is required to define at least one incident beam which is incident
                     to the sample. You may specify if this beam parameters are acutally measured
@@ -568,7 +568,7 @@ Unit category: NX_ANGLE (° or rad)
                     Detector, etc,
                 </doc>
             </group>
-            <group type="NXlens_opt" optional="true">
+            <group type="NXoptical_lens" optional="true">
                 <doc>
                     This is the optical element used to focus or collect light. This may
                     be a genereic lens or microcope objectives which are used for the
@@ -585,12 +585,12 @@ Unit category: NX_ANGLE (° or rad)
                 <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
             <group type="NXwaveplate" optional="true"/>
-            <group type="NXopt_window" optional="true"/>
+            <group type="NXoptical_window" optional="true"/>
             <group name="polfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
                 <doc>
                     polarization filter to prepare light to be measured or to be incident
                     on the sample.
-                    Genereric polarization filter porperties may be implemented via NXfilter_pol
+                    Generic polarization filter properties may be implemented via NXfilter_pol
                     at a later stage.
                 </doc>
                 <field name="filter_mechanism" type="NX_CHAR" optional="true">
@@ -847,18 +847,6 @@ Can be used to describe a beam splitter as optical element.-->
                     </doc>
                 </field>
             </group>
-            <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
-                <doc>
-                    Array of pairs of complex refractive indices n + ik of the medium
-                    for every measured spectral point/wavelength/energy.
-                    Only necessary if the measurement was performed not in air, or
-                    something very well known, e.g. high purity water.
-                </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="2"/>
-                    <dim index="2" value="N_spectrum"/>
-                </dimensions>
-            </field>
         </group>
         <group type="NXsample">
             <doc>
@@ -973,6 +961,18 @@ Can be used to describe a beam splitter as optical element.-->
                         <item value="water"/>
                     </enumeration>
                 </field>
+                <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                        Array of pairs of complex refractive indices n + ik of the medium
+                        for every measured spectral point/wavelength/energy.
+                        Only necessary if the measurement was performed not in air, or
+                        something very well known, e.g. high purity water.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="2"/>
+                        <dim index="2" value="N_spectrum"/>
+                    </dimensions>
+                </field>
             </group>
             <!--Make something like NXlayer_structure_sample?-->
             <field name="thickness" type="NX_NUMBER" optional="true" units="NX_LENGTH">
@@ -1042,7 +1042,7 @@ Can be used to describe a beam splitter as optical element.-->
             <group name="wavelength_calibration" type="NXcalibration" optional="true">
                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
                     <doc>
-                        Location to save the calibrated wavelength data.
+                        Calibrated wavelength axis.
                     </doc>
                 </field>
             </group>
