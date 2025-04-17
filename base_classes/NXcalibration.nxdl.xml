@@ -92,10 +92,10 @@
                 The symbol of the axis to be used in the fit_function, e.g., `energy`, `E`.
                 This should comply to the following naming rules (similar to python's naming rules):
                 
-                  * A variable name must start with a letter or the underscore character
-                  * A variable name cannot start with a number
-                  * A variable name can only contain alpha-numeric characters and underscores (A-z, 0-9, and _ )
-                  * Variable names are case-sensitive (age, Age and AGE are three different variables)
+                * A variable name must start with a letter or the underscore character
+                * A variable name cannot start with a number
+                * A variable name can only contain alpha-numeric characters and underscores (A-z, 0-9, and _ )
+                * Variable names are case-sensitive (age, Age and AGE are three different variables)
             </doc>
         </attribute>
         <attribute name="input_path">
@@ -109,9 +109,9 @@
         <doc>
             Additional input axis to be used in the formula.
         </doc>
-        <field name="TERM" nameType="any">
+        <field name="PARAMETER" nameType="any">
             <doc>
-                The name of each ``TERM`` is used as the symbol to be used in the ``fit_formula_description``, i.e.,
+                The name of each ``PARAMETER`` is used as the symbol to be used in the ``fit_formula_description``, i.e.,
                 if the field name is `my_field` you should refer to this axis by `my_field` in the ``fit_formula_description``.
             </doc>
             <attribute name="input_path">
@@ -122,51 +122,53 @@
             </attribute>
         </field>
     </group>
-    <group name="coefficients" type="NXparameters">
+    <group name="calibration_parameters" type="NXparameters">
         <doc>
-            For non-linear energy calibrations, e.g. in a time-of-flight (TOF) detector, a polynomial function is fitted
-            to a set of features (peaks) at well defined energy positions to determine
-            E(TOF). Here we can store the fit coefficients.
+            Fit coefficients to be used in ``fit_formula_description``.
+            
+            As an example, for non-linear energy calibrations, e.g. in a time-of-flight (TOF) detector, a polynomial 
+            function is fitted to a set of features (peaks) at well defined energy positions to determine
+            E(TOF). Here we can store the fit coefficients for that procedure.
         </doc>
-        <field name="aN" nameType="partial">
+        <field name="aN" nameType="partial" type="NX_NUMBER">
             <doc>
-                Use a0, a1, ..., an for the coefficients, corresponding to the values in the
+                Use a0, a1, ..., an for the coefficients of a polynomial fit, corresponding to the values in the
                 ``fit_formula_description``.
+            </doc>
+        </field>
+        <field name="scaling_factor" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                For linear calibration. Scaling parameter.
+                This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
+
+                For a more detailed description of scaling factors, see 
+                :ref:`/NXdata/FIELDNAME_scaling_factor &lt;/NXdata/FIELDNAME_scaling_factor-field&gt;`.
+            </doc>
+        </field>
+        <field name="offset" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                For linear calibration. Offset parameter.
+                This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
+
+                For a more detailed description of offset, see 
+                :ref:`/NXdata/FIELDNAME_offset &lt;/NXdata/FIELDNAME_offset-field&gt;`.
             </doc>
         </field>
     </group>
     <field name="fit_formula_description" type="NX_CHAR">
         <doc>
-            For non-linear energy calibrations. Here we can store a description of the formula
-            used for the fit function.
+            Here we can store a description of the formula used for the fit function.
             
-            Use a0, a1, ..., an for the coefficients, corresponding to the values in the coefficients group.
-            
-            Use x0, x1, ..., xm for the nth position in the `original_axis` field.
+            For polynomial fits, use a0, a1, ..., an for the coefficients, corresponding to the values in the 
+            coefficients group. Use x0, x1, ..., xm for the mth position in the `original_axis` field.
+
             If there is the symbol attribute specified for the `original_axis` this may be used instead of x.
             If you want to use the whole axis use `x`.
-            Alternate axis can also be available as specified by the `input_SYMBOL` group.
+
+            Alternate axis can also be available as specified by the `fit_formula_inputs` group.
             The data should then be referred here by the `SYMBOL` name, e.g., for a field
-            name `input_my_field` it should be referred here by `my_field` or `my_field0` if
-            you want to read the zeroth element of the array.
-        </doc>
-    </field>
-    <field name="scaling_factor" type="NX_FLOAT" units="NX_ANY">
-        <doc>
-            For linear calibration. Scaling parameter.
-            This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
-            
-            For a more detailed description of scaling factors, see
-            :ref:`/NXdata/FIELDNAME_scaling_factor &lt;/NXdata/FIELDNAME_scaling_factor-field&gt;`.
-        </doc>
-    </field>
-    <field name="offset" type="NX_FLOAT" units="NX_ANY">
-        <doc>
-            For linear calibration. Offset parameter.
-            This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
-            
-            For a more detailed description of offset, see
-            :ref:`/NXdata/FIELDNAME_offset &lt;/NXdata/FIELDNAME_offset-field&gt;`.
+            name ``my_field`` in ``fit_formula_inputs``, it should be referred here by ``my_field`` or ``my_field0``
+            if you want to read the zeroth element of the array.
         </doc>
     </field>
     <field name="mapping_MAPPING" nameType="partial" type="NX_FLOAT" >
