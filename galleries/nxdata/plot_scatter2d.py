@@ -36,7 +36,7 @@ be plotted. In this example we create a 2D scatter plot in the XY-plane.
 But the data could also be plotted as a function of ``x`` or ``y`` in a
 :ref:`sphx_glr_classes_base_classes_data_plot_curve.py` plot. When defining
 ``@axes="x"`` the curve plot would be the most likely intention of the data
-publisher but it is up the the reader to decide how to plot the data.
+publisher but it is up to the reader to decide how to plot the data.
 """
 
 # Data
