@@ -9,8 +9,8 @@ doc: |
   A general optical experiment consists of (i) a light/photon source, (ii) a sample,
   (iii) a detector.
   
-  For any free text descriptions, it is recommended to enter data in english
-  language, as this is the most FAIR representation.
+  For any free-text descriptions, it is recommended to use English, as this ensures
+  the most FAIR (Findable, Accessible, Interoperable, and Reusable) representation of the information.
 symbols:
   doc: |
     Variables used throughout the document, e.g. dimensions or parameters.
@@ -18,7 +18,7 @@ symbols:
     Length of the spectrum array (e.g. wavelength or energy) of the measured
     data.
   N_measurements: |
-    Number of measurements (1st dimension of measured_data array). This is
+    Number of measurements (1st dimension of measured data arrays). This is
     equal to the number of parameters scanned. For example, if the experiment
     was performed at three different temperatures and two different pressures
     N_measurements = 2*3 = 6.
@@ -27,16 +27,16 @@ symbols:
 # Extension of the Draft Version (05/2023) of a NeXus application definition which
 # serves as a template for various optical spectroscopy experiments
 # TODO:
-# - Add NXlens_opt and NXwaveplate to NXinstrument?
-# - Make polfilter_TYPE(NXcomponent) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
-# - Make spectralfilter_TYPE(NXcomponent) own base class -\-> extend NXfilter?  and add them to NXinstrument.
-# - Make offset angles for polar and azimuthal?
+# - Add NXoptical_lens and NXwaveplate to NXinstrument?
+# - Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
+# - Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.
+# - Make offset angles for polar and azimutal?
 # - Can angle_reference_frame be replaced later by only using reference_frames and generic angle description?
 # - Add optical elements and rework them: NXfiber, NXbeam_splitter,
 # - Consider to make power flux recommended? Difficult parameter to measure. Relevant for some samples/techniques, but not for all. Powder density? Nominal vs. measured?
 # - Is there something to describe the spot size?
 # - Restructure the concept "type" in "source_TYPE" to medium and model(NXfabication) -\-> suggestion from Markus: "splitting up the concept into type(NXfabrication) and emitting medium(NXion/NXatom) is a better alternative?"
-# - How to describe beam size properties? NXbeam/extend? Is this enough? or do we need more arbitrary shapes as elliptically? Maybe as well focus spot size?
+# - How to describe beam size properties? NXbeam/extend? Is this enough? or do we need more abitrary shapes as elliptically? Maybe as well focus spot size?
 # - Think of removing/reworking of (optional) NXfabrications? Con: bloats up the NeXus def (move it to base classes?) Pro: as the fixed name device_information is used, the structure is more FAIR / clean designed?
 type: group
 NXoptical_spectroscopy(NXobject):
@@ -162,11 +162,11 @@ NXoptical_spectroscopy(NXobject):
         exists: ['min', '1', 'max', 'unbounded']
         doc: |
           This can be used to describe properties of a photon beam.
-          A beam is always defined between two beam_devices, via
-          "previous_device" and "next_device".
+          A beam can be connected to components, via their
+          "inputs" and "outputs".
           
           It is required to define at least one incident beam which is incident
-          to the sample. You may specify if this beam parameters are actually measured
+          to the sample. You may specify if this beam parameters are acutally measured
           or just nominal.
           If this beam is the output of a source, chose the same
           name appendix as for the NXsource instance (e.g. TYPE=532nm)
@@ -190,7 +190,7 @@ NXoptical_spectroscopy(NXobject):
             The path to the device which emitted this beam (light source or frequency doubler).
             
             This parameter is recommended, if the previous optical element is a photon source.
-            In this way, the properties of the laser or light source can be described
+            In this way, the properties of the laser or light souce can be described
             and associated.
             The beam should be named with the same appendix as the source, e.g.,
             for TYPE=532nmlaser, there should be both a NXsource named
@@ -201,14 +201,14 @@ NXoptical_spectroscopy(NXobject):
         # The two polarization descriptions may be completely replaced by polarization
         beam_polarization_type:
           exists: optional
-          enumeration: [linear, circular, elliptically, unpolarized]
+          enumeration: [linear, circular, ellipically, unpolarized]
         linear_beam_sample_polarization(NX_NUMBER):
           exists: optional
           unit: NX_ANGLE
           doc: |
             Angle of the linear polarized light, with respect to a fixed arbitrary
             defined 0° position. This can be used if no definition of respective
-            coordinate systems for beam and sample normal is done. If coordinate systems
+            cooridnate systems for beam and sample normal is done. If coordinate systems
             are defined, refer to beam "incident_polarization".
       detector_TYPE(NXdetector):
         nameType: partial
@@ -389,8 +389,8 @@ NXoptical_spectroscopy(NXobject):
           Set of transformations, describing the relative orientation of different
           parts of the experiment (beams or sample). You may select one of the specified
           angles for incident and detection beam or sample, and then use polar and azimuthal
-          angles to define the direction via spherical coordinates.
-          This allows consistent definition between different coordinate system.
+          angles to define the direction via sperical coordinates.
+          This allows consistent defintion between different coordinate system.
           You may refer to self defined coordinate system as well.
           
           
@@ -447,11 +447,11 @@ NXoptical_spectroscopy(NXobject):
           Every object which interacts or modifies optical beam properties,
           may be a component, e.g. Filter, Window, Beamsplitter, Photon Source,
           Detector, etc,
-      (NXlens_opt):
+      (NXoptical_lens):
         exists: optional
         doc: |
           This is the optical element used to focus or collect light. This may
-          be a generic lens or microcope objectives which are used for the
+          be a genereic lens or microcope objectives which are used for the
           Raman scattering process.
         type:
           enumeration:
@@ -461,7 +461,7 @@ NXoptical_spectroscopy(NXobject):
           exists: optional
       (NXwaveplate):
         exists: optional
-      (NXopt_window):
+      (NXoptical_window):
         exists: optional
       polfilter_TYPE(NXcomponent):
         exists: optional
@@ -493,12 +493,10 @@ NXoptical_spectroscopy(NXobject):
         nameType: partial
         doc: |
           Spectral filter used to modify properties of the scattered or incident light.
-          Generic spectral filter properties may be implemented via NXfilter_spec
-          at a later stage.
         filter_type:
           exists: optional
           doc: |
-            Type of laserline filter used to suppress the laser, if measurements
+            Type of laserline filter used to supress the laser, if measurements
             close to the laserline are performed.
           enumeration:
             open_enum: true
@@ -506,7 +504,7 @@ NXoptical_spectroscopy(NXobject):
         intended_use:
           exists: optional
           doc: |
-            Type of laserline filter used to suppress the laser, if measurements
+            Type of laserline filter used to supress the laser, if measurements
             close to the laserline are performed.
           enumeration:
             open_enum: true
@@ -559,7 +557,7 @@ NXoptical_spectroscopy(NXobject):
             Description of relation of the beam with the sample. How dit the
             sample hit the beam, e.g. 'center of sample, long edge parallel
             to the plane of incidence'.
-            Is redundant, if a full orientation description is done via the
+            Is redundent, if a full orientation description is done via the
             stages "transformations" entry.
         device_information(NXfabrication):
           exists: optional
@@ -662,7 +660,7 @@ NXoptical_spectroscopy(NXobject):
         calibration_time(NX_DATE_TIME):
           exists: optional
           doc: |
-            If calibration status is 'calibration time provided', specify the
+            If calibtration status is 'calibration time provided', specify the
             ISO8601 date when calibration was last performed before this
             measurement. UTC offset should be specified.
         (NXdata):
@@ -682,17 +680,6 @@ NXoptical_spectroscopy(NXobject):
           unit: NX_WAVELENGTH
           doc: |
             Minimum distinguishable wavelength separation of peaks in spectra.
-      sample_medium_refractive_indices(NX_FLOAT):
-        exists: optional
-        unit: NX_UNITLESS
-        doc: |
-          Array of pairs of complex refractive indices n + ik of the medium
-          for every measured spectral point/wavelength/energy.
-          Only necessary if the measurement was performed not in air, or
-          something very well known, e.g. high purity water.
-        dimensions:
-          rank: 2
-          dim: (2, N_spectrum)
     (NXsample):
       doc: |
         Properties of the sample, such as sample type, layer structure,
@@ -703,7 +690,7 @@ NXoptical_spectroscopy(NXobject):
       sample_id:
         exists: recommended
         doc: |
-          Locally unique ID of the sample, used in the research institute or group.
+          Locally unique ID of the sample, used in the reasearch institute or group.
       physical_form:
         exists: recommended
         doc: |
@@ -774,9 +761,9 @@ NXoptical_spectroscopy(NXobject):
       (NXenvironment):
         exists: optional
         doc: |
-          Arbitrary sample property which may be varied during the experiment
+          Arbirary sample property which may be varied during the experiment
           and controlled by a device. Examples are pressure, voltage, magnetic field etc.
-          Similar to the temperature description of the sample.
+          Similar to the temperautre description of the sample.
         sample_medium:
           exists: recommended
           doc: |
@@ -784,6 +771,17 @@ NXoptical_spectroscopy(NXobject):
           enumeration:
             open_enum: true
             items: [air, vacuum, inert atmosphere, oxidising atmosphere, reducing atmosphere, sealed can, water]
+        sample_medium_refractive_indices(NX_FLOAT):
+          exists: optional
+          unit: NX_UNITLESS
+          doc: |
+            Array of pairs of complex refractive indices n + ik of the medium
+            for every measured spectral point/wavelength/energy.
+            Only necessary if the measurement was performed not in air, or
+            something very well known, e.g. high purity water.
+          dimensions:
+            rank: 2
+            dim: (2, N_spectrum)
       
       # Make something like NXlayer_structure_sample?
       thickness(NX_NUMBER):
@@ -825,11 +823,11 @@ NXoptical_spectroscopy(NXobject):
           a free text description.
     (NXdata):
       doc: |
-        Here generic types of data may be saved.. This may refer to data derived
+        Here generic types of data may be saved. This may refer to data derived
         from single or multiple raw measurements (i.e. several intensities are
         evaluated for different parameters: ellipsometry -> psi and delta) -
         i.e. non-raw data.
-        As well plottable data may be stored/linked here, which provides the most suitable
+        As well plotable data may be stored/linked here, which provides the most suitable
         representation of the data (for the respective community).
         
         You may provide multiple instances of NXdata
@@ -847,17 +845,17 @@ NXoptical_spectroscopy(NXobject):
         calibrated_axis(NX_FLOAT):
           exists: recommended
           doc: |
-            Location to save the calibrated wavelength data.
+            Calibrated wavelength axis.
     
-    # The old "data_collection(NXprocess)" is now replaced by more flexible
+    # The old "data_collection(NXprocess)" is now replaced by more flexbile
     # NXdata. The detailed inclusion of a data collection description (i.e.
     # raw data from ellipsometry as polarization values to the usually used
     # psi and delta values), will be done later after the NXopt workshop.
     derived_parameters(NXprocess):
       exists: optional
       
-      # >>>This section is transferred from the first NXoptical_spectroscopy version and might
-      # require a rework.<<<
+      # >>>This section is transfered from the first NXoptical_spectroscopy version and might
+      # require a reqwork.<<<
       doc: |
         Parameters that are derived from the measured data.
       depolarization(NX_NUMBER):
@@ -910,7 +908,7 @@ NXoptical_spectroscopy(NXobject):
             deterministic manner.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# fa823f2efd7646184af76a5ef9813d659a92624a296766e454fc86b44d2b8a4d
+# c5e5e0eb87c0c3bf03c65a708856f72d353ab474f6da217cdaa238a7fb32e5f5
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -939,16 +937,16 @@ NXoptical_spectroscopy(NXobject):
 # Extension of the Draft Version (05/2023) of a NeXus application definition which
 # serves as a template for various optical spectroscopy experiments
 # TODO:
-# - Add NXlens_opt and NXwaveplate to NXinstrument?
-# - Make polfilter_TYPE(NXcomponent) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
-# - Make spectralfilter_TYPE(NXcomponent) own base class -\-> extend NXfilter?  and add them to NXinstrument.
-# - Make offset angles for polar and azimuthal?
+# - Add NXoptical_lens and NXwaveplate to NXinstrument?
+# - Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
+# - Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.
+# - Make offset angles for polar and azimutal?
 # - Can angle_reference_frame be replaced later by only using reference_frames and generic angle description?
 # - Add optical elements and rework them: NXfiber, NXbeam_splitter,
 # - Consider to make power flux recommended? Difficult parameter to measure. Relevant for some samples/techniques, but not for all. Powder density? Nominal vs. measured?
 # - Is there something to describe the spot size?
 # - Restructure the concept "type" in "source_TYPE" to medium and model(NXfabication) -\-> suggestion from Markus: "splitting up the concept into type(NXfabrication) and emitting medium(NXion/NXatom) is a better alternative?"
-# - How to describe beam size properties? NXbeam/extend? Is this enough? or do we need more arbitrary shapes as elliptically? Maybe as well focus spot size?
+# - How to describe beam size properties? NXbeam/extend? Is this enough? or do we need more abitrary shapes as elliptically? Maybe as well focus spot size?
 # - Think of removing/reworking of (optional) NXfabrications? Con: bloats up the NeXus def (move it to base classes?) Pro: as the fixed name device_information is used, the structure is more FAIR / clean designed?-->
 # <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXoptical_spectroscopy" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <symbols>
@@ -963,7 +961,7 @@ NXoptical_spectroscopy(NXobject):
 #         </symbol>
 #         <symbol name="N_measurements">
 #             <doc>
-#                 Number of measurements (1st dimension of measured_data array). This is
+#                 Number of measurements (1st dimension of measured data arrays). This is
 #                 equal to the number of parameters scanned. For example, if the experiment
 #                 was performed at three different temperatures and two different pressures
 #                 N_measurements = 2*3 = 6.
@@ -980,8 +978,8 @@ NXoptical_spectroscopy(NXobject):
 #         A general optical experiment consists of (i) a light/photon source, (ii) a sample,
 #         (iii) a detector.
 #         
-#         For any free text descriptions, it is recommended to enter data in english
-#         language, as this is the most FAIR representation.
+#         For any free-text descriptions, it is recommended to use English, as this ensures
+#         the most FAIR (Findable, Accessible, Interoperable, and Reusable) representation of the information.
 #     </doc>
 #     <group type="NXentry">
 #         <field name="definition">
@@ -1129,11 +1127,11 @@ NXoptical_spectroscopy(NXobject):
 #             <group name="beam_TYPE" type="NXbeam" nameType="partial" minOccurs="1" maxOccurs="unbounded">
 #                 <doc>
 #                     This can be used to describe properties of a photon beam.
-#                     A beam is always defined between two beam_devices, via
-#                     "previous_device" and "next_device".
+#                     A beam can be connected to components, via their
+#                     "inputs" and "outputs".
 #                     
 #                     It is required to define at least one incident beam which is incident
-#                     to the sample. You may specify if this beam parameters are actually measured
+#                     to the sample. You may specify if this beam parameters are acutally measured
 #                     or just nominal.
 #                     If this beam is the output of a source, chose the same
 #                     name appendix as for the NXsource instance (e.g. TYPE=532nm)
@@ -1158,7 +1156,7 @@ NXoptical_spectroscopy(NXobject):
 #                         The path to the device which emitted this beam (light source or frequency doubler).
 #                         
 #                         This parameter is recommended, if the previous optical element is a photon source.
-#                         In this way, the properties of the laser or light source can be described
+#                         In this way, the properties of the laser or light souce can be described
 #                         and associated.
 #                         The beam should be named with the same appendix as the source, e.g.,
 #                         for TYPE=532nmlaser, there should be both a NXsource named
@@ -1172,7 +1170,7 @@ NXoptical_spectroscopy(NXobject):
 #                     <enumeration>
 #                         <item value="linear"/>
 #                         <item value="circular"/>
-#                         <item value="elliptically"/>
+#                         <item value="ellipically"/>
 #                         <item value="unpolarized"/>
 #                     </enumeration>
 #                 </field>
@@ -1180,7 +1178,7 @@ NXoptical_spectroscopy(NXobject):
 #                     <doc>
 #                         Angle of the linear polarized light, with respect to a fixed arbitrary
 #                         defined 0° position. This can be used if no definition of respective
-#                         coordinate systems for beam and sample normal is done. If coordinate systems
+#                         cooridnate systems for beam and sample normal is done. If coordinate systems
 #                         are defined, refer to beam "incident_polarization".
 #                     </doc>
 #                 </field>
@@ -1396,8 +1394,8 @@ NXoptical_spectroscopy(NXobject):
 #                     Set of transformations, describing the relative orientation of different
 #                     parts of the experiment (beams or sample). You may select one of the specified
 #                     angles for incident and detection beam or sample, and then use polar and azimuthal
-#                     angles to define the direction via spherical coordinates.
-#                     This allows consistent definition between different coordinate system.
+#                     angles to define the direction via sperical coordinates.
+#                     This allows consistent defintion between different coordinate system.
 #                     You may refer to self defined coordinate system as well.
 #                     
 #                     
@@ -1481,10 +1479,10 @@ NXoptical_spectroscopy(NXobject):
 #                     Detector, etc,
 #                 </doc>
 #             </group>
-#             <group type="NXlens_opt" optional="true">
+#             <group type="NXoptical_lens" optional="true">
 #                 <doc>
 #                     This is the optical element used to focus or collect light. This may
-#                     be a generic lens or microcope objectives which are used for the
+#                     be a genereic lens or microcope objectives which are used for the
 #                     Raman scattering process.
 #                 </doc>
 #                 <field name="type">
@@ -1498,7 +1496,7 @@ NXoptical_spectroscopy(NXobject):
 #                 <group name="device_information" type="NXfabrication" optional="true"/>
 #             </group>
 #             <group type="NXwaveplate" optional="true"/>
-#             <group type="NXopt_window" optional="true"/>
+#             <group type="NXoptical_window" optional="true"/>
 #             <group name="polfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
 #                 <doc>
 #                     polarization filter to prepare light to be measured or to be incident
@@ -1531,12 +1529,10 @@ NXoptical_spectroscopy(NXobject):
 #             <group name="spectralfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
 #                 <doc>
 #                     Spectral filter used to modify properties of the scattered or incident light.
-#                     Generic spectral filter properties may be implemented via NXfilter_spec
-#                     at a later stage.
 #                 </doc>
 #                 <field name="filter_type" optional="true">
 #                     <doc>
-#                         Type of laserline filter used to suppress the laser, if measurements
+#                         Type of laserline filter used to supress the laser, if measurements
 #                         close to the laserline are performed.
 #                     </doc>
 #                     <enumeration open="true">
@@ -1549,7 +1545,7 @@ NXoptical_spectroscopy(NXobject):
 #                 </field>
 #                 <field name="intended_use" optional="true">
 #                     <doc>
-#                         Type of laserline filter used to suppress the laser, if measurements
+#                         Type of laserline filter used to supress the laser, if measurements
 #                         close to the laserline are performed.
 #                     </doc>
 #                     <enumeration open="true">
@@ -1618,7 +1614,7 @@ NXoptical_spectroscopy(NXobject):
 #                         Description of relation of the beam with the sample. How dit the
 #                         sample hit the beam, e.g. 'center of sample, long edge parallel
 #                         to the plane of incidence'.
-#                         Is redundant, if a full orientation description is done via the
+#                         Is redundent, if a full orientation description is done via the
 #                         stages "transformations" entry.
 #                     </doc>
 #                 </field>
@@ -1734,7 +1730,7 @@ NXoptical_spectroscopy(NXobject):
 #                 </field>
 #                 <field name="calibration_time" type="NX_DATE_TIME" optional="true">
 #                     <doc>
-#                         If calibration status is 'calibration time provided', specify the
+#                         If calibtration status is 'calibration time provided', specify the
 #                         ISO8601 date when calibration was last performed before this
 #                         measurement. UTC offset should be specified.
 #                     </doc>
@@ -1762,18 +1758,6 @@ NXoptical_spectroscopy(NXobject):
 #                     </doc>
 #                 </field>
 #             </group>
-#             <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
-#                 <doc>
-#                     Array of pairs of complex refractive indices n + ik of the medium
-#                     for every measured spectral point/wavelength/energy.
-#                     Only necessary if the measurement was performed not in air, or
-#                     something very well known, e.g. high purity water.
-#                 </doc>
-#                 <dimensions rank="2">
-#                     <dim index="1" value="2"/>
-#                     <dim index="2" value="N_spectrum"/>
-#                 </dimensions>
-#             </field>
 #         </group>
 #         <group type="NXsample">
 #             <doc>
@@ -1785,7 +1769,7 @@ NXoptical_spectroscopy(NXobject):
 #             <field name="name"/>
 #             <field name="sample_id" recommended="true">
 #                 <doc>
-#                     Locally unique ID of the sample, used in the research institute or group.
+#                     Locally unique ID of the sample, used in the reasearch institute or group.
 #                 </doc>
 #             </field>
 #             <field name="physical_form" recommended="true">
@@ -1870,9 +1854,9 @@ NXoptical_spectroscopy(NXobject):
 #             </group>
 #             <group type="NXenvironment" optional="true">
 #                 <doc>
-#                     Arbitrary sample property which may be varied during the experiment
+#                     Arbirary sample property which may be varied during the experiment
 #                     and controlled by a device. Examples are pressure, voltage, magnetic field etc.
-#                     Similar to the temperature description of the sample.
+#                     Similar to the temperautre description of the sample.
 #                 </doc>
 #                 <field name="sample_medium" recommended="true">
 #                     <doc>
@@ -1887,6 +1871,18 @@ NXoptical_spectroscopy(NXobject):
 #                         <item value="sealed can"/>
 #                         <item value="water"/>
 #                     </enumeration>
+#                 </field>
+#                 <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+#                     <doc>
+#                         Array of pairs of complex refractive indices n + ik of the medium
+#                         for every measured spectral point/wavelength/energy.
+#                         Only necessary if the measurement was performed not in air, or
+#                         something very well known, e.g. high purity water.
+#                     </doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="2"/>
+#                         <dim index="2" value="N_spectrum"/>
+#                     </dimensions>
 #                 </field>
 #             </group>
 #             <!--Make something like NXlayer_structure_sample?-->
@@ -1933,11 +1929,11 @@ NXoptical_spectroscopy(NXobject):
 #         </group>
 #         <group type="NXdata">
 #             <doc>
-#                 Here generic types of data may be saved.. This may refer to data derived
+#                 Here generic types of data may be saved. This may refer to data derived
 #                 from single or multiple raw measurements (i.e. several intensities are
 #                 evaluated for different parameters: ellipsometry -&gt; psi and delta) -
 #                 i.e. non-raw data.
-#                 As well plottable data may be stored/linked here, which provides the most suitable
+#                 As well plotable data may be stored/linked here, which provides the most suitable
 #                 representation of the data (for the respective community).
 #                 
 #                 You may provide multiple instances of NXdata
@@ -1957,18 +1953,18 @@ NXoptical_spectroscopy(NXobject):
 #             <group name="wavelength_calibration" type="NXcalibration" optional="true">
 #                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
 #                     <doc>
-#                         Location to save the calibrated wavelength data.
+#                         Calibrated wavelength axis.
 #                     </doc>
 #                 </field>
 #             </group>
 #         </group>
-#         <!--The old "data_collection(NXprocess)" is now replaced by more flexible
+#         <!--The old "data_collection(NXprocess)" is now replaced by more flexbile
 # NXdata. The detailed inclusion of a data collection description (i.e.
 # raw data from ellipsometry as polarization values to the usually used
 # psi and delta values), will be done later after the NXopt workshop.-->
 #         <group name="derived_parameters" type="NXprocess" optional="true">
-#             <!-->>>This section is transferred from the first NXoptical_spectroscopy version and might
-# require a rework.<<<-->
+#             <!-->>>This section is transfered from the first NXoptical_spectroscopy version and might
+# require a reqwork.<<<-->
 #             <doc>
 #                 Parameters that are derived from the measured data.
 #             </doc>
