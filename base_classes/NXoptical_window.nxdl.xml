@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -21,14 +21,12 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-A draft of a new base class to describe a window in a optical setup or device-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXoptical_window" extends="NXaperture" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
         A window of a cryostat, heater, vacuum chamber or a simple glass slide.
         
-        This first version originates from NXoptical_spectroscopy to describe
-        cryostate windows and possible influences for ellipsometry measurements.
+        This describes cryostat windows and other possible influences for ellipsometry
+        measurements.
         
         For environmental measurements, the environment (liquid, vapor
         etc.) is enclosed in a cell, which has windows both in the
@@ -48,85 +46,81 @@ A draft of a new base class to describe a window in a optical setup or device-->
         beam path. Hence, its position within the beam path should be
         defined by the 'depends_on' field.
     </doc>
-    <group type="NXentry">
-        <field name="window_effects_corrected" type="NX_BOOLEAN">
+    <field name="window_effects_corrected" type="NX_BOOLEAN">
+        <doc>
+            Was a window correction performed? If so, describe the window
+            correction procedure in ``window_correction/procedure``.
+        </doc>
+    </field>
+    <field name="window_effects_type">
+        <doc>
+            Type of effects due to this window on the measurement.
+        </doc>
+        <enumeration open="true">
+            <item value="interference effects"/>
+            <item value="light absorption"/>
+            <item value="light scattering"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <group name="window_correction" type="NXprocess">
+        <doc>
+            Group to describe any window correction - if none performed, then omit this
+        </doc>
+        <field name="procedure">
             <doc>
-                Was a window correction performed? If so, describe the window
-                correction procedure in ``window_correction/procedure``.
+                Describe when (before or after the main measurement + time
+                stamp in 'date') and how the window effects have been
+                corrected, i.e. either mathematically or by performing a
+                reference measurement. In the latter case, provide the link to
+                to the reference data in ``reference_data_file``.
             </doc>
         </field>
-        <field name="window_effects_type">
+        <field name="reference_data_link" type="NX_NUMBER">
             <doc>
-                Type of effects due to this window on the measurement.
-            </doc>
-            <enumeration>
-                <item value="interference effects"/>
-                <item value="light absorption"/>
-                <item value="light scattering"/>
-                <item value="other"/>
-            </enumeration>
-        </field>
-        <group name="window_correction" type="NXprocess">
-            <doc>
-                Was a window correction performed? If 'True' describe the
-                window correction procedure in ''
-            </doc>
-            <field name="procedure">
-                <doc>
-                    Describe when (before or after the main measurement + time
-                    stamp in 'date') and how the window effects have been
-                    corrected, i.e. either mathematically or by performing a
-                    reference measurement. In the latter case, provide the link to
-                    to the reference data in ``reference_data_file``.
-                </doc>
-            </field>
-            <field name="reference_data_link" type="NX_NUMBER">
-                <doc>
-                    :ref:`External link &lt;Design-Links&gt;` to the data field in the NeXus file which describes                   
-                    the reference data if a reference measurement for window correction 
-                    was performed.
+                :ref:`External link &lt;Design-Links&gt;` to the data field in the NeXus file which describes                   
+                the reference data if a reference measurement for window correction 
+                was performed.
 
-                    Ideally, the reference measurement was performed on a reference
-                    sample and on the same sample, and using the same conditions as
-                    for the actual measurement with and without windows. It should
-                    have been conducted as close in time to the actual measurement
-                    as possible.
-                    
-                    Ideally, the link uses the relative path with respect to the actual
-                    NeXus file.
-                </doc>
-            </field>
-        </group>
-        <field name="material" type="NX_CHAR">
-            <doc>
-                The material of the window.
-            </doc>
-            <enumeration>
-                <item value="quartz"/>
-                <item value="diamond"/>
-                <item value="calcium fluoride"/>
-                <item value="zinc selenide"/>
-                <item value="thallium bromoiodide"/>
-                <item value="alkali halide compound"/>
-                <item value="Mylar"/>
-                <item value="other"/>
-            </enumeration>
-        </field>
-        <field name="material_other" type="NX_CHAR">
-            <doc>
-                If you specified 'other' as material, describe here what it is.
-            </doc>
-        </field>
-        <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
-            <doc>
-                Thickness of the window.
-            </doc>
-        </field>
-        <field name="orientation_angle" type="NX_FLOAT" units="NX_ANGLE">
-            <doc>
-                Angle of the window normal (outer) vs. the substrate normal
-                (similar to the angle of incidence).
+                Ideally, the reference measurement was performed on on the same sample,
+                using the same conditions as for the actual measurement, with
+                and, if possible, without windows. It should have been conducted as close in time
+                to the actual measurement as possible.
+                
+                Ideally, the link uses the relative path with respect to the actual
+                NeXus file.
             </doc>
         </field>
     </group>
+    <field name="material" type="NX_CHAR">
+        <doc>
+            The material of the window.
+        </doc>
+        <enumeration open="true">
+            <item value="quartz"/>
+            <item value="diamond"/>
+            <item value="calcium fluoride"/>
+            <item value="zinc selenide"/>
+            <item value="thallium bromoiodide"/>
+            <item value="alkali halide compound"/>
+            <item value="Mylar"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <field name="material_other" type="NX_CHAR">
+        <doc>
+            If you specified 'other' as material, describe here what it is.
+        </doc>
+    </field>
+    <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+            Thickness of the window.
+        </doc>
+    </field>
+    <field name="orientation_angle" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+            Angle of the window normal (outer) vs. the substrate normal
+            (similar to the angle of incidence).
+        </doc>
+    </field>
 </definition>

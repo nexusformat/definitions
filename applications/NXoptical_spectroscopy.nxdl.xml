@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -22,21 +22,12 @@
 # For further information, see http://www.nexusformat.org
 -->
 <!--
-04/2024
-Extension of the Draft Version (05/2023) of a NeXus application definition which
-serves as a template for various optical spectroscopy experiments
 TODO:
 - Add NXoptical_lens and NXwaveplate to NXinstrument?
 - Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
 - Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.
-- Make offset angles for polar and azimuthal?
-- Can angle_reference_frame be replaced later by only using reference_frames and generic angle description?
 - Add optical elements and rework them: NXfiber, NXbeam_splitter,
-- Consider to make power flux recommended? Difficult parameter to measure. Relevant for some samples/techniques, but not for all. Powder density? Nominal vs. measured?
-- Is there something to describe the spot size?
-- Restructure the concept "type" in "source_TYPE" to medium and model(NXfabication) -\-> suggestion from Markus: "splitting up the concept into type(NXfabrication) and emitting medium(NXion/NXatom) is a better alternative?"
-- How to describe beam size properties? NXbeam/extend? Is this enough? or do we need more arbitrary shapes as elliptically? Maybe as well focus spot size?
-- Think of removing/reworking of (optional) NXfabrications? Con: bloats up the NeXus def (move it to base classes?) Pro: as the fixed name device_information is used, the structure is more FAIR / clean designed?-->
+-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXoptical_spectroscopy" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -254,7 +245,6 @@ TODO:
                         Example: /entry/instrument/source_532nmlaser
                     </doc>
                 </field>
-                <!--The two polarization descriptions may be completely replaced by polarization-->
                 <field name="beam_polarization_type" optional="true">
                     <enumeration>
                         <item value="linear"/>
@@ -303,31 +293,6 @@ TODO:
                         This field ideally collects the data with the lowest level of processing
                         possible.
                     </doc>
-                    <!--Define a similar convention for NXoptical_spectroscopy? Or only for NXraman, NXellipsometry and NXphotoluminescence?
-Fields should be named according to new following convention:
-- **pixel_x**: Detector pixel in x direction.
-- **pixel_y**: Detector pixel in y direction.
-- **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-- **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-- **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-- **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-- **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-Unit category: NX_ANGLE
-- **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-Unit category: NX_ANGLE
-- **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-Unit category: NX_LENGTH
-- **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-Unit category: NX_LENGTH
-- **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-- **polarization_angle**: Linear polarization angle of the incoming or
-outgoing beam.
-Unit category: NX_ANGLE (° or rad)
-- **ellipticity**: Ellipticity of the incoming or outgoing beam.
-Unit category: NX_ANGLE (° or rad)
-- **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
-- **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
-- **external_AXIS**: Describes an axis which is coming from outside the detectors scope.-->
                     <attribute name="signal">
                         <enumeration>
                             <item value="raw"/>
@@ -588,7 +553,7 @@ Unit category: NX_ANGLE (° or rad)
             <group type="NXoptical_window" optional="true"/>
             <group name="polfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
                 <doc>
-                    polarization filter to prepare light to be measured or to be incident
+                    Polarization filter to prepare light to be measured or to be incident
                     on the sample.
                     Generic polarization filter properties may be implemented via NXfilter_pol
                     at a later stage.
@@ -621,21 +586,31 @@ Unit category: NX_ANGLE (° or rad)
                 </doc>
                 <field name="filter_type" optional="true">
                     <doc>
-                        Type of laserline filter used to suppress the laser, if measurements
-                        close to the laserline are performed.
+                        Type of laser-line filter used to suppress the laser, if measurements
+                        close to the laser-line are performed.
                     </doc>
                     <enumeration open="true">
-                        <item value="long-pass filter"/>
-                        <item value="short-pass filter"/>
-                        <item value="notch filter"/>
-                        <item value="reflection filter"/>
-                        <item value="neutral density filter"/>
+                        <item value="long-pass filter">
+                            <doc>Blocks shorter wavelengths and transmits longer wavelengths.</doc>
+                        </item>
+                        <item value="short-pass filter">
+                            <doc>Blocks longer wavelengths and transmits shorter wavelengths.</doc>
+                        </item>
+                        <item value="notch filter">
+                            <doc>Blocks a narrow wavelength band while transmitting others.</doc>
+                        </item>
+                        <item value="reflection filter">
+                            <doc>Reflects certain wavelength ranges instead of absorbing them.</doc>
+                        </item>
+                        <item value="neutral density filter">
+                            <doc>Reduces light intensity uniformly across all wavelengths.</doc>
+                        </item>
                     </enumeration>
                 </field>
                 <field name="intended_use" optional="true">
                     <doc>
-                        Type of laserline filter used to suppress the laser, if measurements
-                        close to the laserline are performed.
+                        Type of laser-line filter used to suppress the laser, if measurements
+                        close to the laser-line are performed.
                     </doc>
                     <enumeration open="true">
                         <item value="laser line cleanup"/>
@@ -662,11 +637,6 @@ Unit category: NX_ANGLE (° or rad)
                 </group>
                 <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
-            <!--Later for rework of specific optical elements
-(NXbeam_splitter):
-exists: optional
-doc: |
-Can be used to describe a beam splitter as optical element.-->
             <group type="NXbeam_transfer_matrix_table" optional="true">
                 <doc>
                     Allows description of beam properties via matrices, which relate ingoing with
@@ -704,7 +674,7 @@ Can be used to describe a beam splitter as optical element.-->
                         sample hit the beam, e.g. 'center of sample, long edge parallel
                         to the plane of incidence'.
                         This is redundant if a full orientation description is done via the
-                        stages "transformations" entry.
+                        stage's "transformations" entry.
                     </doc>
                 </field>
                 <group name="device_information" type="NXfabrication" optional="true"/>
@@ -974,7 +944,6 @@ Can be used to describe a beam splitter as optical element.-->
                     </dimensions>
                 </field>
             </group>
-            <!--Make something like NXlayer_structure_sample?-->
             <field name="thickness" type="NX_NUMBER" optional="true" units="NX_LENGTH">
                 <doc>
                     (Measured) sample thickness.
@@ -993,7 +962,6 @@ Can be used to describe a beam splitter as optical element.-->
                     determined.
                 </doc>
             </field>
-            <!--Maybe consider here to include NXsample_component_set.-->
             <field name="layer_structure" optional="true">
                 <doc>
                     Qualitative description of the layer structure for the sample,
@@ -1047,13 +1015,7 @@ Can be used to describe a beam splitter as optical element.-->
                 </field>
             </group>
         </group>
-        <!--The old "data_collection(NXprocess)" is now replaced by more flexible
-NXdata. The detailed inclusion of a data collection description (i.e.
-raw data from ellipsometry as polarization values to the usually used
-psi and delta values), will be done later after the NXopt workshop.-->
         <group name="derived_parameters" type="NXprocess" optional="true">
-            <!-->>>This section is transferred from the first NXoptical_spectroscopy version and might
-require a rework.<<<-->
             <doc>
                 Parameters that are derived from the measured data.
             </doc>
