@@ -89,7 +89,7 @@ NXoptical_spectroscopy(NXobject):
       doc: |
         Specify the type of the optical experiment.
         
-        Chose other if none of these methods are suitable. You may specify
+        Use another term if none of these methods are suitable. You may specify
         fundamental characteristics or properties in the experimental sub-type.
         
         For Raman spectroscopy or ellipsometry use the respective specializations
@@ -197,8 +197,6 @@ NXoptical_spectroscopy(NXobject):
             "source_532nmlaser" and a NXbeam named "beam_532nmlaser".
             
             Example: /entry/instrument/source_532nmlaser
-        
-        # The two polarization descriptions may be completely replaced by polarization
         beam_polarization_type:
           exists: optional
           enumeration: [linear, circular, elliptically, unpolarized]
@@ -230,32 +228,6 @@ NXoptical_spectroscopy(NXobject):
             due to hardware pre-processing of the data.
             This field ideally collects the data with the lowest level of processing
             possible.
-          
-          # Define a similar convention for NXoptical_spectroscopy? Or only for NXraman, NXellipsometry and NXphotoluminescence?
-          # Fields should be named according to new following convention:
-          # - **pixel_x**: Detector pixel in x direction.
-          # - **pixel_y**: Detector pixel in y direction.
-          # - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-          # - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-          # - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-          # - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-          # - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-          # Unit category: NX_ANGLE
-          # - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-          # Unit category: NX_ANGLE
-          # - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-          # Unit category: NX_LENGTH
-          # - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-          # Unit category: NX_LENGTH
-          # - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-          # - **polarization_angle**: Linear polarization angle of the incoming or
-          # outgoing beam.
-          # Unit category: NX_ANGLE (° or rad)
-          # - **ellipticity**: Ellipticity of the incoming or outgoing beam.
-          # Unit category: NX_ANGLE (° or rad)
-          # - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
-          # - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
-          # - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
           \@signal:
             enumeration: [raw]
           raw(NX_NUMBER):
@@ -467,7 +439,7 @@ NXoptical_spectroscopy(NXobject):
         exists: optional
         nameType: partial
         doc: |
-          polarization filter to prepare light to be measured or to be incident
+          Polarization filter to prepare light to be measured or to be incident
           on the sample.
           Generic polarization filter properties may be implemented via NXfilter_pol
           at a later stage.
@@ -496,23 +468,37 @@ NXoptical_spectroscopy(NXobject):
         filter_type:
           exists: optional
           doc: |
-            Type of laserline filter used to suppress the laser, if measurements
-            close to the laserline are performed.
+            Type of laser-line filter used to suppress the laser, if measurements
+            close to the laser-line are performed.
           enumeration:
             open_enum: true
-            items: [long-pass filter, short-pass filter, notch filter, reflection filter, neutral density filter]
+            long-pass filter:
+              doc: |
+                Blocks shorter wavelengths and transmits longer wavelengths.
+            short-pass filter:
+              doc: |
+                Blocks longer wavelengths and transmits shorter wavelengths.
+            notch filter:
+              doc: |
+                Blocks a narrow wavelength band while transmitting others.
+            reflection filter:
+              doc: |
+                Reflects certain wavelength ranges instead of absorbing them.
+            neutral density filter:
+              doc: |
+                Reduces light intensity uniformly across all wavelengths.
         intended_use:
           exists: optional
           doc: |
-            Type of laserline filter used to suppress the laser, if measurements
-            close to the laserline are performed.
+            Type of laser-line filter used to suppress the laser, if measurements
+            close to the laser-line are performed.
           enumeration:
             open_enum: true
             items: [laser line cleanup, raylight line removal, spectral filtering, intensity manipulation]
         filter_characteristics(NXdata):
           exists: optional
           doc: |
-            Properties of the spectral filter such as wavelength dependent Transmission
+            Properties of the spectral filter such as wavelength dependent transmission
             or reflectivity.
           \@characteristics_type:
             exists: optional
@@ -522,12 +508,6 @@ NXoptical_spectroscopy(NXobject):
             enumeration: [transmission, reflection]
         device_information(NXfabrication):
           exists: optional
-      
-      # Later for rework of specific optical elements
-      # (NXbeam_splitter):
-      # exists: optional
-      # doc: |
-      # Can be used to describe a beam splitter as optical element.
       (NXbeam_transfer_matrix_table):
         exists: optional
         doc: |
@@ -554,11 +534,11 @@ NXoptical_spectroscopy(NXobject):
         beam_sample_relation:
           exists: optional
           doc: |
-            Description of relation of the beam with the sample. How dit the
+            Description of relation of the beam with the sample. How does the
             sample hit the beam, e.g. 'center of sample, long edge parallel
             to the plane of incidence'.
-            Is redundant, if a full orientation description is done via the
-            stages "transformations" entry.
+            This is redundant if a full orientation description is done via the
+            stage's "transformations" entry.
         device_information(NXfabrication):
           exists: optional
       temperature_sensor(NXsensor):
@@ -655,7 +635,7 @@ NXoptical_spectroscopy(NXobject):
           doc: |
             Was a calibration performed? If yes, when was it done? If the
             calibration time is provided, it should be specified in
-            ENTRY/INSTRUMENT/calibration/calibration_time.
+            calibration_time.
           enumeration: [calibration time provided, no calibration, within 1 hour, within 1 day, within 1 week]
         calibration_time(NX_DATE_TIME):
           exists: optional
@@ -782,8 +762,6 @@ NXoptical_spectroscopy(NXobject):
           dimensions:
             rank: 2
             dim: (2, N_spectrum)
-      
-      # Make something like NXlayer_structure_sample?
       thickness(NX_NUMBER):
         exists: optional
         unit: NX_LENGTH
@@ -801,8 +779,6 @@ NXoptical_spectroscopy(NXobject):
         doc: |
           If a thickness if given, please specify how this thickness was estimated or
           determined.
-      
-      # Maybe consider here to include NXsample_component_set.
       layer_structure:
         exists: optional
         doc: |
@@ -846,16 +822,8 @@ NXoptical_spectroscopy(NXobject):
           exists: recommended
           doc: |
             Calibrated wavelength axis.
-    
-    # The old "data_collection(NXprocess)" is now replaced by more flexible
-    # NXdata. The detailed inclusion of a data collection description (i.e.
-    # raw data from ellipsometry as polarization values to the usually used
-    # psi and delta values), will be done later after the NXopt workshop.
     derived_parameters(NXprocess):
       exists: optional
-      
-      # >>>This section is transferred from the first NXoptical_spectroscopy version and might
-      # require a rework.<<<
       doc: |
         Parameters that are derived from the measured data.
       depolarization(NX_NUMBER):
@@ -890,7 +858,7 @@ NXoptical_spectroscopy(NXobject):
         dimensions:
           rank: 3
           dim: (N_measurements, 1, N_spectrum)
-      ANALYSIS_program(NXprocess):
+      ANALYSIS_program(NXprogram):
         nameType: partial
         exists: optional
         program:
@@ -899,17 +867,11 @@ NXoptical_spectroscopy(NXobject):
             used to generate or calculate the derived parameters.
             If home written, one can provide the actual steps in the NOTE
             subfield here.
-        version:
-          doc: |
-            Either version with build number, commit hash, or description of a
-            (online) repository where the source code of the program and build
-            instructions can be found so that the program can be configured in
-            such a way that result files can be created ideally in a
-            deterministic manner.
+          \@version:
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 7216b0f5842fa7d64ef23fc84bac3f5593e233d890ebf71922eb44bd250ec190
-# <?xml version='1.0' encoding='UTF-8'?>
+# 278139f22deff4fab38ebdda40381a22b22e48471b38d857e31c95c334ab5c46
+# <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
@@ -1039,7 +1001,7 @@ NXoptical_spectroscopy(NXobject):
 #             <doc>
 #                 Specify the type of the optical experiment.
 #                 
-#                 Chose other if none of these methods are suitable. You may specify
+#                 Use another term if none of these methods are suitable. You may specify
 #                 fundamental characteristics or properties in the experimental sub-type.
 #                 
 #                 For Raman spectroscopy or ellipsometry use the respective specializations
@@ -1165,7 +1127,6 @@ NXoptical_spectroscopy(NXobject):
 #                         Example: /entry/instrument/source_532nmlaser
 #                     </doc>
 #                 </field>
-#                 <!--The two polarization descriptions may be completely replaced by polarization-->
 #                 <field name="beam_polarization_type" optional="true">
 #                     <enumeration>
 #                         <item value="linear"/>
@@ -1214,31 +1175,6 @@ NXoptical_spectroscopy(NXobject):
 #                         This field ideally collects the data with the lowest level of processing
 #                         possible.
 #                     </doc>
-#                     <!--Define a similar convention for NXoptical_spectroscopy? Or only for NXraman, NXellipsometry and NXphotoluminescence?
-# Fields should be named according to new following convention:
-# - **pixel_x**: Detector pixel in x direction.
-# - **pixel_y**: Detector pixel in y direction.
-# - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-# - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-# - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-# - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-# - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-# Unit category: NX_ANGLE
-# - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-# Unit category: NX_ANGLE
-# - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-# Unit category: NX_LENGTH
-# - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-# Unit category: NX_LENGTH
-# - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-# - **polarization_angle**: Linear polarization angle of the incoming or
-# outgoing beam.
-# Unit category: NX_ANGLE (° or rad)
-# - **ellipticity**: Ellipticity of the incoming or outgoing beam.
-# Unit category: NX_ANGLE (° or rad)
-# - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
-# - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
-# - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.-->
 #                     <attribute name="signal">
 #                         <enumeration>
 #                             <item value="raw"/>
@@ -1499,7 +1435,7 @@ NXoptical_spectroscopy(NXobject):
 #             <group type="NXoptical_window" optional="true"/>
 #             <group name="polfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
 #                 <doc>
-#                     polarization filter to prepare light to be measured or to be incident
+#                     Polarization filter to prepare light to be measured or to be incident
 #                     on the sample.
 #                     Generic polarization filter properties may be implemented via NXfilter_pol
 #                     at a later stage.
@@ -1532,21 +1468,31 @@ NXoptical_spectroscopy(NXobject):
 #                 </doc>
 #                 <field name="filter_type" optional="true">
 #                     <doc>
-#                         Type of laserline filter used to suppress the laser, if measurements
-#                         close to the laserline are performed.
+#                         Type of laser-line filter used to suppress the laser, if measurements
+#                         close to the laser-line are performed.
 #                     </doc>
 #                     <enumeration open="true">
-#                         <item value="long-pass filter"/>
-#                         <item value="short-pass filter"/>
-#                         <item value="notch filter"/>
-#                         <item value="reflection filter"/>
-#                         <item value="neutral density filter"/>
+#                         <item value="long-pass filter">
+#                             <doc>Blocks shorter wavelengths and transmits longer wavelengths.</doc>
+#                         </item>
+#                         <item value="short-pass filter">
+#                             <doc>Blocks longer wavelengths and transmits shorter wavelengths.</doc>
+#                         </item>
+#                         <item value="notch filter">
+#                             <doc>Blocks a narrow wavelength band while transmitting others.</doc>
+#                         </item>
+#                         <item value="reflection filter">
+#                             <doc>Reflects certain wavelength ranges instead of absorbing them.</doc>
+#                         </item>
+#                         <item value="neutral density filter">
+#                             <doc>Reduces light intensity uniformly across all wavelengths.</doc>
+#                         </item>
 #                     </enumeration>
 #                 </field>
 #                 <field name="intended_use" optional="true">
 #                     <doc>
-#                         Type of laserline filter used to suppress the laser, if measurements
-#                         close to the laserline are performed.
+#                         Type of laser-line filter used to suppress the laser, if measurements
+#                         close to the laser-line are performed.
 #                     </doc>
 #                     <enumeration open="true">
 #                         <item value="laser line cleanup"/>
@@ -1557,7 +1503,7 @@ NXoptical_spectroscopy(NXobject):
 #                 </field>
 #                 <group name="filter_characteristics" type="NXdata" optional="true">
 #                     <doc>
-#                         Properties of the spectral filter such as wavelength dependent Transmission
+#                         Properties of the spectral filter such as wavelength dependent transmission
 #                         or reflectivity.
 #                     </doc>
 #                     <attribute name="characteristics_type" optional="true">
@@ -1573,11 +1519,6 @@ NXoptical_spectroscopy(NXobject):
 #                 </group>
 #                 <group name="device_information" type="NXfabrication" optional="true"/>
 #             </group>
-#             <!--Later for rework of specific optical elements
-# (NXbeam_splitter):
-# exists: optional
-# doc: |
-# Can be used to describe a beam splitter as optical element.-->
 #             <group type="NXbeam_transfer_matrix_table" optional="true">
 #                 <doc>
 #                     Allows description of beam properties via matrices, which relate ingoing with
@@ -1611,11 +1552,11 @@ NXoptical_spectroscopy(NXobject):
 #                 </group>
 #                 <field name="beam_sample_relation" optional="true">
 #                     <doc>
-#                         Description of relation of the beam with the sample. How dit the
+#                         Description of relation of the beam with the sample. How does the
 #                         sample hit the beam, e.g. 'center of sample, long edge parallel
 #                         to the plane of incidence'.
-#                         Is redundant, if a full orientation description is done via the
-#                         stages "transformations" entry.
+#                         This is redundant if a full orientation description is done via the
+#                         stage's "transformations" entry.
 #                     </doc>
 #                 </field>
 #                 <group name="device_information" type="NXfabrication" optional="true"/>
@@ -1718,7 +1659,7 @@ NXoptical_spectroscopy(NXobject):
 #                     <doc>
 #                         Was a calibration performed? If yes, when was it done? If the
 #                         calibration time is provided, it should be specified in
-#                         ENTRY/INSTRUMENT/calibration/calibration_time.
+#                         calibration_time.
 #                     </doc>
 #                     <enumeration>
 #                         <item value="calibration time provided"/>
@@ -1885,7 +1826,6 @@ NXoptical_spectroscopy(NXobject):
 #                     </dimensions>
 #                 </field>
 #             </group>
-#             <!--Make something like NXlayer_structure_sample?-->
 #             <field name="thickness" type="NX_NUMBER" optional="true" units="NX_LENGTH">
 #                 <doc>
 #                     (Measured) sample thickness.
@@ -1904,7 +1844,6 @@ NXoptical_spectroscopy(NXobject):
 #                     determined.
 #                 </doc>
 #             </field>
-#             <!--Maybe consider here to include NXsample_component_set.-->
 #             <field name="layer_structure" optional="true">
 #                 <doc>
 #                     Qualitative description of the layer structure for the sample,
@@ -1958,13 +1897,7 @@ NXoptical_spectroscopy(NXobject):
 #                 </field>
 #             </group>
 #         </group>
-#         <!--The old "data_collection(NXprocess)" is now replaced by more flexible
-# NXdata. The detailed inclusion of a data collection description (i.e.
-# raw data from ellipsometry as polarization values to the usually used
-# psi and delta values), will be done later after the NXopt workshop.-->
 #         <group name="derived_parameters" type="NXprocess" optional="true">
-#             <!-->>>This section is transferred from the first NXoptical_spectroscopy version and might
-# require a rework.<<<-->
 #             <doc>
 #                 Parameters that are derived from the measured data.
 #             </doc>
@@ -2008,7 +1941,7 @@ NXoptical_spectroscopy(NXobject):
 #                     <dim index="3" value="N_spectrum"/>
 #                 </dimensions>
 #             </field>
-#             <group name="ANALYSIS_program" type="NXprocess" nameType="partial" optional="true">
+#             <group name="ANALYSIS_program" type="NXprogram" nameType="partial" optional="true">
 #                 <field name="program">
 #                     <doc>
 #                         Commercial or otherwise defined given name of the program that was
@@ -2016,15 +1949,7 @@ NXoptical_spectroscopy(NXobject):
 #                         If home written, one can provide the actual steps in the NOTE
 #                         subfield here.
 #                     </doc>
-#                 </field>
-#                 <field name="version">
-#                     <doc>
-#                         Either version with build number, commit hash, or description of a
-#                         (online) repository where the source code of the program and build
-#                         instructions can be found so that the program can be configured in
-#                         such a way that result files can be created ideally in a
-#                         deterministic manner.
-#                     </doc>
+#                     <attribute name="version"/>
 #                 </field>
 #             </group>
 #         </group>
