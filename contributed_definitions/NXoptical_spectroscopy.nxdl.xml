@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -26,7 +26,7 @@
 Extension of the Draft Version (05/2023) of a NeXus application definition which
 serves as a template for various optical spectroscopy experiments
 TODO:
-- Add NXlens_opt and NXwaveplate to NXinstrument?
+- Add NXoptical_lens and NXwaveplate to NXinstrument?
 - Make polfilter_TYPE(NXcomponent) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
 - Make spectralfilter_TYPE(NXcomponent) own base class -\-> extend NXfilter?  and add them to NXinstrument.
 - Make offset angles for polar and azimuthal?
@@ -50,7 +50,7 @@ TODO:
         </symbol>
         <symbol name="N_measurements">
             <doc>
-                Number of measurements (1st dimension of measured_data array). This is
+                Number of measurements (1st dimension of measured data arrays). This is
                 equal to the number of parameters scanned. For example, if the experiment
                 was performed at three different temperatures and two different pressures
                 N_measurements = 2*3 = 6.
@@ -67,8 +67,8 @@ TODO:
         A general optical experiment consists of (i) a light/photon source, (ii) a sample,
         (iii) a detector.
         
-        For any free text descriptions, it is recommended to enter data in english
-        language, as this is the most FAIR representation.
+        For any free-text descriptions, it is recommended to use English, as this ensures
+        the most FAIR (Findable, Accessible, Interoperable, and Reusable) representation of the information.
     </doc>
     <group type="NXentry">
         <field name="definition">
@@ -128,7 +128,7 @@ TODO:
             <doc>
                 Specify the type of the optical experiment.
                 
-                Chose other if none of these methods are suitable. You may specify
+                Use another term if none of these methods are suitable. You may specify
                 fundamental characteristics or properties in the experimental sub-type.
                 
                 For Raman spectroscopy or ellipsometry use the respective specializations
@@ -216,8 +216,8 @@ TODO:
             <group name="beam_TYPE" type="NXbeam" nameType="partial" minOccurs="1" maxOccurs="unbounded">
                 <doc>
                     This can be used to describe properties of a photon beam.
-                    A beam is always defined between two beam_devices, via
-                    "previous_device" and "next_device".
+                    A beam can be connected to components, via their
+                    "inputs" and "outputs".
                     
                     It is required to define at least one incident beam which is incident
                     to the sample. You may specify if this beam parameters are actually measured
@@ -254,7 +254,6 @@ TODO:
                         Example: /entry/instrument/source_532nmlaser
                     </doc>
                 </field>
-                <!--The two polarization descriptions may be completely replaced by polarization-->
                 <field name="beam_polarization_type" optional="true">
                     <enumeration>
                         <item value="linear"/>
@@ -266,7 +265,10 @@ TODO:
                 <field name="linear_beam_sample_polarization" type="NX_NUMBER" optional="true" units="NX_ANGLE">
                     <doc>
                         Angle of the linear polarized light, with respect to a fixed arbitrary
-                        defined 0° position. This can be used if no definition of respective
+                        defined 0° position. Note that the zero reference should be a direction vector for a
+                        :ref:`reference_plane &lt;/NXbeam/TRANSFORMATIONS/reference_plane-field&gt;`
+                        normal in an :ref:`NXtransformations` group within :ref:`NXbeam`.
+                        This can be used if no definition of respective
                         coordinate systems for beam and sample normal is done. If coordinate systems
                         are defined, refer to beam "incident_polarization".
                     </doc>
@@ -303,31 +305,6 @@ TODO:
                         This field ideally collects the data with the lowest level of processing
                         possible.
                     </doc>
-                    <!--Define a similar convention for NXoptical_spectroscopy? Or only for NXraman, NXellipsometry and NXphotoluminescence?
-Fields should be named according to new following convention:
-- **pixel_x**: Detector pixel in x direction.
-- **pixel_y**: Detector pixel in y direction.
-- **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-- **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-- **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-- **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-- **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-Unit category: NX_ANGLE
-- **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-Unit category: NX_ANGLE
-- **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-Unit category: NX_LENGTH
-- **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-Unit category: NX_LENGTH
-- **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-- **polarization_angle**: Linear polarization angle of the incoming or
-outgoing beam.
-Unit category: NX_ANGLE (° or rad)
-- **ellipticity**: Ellipticity of the incoming or outgoing beam.
-Unit category: NX_ANGLE (° or rad)
-- **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
-- **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
-- **external_AXIS**: Describes an axis which is coming from outside the detectors scope.-->
                     <attribute name="signal">
                         <enumeration>
                             <item value="raw"/>
@@ -568,7 +545,7 @@ Unit category: NX_ANGLE (° or rad)
                     Detector, etc,
                 </doc>
             </group>
-            <group type="NXlens_opt" optional="true">
+            <group type="NXoptical_lens" optional="true">
                 <doc>
                     This is the optical element used to focus or collect light. This may
                     be a generic lens or microcope objectives which are used for the
@@ -585,10 +562,10 @@ Unit category: NX_ANGLE (° or rad)
                 <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
             <group type="NXwaveplate" optional="true"/>
-            <group type="NXopt_window" optional="true"/>
+            <group type="NXoptical_window" optional="true"/>
             <group name="polfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
                 <doc>
-                    polarization filter to prepare light to be measured or to be incident
+                    Polarization filter to prepare light to be measured or to be incident
                     on the sample.
                     Generic polarization filter properties may be implemented via NXfilter_pol
                     at a later stage.
@@ -618,26 +595,34 @@ Unit category: NX_ANGLE (° or rad)
             <group name="spectralfilter_TYPE" type="NXcomponent" optional="true" nameType="partial">
                 <doc>
                     Spectral filter used to modify properties of the scattered or incident light.
-                    Generic spectral filter properties may be implemented via NXfilter_spec
-                    at a later stage.
                 </doc>
                 <field name="filter_type" optional="true">
                     <doc>
-                        Type of laserline filter used to suppress the laser, if measurements
-                        close to the laserline are performed.
+                        Type of laser-line filter used to suppress the laser, if measurements
+                        close to the laser-line are performed.
                     </doc>
                     <enumeration open="true">
-                        <item value="long-pass filter"/>
-                        <item value="short-pass filter"/>
-                        <item value="notch filter"/>
-                        <item value="reflection filter"/>
-                        <item value="neutral density filter"/>
+                        <item value="long-pass filter">
+                            <doc>Blocks shorter wavelengths and transmits longer wavelengths.</doc>
+                        </item>
+                        <item value="short-pass filter">
+                            <doc>Blocks longer wavelengths and transmits shorter wavelengths.</doc>
+                        </item>
+                        <item value="notch filter">
+                            <doc>Blocks a narrow wavelength band while transmitting others.</doc>
+                        </item>
+                        <item value="reflection filter">
+                            <doc>Reflects certain wavelength ranges instead of absorbing them.</doc>
+                        </item>
+                        <item value="neutral density filter">
+                            <doc>Reduces light intensity uniformly across all wavelengths.</doc>
+                        </item>
                     </enumeration>
                 </field>
                 <field name="intended_use" optional="true">
                     <doc>
-                        Type of laserline filter used to suppress the laser, if measurements
-                        close to the laserline are performed.
+                        Type of laser-line filter used to suppress the laser, if measurements
+                        close to the laser-line are performed.
                     </doc>
                     <enumeration open="true">
                         <item value="laser line cleanup"/>
@@ -648,7 +633,7 @@ Unit category: NX_ANGLE (° or rad)
                 </field>
                 <group name="filter_characteristics" type="NXdata" optional="true">
                     <doc>
-                        Properties of the spectral filter such as wavelength dependent Transmission
+                        Properties of the spectral filter such as wavelength dependent transmission
                         or reflectivity.
                     </doc>
                     <attribute name="characteristics_type" optional="true">
@@ -664,11 +649,6 @@ Unit category: NX_ANGLE (° or rad)
                 </group>
                 <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
-            <!--Later for rework of specific optical elements
-(NXbeam_splitter):
-exists: optional
-doc: |
-Can be used to describe a beam splitter as optical element.-->
             <group type="NXbeam_transfer_matrix_table" optional="true">
                 <doc>
                     Allows description of beam properties via matrices, which relate ingoing with
@@ -702,11 +682,11 @@ Can be used to describe a beam splitter as optical element.-->
                 </group>
                 <field name="beam_sample_relation" optional="true">
                     <doc>
-                        Description of relation of the beam with the sample. How dit the
+                        Description of relation of the beam with the sample. How does the
                         sample hit the beam, e.g. 'center of sample, long edge parallel
                         to the plane of incidence'.
-                        Is redundant, if a full orientation description is done via the
-                        stages "transformations" entry.
+                        This is redundant if a full orientation description is done via the
+                        stage's "transformations" entry.
                     </doc>
                 </field>
                 <group name="device_information" type="NXfabrication" optional="true"/>
@@ -809,7 +789,7 @@ Can be used to describe a beam splitter as optical element.-->
                     <doc>
                         Was a calibration performed? If yes, when was it done? If the
                         calibration time is provided, it should be specified in
-                        ENTRY/INSTRUMENT/calibration/calibration_time.
+                        calibration_time.
                     </doc>
                     <enumeration>
                         <item value="calibration time provided"/>
@@ -849,18 +829,6 @@ Can be used to describe a beam splitter as optical element.-->
                     </doc>
                 </field>
             </group>
-            <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
-                <doc>
-                    Array of pairs of complex refractive indices n + ik of the medium
-                    for every measured spectral point/wavelength/energy.
-                    Only necessary if the measurement was performed not in air, or
-                    something very well known, e.g. high purity water.
-                </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="2"/>
-                    <dim index="2" value="N_spectrum"/>
-                </dimensions>
-            </field>
         </group>
         <group type="NXsample">
             <doc>
@@ -975,8 +943,19 @@ Can be used to describe a beam splitter as optical element.-->
                         <item value="water"/>
                     </enumeration>
                 </field>
+                <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                        Array of pairs of complex refractive indices n + ik of the medium
+                        for every measured spectral point/wavelength/energy.
+                        Only necessary if the measurement was performed not in air, or
+                        something very well known, e.g. high purity water.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="2"/>
+                        <dim index="2" value="N_spectrum"/>
+                    </dimensions>
+                </field>
             </group>
-            <!--Make something like NXlayer_structure_sample?-->
             <field name="thickness" type="NX_NUMBER" optional="true" units="NX_LENGTH">
                 <doc>
                     (Measured) sample thickness.
@@ -995,7 +974,6 @@ Can be used to describe a beam splitter as optical element.-->
                     determined.
                 </doc>
             </field>
-            <!--Maybe consider here to include NXsample_component_set.-->
             <field name="layer_structure" optional="true">
                 <doc>
                     Qualitative description of the layer structure for the sample,
@@ -1020,7 +998,7 @@ Can be used to describe a beam splitter as optical element.-->
         </group>
         <group type="NXdata">
             <doc>
-                Here generic types of data may be saved.. This may refer to data derived
+                Here generic types of data may be saved. This may refer to data derived
                 from single or multiple raw measurements (i.e. several intensities are
                 evaluated for different parameters: ellipsometry -&gt; psi and delta) -
                 i.e. non-raw data.
@@ -1044,18 +1022,12 @@ Can be used to describe a beam splitter as optical element.-->
             <group name="wavelength_calibration" type="NXcalibration" optional="true">
                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
                     <doc>
-                        Location to save the calibrated wavelength data.
+                        Calibrated wavelength axis.
                     </doc>
                 </field>
             </group>
         </group>
-        <!--The old "data_collection(NXprocess)" is now replaced by more flexible
-NXdata. The detailed inclusion of a data collection description (i.e.
-raw data from ellipsometry as polarization values to the usually used
-psi and delta values), will be done later after the NXopt workshop.-->
         <group name="derived_parameters" type="NXprocess" optional="true">
-            <!-->>>This section is transferred from the first NXoptical_spectroscopy version and might
-require a rework.<<<-->
             <doc>
                 Parameters that are derived from the measured data.
             </doc>
@@ -1099,7 +1071,7 @@ require a rework.<<<-->
                     <dim index="3" value="N_spectrum"/>
                 </dimensions>
             </field>
-            <group name="ANALYSIS_program" type="NXprocess" nameType="partial" optional="true">
+            <group name="ANALYSIS_program" type="NXprogram" nameType="partial" optional="true">
                 <field name="program">
                     <doc>
                         Commercial or otherwise defined given name of the program that was
@@ -1107,15 +1079,7 @@ require a rework.<<<-->
                         If home written, one can provide the actual steps in the NOTE
                         subfield here.
                     </doc>
-                </field>
-                <field name="version">
-                    <doc>
-                        Either version with build number, commit hash, or description of a
-                        (online) repository where the source code of the program and build
-                        instructions can be found so that the program can be configured in
-                        such a way that result files can be created ideally in a
-                        deterministic manner.
-                    </doc>
+                    <attribute name="version"/>
                 </field>
             </group>
         </group>

@@ -64,15 +64,18 @@ This is the set of base classes for describing an optical experiment.
     :ref:`NXmonochromator`
       A monochromator is often used to energetically disperse the scattered or emitted light.
 
-    :ref:`NXlens_opt`
-       Description of an optical lens.
+    :ref:`NXoptical_lens`
+      Description of an optical lens.
+
+    :ref:`NXoptical_window`
+      Description of an optical window.
        
     :ref:`NXwaveplate`
-       A waveplate or retarder.
+      A waveplate or retarder.
 
     :ref:`NXsensor`
-       Specify external parameters that have influenced the sample such as
-       varied parameters e.g. temperature, pressure, pH value, beam intensity, etc.
+      Specify external parameters that have influenced the sample such as
+      varied parameters e.g. temperature, pressure, pH value, beam intensity, etc.
 
 
 
