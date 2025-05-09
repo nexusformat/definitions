@@ -1,75 +1,25 @@
-.. _Ellipsometry-Structure:
+.. _Contributed-Opt-Spec-Structure:
 
 ========================
 Optical Spectroscopy
 ========================
 
 .. index::
-   Ellipsometry
-   DispersiveMaterial
+   Contributed-Opt-Spec-Introduction
+   Contributed-Opt-Spec-DispersiveMaterial
 
 
-.. _Ellipsometry:
+.. _Contributed-Opt-Spec-Introduction:
 
-Ellipsometry
+Introduction
 ##############
 
-Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
-The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
-Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
-
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+:ref:`Application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` and :ref:`base classes &lt;BC-Opt-Spec-Classes&gt;` to describe atom-probe tomography/microscopy (APT/APM) experiments
+are already part of the NeXus standard. In addition, there are several contributed definitions that are currently
+under discussion.
 
 
-Application Definitions
------------------------
-
-    :ref:`NXopt`:
-       A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
-
-    :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
-
-
-Base Classes
-------------
-
-This is the set of base classes for describing an optical experiment.
-
-    :ref:`NXbeam_path`
-       A beam path consisting of one or more optical elements.
-       
-       NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
-       of optical elements between the excitation source and the sample, or between
-       the sample and the detector unit.
-              
-    :ref:`NXbeam_splitter`
-       A beam splitter, i.e. a device splitting the light into two or more beams.
-       
-       Use two or more NXbeam_paths to describe the beam paths after the beam
-       splitter. In the dependency chain of the new beam paths, the first elements
-       each point to this beam splitter, as this is the previous element.
-
-    :ref:`NXfiber`
-       An optical fiber, e.g. glass fiber.
-
-    :ref:`NXlens_opt`
-       Description of an optical lens.
-       
-    :ref:`NXpolarizer_opt`
-       An optical polarizer.
-
-    :ref:`NXwaveplate`
-       A waveplate or retarder.
-
-    :ref:`NXenvironment`
-       Specify external parameters that have influenced the sample,
-       such as the surrounding medium, and varied parameters e.g.
-       temperature, pressure, pH value, optical excitation etc.
-
-
-
-.. _DispersiveMaterial:
+.. _Contributed-Opt-Spec-DispersiveMaterial:
 
 Dispersive Material
 ###################
@@ -85,7 +35,6 @@ Application Definition
        An application definition to describe the dispersive properties of a material.
        The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
        to three dispersive functions or tables.
-
 
 
 Base Classes
