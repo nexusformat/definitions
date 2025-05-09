@@ -1,26 +1,26 @@
-.. _Transport-Structure:
+.. _Contributed-Transport-Structure:
 
 ===================
 Transport Phenomena
 ===================
 
 .. index::
-   IntroductionTransport
-   TransportAppDef
+   Contributed-Transport-Introduction
+   Contributed-Transport-Definitions
 
 
-.. _IntroductionTransport:
+.. _Contributed-Transport-Introduction:
 
 Introduction
 ##############
 
 
-.. _TransportAppDef:
+.. _Contributed-Transport-Definitions:
 
 Application Definitions
 #######################
 
-We realize that many experiments in condensed-matter physics and materials engineering belong to the category
+Many experiments in condensed-matter physics and materials engineering belong to the category
 of measurements of transparent phenomena. A possible example of such experiments are temperature-dependent
 current-voltage (IV) curve measurements (or JV for engineers) measurements. In this case, electrical charge is transported
 and the temperature-dependent current response as a function of applied voltage is recorded.

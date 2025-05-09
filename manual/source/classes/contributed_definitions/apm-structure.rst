@@ -1,12 +1,12 @@
-.. _Apm-Structure:
+.. _Contributed-Apm-Structure:
 
 =========================
 Atom-probe tomography
 =========================
 
 .. index::
-   IntroductionApm
-   ApmAppDef
+   Contributed-Apm-Introduction
+   Contributed-Apm-Definitions
    ApmBC
 
 
@@ -15,11 +15,13 @@ Atom-probe tomography
 Introduction
 ##############
 
-Set of data storage objects to describe the acquisition/measurement side, the reconstruction, and the ranging for atom probe microscopy experiments. The data storage objects can be useful as well for field-ion microscopy experiments.
+:ref:`Application definitions &lt;AppDef-Apm-Definitions&gt;` and :ref:`base classes &lt;BC-Apm-Classes&gt;` to describe atom-probe tomography/microscopy (APT/APM) experiments
+are already part of the NeXus standard. In addition, there are several contributed definitions that are currently
+under discussion.
 
 .. _ApmAppDef:
 
-Application Definition
+Contributed Definitions
 ######################
 
 It is proposed to use one application definition to serve atom probe tomography

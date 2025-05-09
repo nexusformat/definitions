@@ -75,7 +75,6 @@ def nxdl_indices() -> Dict[str, dict]:
         if file.endswith("contributed_definitions/index.rst"):
             rst_lines.append(f"{indentation}em-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
-            rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
             rst_lines.append(f"{indentation}sts-structure\n")
@@ -120,14 +119,14 @@ NeXus base class definitions define the set of terms that
 Consider the base classes as a set of *components*
 that are used to construct a data file.
 
-Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-BC>`
+Some base classes are grouped together:
+  :ref:`Atomprobe Microscopy <BC-Apm-Structure>`
 
-  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-BC>`
+  :ref:`Electron Microscopy <BC-Em-Structure>`
 
-  :ref:`Atomprobe Microscopy <Apm-Structure-BC>`
+  :ref:`Multi-dimensional Photoemission Spectroscopy <BC-Mpes-Structure>`
 
-  :ref:`Electron Microscopy <Em-Structure-BC>`
+  :ref:`Optical Spectroscopy <BC-Opt-Spec-Structure>`
 
 and others are simply listed here:
 
@@ -160,15 +159,14 @@ In application definitions involving raw data,
 write the raw data in the :ref:`NXinstrument` tree and then link to it
 from the location(s) defined in the relevant application definition.
 
-Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-APP>`
+Some application definitions are grouped together:
+  :ref:`Atomprobe Microscopy <AppDef-Apm-Structure>`
 
-  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-APP>`
+  :ref:`Electron Microscopy <AppDef-Em-Structure>`
 
-  :ref:`Atomprobe Microscopy <Apm-Structure-APP>`
+  :ref:`Multi-dimensional Photoemission Spectroscopy <AppDef-Mpes-Structure>`
 
-  :ref:`Electron Microscopy <Em-Structure-APP>`
-
+  :ref:`Optical Spectroscopy <AppDef-Opt-Spec-Structure>`
 
 and others are simply listed here:
 
@@ -194,18 +192,15 @@ definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
 Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure>`
+  :ref:`Atomprobe Microscopy <Contributed-Apm-Structure>`
 
-  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
+  :ref:`Geometry and Microstructures <Contributed-Cgms-Structure>`
+  
+  :ref:`Optical Spectroscopy <Contributed-Opt-Spec-Structure>`
 
-  :ref:`Atom Probe Microscopy <Apm-Structure>`
+  :ref:`Scanning Probe Microscopy <Contributed-Spm-Structure>`
 
-  :ref:`Electron Microscopy <Em-Structure>`
-
-  :ref:`Transport Measurements <Transport-Structure>`
-
-  :ref:`Geometry and Microstructures  <CgmsFeatures-Structure>`
-
+  :ref:`Transport Measurements <Contributed-Transport-Structure>`
 
 and others are simply listed here:
 

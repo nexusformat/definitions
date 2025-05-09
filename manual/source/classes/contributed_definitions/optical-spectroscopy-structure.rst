@@ -1,26 +1,22 @@
-.. _Ellipsometry-Structure:
+.. _Contributed-Opt-Spec-Structure:
 
 ========================
 Optical Spectroscopy
 ========================
 
 .. index::
-   Ellipsometry
-   DispersiveMaterial
-
-EXAMPLE FOR DOCUMENTATION OF A GROUP OF BASE CLASSES
+   Contributed-Opt-Spec-Introduction
+   Contributed-Opt-Spec-DispersiveMaterial
 
 
-.. _Ellipsometry:
+.. _Contributed-Opt-Spec-Introduction:
 
-Ellipsometry
+Introduction
 ##############
 
-Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
-The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
-Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
-
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+:ref:`Application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` and :ref:`base classes &lt;BC-Opt-Spec-Classes&gt;` to describe atom-probe tomography/microscopy (APT/APM) experiments
+are already part of the NeXus standard. In addition, there are several contributed definitions that are currently
+under discussion.
 
 
 Application Definitions
@@ -79,7 +75,6 @@ Application Definition
        An application definition to describe the dispersive properties of a material.
        The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
        to three dispersive functions or tables.
-
 
 
 Base Classes
