@@ -60,10 +60,10 @@
 		type has been specified.
 
 		The entry point (``depends_on``) will be outside of this class and point to a
-		field in here. Following the chain may also require following ``depends_on``
-		links to transformations outside, for example to a common base table.  If
-		a relative path is given, it is relative to the group enclosing the ``depends_on``
-		specification.
+		field in here (or to an instance of ``NX_coordinate_system``). Following the
+		chain may also require following ``depends_on``	links to transformations outside,
+		for example to a common base table.  If a relative path is given, it is relative
+		to the group enclosing the ``depends_on`` specification.
 
 		For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
 		and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
@@ -108,6 +108,14 @@
 		* depends_on
 
 		as needed.
+
+		NOTE
+
+		NXtransformations follows the **active** transformation convention. This means that the transformation describes
+		how an object is moved or rotated within the coordinate system. In other words, the transformation
+		actively changes the position or orientation of the object itself. This is in contrast to a **passive** transformation,
+		which changes the frame of reference or coordinate system, while the object remains fixed. In case it is needed 
+		to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
 		<doc>
@@ -148,6 +156,11 @@
 				For ``translation`` axes the direction should be chosen for
 				increasing displacement. For general axes, an appropriate direction
 				should be chosen.
+
+				Note that if the ``NXtransformation`` depends on a coordinate system
+				(i.e., its ``depends_on`` attribute points to an instance :ref:`NXcoordinate_system`),
+				the rotation is right handed in that coordinate system, even if the the coordinate system
+				itself is left-handed (as defined by the determinant of its base vectors).
 			</doc>
 			<dimensions rank="1">
 				<dim index="1" value="3" />
@@ -170,8 +183,12 @@
 		</attribute>
 		<attribute name="depends_on" type="NX_CHAR">
 			<doc>
-				Points to the path to a field defining the axis on which this
-				depends or the string ".".
+				Points to the path of a field defining the axis on which this instance of
+				NXtransformations depends or the string ".". It can also point to an instance of
+				``NX_coordinate_system`` if this transformation depends on it.
+
+				If it is the string ".", it is explicitly pointing towards the default 
+				`NeXus coordinate system &lt;https://manual.nexusformat.org/design.html#the-nexus-coordinate-system&gt;`_.
 			</doc>
 		</attribute>
 		<attribute name="equipment_component" type="NX_CHAR">
@@ -202,7 +219,7 @@
 			the corresponding axis moves during the exposure of a frame.  Ideally, the
 			value of this field added to each value of ``AXISNAME`` would agree with the
 			corresponding values of ``AXISNAME_end``, but there is a possibility of significant
-			differences.  Use of ``AXISNAME_end`` is recommended.
+			differences. Use of ``AXISNAME_end`` is recommended.
 		</doc>
 	</field>
 </definition>
