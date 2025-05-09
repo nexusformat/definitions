@@ -1,18 +1,16 @@
-.. _CgmsFeatures-Structure:
+.. _Contributed-Cgms-Structure:
 
 =========================
 Geometry & Microstructure
 =========================
 
 .. index::
-   IntroductionCgms
-   PhysicsCgms
-   CgmsAppDef
-   CgmsBC
-   IcmeMsModels
+   Contributed-Cgms-Introduction
+   Contributed-Cgms-Introduction-Physics
+   Contributed-Cgms-Introduction-Base-Classes
+   Contributed-Cgms-Introduction-IcmeMsModels
 
-
-.. _IntroductionCgms:
+.. _Contributed-Cgms-Introduction:
 
 Introduction
 ############
@@ -20,7 +18,7 @@ Introduction
 The computational-geometry/microstructure-modeling-based part of the proposal
 has the following aims:
 
-First, we would like to contribute to efforts on standardizing a controlled
+To contribute to efforts on standardizing a controlled
 vocabulary, definitions for these terms, and relations between the terms, for
 computational-geometry-based descriptions of the structure of materials and
 atomic configurations used when characterizing materials in experiments
@@ -31,21 +29,7 @@ and shapes offer a complementary alternative to the current set of base classes 
 NeXus for constructive solid geometry such as :ref:`NXcsg`, :ref:`NXoff_geometry`, 
 or :ref:`NXquadric` to name but a few.
 
-Second, we would like to explore with this proposal how we can harmonize terms
-frequently used by materials scientists in the field of condensed-matter physics
-with definitions and terms offer by the NOMAD MetaInfo description.
-
-Third, the proposal should yield a substantiated set of arguments and suggestions
-how descriptors for the structure and atomic architecture of materials can be
-harmonized. With this we especially would like to reach out and intensify the
-cooperation between the materials-science-related consortia of the German
-National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
-NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
-
-.. The proposal reaches out to our colleagues in the materials engineering-based
-.. consortia to document that there is value in discussing about controlled vocabulary.
-
-.. _PhysicsCgms:
+.. _Contributed-Cgms-Introduction-Physics:
 
 Physics background
 ##################
@@ -68,13 +52,6 @@ Maybe this is a historical burden given the large set of technical terms and jar
 in place, which then motivated pragmatic solutions that resulted in many research groups
 have developed similar formats using similar descriptions.
 
-We see this work on base classes and application definitions not primarily an
-effort to improve and extend NeXus for now. Rather this part of the proposal
-is an effort to support activities in materials science to work towards
-common terminology and using controlled vocabularies more frequently.
-These are the foundation for more sophisticated thoughts about practically
-useful ontologies.
-
 Defining crystal defects is a question of how to coarse-grain a given spatiotemporal
 set of atoms, each having a nuclide type and position/trajectory. Different mathematical/geometrical
 methods exists to coarse-grain and thus determine how a point, a line, a surface, or
@@ -96,7 +73,7 @@ atoms and features turn out to yield useful descriptors. Examples include point,
 line, surface defects, such as vacancies, solute cluster, dislocations,
 disconnections, interfaces to name but a few.
 
-.. _CgmsBC:
+.. _Contributed-Cgms-Introduction-Base-Classes:
 
 Base Classes
 ############
@@ -252,7 +229,7 @@ parameters and to summarize its performance statistics:
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
 
-.. _IcmeMsModels:
+.. _Contributed-Cgms-Introduction-IcmeMsModels:
 
 Application definitions for ICME models
 #######################################
@@ -270,7 +247,7 @@ The following application definitions are proposed to support discussion on
 how materials engineering-specific data models connect to or can be mapped on
 concepts which are equally modellable with NeXus:
 
-    :ref:`NXms`:
+    :ref:`NXmicrostructure`:
         An application definition for arbitrary spatiotemporally resolved simulations.
 
     :ref:`NXms_score_config`:
@@ -282,3 +259,5 @@ concepts which are equally modellable with NeXus:
         A specific example of how :ref:`NXms` can be specialized for documenting
         results of computer simulations with the static recrystallization
         cellular automata model SCORE.
+
+TODO: revisit classes here if they still exist
