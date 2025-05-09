@@ -1,19 +1,15 @@
-.. _Optical-Spectroscopy-Structure-APP:
+.. _AppDef-Opt-Spec-Structure:
 
 ====================
 Optical Spectroscopy
 ====================
 
 .. index::
-   Ellipsometry-APP
-   Raman-APP
-   DispersiveMaterial-APP
+   AppDef-Opt-Spec-Ellipsometry
+   AppDef-Opt-Spec-Raman
+   AppDef-Opt-Spec-Definitions
 
-
-EXAMPLE FOR DOCUMENTATION OF A GROUP OF APPLICATION DEFINITIONS
-
-
-.. _Ellipsometry-APP:
+.. _AppDef-Opt-Spec-Ellipsometry:
 
 Ellipsometry
 ############
@@ -24,9 +20,9 @@ Interpretation is based on Fresnel equations and numerical models of the optical
 
 In the application definition, we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
 
-.. _Raman-APP:
+.. _AppDef-Opt-Spec-Raman:
 
-Raman
+Raman spectroscopy
 ############
 
 Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases, or solids. 
@@ -35,6 +31,7 @@ Interpretation can be done based on peaks, which represent the phonon properties
 
 The application definition contains a minimum of descriptive elements required to understand Raman spectroscopy measurements.
 
+.. _AppDef-Opt-Spec-Definitions:
 
 Application Definitions
 -----------------------
@@ -48,19 +45,7 @@ Application Definitions
     :ref:`NXraman`:
        An application definition for Raman spectroscopy measurements.
 
-.. _DispersiveMaterial-APP:
+Base classes
+#######################
 
-Dispersive Material
-###################
-
-A dispersive material is a description for the optical dispersion of materials.
-This description may be used to store optical model data from an ellipsometric analysis 
-(or any other technique) or to build a database of optical constants for optical properties of materials.
-
-Application Definition
-----------------------
-
-    :ref:`NXdispersive_material`:
-       An application definition to describe the dispersive properties of a material.
-       The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
-       to three dispersive functions or tables.
+A specific set of base classes which are used in these application definitions can be found :ref:`here &lt;BC-Opt-Spec-Classes&gt;`.
