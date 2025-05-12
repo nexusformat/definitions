@@ -116,7 +116,7 @@ Consider the base classes as a set of *components*
 that are used to construct a data file.
 
 Some base classes are grouped together:
-  :ref:`Atomprobe Microscopy <BC-Apm-Structure>`
+  :ref:`Atom Probe Microscopy <BC-Apm-Structure>`
 
   :ref:`Electron Microscopy <BC-Em-Structure>`
 
@@ -156,7 +156,7 @@ write the raw data in the :ref:`NXinstrument` tree and then link to it
 from the location(s) defined in the relevant application definition.
 
 Some application definitions are grouped together:
-  :ref:`Atomprobe Microscopy <AppDef-Apm-Structure>`
+  :ref:`Atom Probe Microscopy <AppDef-Apm-Structure>`
 
   :ref:`Electron Microscopy <AppDef-Em-Structure>`
 
@@ -188,7 +188,7 @@ definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
 Some contributions are grouped together:
-  :ref:`Atomprobe Microscopy <Contributed-Apm-Structure>`
+  :ref:`Atom Probe Microscopy <Contributed-Apm-Structure>`
 
   :ref:`Geometry and Microstructures <Contributed-Cgms-Structure>`
   
