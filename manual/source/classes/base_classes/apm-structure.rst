@@ -1,8 +1,8 @@
 .. _BC-Apm-Structure:
 
-================================
-Atom-probe tomography/microscopy
-================================
+==================================
+Atom Probe Microscopy / Tomography
+==================================
 
 .. index::
    BC-Apm-Introduction

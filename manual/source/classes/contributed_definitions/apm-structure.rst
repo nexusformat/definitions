@@ -1,8 +1,8 @@
 .. _Contributed-Apm-Structure:
 
-=========================
-Atom-probe tomography
-=========================
+==================================
+Atom Probe Microscopy / Tomography
+==================================
 
 .. index::
    Contributed-Apm-Introduction
