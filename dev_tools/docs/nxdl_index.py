@@ -67,21 +67,17 @@ def nxdl_indices() -> Dict[str, dict]:
             file = ""
             print("---------++++++++-", section)
         if file.endswith(("applications/index.rst", "base_classes/index.rst")):
+            rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}em-structure\n")
-            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
-            rst_lines.append(f"{indentation}apm-structure\n")
-
+            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
         if file.endswith("contributed_definitions/index.rst"):
+            rst_lines.append(f"{indentation}apm-structure\n")
+            rst_lines.append(f"{indentation}cgms-structure\n")
             rst_lines.append(f"{indentation}em-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
-            rst_lines.append(f"{indentation}apm-structure\n")
+            rst_lines.append(f"{indentation}spm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
-            rst_lines.append(f"{indentation}sts-structure\n")
-            rst_lines.append(f"{indentation}cgms-structure\n")
-            rst_lines.append(f"{indentation}icme-structure\n")
-            rst_lines.append(f"{indentation}sample-prep-structure\n")
-
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
 
