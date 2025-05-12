@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,6 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-https://doi.org/10.1017/9781316337455.022-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcorrector_cs" extends="NXcomponent" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -40,12 +38,14 @@ https://doi.org/10.1017/9781316337455.022-->
         Different technology partners use different conventions and
         models for quantifying the aberration coefficients.
         
-        The corrector in an electron microscope is composed of multiple lenses
-        and multipole stigmators with details that are specific for the technology partner
-        and microscope. Most technical details are proprietary knowledge.
+        Correctors in an electron microscope are composed of multiple lenses
+        and multipole stigmators. Their technical details are specific for the
+        technology partner as well as microscope. Most technical details are
+        proprietary knowledge.
         
-        If one component corrects for multiple types of aberrations (like it is the case reported
-        here `CEOS &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_) follow this design:
+        If one component corrects for multiple types of aberrations (like it is the case
+        reported here `CEOS &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_) follow this
+        design when using corrector and monochromator in an application definition:
         
         * Use :ref:`NXcorrector_cs` for spherical aberration
         * Use :ref:`NXmonochromator` for energy filtering or chromatic aberration
@@ -57,9 +57,9 @@ https://doi.org/10.1017/9781316337455.022-->
             Was the corrector used?
         </doc>
     </field>
-    <group name="TABLEAU" type="NXprocess" nameType="any">
+    <group name="tableauID" type="NXprocess" nameType="partial">
         <doc>
-            Specific information about the alignment procedure that is a process during which
+            Specific information about the alignment procedure. This is a process during which
             the corrector is configured to enable calibrated usage of the instrument.
             
             This :ref:`NXprocess` group should also be used when one describes in a computer
@@ -76,7 +76,8 @@ https://doi.org/10.1017/9781316337455.022-->
                 The outer tilt angle of the beam in tableau acquisition.
                 
                 TODO: The relevant axes which span the tilt_angle need a
-                cleaner description.
+                cleaner description. Suggestions from the community are
+                welcome here for guiding an improvement of this base class.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_img"/>
@@ -99,14 +100,14 @@ https://doi.org/10.1017/9781316337455.022-->
                 <dim index="1" value="n_img"/>
             </dimensions>
         </field>
-        <group type="NXimage">
+        <group name="imageID" type="NXimage" nameType="partial">
             <doc>
                 Image(s) taken during the alignment procedure
             </doc>
         </group>
         <field name="model" type="NX_CHAR">
             <doc>
-                Convention used for storing measured or estimated aberrations (for each image or final)
+                Convention used for storing measured or estimated aberrations (for each or the final image)
                 via fields c_1, a_1, c_1_0, c_1_2_a, and so on and so forth.
                 
                 See `S. J. Pennycock and P. D. Nellist &lt;https://doi.org/10.1007/978-1-4419-7200-2&gt;`_ (page 44ff, and page 118ff)
@@ -162,45 +163,6 @@ https://doi.org/10.1017/9781316337455.022-->
         <group name="c_5_6_a" type="NXaberration"/>
         <group name="c_5_6_b" type="NXaberration"/>
     </group>
-    <!--further comments from Thilo Remmele (Leibniz-Institut für Kristallzüchtung)
-ThermoFisher uses CEOS correctors but makes customizations to these in their microscopes
-Aberration naming schema: C_order_multiplicity (similar to NXem, but with
-another coordinate system and in addition with a confidence entry.
-Aberrations with multiplicity 0 have no angle entry (C1,C3,C5,.., CEOS notation)
-contrast transferfuntion: ctf = e^(-i*Xi(g)) in Fourier space
-aberration function:
-Xi(g) = 2*pi/lamda{ 1/2 * (lamda*g)^2 (C20 + C22 cos[2(phi-phi_22)]
-+1/3 * (lamda*g)^3 (C31 cos[(phi-phi_31) + C33 cos[3(phi-phi_33)
-+1/4 * (lamda*g)^4 (C40 + C42 cos[2(phi-phi_42)] + C44 cos[4(phi-phi_42)]
-+1/f * (lamda*g)^f Sum (Cfm cos[m(phi-phi_fm)] where m=[0,2,..f] for even f and m=[1,3,..,f] for odd f
-Thilo Remmele also mentions that there is a mapping of aberration coefficient names:
-C_2_0 -> C1 Defocus
-C_2_2 -> A1 2-fold astigmatism
-C_3_3 -> A2 3-fold astigmatism
-C_3_1 -> B2 axial coma
-C_4_0 -> C3 spherical aberration
-C_4_4 -> A3 4-fold astigmatism
-C_4_2 -> S3 star aberration
-C_5_5 -> A4 5-fold astigmatism
-C_5_1 -> B4 axial coma
-C_5_3 -> D4 three lobe aberration
-C_6_0 -> C5 spherical aberration
-C_6_2 -> S5 star aberration
-C_6_4 -> R5 rosette aberration
-C_6_6 -> A5 6-fold astigmatism
-In a session with HRTEM images the corrector is commonly aligned.
-The final measurement with the estimated residual aberrations
-should be saved in a corrector.html file (an example is appended
-at the end of this file. Unfortunately the datetime is not included
-in that html output, nor is the used outer tilt angle and exposure time.
-The datetime may be estimated from the file datetime and the Delta t entry,
-but caution if that datetime is not preserved on file transfers!
-More than one detector entry could occure but is not common.
-A seperate corrector schema, so it can be easily exchanged to other correctors if necessary.
-It might be useful to collect all the corrector entries in one table, for example to analyse the performance of the corrector.
-The corrector entry of the nexus em definition lacks the confidence information and the
-parameter settings for the estimation oft the aberrations.
-technical design perspective-->
     <group type="NXlens_em"/>
     <group type="NXaperture"/>
     <group type="NXdeflector"/>
