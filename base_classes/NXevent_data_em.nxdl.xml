@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,17 @@
     <doc>
         Base class to store state and (meta)data of events for electron microscopy.
         
+        Event-related (meta)data, typically measured datasets like images and spectra.
+        To avoid repetitively storing static instrument-related metadata,
+        the dynamic (meta)data that typically changes for each image and spectrum
+        is split from the static (meta)data.
+        
+        Which temporal granularity is adequate to log events depends on the situation and
+        research question. Using a model which enables a collection of events offers
+        the most flexible way to cater for both experiments with controlled electron
+        beams in a real microscope or the simulation of such experiments or
+        individual aspects of such experiments.
+        
         Electron microscopes are dynamic. Scientists often report that microscopes
         *perform differently* across sessions. That *they* perform differently from
         one day or another. In some cases, root causes for performance differences
@@ -33,23 +44,17 @@
         bring the microscope into a state where conditions are considered better
         or of whatever high enough quality for starting or continuing the measurement.
         
-        Which temporal granularity is adequate to log events depends on the situation and
-        research question. Using a model which enables a collection of events offers
-        the most flexible way to cater for both experiments with controlled electron
-        beams in a real microscope or the simulation of such experiments or
-        individual aspects of such experiments.
-        
         In all these use cases it is useful to have a mechanism whereby time-dependent
         data of the instrument state can be stored and documented in an representation
-        that facilitates interoperability.
+        that facilitates interoperability. This is the idea behind this base class.
         
         :ref:`NXevent_data_em` represents an instance to describe and serialize flexibly
         whatever is considered a time interval during which the instrument is
-        considered stable enough for allowing any working on tasks with the microscope.
+        considered stable enough for allowing any working on tasks with it.
         Examples of such tasks are the collecting of data (images and spectra) or
         the calibrating the instrument or individual of its components. Users may wish to take
-        only a single scan or image and complete their microscope session thereafter.
-        Alternatively, users are working for much longer time at the microscope,
+        only a single scan or image and complete their session thereafter.
+        Alternatively, users are working for much longer time at the instrument,
         perform recalibrations in between and take several scans (of different
         ROIs on the specimen), or they explore the state of the microscope for
         service or maintenance tasks.
@@ -59,14 +64,7 @@
         * Firstly, via a header section whose purpose is to contextualize
           and identify the event instance in time.
         * Secondly, via a data and metadata section where individual data
-           collections can be stored in a standardized representation.
-        
-        The idea of the first section, the event-based em_lab, is to document the
-        state of the microscope as it was found during the event. The idea of the other,
-        the :ref:`NXem` application-definition-based em_lab(NXinstrument) section is to
-        keep all those data that are static in the sense that they remain the same
-        across multiple :ref:`NXevent_data_em` instances.
-        This reduces the need for having many copies of the same metadata.
+          collections can be stored in a standardized representation.
         
         We are aware of the fact that given the variety how an electron microscope
         is used, there is a need for a flexible and adaptive documentation system.
@@ -85,28 +83,27 @@
         or a stack of spectra. Having to deal with instabilities is a common theme in
         electron microscopy practice. Numerical protocols can be used during data
         post-processing to correct for some of the instabilities.
-        A few exemplar references to provide an overview on the subject is
-        available in the literature:
+        A few exemplar references provide an overview on the subject:
         
         * `C. Ophus et al. &lt;https://dx.doi.org/10.1016/j.ultramic.2015.12.002&gt;`_
         * `B. Berkels et al. &lt;https://doi.org/10.1016/j.ultramic.2018.12.016&gt;`_
         * `L. Jones et al. &lt;https://link.springer.com/article/10.1186/s40679-015-0008-4&gt;`_
         
         For specific simulation purposes, mainly in an effort to digitally repeat or simulate
-        the experiment, it is tempting to consider dynamics of the instrument,
+        the experiment (digital twin), it is tempting to consider dynamics of the instrument,
         implemented as time-dependent functional descriptions of e.g. lens excitations,
-        beam shape functions, trajectories of groups of electrons and ions,
-        or detector noise models. This warrants to document the time-dependent
-        details of individual components of the microscope
-        as is implemented in :ref:`NXevent_data_em`.
+        beam shape functions, trajectories of groups of electrons and ions, or detector noise models.
+        This also warrants to document the time-dependent details of individual components
+        of the microscope via the here implemented class :ref:`NXevent_data_em`.
     </doc>
     <field name="start_time" type="NX_DATE_TIME">
         <doc>
             ISO 8601 time code with local time zone offset to UTC information included
-            when the snapshot time interval started. If the user wishes to specify an
-            interval of time that the snapshot should represent during which the instrument
-            was stable and configured using specific settings and calibrations,
-            the start_time is the start (left bound of the time interval) while
+            when the snapshot time interval started.
+            
+            If users wish to specify an interval of time that the snapshot should represent
+            during which the instrument was stable and configured using specific settings and
+            calibrations, the start_time is the start (left bound of the time interval) while
             the end_time specifies the end (right bound) of the time interval.
         </doc>
     </field>
@@ -123,8 +120,7 @@
     </field>
     <field name="identifier_sample" type="NX_CHAR" units="NX_UNITLESS">
         <doc>
-            The name of the sample instance under NXem/ENTRY/SAMPLE to resolve
-            ambiguities that are explained in the docstring of NXem/ENTRY/SAMPLE.
+            The name of the sample to resolve ambiguities.
         </doc>
     </field>
     <field name="type" type="NX_CHAR">
@@ -150,11 +146,8 @@
             about the event for which there is at the moment no other place.
             
             In the long run such free-text field description should be avoided as
-            they are difficult to machine-interpret. Instead, reference should be given
-            to refactoring these descriptions into structured metadata.
-            The reason why in this base class the field event_type is nonetheless kept
-            is to offer a place whereby practically users may enter data for
-            follow-up modifications to support arriving at an improved :ref:`NXevent_data_em` base class.
+            it is difficult to machine-interpret. Instead, an enumeration should
+            be used.
         </doc>
     </field>
     <group type="NXuser"/>
