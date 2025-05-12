@@ -77,7 +77,7 @@ def nxdl_files():
         # NXem.nxdl.xml test cases
         (
             "NXem.nxdl.xml",
-            "/ENTRY/measurement/EVENT_DATA_EM/end_time",
+            "/ENTRY/measurement/eventID/end_time",
             {"name": "end_time"},
         ),
         (
@@ -86,17 +86,17 @@ def nxdl_files():
             {"type": "NXinstrument_em"}),
         (
             "NXem.nxdl.xml",
-            "/ENTRY/measurement/EVENT_DATA_EM/IMAGE/image_3d",
+            "/ENTRY/measurement/eventID/imageID/image_3d",
             {"type": "NXdata"},
         ),
         (
             "NXem.nxdl.xml",
-            "/ENTRY/measurement/EVENT_DATA_EM/IMAGE/image_3d/AXISNAME_indices",
+            "/ENTRY/measurement/eventID/imageID/image_3d/AXISNAME_indices",
             {"name": "AXISNAME_indices"},
         ),
         (
             "NXem.nxdl.xml",
-            "/ENTRY/measurement/EVENT_DATA_EM/IMAGE/image_3d/axis_j",
+            "/ENTRY/measurement/eventID/imageID/image_3d/axis_j",
             {"type": "NX_NUMBER"},
         ),
     ],
