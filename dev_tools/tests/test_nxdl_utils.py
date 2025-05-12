@@ -80,10 +80,7 @@ def nxdl_files():
             "/ENTRY/measurement/eventID/end_time",
             {"name": "end_time"},
         ),
-        (
-            "NXem.nxdl.xml",
-            "/ENTRY/measurement/instrument",
-            {"type": "NXinstrument_em"}),
+        ("NXem.nxdl.xml", "/ENTRY/measurement/instrument", {"type": "NXinstrument_em"}),
         (
             "NXem.nxdl.xml",
             "/ENTRY/measurement/eventID/imageID/image_3d",
