@@ -1,8 +1,8 @@
 .. _AppDef-Apm-Structure:
 
-=====================
-Atom-probe tomography
-=====================
+==================================
+Atom Probe Microscopy / Tomography
+==================================
 
 .. index::
    AppDef-Apm-Introduction
