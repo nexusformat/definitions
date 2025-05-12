@@ -23,7 +23,7 @@ In the application definition, we provide a minimum set of description elements 
 .. _AppDef-Opt-Spec-Raman:
 
 Raman spectroscopy
-############
+##################
 
 Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases, or solids. 
 The measurements is based on the inelastic light scattering due to the material's vibrations.
