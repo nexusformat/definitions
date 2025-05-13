@@ -38,64 +38,26 @@
         Having at least one instance for an instance of NXapm is recommended.
         
         This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
-        of atom probe research. Against static and dynamic quantities are split to avoid a duplication
+        of atom probe research. Again static and dynamic quantities are split to avoid a duplication
         of information. Specifically, the time interval considered is the entire time
-        starting at start_time until end_time during which we assume the pulser triggered named pulses.
-        These pulses are identified via the pulse_id field. The point in time when each was issued
-        is specified via the combination of start_time and delta_time.
+        starting at start_time until end_time during which we assume the pulser triggered pulses.
+        These pulses are identified via the pulse_id field. The point in time when each pulse was
+        fired can be recovered from analyzing start_time and delta_time.
         
         Which temporal granularity is adequate depends on the situation and research question.
         Using a model which enables a collection of events offers the most flexible way to cater for
         both atom probe experiments or simulation. To monitor the course of an ion extraction experiment
         (or simulation) it makes sense to track time explicitly via time stamps or implicitly
-        via e.g. a clock inside the instrument, such as the clock of the pulser and respective pulsing event
-        identifier.
-        
-        As set and measured quantities typically change over time and we do not yet know during the
-        measurement which of the events have associated (molecular) ions that will end up in the
-        reconstructed volume, we must not document quantities as a function of the evaporation_id but
-        as a function of the (pulsing) identifier_event.
-        
-        Conceptually and technically NeXus currently stores tensorial information as arrays of values
-        (with each value of the same datatype). For instance, a field temperature(NX_FLOAT) stores
-        a set of temperature values but that field when used somewhere is a concept. However, that
-        concept has no information at which point in time these temperatures were taken.
-        An existent functional relationship between the two concepts is not defined.
-        
-        However, a correct interpretation of the temperature values demands knowledge about what is
-        the independent quantity on which temperature depends on or according to which frequency
-        temperature values were sampled.
-        In NeXus there are two approaches which cope with such correlations:
-        One is :ref:`NXdata` where the attribute signal specifies the correlation.
-        The other one is :ref:`NXlog` which, like NXdata, demands to granularize logged_against
-        (dependent signal) and independent quantities into an own group.
-        In many cases this additional grouping is not desired though.
-        
-        One naive solution typically employed is then to store the independent variable values via a second
-        vector e.g. time_stamp with the same number of entries (with dimensionality defined through symbols).
-        However, there is no independent logical connection between these two concepts, i.e. temperature
-        and time_stamp.
-        
-        In the case of atom probe though the time that one would use in NXlog is defined implicitly via pulse_id,
-        which is the independent variable vector against which eventually dozens of channels of data are logged.
-        Not only are these channels logged they should ideally also be self-descriptive in that these channels have
-        pulse_id as the independent variable but we do not wish to duplicate this information all the time but
-        reference it.
-        
-        Therefore, we here explore the use of an attribute with symbol logged_against. Maybe it is better to use the
-        symbol depends_on but this is easily to be confused with depends_on that is used for instances of
-        :ref:`NXtransformations`. Consequently, if depends_on were to be used extra logic is needed by consuming
-        applications to understand that the here build correlations are conceptually different ones.
-        
-        This issue should be discussed further by the NeXus community.
+        via e.g. a clock inside the instrument, such as the clock of the pulser and respective pulse_id.
     </doc>
     <field name="start_time" type="NX_DATE_TIME">
         <doc>
             ISO 8601 time code with local time zone offset to UTC information included
-            when the snapshot time interval started. If the user wishes to specify an
-            interval of time that the snapshot should represent during which the instrument
-            was stable and configured using specific settings and calibrations,
-            the start_time is the start (left bound of the time interval) while
+            when the snapshot time interval started.
+            
+            If users wish to specify an interval of time that the snapshot should represent
+            during which the instrument was stable and configured using specific settings and
+            calibrations, the start_time is the start (left bound of the time interval) while
             the end_time specifies the end (right bound) of the time interval.
         </doc>
     </field>
@@ -108,11 +70,11 @@
     <field name="delta_time" type="NX_NUMBER" units="NX_TIME">
         <doc>
             Delta time array which resolves for each pulse_id the time difference
-            between when that pulse was issued and start_time.
+            between when that pulse was fired and start_time.
             
             In summary, using start_time, end_time, delta_time, pulse_id_offset,
-            and pulse_id exactly specifies the connection between when a pulse was
-            issued relative to start and absolute in UTC.
+            and pulse_id exactly specify the connection between when a pulse was
+            fired relative to start_time and in absolute in coordinated world time UTC.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="p"/>
@@ -145,7 +107,7 @@
             when quantities have been collected via sampling.
             
             In virtually all cases the pulser is a blackbox. Depending on how the
-            instrument is configured during a measurement the target
+            instrument is configured during a measurement, the target
             values and thus also the actual values may change.
             
             Maybe the first part of the experiment is run at a certain pulse fraction but thereafter
@@ -154,17 +116,23 @@
             long vector which stores the set of events (e.g. pulsing events) when that value was
             measured.
             
-            This may cause several situations: In the case that e.g. the pulse_fraction is never changed
+            This may lead to several cases: In the case that e.g. the pulse_fraction is never changed
             and also exact details not interesting, one stores the set value for the pulse_fraction
             and a single value for the pulse_id e.g. 0 to indicate that the pulse_fraction was set
             at the beginning and it was maintained constant during the measurement.
-            If the pulse_fraction was maybe changed after the 100000th pulse, pulse_fraction is a
-            vector with two values one for the first and another one for the value from the 100000-th
-            pulse onwards. The values of pulse_id are then [0, 99999] respectively.
+            
+            If the pulse_fraction was e.g. changed after the 100000th pulse, pulse_fraction is a
+            vector with two values. One value for the first and another one for the value from the
+            100000th pulse onwards. The values of pulse_id are then [0, 99999] respectively.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="p"/>
         </dimensions>
     </field>
-    <group name="instrument" type="NXinstrument_apm"/>
+    <group name="instrument" type="NXinstrument_apm">
+        <doc>
+            Place to store dynamic metadata of the instrument to document as close as possible
+            the state of the instrument during the event, i.e. in between start_time and end_time.
+        </doc>
+    </group>
 </definition>

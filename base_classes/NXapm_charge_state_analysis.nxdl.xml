@@ -43,42 +43,32 @@
         </symbol>
     </symbols>
     <doc>
-        Base class to document an algorithm for recovering charge state and nuclide composition of a (molecular) ion.
+        Base class to document the parameters (configuration) and results of a processing for recovering
+        the charge state and nuclide composition of a (molecular) ion from ranging definitions as used
+        in the research field of atom probe microscopy.
         
-        Currently ranging definitions in the research field of atom probe face have limitations:
-        
-        1. A ranging definition maps all signal within a mass-to-charge-state-ratio value interval
-           on one iontype. Facing limited mass-resolving-power, there are mass-to-charge-state-ratio
-           values, though, for which not only multiple (molecular) ions are indistinguishable but
-           also for which the current practice of documenting classical ranging definitions is incomplete.
-        2. Indeed, ranging definitions often report only (for each interval) the
-           mass-to-charge-state-ratio intervals surplus the composition of elements
-           that build the (molecular) ion.
-        3. Therefore, classical ranging definitions demand a post-processing with an algorithm
-           which can identify nuclides from which the (molecular) ion is constructed
-           and a charge state possibly recovered. Combinatorial algorithms are used for this purpose.
-        
-        This base class documents the configuration and results of such an algorithm.
+        A ranging definition reports classically only the mass-to-charge-state-ratio interval surplus
+        the composition of the elements but not necessarily the nuclides out of which the (molecular) ion
+        is built. As the mass-resolving-power in an atom probe instrument is finite and typically lower
+        than for cutting edge tandem mass spectrometry it is possible that different combinations of nuclides
+        are indistinguishable and thus multiple (molecular) ions in eventually even different charge states
+        can be valid labels for a given mass-to-charge-state-ratio peak. Enumerating the possible combinations
+        is a programmatic approach that can help with peak identification.
     </doc>
-    <!--Details and results of the combinatorial analyses of a ranging definition
-to clarify (if possible) the charge_state of an ion and its (not necessarily)
-unique combination of nuclides contained including their multiplicity.
-input/config-->
     <field name="nuclides" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-            Input constraint, list of nuclide_hash for typically elements used for the
-            ranging definition of the ion whose charge state the analyses covered.
-            The list contains each hash as many times as its multiplicity.
-            Nuclides are encoded using the hashing rule that is defined in :ref:`NXion`.
-            
-            As an example, a ranging definition H:2 O:1 is configured by setting nuclides to
-            a list with entries :math:`1 + 0 \cdot 256`, :math:`1 + 0 \cdot 256`, :math:`8 + 0 \cdot 256`.
+            Parameter that defines the elements considered in the combinatorial search.
+            The array contains nuclides as many times as their multiplicity.
+
+            Nuclides are encoded using the hashing rule that is defined in :ref:`NXion`; an example:
+            A ranging definition H:2 O:1 is configured by setting nuclides to a list with entries
+            :math:`1 + 0 \cdot 256`, :math:`1 + 0 \cdot 256`, :math:`8 + 0 \cdot 256`.
             An empty list does not release the constraint. Instead, a list with all elements
             in the periodic table (encoded as nuclide_hash values) should be used, i.e.
             :math:`1 + 0 \cdot 256`, :math:`2 + 0 \cdot 256`, and so on and so forth.
             
-            Keep in mind that with a weakly constrained parameter space the combinatorial
-            analysis may become very time consuming!
+            Constraining the elements or nuclides reduces the time to perform an
+            exhaustive combinatorial search.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_variable"/>
@@ -86,8 +76,8 @@ input/config-->
     </field>
     <field name="mass_to_charge_range" type="NX_FLOAT" units="NX_ANY">
         <doc>
-            Input constraint, interval within which (molecular) ions need to have the
-            mass-to-charge-state-ratio such that an ion qualifies as a candidate.
+            Parameter that defines the interval :math:`[{m/q}_{min}, m/q}_{max}]` within which
+            (molecular) ions with given mass-to-charge-state-ratio qualify as candidates.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="1"/>
@@ -96,13 +86,13 @@ input/config-->
     </field>
     <field name="min_half_life" type="NX_FLOAT" units="NX_TIME">
         <doc>
-            Input constraint, minimum half life for how long each nuclide of each
+            Parameter that defines the minimum half life for how long each nuclide of each
             (molecular) ion needs to be stable such that the ion qualifies as a candidate.
         </doc>
     </field>
     <field name="min_abundance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
         <doc>
-            Input constraint, minimum natural abundance of each nuclide of each
+            Parameter that defines the minimum natural abundance of each nuclide of each
             (molecular) ion such that the ion qualifies as a candidate.
         </doc>
     </field>
@@ -125,7 +115,8 @@ input/config-->
     <field name="nuclide_hash" type="NX_UINT" units="NX_UNITLESS">
         <doc>
             Table of nuclide instances of which each candidate is composed.
-            Each row vector is sorted in descending order. Unused values are nullified.
+            Each row vector is sorted in descending order.
+            Unused entries in the matrix are nullified.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_cand"/>
@@ -151,8 +142,8 @@ input/config-->
     </field>
     <field name="shortest_half_life" type="NX_FLOAT" units="NX_TIME">
         <doc>
-            For each candidate the half life of that nuclide which has the shortest half
-            life.
+            For each candidate the half life of the nuclide that has the
+            shortest half life.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_cand"/>
