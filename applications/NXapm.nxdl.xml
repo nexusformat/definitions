@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,49 +24,49 @@
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
-             The symbols used in the schema to specify e.g. dimensions of arrays.
+            The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
         <symbol name="n_ht">
             <doc>
-                 Number of hit qualities (hit types) distinguished.
+                Number of hit qualities (hit types) distinguished.
             </doc>
         </symbol>
         <symbol name="n_dld">
             <doc>
-                 Number of delay-line wires of the detector.
+                Number of delay-line wires of the detector.
             </doc>
         </symbol>
         <symbol name="n_bins">
             <doc>
-                 Number of bins used in the mass-to-charge-state-ratio spectrum.
+                Number of bins used in the mass-to-charge-state-ratio spectrum.
             </doc>
         </symbol>
         <symbol name="p">
             <doc>
-                 Number of pulses collected in between start_time and end_time resolved by an
-                 instance of :ref:`NXevent_data_apm`. If this is not defined, p is the number of
-                 ions included in the reconstructed volume if the application definition is used
-                 to store results of an already reconstructed datasets.
+                Number of pulses collected in between start_time and end_time resolved by an
+                instance of :ref:`NXevent_data_apm`. If this is not defined, p is the number of
+                ions included in the reconstructed volume if the application definition is used
+                to store results of an already reconstructed dataset.
             </doc>
         </symbol>
         <symbol name="p_out">
             <doc>
-                 Number of pulses returned by the hit finding algorithm.
-                 Neither necessarily equal to p nor to n.
+                Number of pulses returned by the hit_finding algorithm.
+                Neither necessarily equal to p nor to n.
             </doc>
         </symbol>
         <symbol name="n">
             <doc>
-                 Number of ions spatially filtered from results of the hit_finding algorithm
-                 from which an instance of a reconstructed volume has been generated.
-                 These ions get new identifier assigned in the process (the so-called
-                 identifier_evaporation). This identifier must not be confused with
-                 the identifier_pulse. Typically smaller than both p_out and p_out.
+                Number of ions spatially filtered from results of the hit_finding algorithm
+                from which an instance of a reconstructed volume has been generated.
+                These ions get new identifier assigned in the process (the so-called
+                evaporation_id). This identifier must not be confused with
+                the pulse_id. This value is typically smaller than both p and p_out.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Application definition for atom probe and field ion microscopy experiments.
+        Application definition for real or simulated atom probe and field-ion microscopy experiments.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
@@ -77,143 +77,131 @@
         </field>
         <group name="profiling" type="NXcs_profiling" optional="true">
             <doc>
-                 The configuration of the I/O writer software (e.g. `pynxtools &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_ or its plugins)
-                 which was used to generate this NeXus file instance.
+                The configuration of the software that was used to generate this NeXus file.
             </doc>
-            <!--command_line_call(NX_CHAR):-->
-            <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                 <doc>
-                     A collection of all programs and libraries which are considered relevant
-                     to understand with which software tools this NeXus file instance was
-                     generated. Ideally, to enable a binary recreation from the input data.
-                     
-                     Examples include the name and version of the libraries used to write the
-                     instance. Ideally, the software which writes these NXprogram instances
-                     also includes the version of the set of NeXus classes i.e. the specific
-                     set of base classes, application definitions, and  contributed definitions
-                     with which the here described concepts can be resolved.
-                     
-                     For the `pynxtools library &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_
-                     which is used by the `NOMAD &lt;https://nomad-lab.eu/nomad-lab&gt;`_
-                     research data management system, it makes sense to store e.g. the GitHub
-                     repository commit and respective submodule references used.
+                    A collection of all programs and libraries which are considered relevant
+                    to understand with which software tools this NeXus file instance was
+                    generated. Ideally, to enable a binary recreation from the input data.
+                    
+                    Examples include the name and version of the libraries used to write the
+                    instance. Ideally, the software which writes these NXprogram instances
+                    also includes the version of the set of NeXus classes i.e. the specific
+                    set of base classes, application definitions, and  contributed definitions
+                    with which the here described concepts can be resolved.
+                    
+                    For the `pynxtools library &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_
+                    which is used by the `NOMAD &lt;https://nomad-lab.eu/nomad-lab&gt;`_
+                    research data management system, it makes sense to store e.g. the GitHub
+                    repository commit and respective submodule references used.
                 </doc>
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
                 </field>
             </group>
+            <group name="environment" type="NXcollection" recommended="true">
+                <doc>
+                    Programs and libraries representing the computational environment
+                </doc>
+                <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <field name="program" type="NX_CHAR">
+                        <attribute name="version" type="NX_CHAR"/>
+                    </field>
+                </group>
+            </group>
         </group>
-        <!--\@url:-->
-        <field name="experiment_identifier" type="NX_CHAR" recommended="true"/>
         <field name="run_number" type="NX_UINT" recommended="true" units="NX_UNITLESS">
-            <!--
-cannot be made required as for simulations you do not have a run number!
--->
+            <!--cannot be made required as for simulations you do not have a run number!-->
             <doc>
-                 The identifier whereby the experiment is referred to in the control software.
-                 This is neither the specimen_name nor the experiment_identifier. For
-                 Local Electrode Atom Probe (LEAP) instruments, it is recommended to use the
-                 run_number from the proprietary software IVAS/APSuite of AMETEK/Cameca.
-                 For other instruments, such as the one from Stuttgart or Oxcart from Erlangen,
-                 or the instruments at GPM in Rouen, use the identifier which matches
-                 best conceptually to the LEAP run number.
-                 The field does not have to be required if the information is recoverable
-                 in the dataset which for LEAP instruments is the case (provided these
-                 RHIT or HITS files respectively are stored alongside a data artifact).
-                 With NXapm the RHIT or HITS can be stored via NXnote in the
-                 hit_finding algorithm section.
-                 
-                 As a destructive microscopy technique, a run can be performed only once.
-                 It is possible, however, to interrupt a run and restart data acquisition
-                 while still using the same specimen. In this case, each evaporation run
-                 needs to be distinguished with different run numbers.
-                 We follow this habit of most atom probe groups. Such interrupted runs
-                 should be stored as individual :ref:`NXentry` instances in one NeXus file.
+                The identifier whereby the experiment is referred to in the control software.
+                
+                Neither is this necessarily the specimen_name nor the experiment_identifier.
+                For Local Electrode Atom Probe (LEAP) instruments, it is recommended to use the
+                run_number from the proprietary software IVAS/APSuite of AMETEK/Cameca.
+                
+                For other instruments, such as the one from Stuttgart or Oxcart from Erlangen,
+                or the instruments at GPM in Rouen, use the identifier which matches
+                best conceptually to the LEAP run number.
+                
+                The field does not have to be required if the information is recoverable
+                in the dataset which for LEAP instruments is the case (provided these
+                RHIT or HITS files respectively are stored alongside a data artifact).
+                With NXapm the RHIT or HITS can be stored via NXnote in the
+                hit_finding algorithm section.
+                
+                As a destructive microscopy technique, a run can be performed only once.
+                It is possible, however, to interrupt a run and restart data acquisition
+                while still using the same specimen. In this case, each evaporation run
+                needs to be distinguished with different run numbers.
+                We follow this habit of most atom probe groups. Such interrupted runs
+                should be stored as individual :ref:`NXentry` instances in one NeXus file.
             </doc>
         </field>
-        <field name="experiment_alias" type="NX_CHAR" recommended="true">
+        <field name="experiment_alias" type="NX_CHAR" optional="true">
             <doc>
-                 Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
-                 For experiments usually this is the run_number but for simulation typically no run_numbers are issued.
+                Alias (short name) which scientists can use to refer to this experiment.
             </doc>
         </field>
         <field name="experiment_description" type="NX_CHAR" optional="true">
             <doc>
-                 Free-text description about the experiment.
-                 
-                 Users are strongly advised to parameterize the description of their experiment
-                 by using respective groups and fields and base classes instead of writing prose
-                 into this field.
-                 
-                 The reason is that such free-text field is difficult to machine-interpret.
-                 The motivation behind keeping this field for now is to learn in how far the
-                 current base classes need extension based on user feedback.
+                Free-text description about the experiment.
+                
+                Users are strongly advised to parameterize the description of their experiment
+                by using respective groups and fields and base classes instead of writing prose
+                into the field.
             </doc>
         </field>
-        <!--optional quantities do not need to be mentioned in an appdef because they can always be added
-if NXapm inherits from NXapm_base having this optional field does not need to be
-mentioned because optional nodes can always be added to a NeXus file instance without
-making it thereby non-compliant to the application definition
-the only difference is that if the consuming application wishes to demand to find that field
-it has to be specified in the appdef for the appdef to be a useful document of the contract
-which pieces of information a software expects to find and which not
-if you think about you being the consuming human (agent) also you would like to know
-if there is a run_number for the atom probe measurement from your colleague i.e. you
-effectively ask your colleague for that information while working off your imagined list of requirements
-the appdef definition here is nothing else then the documentation of this for a software-->
         <field name="start_time" type="NX_DATE_TIME">
             <doc>
-                 ISO 8601 time code with local time zone offset to UTC information
-                 included when the atom probe session started. If the exact duration of
-                 the measurement is not relevant start_time only should be used.
-                 
-                 Often though it is useful to specify both start_time and end_time to
-                 capture more detailed bookkeeping of the experiment. The user should
-                 be aware that even with having both dates specified, it may not be
-                 possible to infer how long the experiment took or for how long data
-                 were collected.
-                 
-                 More detailed timing data over the course of the experiment have to be
-                 collected to compute this event chain during the experiment. For this
-                 purpose the :ref:`NXevent_data_apm` instance should be used.
+                ISO 8601 time code with local time zone offset to UTC information
+                included when the atom probe session started. If the exact duration of
+                the measurement is not relevant, start_time only should be used.
+                
+                Often though it is useful to specify both start_time and end_time to
+                capture more detailed bookkeeping of the experiment. The user should
+                be aware that even with having both dates specified, it may not be
+                possible to infer how long the experiment took or for how long data
+                were collected.
+                
+                More detailed timing data over the course of the experiment have to be
+                collected to compute this event chain during the experiment. For this
+                purpose the :ref:`NXevent_data_apm` instance should be used.
             </doc>
         </field>
         <field name="end_time" type="NX_DATE_TIME" recommended="true">
             <doc>
-                 ISO 8601 time code with local time zone offset to UTC included
-                 when the atom probe session ended.
+                ISO 8601 time code with local time zone offset to UTC included
+                when the atom probe session ended.
             </doc>
         </field>
         <field name="elapsed_time" type="NX_FLOAT" recommended="true" units="NX_TIME">
             <doc>
-                 How long did the measurement take e.g. use CRunHeader.CAnalysis.fElapsedTime
+                How long did the measurement take e.g. use CRunHeader.CAnalysis.fElapsedTime
             </doc>
         </field>
-        <group type="NXcite" minOccurs="0" maxOccurs="unbounded">
+        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <field name="doi" type="NX_CHAR"/>
         </group>
-        <group type="NXnote" minOccurs="0" maxOccurs="unbounded">
-            <field name="type" type="NX_CHAR"/>
+        <group name="noteID" type="NXnote" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+            <field name="type" type="NX_CHAR" recommended="true"/>
             <field name="file_name" type="NX_CHAR"/>
-            <field name="checksum" type="NX_CHAR"/>
-            <field name="algorithm" type="NX_CHAR"/>
+            <field name="checksum" type="NX_CHAR" recommended="true"/>
+            <field name="algorithm" type="NX_CHAR" recommended="true"/>
         </group>
         <field name="operation_mode" type="NX_CHAR">
             <doc>
-                 What type of atom probe experiment is performed? This field is meant to
-                 inform research data management systems to allow filtering:
-                 
-                 * apt are experiments where the analysis_chamber has no imaging gas.
-                   experiment with LEAP instruments are typically performed such.
-                 * fim are experiments where the analysis_chamber has an imaging gas,
-                   which should be specified with the atmosphere in the analysis_chamber group.
-                 * apt_fim should be used for combinations of the two imaging modes.
-                   few experiments of this  type have been performed as this can be detrimental
-                   to LEAP systems (see `S. Katnagallu et al. &lt;https://doi.org/10.1017/S1431927621012381&gt;`_).
-                 * other should be used in combination with the user specifying details
-                   in the experiment_documentation field.
-                 
-                 If NXapm is used for storing details about a simulation use other for now.
+                What type of atom probe experiment is performed to inform research data management
+                systems and allow filtering:
+                
+                * apt are experiments where the analysis_chamber has no imaging gas.
+                  Experiments with LEAP instruments are typically with this operation_mode.
+                * fim are experiments where the analysis_chamber has an imaging gas,
+                  which should be specified with the atmosphere in the analysis_chamber group.
+                * apt_fim should be used for combinations of the two imaging modes.
+                  Few experiments of this type have been performed, as it can be detrimental
+                  to LEAP systems (see `S. Katnagallu et al. &lt;https://doi.org/10.1017/S1431927621012381&gt;`_).
+                
             </doc>
             <enumeration open="true">
                 <item value="apt"/>
@@ -221,153 +209,117 @@ the appdef definition here is nothing else then the documentation of this for a 
                 <item value="apt_fim"/>
             </enumeration>
         </field>
-        <group type="NXuser" recommended="true">
-            <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true"/>
+        <group name="userID" type="NXuser" recommended="true" nameType="partial">
+            <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true">
+                <attribute name="type" type="NX_CHAR"/>
+            </field>
             <field name="name" type="NX_CHAR" optional="true"/>
         </group>
         <group name="sample" type="NXsample" recommended="true">
             <doc>
-                 Description of the sample from which the specimen was prepared or
-                 site-specifically cut out using e.g. a focused-ion beam instrument.
-                 
-                 The sample group is currently a place for storing suggestions from
-                 atom probers about knowledge they have gained about the sample.
-                 There are cases where the specimen is machined further or exposed to
-                 external stimuli during the experiment. In this case, these details should
-                 not be stored under sample but suggestions should be made
-                 how this application definition can be improved.
-                 
-                 In the future also details like how the grain_diameter was characterized,
-                 how the sample was prepared, how the material was heat-treated etc.,
-                 should be stored. For this specific application definitions/schemas can be
-                 used which are then arranged and documented with a description of the
-                 workflow so that actionable graphs become instantiatable.
+                Description of the sample from which the specimen was prepared or
+                site-specifically cut out using e.g. a focused-ion beam instrument.
+                
+                The sample group is currently a place for storing suggestions from
+                atom probers about knowledge they have gained about the sample.
+                There are cases where the specimen is machined further or exposed to
+                external stimuli during the experiment. In this case, these details should
+                not be stored under sample but suggestions should be made
+                how this application definition can be improved.
+                
+                In the future also details like how the grain_diameter was characterized,
+                how the sample was prepared, how the material was heat-treated etc.,
+                should be stored. For this specific application definitions/schemas can be
+                used which are then arranged and documented with a description of the
+                workflow so that actionable graphs become instantiatable.
             </doc>
             <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true"/>
             <field name="is_simulation" type="NX_BOOLEAN">
                 <doc>
-                    Qualifier whether the sample is a real (in which case is_simulation should be set to false)
-                    or a virtual one (in which case is_simulation should be set to true).
+                    False, if the sample is a real one.
+                    True, if the sample is a virtual one.
                 </doc>
             </field>
             <field name="alias" type="NX_CHAR">
                 <doc>
-                     Given name/alias for the sample.
+                    Given name/alias for the sample.
                 </doc>
             </field>
             <field name="grain_diameter" type="NX_FLOAT" optional="true" units="NX_LENGTH">
                 <doc>
-                     Qualitative information about the grain size, here specifically
-                     described as the equivalent spherical diameter of an assumed
-                     average grain size for the crystal ensemble.
-                     Users of this information should be aware that although the grain
-                     diameter or radius is often referred to as grain size.
-                     
-                     In atom probe it is possible that the specimen may contain a few
-                     crystals only. In this case the grain_diameter is not a reliable
-                     descriptor. Reporting a grain size may be useful though as it allows
-                     judging if specific features are expected to be found in the
-                     detector hit map.
+                    Qualitative information about the grain size, here specifically
+                    described as the equivalent spherical diameter of an assumed
+                    average grain size for the crystal ensemble.
+                    
+                    If the specimen does not contain many crystals average values
+                    might be an unreliable descriptor.
+                    
+                    Reporting a grain size may be useful though as it allows
+                    judging if specific features are expected to be found in the
+                    detector hit map.
                 </doc>
             </field>
-            <field name="grain_diameter_error" type="NX_FLOAT" optional="true" units="NX_LENGTH">
+            <field name="grain_diameter_errors" type="NX_FLOAT" optional="true" units="NX_LENGTH">
                 <doc>
-                     Magnitude of the standard deviation of the grain_diameter.
+                    Magnitude of the standard deviation of the grain_diameter.
                 </doc>
             </field>
-            <!--
-schema for heat treatment
--->
             <field name="heat_treatment_temperature" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                     The temperature of the last heat treatment step before quenching.
-                     Knowledge about this value can give an idea how the sample
-                     was heat treated. However, if a documentation of the annealing
-                     treatment as a function of time is available one should better
-                     rely on this information and have it stored alongside the NeXus file.
+                    The temperature of the last heat treatment step before quenching.
+                    
+                    Knowledge about this value can give an idea how the sample
+                    was heat treated. However, if a documentation of the annealing
+                    treatment as a function of time is available one should better
+                    rely on this information and have it stored alongside the NeXus file.
                 </doc>
             </field>
-            <field name="heat_treatment_temperature_error" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
+            <field name="heat_treatment_temperature_errors" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                     Magnitude of the standard deviation of the heat_treatment_temperature.
+                    Magnitude of the standard deviation of the heat_treatment_temperature.
                 </doc>
             </field>
             <field name="heat_treatment_quenching_rate" type="NX_FLOAT" optional="true" units="NX_ANY">
                 <doc>
-                     Rate of the last quenching step. Knowledge about this value can give
-                     an idea how the sample was heat treated. However, there are many
-                     situations where one can imagine that the scalar value for just the
-                     quenching rate is insufficient.
-                     
-                     An example is when the sample was left in the furnace after the
-                     furnace was switched off. In this case the sample cools down with
-                     a specific rate of how this furnace cools down in the lab.
-                     Processes which in practice are often not documented.
-                     
-                     This can be problematic though because when the furnace door was left open
-                     or the ambient temperature in the lab changed, i.e. for a series of
-                     experiments where one is conducted on a hot summer day and the next
-                     during winter this can have an effect on the evolution of the microstructure.
-                     There are many cases where this has been reported to be an QA issue in industry,
-                     e.g. think about aging aluminium samples left on the factory
-                     parking lot on a hot summer day.
+                    Rate of the last quenching step.
+                    
+                    Knowledge about this value can give an idea how the sample was heat treated.
+                    However, there are many situations where one can imagine that the scalar value
+                    for just the quenching rate is insufficient.
+                    
+                    An example is when the sample was left in the furnace after the
+                    furnace was switched off. In this case the sample cools down with
+                    a specific rate of how this furnace cools down in the lab.
+                    Processes which in practice are often not documented.
+                    
+                    This can be problematic though because when the furnace door was left open
+                    or the ambient temperature in the lab changed, i.e. for a series of
+                    experiments where one is conducted on a hot summer day and the next
+                    during winter this can have an effect on the evolution of the microstructure.
+                    There are many cases where this has been reported to be an QA issue in industry,
+                    e.g. think about aging aluminum samples left on the factory
+                    parking lot on a hot summer day.
                 </doc>
             </field>
-            <field name="heat_treatment_quenching_rate_error" type="NX_FLOAT" optional="true" units="NX_ANY">
+            <field name="heat_treatment_quenching_rate_errors" type="NX_FLOAT" optional="true" units="NX_ANY">
                 <doc>
-                     Magnitude of the standard deviation of the heat_treatment_quenching_rate.
+                    Magnitude of the standard deviation of the heat_treatment_quenching_rate.
                 </doc>
             </field>
             <field name="description" type="NX_CHAR" optional="true"/>
             <group name="chemical_composition" type="NXchemical_composition" recommended="true">
                 <doc>
-                     The chemical composition of the sample. Typically, it is assumed that
-                     this more macroscopic composition is representative for the material
-                     so that the composition of the typically substantially less voluminous
-                     specimen probes from the more voluminous sample.
+                    The chemical composition of the sample.
+                    
+                    Typically, it is assumed that this more macroscopic composition is representative
+                    for the material so that the composition of the typically substantially less
+                    voluminous specimen probes from the more voluminous sample.
                 </doc>
-                <field name="normalization" type="NX_CHAR">
-                    <doc>
-                         Reporting compositions as atom and weight percent yields both
-                         dimensionless quantities but their conceptual interpretation differs.
-                         A normalization based on atom_percent counts relative to the
-                         total number of atoms which are of a particular type.
-                         By contrast, weight_percent normalization factorizes in the
-                         respective mass of the elements. Python libraries like pint are
-                         challenged by these differences as at.-% and wt.-% are both
-                         fractional quantities.
-                    </doc>
-                    <enumeration>
-                        <item value="atom_percent"/>
-                        <item value="weight_percent"/>
-                    </enumeration>
-                </field>
-                <group type="NXion" minOccurs="1" maxOccurs="118">
-                    <doc>
-                        Instances should use element as a name prefix and start counting
-                        at 1 such that the name of each group already informs humans
-                        for which element a composition is provided.
-                    </doc>
-                    <field name="chemical_symbol" type="NX_CHAR">
-                        <doc>
-                             Human-readable name of the element (e.g. Fe).
-                             Name has to be a symbol of an element from the periodic table.
-                             All symbols in the set of NXion instances inside the group
-                             chemical_composition need to be disjoint.
-                        </doc>
-                    </field>
-                    <field name="composition" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-                        <doc>
-                             Composition value for the element/ion referred to under name.
-                             The value is normalized based on normalization, i.e. composition
-                             is either an atom or weight percent quantity.
-                        </doc>
-                    </field>
-                    <field name="composition_error" type="NX_FLOAT" optional="true" units="NX_DIMENSIONLESS">
-                        <doc>
-                             Magnitude of the standard deviation of the composition (value).
-                        </doc>
-                    </field>
+                <field name="normalization" type="NX_CHAR"/>
+                <group name="ELEMENT" type="NXatom" minOccurs="1" maxOccurs="118" nameType="any">
+                    <field name="chemical_symbol" type="NX_CHAR"/>
+                    <field name="composition" type="NX_FLOAT"/>
+                    <field name="composition_errors" type="NX_FLOAT" recommended="true"/>
                 </group>
             </group>
         </group>
@@ -375,235 +327,329 @@ schema for heat treatment
             <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true"/>
             <field name="is_simulation" type="NX_BOOLEAN">
                 <doc>
-                    Qualifier whether the specimen is a real (in which case is_simulation should be set to false)
-                    or a virtual one (in which case is_simulation should be set to true).
+                    False, if the specimen is a real one.
+                    True, if the specimen is a virtual one.
                 </doc>
             </field>
             <field name="alias" type="NX_CHAR" recommended="true">
                 <doc>
-                     Given name an alias. Better use identifierNAME and identifier_parent instead.
-                     A single NXentry should be used only for the characterization of a single specimen.
+                    Given name an alias. Better use identifierNAME and identifier_parent instead.
+                    
+                    A single NXentry should be used only for the characterization of a single specimen.
                 </doc>
             </field>
             <field name="identifier_parent" type="NX_CHAR" recommended="true">
                 <doc>
-                     Identifier of the sample from which the specimen was cut or the string
-                     n/a. The purpose of this field is to support functionalities for
-                     tracking sample provenance via a research data management system.
+                    Identifier of the sample from which the specimen was cut or the string n/a.
+                    
+                    The purpose of this field is to support functionalities for tracking sample
+                    provenance via a research data management system.
                 </doc>
             </field>
             <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
                 <doc>
-                     ISO 8601 time code with local time zone offset to UTC information
-                     when the specimen was prepared.
-                     
-                     Ideally, report the end of the preparation, i.e. the last known time
-                     the measured specimen surface was actively prepared. Ideally, this
-                     matches the last timestamp that is mentioned in the digital resource
-                     pointed to by identifier_parent.
-                     
-                     Knowing when the specimen was exposed to e.g. specific atmosphere is
-                     especially required for environmentally sensitive material such as
-                     hydrogen charged specimens or experiments including tracers with a
-                     short half time. Additional time stamps prior to preparation_date
-                     should better be placed in resources which describe but which do not
-                     pollute the description here with prose. Resolving these connected
-                     pieces of information is considered within the responsibility of the
-                     research data management system.
+                    ISO 8601 time code with local time zone offset to UTC information
+                    when the specimen was prepared.
+                    
+                    Ideally, report the end of the preparation, i.e. the last known time
+                    the measured specimen surface was actively prepared. Ideally, this
+                    matches the last timestamp that is mentioned in the digital resource
+                    pointed to by identifier_parent.
+                    
+                    Knowing when the specimen was exposed to e.g. specific atmosphere is
+                    especially required for environmentally sensitive material such as
+                    hydrogen charged specimens or experiments including tracers with a
+                    short half time. Additional time stamps prior to preparation_date
+                    should better be placed in resources which describe but which do not
+                    pollute the description here with prose. Resolving these connected
+                    pieces of information is considered within the responsibility of the
+                    research data management system.
                 </doc>
             </field>
             <field name="atom_types" type="NX_CHAR">
                 <doc>
-                     List of comma-separated elements from the periodic table that are
-                     contained in the specimen. If the specimen substance has multiple
-                     components, all elements from each component must be included in
-                     `atom_types`.
-                     
-                     The purpose of the field is to offer research data management systems an
-                     opportunity to parse the relevant elements without having to interpret
-                     these from the resources pointed to by identifier_parent or walk through
-                     eventually deeply nested groups in data instances.
+                    List of comma-separated elements from the periodic table that are
+                    contained in the specimen. If the specimen substance has multiple
+                    components, all elements from each component must be included in
+                    `atom_types`.
+                    
+                    The purpose of the field is to offer research data management systems an
+                    opportunity to parse the relevant elements without having to interpret
+                    these from the resources pointed to by identifier_parent or walk through
+                    eventually deeply nested groups in data instances.
                 </doc>
             </field>
             <field name="description" type="NX_CHAR" optional="true">
                 <doc>
-                     Discouraged free-text field.
+                    Discouraged free-text field.
                 </doc>
             </field>
             <field name="is_polycrystalline" type="NX_BOOLEAN" recommended="true">
                 <doc>
-                     Report if the specimen is polycrystalline, in which case it
-                     contains a grain or phase boundary, or if the specimen is a
-                     single crystal.
+                    True, if the specimen contains a grain or phase boundary.
+                    False, if the specimen is a single crystal.
                 </doc>
             </field>
             <field name="is_amorphous" type="NX_BOOLEAN" recommended="true">
                 <doc>
-                     Report if the specimen is amorphous.
+                    True, if the specimen is amorphous.
+                    False, if it is not.
                 </doc>
             </field>
             <field name="initial_radius" type="NX_FLOAT" recommended="true" units="NX_LENGTH">
                 <doc>
-                     Ideally measured otherwise best elaborated guess of the initial radius of the
-                     specimen.
+                    Ideally measured otherwise best elaborated guess of the initial radius of the
+                    specimen.
                 </doc>
             </field>
             <field name="shank_angle" type="NX_FLOAT" recommended="true" units="NX_ANGLE">
                 <doc>
-                     Ideally measured otherwise best elaborated guess of the (initial) shank angle.
-                     This is a measure of the specimen taper. Define it in such a way that the base of the specimen
-                     is modelled as a conical frustrum so that the shank angle is the (shortest) angle between
-                     the specimen space z-axis and a vector on the lateral surface of the cone.
+                    Ideally measured otherwise best elaborated guess of the (initial) shank angle.
+                    
+                    This is a measure of the specimen taper.
+                    Define it in such a way that the base of the specimen is modelled
+                    as a conical frustrum so that the shank angle is the (shortest) angle
+                    between the specimen space z-axis and a vector on the lateral surface
+                    of the cone.
                 </doc>
             </field>
         </group>
-        <!--describing the geometry of the specimen-->
-        <group name="coordinate_system_set" type="NXcoordinate_system_set" recommended="true">
+        <group name="consistent_rotations" type="NXparameters" recommended="true">
             <doc>
-                 Set to hold different coordinate systems conventions.
-                 Inspect the description of the :ref:`NXcoordinate_system_set`
-                 and :ref:`NXcoordinate_system` base classes how to define
-                 coordinate systems in NeXus. Specific details for application
-                 in atom probe microscopy follow.
-                 
-                 In this research field scientists usually distinguish several
-                 Euclidean coordinate systems (CS):
-                 
-                 * World space;
-                   a CS specifying a local coordinate system of the planet earth which
-                   identifies into which direction gravity is pointing such that
-                   the laboratory space CS can be rotated into this world CS.
-                 * The laboratory space;
-                   a CS specifying the room where the instrument is located in or
-                   a physical landmark on the instrument, e.g. the direction of the
-                   transfer rod where positive is the direction how the rod
-                   has to be pushed during loading a specimen into the instrument.
-                   In summary, this CS is defined by the chassis of the instrument.
-                 * The specimen space;
-                   a CS affixed to either the base or the initial apex of the specimen,
-                   whose z axis points towards the detector.
-                 * The detector space;
-                   a CS affixed to the detector plane whose xy plane is usually in the
-                   detector and whose z axis points towards the specimen.
-                   This is a distorted space with respect to the reconstructed ion
-                   positions.
-                 * The reconstruction space;
-                   a CS in which the reconstructed ion positions are defined.
-                   The orientation depends on the analysis software used.
-                 * Eventually further coordinate systems attached to the
-                   flight path of individual ions might be defined.
-                 
-                 In atom probe microscopy a frequently used choice for the detector
-                 space (CS) is discussed with the so-called detector space image
-                 (stack). This is a stack of two-dimensional histograms of detected ions
-                 within a predefined evaporation identifier interval. Typically, the set of
-                 ion evaporation sequence identifiers is grouped into chunks.
-                 
-                 For each chunk a histogram of the ion hit positions on the detector
-                 is computed. This leaves the possibility for inconsistency between
-                 the so-called detector space and the e.g. specimen space.
-                 
-                 To avoid these ambiguities, instances of :ref:`NXtransformations` should
-                 be used.
+                The conventions used when reporting crystal orientations.
+                We follow the best practices of the Material Science community
+                that are defined in reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
             </doc>
-            <group type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded">
-                <field name="origin" type="NX_CHAR"/>
-                <field name="alias" type="NX_CHAR"/>
-                <field name="type" type="NX_CHAR"/>
-                <field name="handedness" type="NX_CHAR"/>
-                <field name="x_direction" type="NX_CHAR"/>
-                <field name="y_direction" type="NX_CHAR"/>
-                <field name="z_direction" type="NX_CHAR"/>
-            </group>
+            <field name="rotation_handedness" type="NX_CHAR">
+                <doc>
+                    Convention how a positive rotation angle is defined when viewing
+                    from the end of the rotation unit vector towards its origin.
+                    This is in accordance with convention 2 of reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
+                    
+                    Counter_clockwise is equivalent to a right-handed choice.
+                    Clockwise is equivalent to a left-handed choice.
+                </doc>
+                <enumeration>
+                    <item value="counter_clockwise"/>
+                    <item value="clockwise"/>
+                </enumeration>
+            </field>
+            <field name="rotation_convention" type="NX_CHAR">
+                <doc>
+                    How are rotations interpreted into an orientation according to convention 3
+                    of reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
+                </doc>
+                <enumeration>
+                    <item value="passive"/>
+                    <item value="active"/>
+                </enumeration>
+            </field>
+            <field name="euler_angle_convention" type="NX_CHAR">
+                <doc>
+                    How are Euler angles interpreted given that there are several choices (e.g. zxz, xyz)
+                    according to convention 4 of reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
+                    
+                    The most frequently used convention in Materials Science is zxz, which is based on the work
+                    of H.-J. Bunge but using other conventions is possible. Proper Euler angles are distinguished
+                    from (improper) Tait-Bryan angles.
+                </doc>
+                <enumeration>
+                    <item value="zxz"/>
+                    <item value="xyx"/>
+                    <item value="yzy"/>
+                    <item value="zyz"/>
+                    <item value="xzx"/>
+                    <item value="yxy"/>
+                    <item value="xyz"/>
+                    <item value="yzx"/>
+                    <item value="zxy"/>
+                    <item value="xzy"/>
+                    <item value="zyx"/>
+                    <item value="yxz"/>
+                </enumeration>
+            </field>
+            <field name="axis_angle_convention" type="NX_CHAR">
+                <doc>
+                    To which angular range is the rotation angle argument of an
+                    axis-angle pair parameterization constrained according to
+                    convention 5 of reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
+                </doc>
+                <enumeration>
+                    <item value="rotation_angle_on_interval_zero_to_pi"/>
+                </enumeration>
+            </field>
+            <field name="sign_convention" type="NX_CHAR">
+                <doc>
+                    Which sign convention is followed when converting orientations
+                    between different parametrizations/representations according
+                    to convention 6 of reference `&lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_.
+                </doc>
+                <enumeration>
+                    <item value="p_plus_one"/>
+                    <item value="p_minus_one"/>
+                </enumeration>
+            </field>
         </group>
-        <group name="measurement" type="NXobject" optional="true">
+        <group name="VARIADIC_reference_frame" type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded" nameType="partial">
             <doc>
-                 Base class for collecting a session with a real atom probe or field-ion microscope.
-                 
-                 Workflows used during experiments or simulations of atom probe and related field-evaporation
-                 research should be documented in more detail and be better contextualized not only because of
-                 ongoing developments and the tighter becoming connection between atom probe and other
-                 methods for material characterization foremost electron microscopy see e.g.:
-                 
-                 * `T. Kelly et al. &lt;https://doi.org/10.1017/S1431927620022205&gt;`_
-                 * `C. Fleischmann et al. &lt;https://doi.org/10.1016/j.ultramic.2018.08.010&gt;`_
-                 * `W. Windl et al. &lt;https://doi.org/10.1093/micmic/ozad067.294&gt;`_
-                 * `C. Freysoldt et al. &lt;https://doi.org/10.1103/PhysRevLett.124.176801&gt;`_
-                 * `G. da Costa et al. &lt;https://doi.org/10.1038/s41467-024-54169-2&gt;`_
-                 
-                 to mention but a few.
-                 
-                 To arrive at a design of base classes and an application definition that can be used
-                 for both real and simulated atom probe experiments it is worthwhile to recall concepts that are
-                 related to events and (molecular) ions:
-                 
-                 * Pulsing events which are used to trigger ion extraction events.
-                 * Physical events and corresponding signal triggered by an ion hitting the detector.
-                   Some of these events are not necessarily caused by or directly correlated with an identifiable pulsing event.
-                 * Processed ion hits which are the result of an algorithm that took the physical and pulsing events as input
-                   and qualified some of these events as to be of sufficiently high quality to call them (molecular) ions that are
-                   wortwhile to be considered further and eventually included in the reconstructed volume.
-                 * Calibration and signal filtering steps applied to these processed ion hits as input which results in actually
-                   selected (molecular) ions based on which an instance of a reconstruction is created.
-                 * Correlation of these ions with a statistics and theoretical model of mass-to-charge-state ratio values
-                   and charge states of the (molecular) ions to substantiate that some of these ions can be considered
-                   as rangable ions and hence an iontype can be assigned to these via running peak finding algorithms
-                   and subsequent peak labeling. In the field of atom probe this these peak identification methods
-                   are known as ranging definitions.
-                 
-                 Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
-                 are well distinguished. However, the algorithms used to transform correlations between pulses and physical events
-                 into actual events (detector hits) ions is a proprietary one - the so-called hit finding algorithm.
-                 
-                 Due to this practical inaccessibility of details, virtually all atom probe studies currently use a reporting scheme
-                 where the course of the specimen evaporation is documented such that quantities are a function of evaporation identifier
-                 i.e. actual event/ion, i.e. after having the hit finding algorithm and correlations applied.
-                 That is identifier_evaporation values take the role of an implicit time and course of the experiment given that
-                 ion extraction physically is a sequential process.
-                 
-                 There is a number of research groups who build own instruments and share different aspects of their technical
-                 specifications and approaches how they apply data processing e.g.:
-                 
-                 * `M. Monajem et al. &lt;https://doi.org/10.1017/S1431927622003397&gt;`_
-                 * `P. Stender et al. &lt;https://doi.org/10.1017/S1431927621013982&gt;`_ 
-                 * `I. Dimkou et al. &lt;https://doi.org/10.1093/micmic/ozac051&gt;`_
-                 
-                 to name but a few.
-                 
-                 Despite some of these activities embrace practices of open-source development, they use essentially the same
-                 workflow that has been proposed by AMETEK/Cameca and its forerunner company Imago: A graphical user interface
-                 software is used to explore and thus analyze reconstructed atom probe datasets.
-                 
-                 Specifically, software is used to correlate and interpret pulsing and physical events into processed ion hits.
-                 Some of these ion hits are reported as (molecular) ions with ranged iontypes to yield a dataset based on which
-                 scientific conclusions about the characterized material volume are made. Also here a reconstruction is 
-                 point cloud that serves as the proxy for the characterized material volume, i.e. the reconstruction is a model.
-                 
-                 By contrast, simulations of field-evaporation have the luxury to document the flight path and allow a following of all
-                 the whereabouts of each ion evaporated if this is desired. This level of detail is currently not characterizable in experiment.
-                 Thus, there is a divide between schemas describing simulations of atom probe vs measurements of atom probe.
-                 We argue that this divide can be bridged with realizing the above-mentioned context and the realization that
-                 similar concepts are used in both research realms with many concepts not only being similar but being exactly the same.
-                 
-                 A further argument to support this view is that computer simulations of atom probe usually are compared to reconstructed
-                 datasets, either to the input configuration that served as the virtual specimen or to a real world atom probe experiment
-                 and reconstructions computed from these. In both cases, the recorded simulated physical events of simulated ions hitting
-                 a simulated detector is not the end of the research workflow but typically the input to apply additional algorithms such as
-                 (spatial) filtering and reconstruction algorithms.
-                 
-                 Only the practical need for making ranging definitions is (at least as of now) not as much needed in field-evaporation
-                 simulations than it is in real world measurements because each ion has a prescribed iontype in the simulation.
-                 Be it a specifically charged nuclid or a molecular ion whose flight path the simulation resolves.
-                 Although, in principle simpler though, we have to consider that this is caused by many assumptions made in the simulations.
-                 Indeed, the multi-scale (time and space) aspects of the challenge that is the simulating of field-evaporation often require
-                 simplifications because of otherwise too high becoming computing resource demands and existent knowledge gaps
-                 in how to deal with all quantum physics complexities. Molecular ion dissociation upon flight is one such complexity.
-                 Also the complexity of simulation setups is typically defined simpler in simulation (e.g. straight flight path assumption)
-                 than in a measurement with a real instrument. In addition, simulation often also ignore objects and fields in the flight path
-                 such as local electrodes or physical obstacles and electric fields (controlled or stray fields).
+                A collection of coordinate systems. Several Euclidean
+                coordinate systems (CS) are used in the field of atom probe:
+                
+                * World space;
+                  a CS specifying a local coordinate system of the planet earth which
+                  identifies into which direction gravity is pointing such that
+                  the laboratory space CS can be rotated into this world CS.
+                * The laboratory space;
+                  a CS specifying the room where the instrument is located in or
+                  a physical landmark on the instrument, e.g. the direction of the
+                  transfer rod where positive is the direction how the rod
+                  has to be pushed during loading a specimen into the instrument.
+                  In summary, this CS is defined by the chassis of the instrument.
+                * The specimen space;
+                  a CS affixed to either the base or the initial apex of the specimen,
+                  whose z axis points towards the detector.
+                * The detector space;
+                  a CS affixed to the detector plane whose xy plane is usually in the
+                  detector and whose z axis points towards the specimen.
+                  This is a distorted space with respect to the reconstructed ion
+                  positions.
+                * The reconstruction space;
+                  a CS in which the reconstructed ion positions are defined.
+                  The orientation depends on the analysis software used.
+                * Eventually further coordinate systems attached to the
+                  flight path of individual ions might be defined.
+                
+                In atom probe microscopy a frequently used choice for the detector
+                space (CS) is discussed with the so-called detector space image
+                (stack). This is a stack of two-dimensional histograms of detected ions
+                within a predefined evaporation identifier interval. Typically, the set of
+                ion evaporation sequence identifiers is grouped into chunks.
+                
+                For each chunk a histogram of the ion hit positions on the detector
+                is computed. This leaves the possibility for inconsistency between
+                the so-called detector space and the e.g. specimen space.
+                
+                To avoid these ambiguities, instances of :ref:`NXtransformations` should be used.
             </doc>
+            <field name="alias" type="NX_CHAR" optional="true"/>
+            <field name="type" type="NX_CHAR"/>
+            <field name="origin" type="NX_CHAR" recommended="true"/>
+            <field name="x" type="NX_NUMBER"/>
+            <field name="x_direction" type="NX_CHAR" recommended="true"/>
+            <field name="y" type="NX_NUMBER"/>
+            <field name="y_direction" type="NX_CHAR" recommended="true"/>
+            <field name="z" type="NX_NUMBER"/>
+            <field name="z_direction" type="NX_CHAR" recommended="true"/>
+        </group>
+        <group name="measurement" type="NXapm_measurement" optional="true">
+            <doc>
+                Base class for collecting a session with a real or simulated atom probe or field-ion microscope.
+                
+                Workflows used during experiments or simulations of atom probe and related field-evaporation
+                research should be documented in more detail and be better contextualized not only because of
+                ongoing developments and the tighter becoming connection between atom probe and other
+                methods for material characterization foremost electron microscopy see e.g.:
+                
+                * `T. Kelly et al. &lt;https://doi.org/10.1017/S1431927620022205&gt;`_
+                * `C. Fleischmann et al. &lt;https://doi.org/10.1016/j.ultramic.2018.08.010&gt;`_
+                * `W. Windl et al. &lt;https://doi.org/10.1093/micmic/ozad067.294&gt;`_
+                * `C. Freysoldt et al. &lt;https://doi.org/10.1103/PhysRevLett.124.176801&gt;`_
+                * `G. da Costa et al. &lt;https://doi.org/10.1038/s41467-024-54169-2&gt;`_
+                
+                to mention but a few.
+                
+                To arrive at a design of base classes and an application definition that can be used
+                for both real and simulated atom probe experiments, it is worthwhile to recall concepts
+                that are related to events and (molecular) ions:
+                
+                * Pulsing events which are used to trigger ion extraction events.
+                * Physical events and corresponding signal triggered by an ion hitting the detector.
+                  Some of these events are not necessarily caused by or directly correlated with an identifiable pulsing event.
+                * Processed ion hits which are the result of a processing that takes the physical and pulsing events as input
+                  returns some of these as events of sufficient quality to qualify as (molecular) ions that are
+                  worthwhile to be considered further and eventually included in the reconstructed volume.
+                * Calibration and signal filtering steps applied to these processed ion hits as input which results in
+                  actually selected (molecular) ions based on which an instance of a reconstruction is created.
+                * Correlation of these ions with a statistics and theoretical model of mass-to-charge-state ratio values
+                  and charge states of the (molecular) ions to substantiate that some of these ions can be considered
+                  as rangeable ions and hence an iontype can be assigned to these via running peak finding algorithms
+                  and subsequent peak labeling. In the field of atom probe this these peak identification methods
+                  are known as ranging definitions.
+                
+                Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
+                are well distinguished. However, the algorithms used to transform correlations between pulses and physical
+                events into actual events (detector hits) ions is a proprietary one - the so-called hit finding algorithm.
+                
+                Due to this practical inaccessibility of details, virtually all atom probe studies currently use a reporting
+                schema where the course of the specimen evaporation is documented such that quantities are a function of
+                evaporation_id i.e. actual event/ion, i.e. after having the hit finding algorithm and correlations applied.
+                That is evaporation_id values take the role of an implicit time and course of the experiment given that
+                ion extraction physically is a sequential process.
+                
+                There is a number of research groups who build own instruments and share different aspects of the technical
+                specifications and approaches including how these groups apply data processing e.g.:
+                
+                * `M. Monajem et al. &lt;https://doi.org/10.1017/S1431927622003397&gt;`_
+                * `P. Stender et al. &lt;https://doi.org/10.1017/S1431927621013982&gt;`_
+                * `I. Dimkou et al. &lt;https://doi.org/10.1093/micmic/ozac051&gt;`_
+                
+                to name but a few.
+                
+                Despite some of these activities embrace practices of open-source development, they use essentially the same
+                workflow that has been proposed by AMETEK/Cameca and its forerunner company Imago: A graphical user interface
+                software that is used to explore and analyze reconstructed atom probe datasets - the reconstructed volume.
+                
+                Specifically, software is used to correlate and interpret pulsing and physical events into processed ion hits.
+                Some of these ion hits are reported as (molecular) ions with ranged iontypes to yield a dataset based on which
+                scientific conclusions about the characterized material volume are made. Also here a reconstruction is a
+                point cloud that serves as the proxy for the characterized material volume, i.e. the reconstruction is a model.
+                
+                By contrast, simulations of field-evaporation have the luxury to document the flight path and allow following of all
+                the whereabouts of each ion evaporated. This level of detail is currently not characterizable in experiment.
+                Thus, there is a divide between schemas describing simulations of atom probe vs measurements of atom probe.
+                NXapm is an attempt to bridge this divide realizing the above-mentioned context and the fact that
+                similar concepts are used in both research realms. Many concepts not only are similar but exactly the same.
+                
+                A further argument to support this view is that computer simulations of atom probe usually are compared to
+                reconstructed volume/datasets, either to the input configuration that served as the virtual specimen or to a
+                real world atom probe experiment and reconstructions computed from these.
+                
+                In both cases, the recorded simulated physical events of simulated ions hitting a simulated detector is not the
+                end of the research workflow but typically the input to apply additional algorithms such as
+                (spatial) filtering and reconstruction algorithms.
+                
+                Only the practical need for making ranging definitions is (at least as of now) not as much needed in field-evaporation
+                simulations than it is in real world measurements because each ion has a prescribed iontype in the simulation.
+                Be it a specifically charged nuclid or a molecular ion whose flight path the simulation resolves.
+                Although, in principle simpler though, we have to consider that this is caused by many assumptions made in the
+                simulations.
+                
+                Indeed, the multi-scale (time and space) aspects of the challenge that is the simulating of field-evaporation often
+                require simplifications because of otherwise too high becoming computing resource demands and existent knowledge gaps
+                in how to deal with all quantum physics complexities involved in ion removal.
+                
+                Molecular ion dissociation upon flight is one such complexity.
+                Also the complexity of simulation setups is typically defined simpler in simulation (e.g. straight flight path assumption)
+                than in a measurement with a real instrument. In addition, simulation often also ignore objects and fields in the flight path
+                such as local electrodes or physical obstacles and electric fields (controlled or stray fields).
+            </doc>
+            <field name="status" type="NX_CHAR" recommended="true">
+                <doc>
+                    A statement whether the measurement was successful or failed prematurely.
+                </doc>
+                <enumeration>
+                    <item value="success"/>
+                    <item value="failed"/>
+                </enumeration>
+            </field>
+            <field name="quality" type="NX_CHAR" recommended="true">
+                <doc>
+                    CAnalysis.CResults.fQuality
+                </doc>
+            </field>
             <group name="instrument" type="NXinstrument_apm">
                 <field name="type" type="NX_CHAR" recommended="true"/>
+                <field name="location" type="NX_CHAR" recommended="true"/>
                 <group name="fabrication" type="NXfabrication" recommended="true">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
@@ -633,7 +679,7 @@ schema for heat treatment
                         <field name="model" type="NX_CHAR"/>
                         <field name="serial_number" type="NX_CHAR" recommended="true"/>
                     </group>
-                    <group type="NXsource" minOccurs="0" maxOccurs="2">
+                    <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2" nameType="partial">
                         <group name="fabrication" type="NXfabrication" recommended="true">
                             <field name="vendor" type="NX_CHAR"/>
                             <field name="model" type="NX_CHAR"/>
@@ -644,140 +690,99 @@ schema for heat treatment
                 <!--wavelength and pulse_energy as dynamic/volatile quantities stored in event data part-->
                 <field name="comment" type="NX_CHAR">
                     <doc>
-                         Free text field for additional comments.
+                        Free text field for additional comments.
                     </doc>
                 </field>
             </group>
-            <field name="status" type="NX_CHAR" recommended="true">
-                <doc>
-                     A statement whether the measurement was successful or failed prematurely.
-                </doc>
-            </field>
-            <field name="quality" type="NX_CHAR" recommended="true">
-                <doc>
-                     CAnalysis.CResults.fQuality
-                </doc>
-            </field>
-            <group name="events" type="NXobject" optional="true">
-                <!--
-the case of allowing to not have event_data but only the above-mentioned instrument
-details can be useful to convey details about an atom probe instrument in general
--->
-                <doc>
-                     Group to hold instances of :ref:`NXevent_data_apm`.
-                     
-                     Which temporal granularity is adequate depends on the situation and research
-                     question. Using a model which enables a collection of events offers the most
-                     flexible way to cater for both atom probe experiments or simulation.
-                     
-                     To monitor the course of an ion extraction experiment (or simulation)
-                     it makes sense to track time explicitly via time stamps or implicitly
-                     via e.g. a clock inside the instrument, such as the clock of the pulser
-                     and respective pulsing event identifier.
-                     
-                     As set and measured quantities typically change over time and we do not
-                     yet know during the measurement which of the events have associated
-                     (molecular) ions that will end up in the reconstructed volume, we must not
-                     document quantities as a function of the identifier_evaporation but as a
-                     function of the (pulsing) identifier_event.
-                </doc>
-                <group type="NXevent_data_apm" minOccurs="0" maxOccurs="unbounded">
-                    <!--all these cannot be made required because for LEAP only stored in RHIT/HITS
+            <group name="eventID" type="NXevent_data_apm" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                <!--all these cannot be made required because for LEAP only stored in RHIT/HITS
 but for M-TAP and Oxcart these pieces of information are available.-->
-                    <doc>
-                        Instances should use event as a name prefix.
-                    </doc>
-                    <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
-                    <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
-                    <!--delta_time(NX_NUMBER):
-identifier_pulse_offset(NX_INT):
-identifier_pulse(NX_INT):-->
-                    <group name="instrument" type="NXinstrument_apm" recommended="true">
-                        <group name="reflectron" type="NXcomponent" recommended="true">
-                            <field name="voltage" type="NX_FLOAT"/>
-                        </group>
-                        <!--decelerate_electrode(NXlens_em):-->
-                        <group name="local_electrode" type="NXlens_em" recommended="true">
-                            <field name="voltage" type="NX_FLOAT"/>
-                        </group>
-                        <!--ion_detector(NXdetector):-->
-                        <group name="pulser" type="NXcomponent" recommended="true">
-                            <field name="pulse_mode" type="NX_CHAR"/>
-                            <field name="pulse_frequency" type="NX_FLOAT"/>
-                            <!--\@logged_against(NX_CHAR):-->
-                            <field name="pulse_fraction" type="NX_FLOAT"/>
-                            <!--\@logged_against(NX_CHAR):-->
-                            <field name="pulse_voltage" type="NX_FLOAT" optional="true">
+                <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+                <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+                <!--delta_time(NX_NUMBER):
+pulse_id_offset(NX_INT):
+pulse_id(NX_INT):-->
+                <group name="instrument" type="NXinstrument_apm" recommended="true">
+                    <group name="reflectron" type="NXcomponent" recommended="true">
+                        <field name="voltage" type="NX_FLOAT"/>
+                    </group>
+                    <!--decelerate_electrode(NXlens_em):-->
+                    <group name="local_electrode" type="NXlens_em" recommended="true">
+                        <field name="voltage" type="NX_FLOAT"/>
+                    </group>
+                    <!--ion_detector(NXdetector):-->
+                    <group name="pulser" type="NXcomponent" recommended="true">
+                        <field name="pulse_mode" type="NX_CHAR"/>
+                        <field name="pulse_frequency" type="NX_FLOAT"/>
+                        <field name="pulse_fraction" type="NX_FLOAT"/>
+                        <field name="pulse_voltage" type="NX_FLOAT" optional="true">
+                            <dimensions rank="1">
+                                <dim index="1" value="n"/>
+                            </dimensions>
+                        </field>
+                        <field name="pulse_number" type="NX_UINT" optional="true">
+                            <dimensions rank="1">
+                                <dim index="1" value="n"/>
+                            </dimensions>
+                        </field>
+                        <field name="standing_voltage" type="NX_FLOAT" optional="true">
+                            <dimensions rank="1">
+                                <dim index="1" value="n"/>
+                            </dimensions>
+                        </field>
+                        <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2" nameType="partial">
+                            <field name="wavelength" type="NX_FLOAT" recommended="true" units="NX_WAVELENGTH"/>
+                            <field name="power" type="NX_FLOAT" units="NX_POWER"/>
+                            <field name="pulse_energy" type="NX_FLOAT">
                                 <dimensions rank="1">
                                     <dim index="1" value="n"/>
                                 </dimensions>
                             </field>
-                            <!--\@logged_against(NX_CHAR):-->
-                            <field name="pulse_number" type="NX_UINT" optional="true">
-                                <dimensions rank="1">
-                                    <dim index="1" value="n"/>
-                                </dimensions>
-                            </field>
-                            <!--\@logged_against(NX_CHAR):-->
-                            <field name="standing_voltage" type="NX_FLOAT" optional="true">
-                                <dimensions rank="1">
-                                    <dim index="1" value="n"/>
-                                </dimensions>
-                            </field>
-                            <!--\@logged_against(NX_CHAR):-->
-                            <group type="NXsource" minOccurs="0" maxOccurs="2">
-                                <field name="pulse_energy" type="NX_FLOAT">
-                                    <dimensions rank="1">
-                                        <dim index="1" value="n"/>
-                                    </dimensions>
-                                </field>
-                            </group>
                         </group>
-                        <!--\@logged_against(NX_CHAR):
-laser geometry at the moment has neither a worked out example
+                    </group>
+                    <!--laser geometry at the moment has neither a worked out example
 nor any feedback from the community despite the work from B. Gault
 on laser atom probe was granted a Leibnitz award-->
-                        <group name="stage" type="NXmanipulator">
-                            <group name="temperature_sensor" type="NXsensor">
-                                <field name="measurement" type="NX_CHAR"/>
-                                <field name="value" type="NX_FLOAT"/>
-                            </group>
+                    <group name="stage" type="NXmanipulator">
+                        <group name="temperature_sensor" type="NXsensor">
+                            <field name="measurement" type="NX_CHAR"/>
+                            <field name="value" type="NX_FLOAT"/>
                         </group>
-                        <group name="analysis_chamber" type="NXcomponent">
-                            <group name="pressure_sensor" type="NXsensor">
-                                <field name="measurement" type="NX_CHAR"/>
-                                <field name="value" type="NX_FLOAT"/>
-                            </group>
+                    </group>
+                    <group name="analysis_chamber" type="NXcomponent">
+                        <group name="pressure_sensor" type="NXsensor">
+                            <field name="measurement" type="NX_CHAR"/>
+                            <field name="value" type="NX_FLOAT"/>
                         </group>
-                        <group name="control" type="NXcollection" recommended="true">
-                            <field name="evaporation_control" type="NX_CHAR"/>
-                            <field name="target_detection_rate" type="NX_NUMBER"/>
-                        </group>
+                    </group>
+                    <group name="control" type="NXparameters" recommended="true">
+                        <field name="evaporation_control" type="NX_CHAR"/>
+                        <field name="target_detection_rate" type="NX_NUMBER"/>
                     </group>
                 </group>
             </group>
         </group>
-        <group name="simulation" type="NXobject" optional="true">
+        <group name="simulation" type="NXapm_simulation" optional="true">
             <doc>
-                 Simulation of ion extraction from matter via laser and/or voltage pulsing.
+                Simulation of ion extraction from matter via laser and/or voltage pulsing.
             </doc>
         </group>
         <!--future possibility to reuse concepts from NXinstrument_apm again without
 the need for defining them again-->
-        <group name="atom_probe" type="NXobject" recommended="true">
+        <group name="atom_probe" type="NXroi" recommended="true">
             <doc>
-                 A region-of-interest analyzed either during or after the session for which
-                 specific processed data of the measured or simulated data are available.
+                A region-of-interest analyzed either during or after the session for which
+                specific processed data of the measured or simulated data are available.
             </doc>
             <!--earlier comments here https://github.com/FAIRmat-NFDI/nexus_definitions/commit/a8602870f13f04b8befc902efb345afe650d8dd3-->
             <group name="initial_specimen" type="NXimage" recommended="true">
                 <doc>
-                     SEM or TEM image of the initial specimen (ideally taken prior data acquisition).
+                    SEM or TEM image of the initial specimen (ideally taken prior data acquisition).
                 </doc>
                 <group name="image_2d" type="NXdata">
                     <attribute name="signal" type="NX_CHAR"/>
                     <attribute name="axes" type="NX_CHAR"/>
-                    <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
+                    <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
                     <field name="real" type="NX_NUMBER"/>
                     <field name="axis_j" type="NX_NUMBER">
                         <dimensions rank="1">
@@ -796,31 +801,31 @@ the need for defining them again-->
             <!--could use a stack_3d(NXdata) to record time series of specimen shape evolution-->
             <group name="raw_data" type="NXprocess" recommended="true">
                 <doc>
-                     For almost atom probe instruments (meta)data about raw data follow proprietary semantics.
-                     Therefore, this group can currently be used only to point to these digital artifacts
-                     in an effort to document all step of an analysis workflow.
-                     
-                     The physical quantities measured in an atom probe experiment are time-of-flight and
-                     tuples of arrival_time_pairs as a function of the event chain on the pulser.
-                     From these tuples hits are computed in a process called hit_finding.
+                    For almost atom probe instruments (meta)data about raw data follow proprietary semantics.
+                    Therefore, this group can currently be used only to point to these digital artifacts
+                    in an effort to document all step of an analysis workflow.
+                    
+                    The physical quantities measured in an atom probe experiment are time-of-flight and
+                    tuples of arrival_time_pairs as a function of the event chain on the pulser.
+                    From these tuples hits are computed in a process called hit_finding.
                 </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
                 <!--point at least to the proprietary artifact-->
                 <group name="source" type="NXnote" recommended="true">
-                    <field name="type" type="NX_CHAR"/>
+                    <field name="type" type="NX_CHAR" recommended="true"/>
                     <field name="file_name" type="NX_CHAR"/>
-                    <field name="checksum" type="NX_CHAR"/>
-                    <field name="algorithm" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR" recommended="true"/>
+                    <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
                 <!--technical details of data the ion_detector collects-->
                 <field name="number_of_dld_wires" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                     <doc>
-                         The number of wires in the detector.
+                        The number of wires in the detector.
                     </doc>
                     <enumeration>
                         <item value="1"/>
@@ -830,8 +835,8 @@ the need for defining them again-->
                 </field>
                 <field name="dld_wire_names" type="NX_CHAR" optional="true">
                     <doc>
-                         Alias tuple (begin, end) of each DLD wire of the detector.
-                         Order follows arrival_time_pairs.
+                        Alias tuple (begin, end) of each DLD wire of the detector.
+                        Order follows arrival_time_pairs.
                     </doc>
                     <dimensions rank="2">
                         <dim index="1" value="n_dld"/>
@@ -840,8 +845,8 @@ the need for defining them again-->
                 </field>
                 <field name="arrival_time_pairs" type="NX_NUMBER" optional="true" units="NX_TIME">
                     <doc>
-                         Raw readings from the analog-to-digital-converter
-                         timing circuits of the detector wires.
+                        Raw readings from the analog-to-digital-converter
+                        timing circuits of the detector wires.
                     </doc>
                     <dimensions rank="3">
                         <dim index="1" value="p"/>
@@ -852,7 +857,7 @@ the need for defining them again-->
             </group>
             <group name="hit_finding" type="NXprocess" recommended="true">
                 <doc>
-                     Configuration of and results obtained from a hit finding algorithm.
+                    Configuration of and results obtained from a hit finding algorithm.
                 </doc>
                 <!--we careful how we go about doing this here, we recommended to make some details of the hit_finding
 algorithm open namely the input and the output what the black box then does by AMETEK/Cameca
@@ -860,24 +865,24 @@ does not have to be exposed (although this clearly is against FAIR principles bu
 is does not have the authority to decide which portions of proprietary code have to be public
 we can only make recommendations-->
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
                 <!--config of the hit_finding algorithm-->
                 <group name="config" type="NXnote" recommended="true">
-                    <field name="type" type="NX_CHAR"/>
+                    <field name="type" type="NX_CHAR"  recommended="true"/>
                     <field name="file_name" type="NX_CHAR"/>
-                    <field name="checksum" type="NX_CHAR"/>
-                    <field name="algorithm" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR" recommended="true"/>
+                    <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
                 <!--results of the hit_finding algorithm-->
                 <field name="hit_positions" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                     <doc>
-                         Evaluated ion impact coordinates on the detector.
-                         Use the depends_on field to specify which reference
-                         frame the positions are defined.
+                        Evaluated ion impact coordinates on the detector.
+                        Use the depends_on field to specify which reference
+                        frame the positions are defined.
                     </doc>
                     <dimensions rank="2">
                         <dim index="1" value="p_out"/>
@@ -885,39 +890,47 @@ we can only make recommendations-->
                     </dimensions>
                     <attribute name="depends_on" type="NX_CHAR">
                         <doc>
-                             Defines in which reference frame the positions are defined.
+                            Defines in which reference frame the positions are defined.
                         </doc>
                     </attribute>
                 </field>
                 <field name="total_event_golden" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         CRunHeader.fTotalEventGolden
+                        CRunHeader.fTotalEventGolden
                     </doc>
                 </field>
                 <field name="total_event_incomplete" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         CRunHeader.fTotalEventIncomplete
+                        CRunHeader.fTotalEventIncomplete
                     </doc>
                 </field>
                 <field name="total_event_multiple" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         CRunHeader.fTotalEventMultiple
+                        CRunHeader.fTotalEventMultiple
                     </doc>
                 </field>
                 <field name="total_event_partial" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         CRunHeader.fTotalEventPartials
+                        CRunHeader.fTotalEventPartials
                     </doc>
                 </field>
                 <field name="total_event_record" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         CRunHeader.fTotalEventRecords
+                        CRunHeader.fTotalEventRecords
                     </doc>
                 </field>
-                <field name="identifier_hit_quality" type="NX_UINT" optional="true">
+                <field name="hit_quality_type" type="NX_CHAR" optional="true">
                     <doc>
-                         Identifier used for each hit_quality type.
-                         Following the order of hit_quality_types.
+                        Hit quality is an integer that specifies which category/type a hit was assigned to.
+                        This field lists the human-readable, possibly though proprietary types distinguished.
+                        The indices of this array are used in hit_quality to encode hit_quality for each
+                        pulse in a more efficient way than by repeating the string that is used for each
+                        type as it is provided in this field.
+                        
+                        As an example assume two types golden and partial are distinguished.
+                        If hit_quality_type stores the array "golden", "partial", the index 0
+                        in hit_quality identifies all those pulses of category golden,
+                        while the index 1 in hit_quality identifies all of category partial.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ht"/>
@@ -925,8 +938,8 @@ we can only make recommendations-->
                 </field>
                 <field name="hit_quality" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         Hit quality identifier for each pulse.
-                         Identifier have to be within identifier_hit_quality.
+                        Hit quality identifier for each pulse.
+                        Identifier have to be within hit_quality.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="p_out"/>
@@ -934,12 +947,12 @@ we can only make recommendations-->
                 </field>
                 <field name="hit_multiplicity" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         This processing yields for each ion with how many others it evaporated
-                         if these were collected on the same pulse. Extraction of multiple ions
-                         on one pulse on different or even the same pixel of the detector are possible.
-                         
-                         Multiplicity must not be confused with how many atoms of the same element
-                         a molecular ion contains.
+                        This processing yields for each ion with how many others it evaporated
+                        if these were collected on the same pulse. Extraction of multiple ions
+                        on one pulse on different or even the same pixel of the detector are possible.
+                        
+                        Multiplicity must not be confused with how many atoms of the same element
+                        a molecular ion contains.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="p_out"/>
@@ -950,9 +963,9 @@ we can only make recommendations-->
 insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
 used only in the context to learn about the multiplicity of an ion.
 pulses_since_last_ion(NX_UINT):
-  dim: (n,)
-identifier_pulse(NX_INT):
-  dim: (n,)
+dim: (n,)
+pulse_id(NX_INT):
+dim: (n,)
 at this point the original set of events p has been filtered down to p_out-->
             <group name="hit_spatial_filtering" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
@@ -967,29 +980,29 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <field name="identifier_evaporation_offset" type="NX_INT" units="NX_UNITLESS">
+                <field name="evaporation_id_offset" type="NX_INT" units="NX_UNITLESS">
                     <doc>
-                         Integer used to name the first pulse to know if there is an
-                         offset of the identifier_evaporation to zero.
-                         
-                         Identifiers can be defined either implicitly or explicitly.
-                         For implicit indexing identifiers are defined on the interval
-                         :math:`[identifier\_offset, identifier\_offset + c - 1]`.
-                         
-                         Therefore, implicit identifier are completely defined by the value of
-                         identifier_offset and cardinality. For example if identifier run from
-                         -2 to 3 the value for identifier_offset is -2.
-                         
-                         For explicit indexing the field identifier has to be used.
-                         Fortran-/Matlab- and C-/Python-style indexing have specific implicit
-                         identifier conventions where identifier_offset is 1 and 0 respectively.
+                        Integer used to name the first pulse to know if there is an
+                        offset of the evaporation_id to zero.
+                        
+                        Identifiers can be defined either implicitly or explicitly.
+                        For implicit indexing identifiers are defined on the interval
+                        :math:`[identifier\_offset, identifier\_offset + c - 1]`.
+                        
+                        Therefore, implicit identifier are completely defined by the value of
+                        evaporation_id_offset and cardinality. For example if identifier run from
+                        -2 to 3 the value for evaporation_id_offset is -2.
+                        
+                        For explicit indexing the field identifier has to be used.
+                        Fortran-/Matlab- and C-/Python-style indexing have specific implicit
+                        identifier conventions where evaporation_id_offset is 1 and 0 respectively.
                     </doc>
                 </field>
-                <field name="identifier_evaporation" type="NX_INT" units="NX_UNITLESS">
+                <field name="evaporation_id" type="NX_INT" units="NX_UNITLESS">
                     <doc>
-                         (Molecular) ion identifier which resolves the sequence in which
-                         the ions were evaporated but taking into account that a hit_finding
-                         and spatial_filtering was applied.
+                        (Molecular) ion identifier which resolves the sequence in which
+                        the ions were evaporated but taking into account that a hit_finding
+                        and spatial_filtering was applied.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1006,10 +1019,10 @@ at this point the original set of events p has been filtered down to p_out-->
             <!--at this point the set of events p_out has been filtered down to n-->
             <group name="voltage_and_bowl" type="NXprocess" recommended="true">
                 <doc>
-                     Configuration of and results obtained from a voltage-and-bowl time-of-flight correction algorithm.
-                     
-                     The voltage-and-bowl correction is a data post-processing step to correct ion impact
-                     positions for flight path differences, detector biases, and nonlinearities.
+                    Configuration of and results obtained from a voltage-and-bowl time-of-flight correction algorithm.
+                    
+                    The voltage-and-bowl correction is a data post-processing step to correct ion impact
+                    positions for flight path differences, detector bias, and nonlinearities.
                 </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                 <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
@@ -1023,13 +1036,10 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <!--
-currently cannot be made required because of being a quantity measured
-by proprietary hardware with proprietary semantics
--->
+                <!--currently cannot be made required proprietary hardware and semantics-->
                 <field name="raw_tof" type="NX_FLOAT" recommended="true">
                     <doc>
-                         Raw time-of-flight data without corrections.
+                        Raw time-of-flight data without corrections.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1038,12 +1048,12 @@ by proprietary hardware with proprietary semantics
                 <!--result-->
                 <field name="tof_zero_estimate" type="NX_FLOAT" optional="true" units="NX_TIME">
                     <doc>
-                         The parameter :math:`t_0`, CAnalysis.CCalibMass.fT0Estimate
+                        The parameter :math:`t_0`, CAnalysis.CCalibMass.fT0Estimate
                     </doc>
                 </field>
                 <field name="calibrated_tof" type="NX_FLOAT" recommended="true">
                     <doc>
-                         Calibrated time-of-flight.
+                        Calibrated time-of-flight.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1063,8 +1073,6 @@ by proprietary hardware with proprietary semantics
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <!--config/input
-results-->
                 <field name="mass_to_charge" type="NX_FLOAT">
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1080,12 +1088,12 @@ results-->
                 </group>
                 <group name="config" type="NXnote" recommended="true">
                     <doc>
-                         For LEAP and IVAS/APSuite-based analyses root file which stores
-                         the settings whereby an RHIT/HITS file can be used to regenerate the
-                         reconstruction that is here referred to.
-                         
-                         The respective RHIT/HITS file should ideally be specified in the serialized
-                         group of the hit_finding section of this application definition.
+                        For LEAP and IVAS/APSuite-based analyses root file which stores
+                        the settings whereby an RHIT/HITS file can be used to regenerate the
+                        reconstruction that is here referred to.
+                        
+                        The respective RHIT/HITS file should ideally be specified in the serialized
+                        group of the hit_finding section of this application definition.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
                     <field name="file_name" type="NX_CHAR"/>
@@ -1094,16 +1102,16 @@ results-->
                 </group>
                 <group name="results" type="NXnote" recommended="true">
                     <doc>
-                         For LEAP and IVAS/APSuite-based analyses the resulting typically
-                         file with the reconstructed positions and (calibrated) mass-to-charge
-                         state ratio values.
-                         
-                         For other data collection/analysis software the data artifact which comes
-                         closest conceptually to AMETEK/Cameca's typical file formats.
-                         
-                         These are typically exported as a POS, ePOS, APT, ATO, ENV, or HDF5 file,
-                         which should be stored alongside this record in the research data
-                         management system.
+                        For LEAP and IVAS/APSuite-based analyses the resulting typically
+                        file with the reconstructed positions and (calibrated) mass-to-charge
+                        state ratio values.
+                        
+                        For other data collection/analysis software the data artifact which comes
+                        closest conceptually to AMETEK/Cameca's typical file formats.
+                        
+                        These are typically exported as a POS, ePOS, APT, ATO, ENV, or HDF5 file,
+                        which should be stored alongside this record in the research data
+                        management system.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
                     <field name="file_name" type="NX_CHAR"/>
@@ -1127,14 +1135,11 @@ results-->
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
                     </group>
-                    <!--config/input
-results-->
+                    <!--results-->
                     <group type="NXdata">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>
-                        <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
-                        <!-- dim: (3,)
-\@long_name:-->
+                        <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
                         <field name="title" type="NX_CHAR" recommended="true"/>
                         <field name="intensity" type="NX_NUMBER">
                             <dimensions rank="3">
@@ -1173,7 +1178,7 @@ results-->
                 </group>
                 <group name="definitions" type="NXnote" recommended="true">
                     <doc>
-                         The respective ranging definitions file RNG/RRNG/ENV/HDF5.
+                        The respective ranging definitions file RNG/RRNG/ENV/HDF5.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
                     <field name="file_name" type="NX_CHAR"/>
@@ -1191,7 +1196,7 @@ results-->
                     <group name="mass_spectrum" type="NXdata">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>
-                        <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
+                        <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
                         <!--\@long_name(NX_CHAR):-->
                         <field name="title" type="NX_CHAR" recommended="true"/>
                         <field name="intensity" type="NX_NUMBER">
@@ -1217,26 +1222,23 @@ results-->
                     </group>
                     <field name="background" type="NX_FLOAT" recommended="true" units="NX_ANY">
                         <doc>
-                             (Out-of-sync) background levels in ppm/ns
-                             reported by e.g. IVAS/APSuite for LEAP systems.
+                            (Out-of-sync) background levels in ppm/ns
+                            reported by e.g. IVAS/APSuite for LEAP systems.
                         </doc>
                     </field>
                     <field name="mrp_value" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
                         <doc>
-                             MRP, mass-resolving power, `D. Larson et al.
-                             &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (p282, Eqs. D.7 and D.8).
+                            MRP, mass-resolving power, `D. Larson et al.
+                            &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (p282, Eqs. D.7 and D.8).
                         </doc>
                     </field>
                     <field name="mrp_mass_to_charge" type="NX_FLOAT" recommended="true" units="NX_ANY">
                         <doc>
-                             MRP, at which mrp_value was specified.
+                            MRP, at which mrp_value was specified.
                         </doc>
                     </field>
                 </group>
-                <!--config/input
-results
-NEW ISSUE: add parameters of the background model
-in an e.g. work of A. London et al.-->
+                <!--TODO add description of background models and fit like in XPS-->
                 <group name="peak_search" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                     <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
@@ -1249,17 +1251,17 @@ in an e.g. work of A. London et al.-->
                         <field name="description" type="NX_CHAR"/>
                         <field name="category" type="NX_CHAR" recommended="true">
                             <doc>
-                                 Category for the peak offering a qualitative statement of the location of the peak
-                                 in light of limited mass-resolving power that is relevant for
-                                 composition quantification. See `D. Larson et al. (p172) &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ 
-                                 for examples of each category:
-                                 
-                                 * 0, well-separated, :math:`^{10}B^{+}`, :math:`^{28}Si^{2+}`
-                                 * 1, close, but can be sufficiently separated for quantification in a LEAP system, :math:`^{94}Mo^{3+}`, :math:`^{63}Cu^{2+}`
-                                 * 2, closely overlapping, demands better than LEAP4000X MRP can provide :math:`^{14}N^{+}`, :math:`^{28}Si^{2+}` at different charge states
-                                 * 3, overlapped exactly due to multi-charge molecular species, :math:`^{16}{O_{2}}^{2+}`, :math:`^{16}O^{+}`
-                                 * 4, overlapped, same charge state, cannot as of 2013 be discriminated with a LEAP4000X, :math:`^{14}{N_{2}}^{+}`, :math:`^{28}Si^{+}`
-                                 * 5, overlapped, same charge state, any expectation of resolvability, :math:`^{54}Cr^{2+}`, :math:`^{54}Fe^{2+}`
+                                Category for the peak offering a qualitative statement of the location of the peak
+                                in light of limited mass-resolving power that is relevant for
+                                composition quantification. See `D. Larson et al. (p172) &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_
+                                for examples of each category:
+                                
+                                * 0, well-separated, :math:`^{10}B^{+}`, :math:`^{28}Si^{2+}`
+                                * 1, close, but can be sufficiently separated for quantification in a LEAP system, :math:`^{94}Mo^{3+}`, :math:`^{63}Cu^{2+}`
+                                * 2, closely overlapping, demands better than LEAP4000X MRP can provide :math:`^{14}N^{+}`, :math:`^{28}Si^{2+}` at different charge states
+                                * 3, overlapped exactly due to multi-charge molecular species, :math:`^{16}{O_{2}}^{2+}`, :math:`^{16}O^{+}`
+                                * 4, overlapped, same charge state, cannot as of 2013 be discriminated with a LEAP4000X, :math:`^{14}{N_{2}}^{+}`, :math:`^{28}Si^{+}`
+                                * 5, overlapped, same charge state, any expectation of resolvability, :math:`^{54}Cr^{2+}`, :math:`^{54}Fe^{2+}`
                             </doc>
                             <enumeration>
                                 <item value="0"/>
@@ -1283,10 +1285,7 @@ in an e.g. work of A. London et al.-->
                     </group>
                     <field name="number_of_ion_types" type="NX_UINT"/>
                     <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT"/>
-                    <group type="NXion" minOccurs="1" maxOccurs="256">
-                        <doc>
-                            Instances should use ion as a name prefix.
-                        </doc>
+                    <group name="ionID" type="NXion" nameType="partial" minOccurs="1" maxOccurs="256">
                         <field name="nuclide_hash" type="NX_UINT"/>
                         <field name="charge_state" type="NX_INT"/>
                         <group name="charge_state_analysis" type="NXapm_charge_state_analysis" optional="true">

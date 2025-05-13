@@ -27,28 +27,29 @@ are stored but then referencing this in an application definition would demand t
 file required, while NXinstrument_apm can be used directly for the static and the dynamic
 or volatile (meta)data.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXinstrument_apm" extends="NXinstrument" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="p">
+            <doc>
+                Number of pulses collected in between start_time and end_time
+                inside a parent instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </symbol>
+    </symbols>
     <doc>
-        Base class to document an instrument used for atom probe microscopy.
+        Base class for instrument-related details of a real or simulated
+        atom probe tomograph or field-ion microscope.
         
-        Inheriting from NXinstrument, this base class is designed to offer the same concepts about
-        instrument-centric metadata to be used in two places inside NXapm without demanding that
-        the application definition needs to define the concepts in two places as maintaining this is
-        prone to errors. This base class implements the key design idea behind the NXapm application
-        definition in that we would like to offer a design where all (meta)data which over the course
-        of a measurement remain static can be stored only once and without polluting the application
-        definition with another group with concepts that should be used for storing (meta)data about
-        the instrument during events that happen during the course of the measurement.
+        For collecting data and experiments which are simulations of an atom probe
+        microscope (or such session) use the :ref:`NXapm` application definition and
+        the :ref:`NXevent_data_apm` groups it provides.
         
-        This design was inspired by NXem and electron microscopy where typically the instrument is
-        used in sessions and dozens of logical sets of data are collected under not necessarily always
-        the same instrument conditions. We do not want to repeat therefore the static (meta)data, as
-        this is redundant storage by virtue of design. The typical example is an electron microscope
-        where hundreds of images are taken and all static instrument data stored with each image.
-        This makes sense in cases when the image is used as a digital artifact that is exchanged across
-        different software applications or research data management systems but as in NeXus there
-        is either all information bundled into one artifact or there is a coordinating master artifact
-        that references related artifacts there is no point to store hundreds of times that always the
-        same microscope with the same lens setup was used to collect these images.
+        This base class implements the concept of :ref:`NXapm` whereby (meta)data are distinguished
+        whether these typically change during a session (dynamic) or not (static metadata).
+        This design allows to store e.g. hardware related concepts only once instead of demanding
+        that each image or spectrum from the session needs to be stored also with the static metadata.
     </doc>
     <field name="type" type="NX_CHAR">
         <doc>
@@ -96,7 +97,7 @@ Possibility to include a detailed computational geometry description of the inst
             Device which reduces ToF differences of ions in ToF experiments.
             
             For atom probe the reflectron can be considered an energy compensation device.
-            Such a device can be realized technically for example with a Poschenrieder lens.
+            Such a device can be realized technically e.g. with a Poschenrieder lens.
             
             Consult the following U.S. patents for further details:
             
@@ -119,9 +120,7 @@ Possibility to include a detailed computational geometry description of the inst
             A counter electrode of the LEAP 6000 series atom probes.
         </doc>
     </group>
-    <!--counter_electrodes being optional WO2016171675A1
-see https://en.wikipedia.org/wiki/Einzel_lens for details double einzel lens in the invizo 6000
-according to A. Breen (UNSW)-->
+    <!--counter_electrodes being optional WO2016171675A1 or Einzel lens-->
     <group name="local_electrode" type="NXlens_em">
         <doc>
             A local electrode guiding the ion flight path.
@@ -133,12 +132,6 @@ according to A. Breen (UNSW)-->
             </doc>
         </field>
     </group>
-    <!--but the local_electrode does not really on purpose create a magnetic field,
-specific for an electro-magnetic lens is the symmetry of its field
-NEW ISSUE: for now keep that we have what is an NXlens_em
-NEW ISSUE: APEX MONITOR / LEAP distance monitoring
-NEW ISSUE: the definition of flat test data should be included and documented
-NEW ISSUE: local electrode, baking strategies, storage-->
     <group name="ion_detector" type="NXdetector">
         <doc>
             Detector for taking raw time-of-flight and ion/hit impact positions data.
@@ -148,8 +141,10 @@ NEW ISSUE: local electrode, baking strategies, storage-->
                 Amplitude of the signal detected on the multi-channel plate (MCP).
                 
                 This field should be used for storing the signal amplitude quantity
-                within ATO files. The ATO file format is used primarily by the
-                atom probe groups of the GPM in Rouen, France.
+                within ATO files when the detector was an MCP.
+                
+                The ATO file format is used primarily by the atom probe group of the
+                GPM in Rouen, France.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="p"/>
@@ -183,14 +178,6 @@ NEW ISSUE: local electrode, baking strategies, storage-->
                 <item value="laser_and_voltage"/>
             </enumeration>
         </field>
-        <!--the example of how the IFES APT TC's HDF format deals with such data
-conceptually, concepts are mixed into superconcepts interleaved tuple with
-different units: "PulseFrequency : Real array, 2xn (Hz) This is the frequency of
-the high voltage or laser pulser. first entry : first pulse number where the
-spacing between this and all subsequent pulses are considered to be at the
-selected frequency. Each first entry must be strictly increasing in value. The
-second entry contains the frequency value" as data can be compressed in this
-case very efficiently we go for with an array of length 1xn_ions-->
         <field name="pulse_frequency" type="NX_FLOAT" units="NX_FREQUENCY">
             <doc>
                 Frequency with which the pulser fire(s).
@@ -239,7 +226,6 @@ existence constraint is independent of other values.-->
                 </doc>
             </attribute>
         </field>
-        <!--eventually equivalent to pulse_id within NXevent_data_apm-->
         <field name="standing_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
             <doc>
                 Direct current voltage between the specimen and the (local electrode) in
@@ -252,7 +238,7 @@ existence constraint is independent of other values.-->
                 </doc>
             </attribute>
         </field>
-        <group type="NXsource">
+        <group name="sourceID" type="NXsource" nameType="partial">
             <doc>
                 Atom probe microscopes use controlled laser, voltage, or a combination of
                 pulsing strategies to trigger ion extraction via exciting and eventual field evaporation
@@ -278,7 +264,7 @@ existence constraint is independent of other values.-->
                     </doc>
                 </attribute>
             </field>
-            <group type="NXbeam">
+            <group name="beamID" type="NXbeam" nameType="partial">
                 <doc>
                     Details about specific positions along the laser beam
                     which illuminates the (atom probe) specimen.
@@ -368,7 +354,7 @@ existence constraint is independent of other values.-->
             Free-text field for additional comments.
         </doc>
     </field>
-    <group name="control" type="NXcollection">
+    <group name="control" type="NXparameters">
         <doc>
             Relevant quantities during a measurement with a LEAP system as were
             suggested by `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_.
