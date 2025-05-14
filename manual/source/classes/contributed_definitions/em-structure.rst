@@ -43,10 +43,10 @@ Base Classes
 
 The following base classes are proposed to support modularizing the storage of pieces of information with a focus on EM:
 
-    :ref:`NXaberration`:
-        Base class to describe procedures and values for the calibration of aberrations.
+    :ref:`NXaberration` and :ref:NXcorrector_cs`:
+        Base class to describe procedures and values for the calibration of (spherical) aberrations and the devices for achieving this technically.
 
-    :ref:`NXcoordinate_system_set`:
+    :ref:`NXcoordinate_system`:
         A base class to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
@@ -76,7 +76,7 @@ The following base classes are proposed to support modularizing the storage of p
         hardware components or version of control software. Another one that is placed inside an ENTRY.measurements.events group.
         This group holds all those (meta)data data change when collecting data during a session.
 
-    :ref:`NXion` about to become replaced by :ref:`NXatom`:
+    :ref:`NXatom` and :ref:`NXion`:
         A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
 
     :ref:`NXlens_em`:
@@ -101,7 +101,7 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
 
     :ref:`NXspectrum`:
-        Base class and specializations comparable to NXimage_set but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
+        Base class and specializations comparable to NXimage but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
 
 Method-specific concepts and their usage in application definitions
 ###################################################################
