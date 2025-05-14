@@ -72,6 +72,5 @@ There are two related base classes that are common to other techniques:
     :ref:`NXlens_em`:
        A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
-..
     :ref:`NXdeflector`
        A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.

@@ -41,15 +41,12 @@ A microscope session ends with the scientist removing the specimen from the inst
 Base Classes
 ############
 
-The following base classes are proposed to support modularizing the storage of pieces of information:
+The following base classes are proposed to support modularizing the storage of pieces of information with a focus on EM:
 
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
-        Base classes to describe procedures and values for the calibration of aberrations based on either CEOS or Nion.
+    :ref:`NXaberration` and :ref:NXcorrector_cs`:
+        Base class to describe procedures and values for the calibration of (spherical) aberrations and the devices for achieving this technically.
 
-    :ref:`NXaperture_em`:
-        A base class to describe an aperture.
-
-    :ref:`NXcoordinate_system_set`:
+    :ref:`NXcoordinate_system`:
         A base class to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
@@ -65,20 +62,14 @@ The following base classes are proposed to support modularizing the storage of p
         A base class representing a container to hold time-stamped and microscope-state-
         annotated data during a session at an electron microscope.
 
-    :ref:`NXevent_data_em_set`:
-        A base class to group all :ref:`NXevent_data_em` instances.
-
     :ref:`NXibeam_column`:
         A base class serving the possibility to group the components relevant for generating
         and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
     :ref:`NXimage`:
-        Base classes for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
+        Base class for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
 
-    :ref:`NXinteraction_vol_em`:
-        A base class to describe details about e.g. the simulated or known volume of interaction of the electrons with the specimen.
-
-    :ref:`NXion`:
+    :ref:`NXatom` and :ref:`NXion`:
         A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
 
     :ref:`NXlens_em`:
@@ -102,26 +93,5 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
 
-    :ref:`NXspectrum_set`:
-        Base class and specializations comparable to NXimage_set but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
-
-    :ref:`NXmanipulator`:
-        As it was mentioned for atom probe microscopy, this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
-
-Method-specific concepts and their usage in application definitions
-###################################################################
-
-It became clear during the design of the electron-microscopy-specific additions to NeXus that there are sets of pieces of information (data and metadata) which are relevant for a given experiment but have usually only few connections to the detailed description of the workflow of processing these data into knowledge, motivating the granularization of these pieces of information in their own application definition. In fact, one limitation of application definitions in NeXus is that they define a set of constraints on their graph of controlled concepts and terms. If we take for example diffraction experiments with an electron microscope it is usually the case that (diffraction) patterns are collected in the session at the microscope but all scientifically relevant conclusions are drawn later, i.e. through post-processing these data. These numerical and algorithmic steps define computational workflows where data from the application definitions such as NXem are used as input but many additional concepts and constraints may apply without any need for changing constraints on fields or groups of NXem. If we were to modify NXem for these cases, NXem would likely combinatorially diverge as every different combination of required constraints would demand having their own but almost similar application definition. For this reason, we propose to define the following base classes:
-
-More consolidation through the use of NXsubentry classes should be considered in the future.
-
-    :ref:`NXem_ebsd`:
-        Application definition for collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three- and four-dimensional case.
-
-Several new base classes are used by this application definition.
-
-    :ref:`NXem_ebsd_conventions`:
-        A collection of reference frames and rotation conventions necessary to interpret the alignment and orientation data.
-
-    :ref:`NXem_ebsd_crystal_structure_model`:
-        A description of a crystalline phase/structure used for a forward simulation using kinetic or dynamic diffraction theory to generate simulated diffraction pattern against which measured pattern can be indexed.
+    :ref:`NXspectrum`:
+        Base class and specializations comparable to NXimage but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
