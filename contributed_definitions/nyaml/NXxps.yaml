@@ -50,13 +50,13 @@ NXxps(NXmpes):
           Link to transformations defining the XPS base coordinate system,
           which is defined such that the positive z-axis points along the sample stage normal, and the
           x- and y-axes lie in the plane of the sample stage.
-      coordinate_system_transformations(NXtransformations):
+      (NXtransformations):
         exists: optional
         doc: |
           Set of transformations, describing the orientation of the XPS coordinate system
-          with respect to the beam coordinate system (.) or any other coordinate system.
-          
-          The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+          with respect to the beam coordinate system (.) or another coordinate system.
+          The transformations in the ``NXtransformations`` group depend on the actual instrument
+          geometry.
           If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
           the following transformations can be used for describing the XPS coordinate system
           with respect to the beam coordinate system (.):
@@ -64,23 +64,23 @@ NXxps(NXmpes):
           .. code-block::
           
               xps_coordinate_system:NXcoordinate_system
-              depends_on=entry/xps_coordinate_system/coordinate_transformations/z_rotation
-              coordinate_system_transformations:NXtransformations
-                z_rotation=beam_azimuth_angle
-                  @depends_on=y_flip
-                  @transformation_type=rotation
-                  @vector=[0, 0, 1]
-                  @units=degree
-                y_flip=180
-                  @depends_on=y_rotation
-                  @transformation_type=rotation
-                  @vector=[0, 1, 0]
-                  @units=degree
-                y_rotation=beam_polar_angle_of_incidence
-                  @depends_on=.
-                  @transformation_type=rotation
-                  @vector=[0, 1, 0]
-                  @units=degree
+                depends_on=coordinate_transformations/sample_stage_to_source_azimuth
+                coordinate_transformations:NXtransformations
+                  sample_stage_to_source_azimuth=beam_azimuth_angle
+                    @depends_on=sample_stage_to_source_polar
+                    @transformation_type=rotation
+                    @vector=[0, 0, -1]
+                    @units=degree
+                  sample_stage_to_source_polar=beam_polar_angle_of_incidence
+                    @depends_on=.
+                    @transformation_type=rotation
+                    @vector=[1, 0, 0]
+                    @units=degree
+          
+          Note that this ``NXtransformations``  group is not needed when the defined
+          :ref:`transformations in beam_probe </NXxps/ENTRY/INSTRUMENT/beam_probe/transformations-group>`
+          are used. In this case, this group shall not be written here to avoid circular references in the
+          transformations chain.
     (NXinstrument):
       doc:
       - |
@@ -110,7 +110,7 @@ NXxps(NXmpes):
             doc: |
               Beam direction in the XPS coordinate system after rotation.
             \@vector(NX_NUMBER):
-              enumeration: [[0, 0, 1]]
+              enumeration: [[0, 0, -1]]
             \@depends_on:
               enumeration: [beam_polar_angle_of_incidence]
           beam_polar_angle_of_incidence(NX_NUMBER):
@@ -121,7 +121,7 @@ NXxps(NXmpes):
             \@transformation_type:
               enumeration: [rotation]
             \@vector(NX_NUMBER):
-              enumeration: [[0, -1, 0]]
+              enumeration: [[-1, 0, 0]]
             \@depends_on:
               enumeration: [beam_azimuth_angle]
           beam_azimuth_angle(NX_NUMBER):
@@ -131,7 +131,7 @@ NXxps(NXmpes):
             \@transformation_type:
               enumeration: [rotation]
             \@vector(NX_NUMBER):
-              enumeration: [[0, 0, -1]]
+              enumeration: [[0, 0, 1]]
             \@depends_on:
               doc: |
                 This should point to the coordinate system defined in /entry/xps_coordinate_system.
@@ -169,7 +169,7 @@ NXxps(NXmpes):
             \@transformation_type:
               enumeration: [rotation]
             \@vector(NX_NUMBER):
-              enumeration: [[0, -1, 0]]
+              enumeration: [[-1, 0, 0]]
             \@depends_on:
               enumeration: [analyzer_take_off_azimuth_angle]
           analyzer_take_off_azimuth_angle(NX_NUMBER):
@@ -179,7 +179,7 @@ NXxps(NXmpes):
             \@transformation_type:
               enumeration: [rotation]
             \@vector(NX_NUMBER):
-              enumeration: [[0, 0, -1]]
+              enumeration: [[0, 0, 1]]
             \@depends_on:
               doc: |
                 This should point to the coordinate system defined in /entry/xps_coordinate_system.
@@ -415,7 +415,7 @@ NXxps(NXmpes):
           doc: |
             Atomic concentration of the species defined by this peak. This should be a value
             between 0 and 1.
-      backgroundBACKGROUND(NXfit_background):
+      backgroundBACKGROUND(NXpeak):
         nameType: partial
         doc:
         - |
@@ -566,7 +566,7 @@ NXxps(NXmpes):
           \@transformation_type:
             enumeration: [rotation]
           \@vector(NX_NUMBER):
-            enumeration: [[0, 0, -1]]
+            enumeration: [[0, 0, 1]]
           \@depends_on:
             enumeration: [sample_normal_polar_angle_of_tilt]
         sample_normal_polar_angle_of_tilt(NX_NUMBER):
@@ -577,7 +577,7 @@ NXxps(NXmpes):
           \@transformation_type:
             enumeration: [rotation]
           \@vector(NX_NUMBER):
-            enumeration: [[0, -1, 0]]
+            enumeration: [[-1, 0, 0]]
           \@depends_on:
             enumeration: [sample_normal_tilt_azimuth_angle]
         sample_normal_tilt_azimuth_angle(NX_NUMBER):
@@ -587,7 +587,7 @@ NXxps(NXmpes):
           \@transformation_type:
             enumeration: [rotation]
           \@vector(NX_NUMBER):
-            enumeration: [[0, 0, -1]]
+            enumeration: [[0, 0, 1]]
           \@depends_on:
             doc: |
               This should point to the coordinate system defined in /entry/xps_coordinate_system.
@@ -596,7 +596,7 @@ NXxps(NXmpes):
       \@energy_indices(NX_INT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 2ebcb98c8e539f321453d9a63c0fd5ff16e48abbcad0955c08c34f9143adba58
+# 4fca3c5f4a0ffb41e8d2ee06d095c976e8ac5cf9f6a849e48d4add97b0862eed
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -692,12 +692,12 @@ NXxps(NXmpes):
 #                     x- and y-axes lie in the plane of the sample stage.
 #                 </doc>
 #             </field>
-#             <group name="coordinate_system_transformations" type="NXtransformations" optional="true">
+#             <group type="NXtransformations" optional="true">
 #                 <doc>
 #                     Set of transformations, describing the orientation of the XPS coordinate system
-#                     with respect to the beam coordinate system (.) or any other coordinate system.
-#                     
-#                     The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+#                     with respect to the beam coordinate system (.) or another coordinate system.
+#                     The transformations in the ``NXtransformations`` group depend on the actual instrument
+#                     geometry.
 #                     If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
 #                     the following transformations can be used for describing the XPS coordinate system
 #                     with respect to the beam coordinate system (.):
@@ -705,23 +705,23 @@ NXxps(NXmpes):
 #                     .. code-block::
 #                     
 #                         xps_coordinate_system:NXcoordinate_system
-#                         depends_on=entry/xps_coordinate_system/coordinate_transformations/z_rotation
-#                         coordinate_system_transformations:NXtransformations
-#                           z_rotation=beam_azimuth_angle
-#                             @depends_on=y_flip
-#                             @transformation_type=rotation
-#                             @vector=[0, 0, 1]
-#                             @units=degree
-#                           y_flip=180
-#                             @depends_on=y_rotation
-#                             @transformation_type=rotation
-#                             @vector=[0, 1, 0]
-#                             @units=degree
-#                           y_rotation=beam_polar_angle_of_incidence
-#                             @depends_on=.
-#                             @transformation_type=rotation
-#                             @vector=[0, 1, 0]
-#                             @units=degree
+#                           depends_on=coordinate_transformations/sample_stage_to_source_azimuth
+#                           coordinate_transformations:NXtransformations
+#                             sample_stage_to_source_azimuth=beam_azimuth_angle
+#                               @depends_on=sample_stage_to_source_polar
+#                               @transformation_type=rotation
+#                               @vector=[0, 0, -1]
+#                               @units=degree
+#                             sample_stage_to_source_polar=beam_polar_angle_of_incidence
+#                               @depends_on=.
+#                               @transformation_type=rotation
+#                               @vector=[1, 0, 0]
+#                               @units=degree
+#                     
+#                     Note that this ``NXtransformations``  group is not needed when the defined
+#                     :ref:`transformations in beam_probe &lt;/NXxps/ENTRY/INSTRUMENT/beam_probe/transformations-group&gt;`
+#                     are used. In this case, this group shall not be written here to avoid circular references in the
+#                     transformations chain.
 #                 </doc>
 #             </group>
 #         </group>
@@ -752,7 +752,7 @@ NXxps(NXmpes):
 #                         </doc>
 #                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
-#                                 <item value="[0, 0, 1]"/>
+#                                 <item value="[0, 0, -1]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
@@ -773,7 +773,7 @@ NXxps(NXmpes):
 #                         </attribute>
 #                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
-#                                 <item value="[0, -1, 0]"/>
+#                                 <item value="[-1, 0, 0]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
@@ -793,7 +793,7 @@ NXxps(NXmpes):
 #                         </attribute>
 #                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
-#                                 <item value="[0, 0, -1]"/>
+#                                 <item value="[0, 0, 1]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
@@ -839,7 +839,7 @@ NXxps(NXmpes):
 #                         </attribute>
 #                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
-#                                 <item value="[0, -1, 0]"/>
+#                                 <item value="[-1, 0, 0]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
@@ -859,7 +859,7 @@ NXxps(NXmpes):
 #                         </attribute>
 #                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
-#                                 <item value="[0, 0, -1]"/>
+#                                 <item value="[0, 0, 1]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
@@ -1116,7 +1116,7 @@ NXxps(NXmpes):
 #                     </doc>
 #                 </field>
 #             </group>
-#             <group name="backgroundBACKGROUND" type="NXfit_background" nameType="partial">
+#             <group name="backgroundBACKGROUND" type="NXpeak" nameType="partial">
 #                 <doc>
 #                     Functional form of one of the fitted XPS backgrounds.
 #                     
@@ -1275,7 +1275,7 @@ NXxps(NXmpes):
 #                     </attribute>
 #                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
-#                             <item value="[0, 0, -1]"/>
+#                             <item value="[0, 0, 1]"/>
 #                         </enumeration>
 #                     </attribute>
 #                     <attribute name="depends_on">
@@ -1296,7 +1296,7 @@ NXxps(NXmpes):
 #                     </attribute>
 #                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
-#                             <item value="[0, -1, 0]"/>
+#                             <item value="[-1, 0, 0]"/>
 #                         </enumeration>
 #                     </attribute>
 #                     <attribute name="depends_on">
@@ -1316,7 +1316,7 @@ NXxps(NXmpes):
 #                     </attribute>
 #                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
-#                             <item value="[0, 0, -1]"/>
+#                             <item value="[0, 0, 1]"/>
 #                         </enumeration>
 #                     </attribute>
 #                     <attribute name="depends_on">
