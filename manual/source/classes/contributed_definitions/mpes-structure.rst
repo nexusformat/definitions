@@ -77,10 +77,6 @@ Four base classes (which are subclasses of :ref:`NXprocess`) to describe data (p
       :ref:`NXpeak`:
          Base class to describe a peak, its functional form, and support values (i.e., the discretization (points) at which the function has been evaluated).
 
-      :ref:`NXfit_background`:
-         Description of the background for an NXfit model.
-
-
 .. _MpesCommonBC:
 
 Common Base Classes
