@@ -32,7 +32,7 @@
         controlled electron beams are used to study electron-beam matter interactions, explore
         physical mechanisms and phenomena, or to characterize materials with an electron microscope.
         
-        The NeXus application definition NXem defines a hierarchical data model:
+        *The NeXus application definition NXem defines a hierarchical data model with ten building blocks:*
         
         The data model thus represents a tree of concepts with branches (groups of concepts), and either fields
         or attributes as leafs. NXem is defined by composing and specializing base classes into ten categories;
@@ -44,7 +44,7 @@
         - The fields ``NXem/ENTRY/[identifier_experiment,experiment_alias,experiment_description]`` and group ``NXem/ENTRY/userID``
           provide concepts for storing organizational metadata that contextualize the work within the research workflow.
         - The fields ``NXem/ENTRY/[start_time,end_time]`` provide concepts for putting the research into a temporal context.
-        - The groups ``NXem/ENTRY/{citeID,noteID}`` provide concepts for adding contextual details such as citations associated with or notes,
+        - The groups ``NXem/ENTRY/[citeID,noteID]`` provide concepts for adding contextual details such as citations associated with or notes,
           i.e. other eventually less standardized or less formalized artifacts, which nonetheless are deemed relevant when reporting about a
           measurement or simulation. These groups are useful when NXem is used as a serialization format for technology-partner-agnostic
           archival of data and metadata that have been collected during a session with an electron microscope or a simulation of such an experiment.
@@ -54,25 +54,24 @@
         - The group``NXem/ENTRY/simulation`` provides concepts that are useful for describing a simulation of an electron beam that interacts with matter.
           Combined with ``NXem/ENTRY/measurement`` this provides a schema for defining a digital twin of the microscope and its optical setup.
           For example including details about the lens setup that was assumed in the simulation or present in the microscope.
-        - The groups ``NXem/ENTRY/\{consistent_rotations,\*_reference_frame\*}`` provide concepts for reporting coordinate systems (frames of reference)
+        - The groups ``NXem/ENTRY/[consistent_rotations,\*_reference_frame\*]`` provide concepts for reporting coordinate systems (frames of reference)
           and rotation conventions that clarify how collected data (specifically those pertaining to orientable objects in the microscope, its components, or crystal
           and crystal defects in the material of the specimen. These metadata support interpretation for downstream data analysis pipelines and
           analyses which the microscope performs during a session such as indexing of diffraction patterns, image analysis in general, or compositional analyses.
         - The group ``NXem/ENTRY/roiID`` provides concepts for reporting several domain- and technique-specific configurations and results of data processing
           that have been obtained from a measurement or a simulation.
         - The group ``NXem/ENTRY/profiling`` provides concepts that are useful for reporting computational details such as programs and libraries used,
-           the libraries of virtual environments (e.g. conda, python virtual environment), including details about the computing hardware used, and
-           performance analyses or benchmarking of the software and its parts.
+          the libraries of virtual environments (e.g. conda, python virtual environment), including details about the computing hardware used, and
+          performance analyses or benchmarking of the software and its parts.
         
-        Design choices:
+        *Design choices:*
         
         For the data and metadata of a microscope session to be useful, it is necessary that instance data are reported for certain concepts.
-        These are stored typically but not necessarily only in NeXus/HDF5. Specific details how a microscope was used or its operation was
+        These are stored typically but not only necessarily in NeXus/HDF5. Specific details how a microscope was used or its operation was
         simulated differ between user groups. Different peer groups and sub-domains consider different data and metadata relevant.
         Therefore, NXem defines constraints on the existence and cardinality of concepts and their sub-trees of concepts but seeks to offer a
         compromise. The key design pattern followed is that most concepts mentioned in the above-mentioned ten categories are made optional
-        or at most recommended only. This means that to generate a file that is compliant with NeXus it is not required to have instance data
-        for all concepts.
+        or at most recommended only. This means that it is not required to have instance data for all concepts for every use of NXem.
         
         For most concept branches of the NXem schema we followed a design pattern where the parent is optional and its childs required or less restrictive.
         An example is the combination of in the optional group ``NXem/ENTRY/measurement`` having the group ``NXem/ENTRY/measurement/instrument`` is required.
@@ -80,7 +79,7 @@
         instrument, not necessarily though about all the details of its components because also the branches below the instrument branch follow this design pattern
         of required-only-when-the-parent group-is-used is picked up again in the sub branches.
         
-        Inclusive design, one schema for scanning, focused-ion beam, and transmission electron microscopes:
+        *Inclusive design, one schema for scanning, focused-ion beam, and transmission electron microscopes:*
         
         Contrary to many other data schemes for electron microscopy, NXem seeks to highlight the similarity of the three fundamental types of
         electron microscopes that are nowadays most routinely used in various research communities: An electron microscope is a beamline that
@@ -98,7 +97,7 @@
         shaped electron beam illuminates the specimen. In the lower half-space the beam or particles exit the specimen or end up thermalized
         in thick specimens.
         
-        NXem distinguishes instrument-specific metadata based on how long individual instance data remain unchanged:
+        *NXem distinguishes instrument-specific metadata based on how long individual instance data remain unchanged:*
         
         ``NXem/ENTRY/measurement`` provides two groups ``NXem/ENTRY/measurement/instrument`` and ``NXem/ENTRY/measurement/eventID``.
         The first group is designed for storing metadata about the instrument which do not change over the course of the session. That is for instance
@@ -109,6 +108,15 @@
         specific state settings of the microscope that was present during the collection of the event. This includes specific lens settings, apertures, etc.
         By virtue of design this reduces unnecessary repetition of metadata stored in the first group, which is still the frequent situation when
         images are reported in electron microscopy using archival formats like TIFF, PNG, etc.
+        
+        *NXem offers domain-specific classes for standardized reporting of method-specific configurations, data processing, and results:*
+        
+        These include ``NXem_img`` for generic and specific imaging including diffraction, ``NXem_eds`` for energy-dispersive X-ray spectroscopy,
+        ``NXem_ebsd`` for electron backscatter diffraction, as well as ``NXem_eels`` for electron energy loss spectroscopy. These branches provided
+        as examples that proof how NeXus can be used for combining session-centric data storage with data processing. These examples are
+        naturally incomplete but show at different levels of technical depth how standardization can be useful even to report specifically formatted
+        data representations (multi-dimensional plotting) to support that data analysis software can take advantage of standardized reporting rather
+        than having a need for a zoo of parsers that interconvert between many representations.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
