@@ -255,7 +255,7 @@
                 <doc>
                     An array of elapsed time (the independent axis) of a time-temperature curve.
                     
-                    This field can be used in combination with heat_treatment_temperature and 
+                    This field can be used in combination with heat_treatment_temperature and
                     heat_treatment_temperature_errors. In this case, these fields should also
                     be stored as an array with the same dimensions as heat_treatment_time
                     to store the dependant axes of a time-temperature curve.
@@ -752,7 +752,11 @@ the need for defining them again-->
             </group>
             <group name="hit_finding" type="NXprocess" recommended="true">
                 <doc>
-                    Configuration of and results obtained from a hit finding algorithm.
+                    The configuration of a hit finding algorithm and its output.
+                    
+                    Hit finding is the process of deciding which detector signals are significant and
+                    assigning specific ions (or molecular ions) colliding with the detector
+                    to each observed event.
                 </doc>
                 <!--we careful how we go about doing this here, we recommended to make some details of the hit_finding
 algorithm open namely the input and the output what the black box then does by AMETEK/Cameca
@@ -785,7 +789,8 @@ we can only make recommendations-->
                     </dimensions>
                     <attribute name="depends_on" type="NX_CHAR">
                         <doc>
-                            Defines in which reference frame the positions are defined.
+                            Contains the path to an instance of NX_coordinate_system
+                            in which the positions are defined.
                         </doc>
                     </attribute>
                 </field>
@@ -842,12 +847,10 @@ we can only make recommendations-->
                 </field>
                 <field name="hit_multiplicity" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        This processing yields for each ion with how many others it evaporated
-                        if these were collected on the same pulse. Extraction of multiple ions
-                        on one pulse on different or even the same pixel of the detector are possible.
-                        
-                        Multiplicity must not be confused with how many atoms of the same element
-                        a molecular ion contains.
+                        The number of ions determined to have been collected on the same pulse.
+                        These ions may hit different pixels, or even the same detector pixel.
+                        The hit_multiplicity is not related to the makeup of the ions and should not be
+                        confused with the number of atoms or elements that constitute a molecular ion.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="p_out"/>
@@ -877,29 +880,21 @@ at this point the original set of events p has been filtered down to p_out-->
                 </group>
                 <field name="evaporation_id_offset" type="NX_INT" units="NX_UNITLESS">
                     <doc>
-                        Integer used to indicate the first (molecular) ion that is part of
-                        the reconstructed volume to identify if there is an offset
-                        of the evaporation_id to zero.
-                        
-                        Identifiers can be defined either implicitly or explicitly.
-                        For implicit indexing identifiers are defined on the interval
-                        :math:`[evaporation\_id\_offset, evaporation\_id\_offset + c - 1]`.
-                        
-                        Therefore, implicit identifier are completely defined by the value of
-                        evaporation_id_offset and cardinality. For example if identifier run from
-                        -2 to 3 the value for evaporation_id_offset is -2.
-                        
-                        For explicit indexing the field identifier has to be used.
-                        Fortran-/Matlab- and C-/Python-style indexing have specific implicit
-                        identifier conventions where evaporation_id_offset is 1 and 0 respectively.
+                        Integer which defines the first evaporation_id.
+                        Typically, this is either zero or one.
                     </doc>
                 </field>
                 <field name="evaporation_id" type="NX_INT" units="NX_UNITLESS">
                     <doc>
-                        (Molecular) ion identifier which resolve the sequence in which
-                        the ions were evaporated but that takes into account that a
-                        hit_finding and spatial_filtering was applied. Therefore, only
-                        ions in the reconstructed volume are identified.
+                        There are two possibilities to report evaporation_id values:
+                        
+                        If evaporation_id_offset is provided, the evaporation_id values are defined
+                        by the sequence :math:`[evaporation\_id\_offset, evaporation\_id\_offset + n]`
+                        with :math:`n` the number of ions in the reconstructed volume.
+                        
+                        Alternatively, evaporation_id_offset is not provided but instead a
+                        a sequence of :math:`n` values is defined, these integer do not need to
+                        be sorted.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
