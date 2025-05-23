@@ -219,19 +219,6 @@
             <doc>
                 Description of the sample from which the specimen was prepared or
                 site-specifically cut out using e.g. a focused-ion beam instrument.
-                
-                The sample group is currently a place for storing suggestions from
-                atom probers about knowledge they have gained about the sample.
-                There are cases where the specimen is machined further or exposed to
-                external stimuli during the experiment. In this case, these details should
-                not be stored under sample but suggestions should be made
-                how this application definition can be improved.
-                
-                In the future also details like how the grain_diameter was characterized,
-                how the sample was prepared, how the material was heat-treated etc.,
-                should be stored. For this specific application definitions/schemas can be
-                used which are then arranged and documented with a description of the
-                workflow so that actionable graphs become instantiatable.
             </doc>
             <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true"/>
             <field name="is_simulation" type="NX_BOOLEAN">
@@ -264,19 +251,34 @@
                     Magnitude of the standard deviation of the grain_diameter.
                 </doc>
             </field>
+            <field name="heat_treatment_time" type="NX_FLOAT" optional="true" units="NX_TIME">
+                <doc>
+                    An array of elapsed time (the independent axis) of a time-temperature curve.
+                    
+                    This field can be used in combination with heat_treatment_temperature and 
+                    heat_treatment_temperature_errors. In this case, these fields should also
+                    be stored as an array with the same dimensions as heat_treatment_time
+                    to store the dependant axes of a time-temperature curve.
+                </doc>
+            </field>
             <field name="heat_treatment_temperature" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                    The temperature of the last heat treatment step before quenching.
+                    If heat_treatment_time is absent, the temperature of the last heat treatment step
+                    before quenching.
                     
                     Knowledge about this value can give an idea how the sample
                     was heat treated. However, if a documentation of the annealing
                     treatment as a function of time is available one should better
                     rely on this information and have it stored alongside the NeXus file.
+                    
+                    If heat_treatment_time is provided consult the docstring of heat_treatment_time.
                 </doc>
             </field>
             <field name="heat_treatment_temperature_errors" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
                 <doc>
                     Magnitude of the standard deviation of the heat_treatment_temperature.
+                    
+                    If heat_treatment_time is provided consult the docstring of heat_treatment_time.
                 </doc>
             </field>
             <field name="heat_treatment_quenching_rate" type="NX_FLOAT" optional="true" units="NX_ANY">
@@ -286,19 +288,6 @@
                     Knowledge about this value can give an idea how the sample was heat treated.
                     However, there are many situations where one can imagine that the scalar value
                     for just the quenching rate is insufficient.
-                    
-                    An example is when the sample was left in the furnace after the
-                    furnace was switched off. In this case the sample cools down with
-                    a specific rate of how this furnace cools down in the lab.
-                    Processes which in practice are often not documented.
-                    
-                    This can be problematic though because when the furnace door was left open
-                    or the ambient temperature in the lab changed, i.e. for a series of
-                    experiments where one is conducted on a hot summer day and the next
-                    during winter this can have an effect on the evolution of the microstructure.
-                    There are many cases where this has been reported to be an QA issue in industry,
-                    e.g. think about aging aluminum samples left on the factory
-                    parking lot on a hot summer day.
                 </doc>
             </field>
             <field name="heat_treatment_quenching_rate_errors" type="NX_FLOAT" optional="true" units="NX_ANY">
@@ -324,6 +313,11 @@
             </group>
         </group>
         <group name="specimen" type="NXsample">
+            <doc>
+                Description of the specimen that was cut off from the sample.
+                
+                In atom probe jargon this is typically referred to as the tip.
+            </doc>
             <field name="identifierNAME" type="NX_CHAR" nameType="partial" recommended="true"/>
             <field name="is_simulation" type="NX_BOOLEAN">
                 <doc>
@@ -333,14 +327,14 @@
             </field>
             <field name="alias" type="NX_CHAR" recommended="true">
                 <doc>
-                    Given name an alias. Better use identifierNAME and identifier_parent instead.
+                    Given name or an alias. Better use identifierNAME and identifier_parent instead.
                     
                     A single NXentry should be used only for the characterization of a single specimen.
                 </doc>
             </field>
             <field name="identifier_parent" type="NX_CHAR" recommended="true">
                 <doc>
-                    Identifier of the sample from which the specimen was cut or the string n/a.
+                    Identifier of the sample from which the specimen was cut or the string "n/a".
                     
                     The purpose of this field is to support functionalities for tracking sample
                     provenance via a research data management system.
@@ -359,16 +353,12 @@
                     Knowing when the specimen was exposed to e.g. specific atmosphere is
                     especially required for environmentally sensitive material such as
                     hydrogen charged specimens or experiments including tracers with a
-                    short half time. Additional time stamps prior to preparation_date
-                    should better be placed in resources which describe but which do not
-                    pollute the description here with prose. Resolving these connected
-                    pieces of information is considered within the responsibility of the
-                    research data management system.
+                    short half time.
                 </doc>
             </field>
             <field name="atom_types" type="NX_CHAR">
                 <doc>
-                    List of comma-separated elements from the periodic table that are
+                    List of comma-separated elements from the IUPAC periodic table that are
                     contained in the specimen. If the specimen substance has multiple
                     components, all elements from each component must be included in
                     `atom_types`.
@@ -408,7 +398,7 @@
                     
                     This is a measure of the specimen taper.
                     Define it in such a way that the base of the specimen is modelled
-                    as a conical frustrum so that the shank angle is the (shortest) angle
+                    as a conical frustrum so that the shank angle is the (smallest) angle
                     between the specimen space z-axis and a vector on the lateral surface
                     of the cone.
                 </doc>
@@ -490,10 +480,11 @@
                 </enumeration>
             </field>
         </group>
-        <group name="VARIADIC_reference_frame" type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded" nameType="partial">
+        <group name="NAMED_reference_frame" type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded" nameType="partial">
             <doc>
-                A collection of coordinate systems. Several Euclidean
-                coordinate systems (CS) are used in the field of atom probe:
+                A coordinate system. Multiple instances require unique names.
+                
+                Several Euclidean coordinate systems (CS) are used in the field of atom probe:
                 
                 * World space;
                   a CS specifying a local coordinate system of the planet earth which
@@ -518,6 +509,10 @@
                   The orientation depends on the analysis software used.
                 * Eventually further coordinate systems attached to the
                   flight path of individual ions might be defined.
+                
+                To achieve unique names, the prefix "NAMED" should be replaced to
+                with something derived from an alias for the coordinate system,
+                or the value of the "alias" field.
                 
                 Use the suffix _reference_frame when creating specific instances
                 of NXcoordinate_system e.g. laboratory_reference_frame,
@@ -698,13 +693,13 @@ the need for defining them again-->
             <!--could use a stack_3d(NXdata) to record time series of specimen shape evolution-->
             <group name="raw_data" type="NXprocess" recommended="true">
                 <doc>
-                    For almost atom probe instruments (meta)data about raw data follow proprietary semantics.
+                    For almost all atom probe instruments, the recorded raw data and metadata follow proprietary semantics.
                     Therefore, this group can currently be used only to point to these digital artifacts
-                    in an effort to document all step of an analysis workflow.
+                    in an effort to document all steps of an analysis workflow.
                     
                     The physical quantities measured in an atom probe experiment are time-of-flight and
                     tuples of arrival_time_pairs as a function of the event chain on the pulser.
-                    From these tuples hits are computed in a process called hit_finding.
+                    From these tuples, hits are computed in a process called hit_finding.
                 </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                 <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
@@ -722,7 +717,7 @@ the need for defining them again-->
                 <!--technical details of data the ion_detector collects-->
                 <field name="number_of_dld_wires" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                     <doc>
-                        The number of wires in the detector.
+                        The number of delay-line-detector (DLD) wires present.
                     </doc>
                     <enumeration>
                         <item value="1"/>
@@ -734,6 +729,9 @@ the need for defining them again-->
                     <doc>
                         Alias tuple (begin, end) of each DLD wire of the detector.
                         Order follows arrival_time_pairs.
+                        
+                        The order of the first dimension should match that of the
+                        second dimension of the arrival_time_pairs field.
                     </doc>
                     <dimensions rank="2">
                         <dim index="1" value="n_dld"/>
@@ -779,7 +777,7 @@ we can only make recommendations-->
                     <doc>
                         Evaluated ion impact coordinates on the detector.
                         Use the depends_on field to specify which reference
-                        frame the positions are defined.
+                        frame the positions are defined in.
                     </doc>
                     <dimensions rank="2">
                         <dim index="1" value="p_out"/>
@@ -824,10 +822,10 @@ we can only make recommendations-->
                         pulse in a more efficient way than by repeating the string that is used for each
                         type as it is provided in this field.
                         
-                        As an example assume two types golden and partial are distinguished.
+                        As an example, assume two types, "golden" and "partial", are distinguished.
                         If hit_quality_type stores the array "golden", "partial", the index 0
-                        in hit_quality identifies all those pulses of category golden,
-                        while the index 1 in hit_quality identifies all of category partial.
+                        in hit_quality identifies all those pulses of category "golden",
+                        while the index 1 in hit_quality identifies all of category "partial".
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ht"/>
@@ -836,7 +834,7 @@ we can only make recommendations-->
                 <field name="hit_quality" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
                         Hit quality identifier for each pulse.
-                        Identifier have to be within hit_quality.
+                        Identifier has to be within hit_quality_type.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="p_out"/>
@@ -879,7 +877,7 @@ at this point the original set of events p has been filtered down to p_out-->
                 </group>
                 <field name="evaporation_id_offset" type="NX_INT" units="NX_UNITLESS">
                     <doc>
-                        Integer used to name the first (molecular) ion that is part of
+                        Integer used to indicate the first (molecular) ion that is part of
                         the reconstructed volume to identify if there is an offset
                         of the evaporation_id to zero.
                         
