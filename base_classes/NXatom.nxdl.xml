@@ -36,6 +36,16 @@
                 Dimensionality
             </doc>
         </symbol>
+        <symbol name="n_ivec_max">
+            <doc>
+                Maximum number of atoms/isotopes allowed per (molecular) ion (fragment).
+            </doc>
+        </symbol>
+        <symbol name="n_ranges">
+            <doc>
+                Number of mass-to-charge-state-ratio range intervals for ion type.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
         Base class for documenting a set of atoms.
@@ -51,6 +61,13 @@
             This field could for example be used in the research field
             of atom probe tomography to store a standardized human-readable
             name of the element or (molecular) ion like such as Al +++ or 12C +.
+        </doc>
+    </field>
+    <field name="id" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            Given numerical identifier for  the set.
+            
+            The identifier zero is reserved for the special unknown ion type.
         </doc>
     </field>
     <field name="identifier_chemical" type="NX_CHAR">
@@ -142,6 +159,56 @@
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_pos"/>
+        </dimensions>
+    </field>
+    <field name="nuclide_hash" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            Vector of nuclide hash values.
+            
+            Individual hash values :math:H is :math:H = Z + N \cdot 256 with :math:Z
+            encoding the number of protons and :math:N the number of neutrons for
+            each nuclide respectively. :math:Z and :math:N must be 8-bit unsigned integers.
+            
+            Exemplified for tritium (:math:`Z = 1`, :math:`N = 2`), its hash value is :math:`H = 513`.
+            
+            The array is sorted in decreasing order. For the rationale behind this see `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_ivec_max"/>
+        </dimensions>
+    </field>
+    <field name="nuclide_list" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            Table which decodes the entries in nuclide_hash into a human-readable matrix of instances.
+            The first column specifies the nuclide mass number, i.e. using the hashvalues
+            from the isotope_vector this is :math:`Z + N` or 0. The value 0 documents that no
+            isotope-specific information about the element encoded is relevant.
+            The second row specifies the number of protons :math:`Z` or 0.
+            The value 0 in this case documents a placeholder or that no element-specific
+            information is relevant.
+            Taking a carbon-14 nuclide as an example the mass number is 14.
+            That is encoded as a value pair (14, 6) as one row of the table.
+            
+            Therefore, this notation is the typical superscribed nuclide mass number
+            and subscripted number of protons element notation e.g. :math:`^{14}C`.
+            The array is stored matching the order of nuclide_hash.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_ivec_max"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+    </field>
+    <field name="mass_to_charge_range" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+            Associated lower (mqmin) and upper (mqmax) bounds of the
+            mass-to-charge-state ratio interval(s) [mqmin, mqmax]
+            (boundaries inclusive). This field is primarily of interest
+            for documenting :ref:`NXprocess` steps of indexing a
+            ToF/mass-to-charge state histogram.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_ranges"/>
+            <dim index="2" value="2"/>
         </dimensions>
     </field>
 </definition>
