@@ -68,6 +68,34 @@
     <doc>
         Application definition for real or simulated atom probe and field-ion microscopy
         experiments.
+        
+        To arrive at a design of base classes and an application definition that can be used
+        for both real and simulated atom probe experiments, it is worthwhile to recall and
+        distinguish concepts that are related to events and (molecular) ions:
+        
+        * Pulsing events which are used to trigger ion extraction events.
+        * Physical events and corresponding signal triggered by an ion hitting the detector.
+          Some of these events are not necessarily caused by or directly correlated with an identifiable pulsing event.
+        * Processed ion hits which are the result of a processing that takes the physical and pulsing events as input
+          returns some of these as events of sufficient quality to qualify as (molecular) ions that are
+          worthwhile to be considered further and eventually included in the reconstructed volume.
+        * Calibration and signal filtering steps applied to these processed ion hits as input which results in
+          actually selected (molecular) ions based on which an instance of a reconstruction is created.
+        * Correlation of these ions with a statistics and theoretical model of mass-to-charge-state ratio values
+          and charge states of the (molecular) ions to substantiate that some of these ions can be considered
+          as rangeable ions and hence an iontype can be assigned to these via running peak finding algorithms
+          and subsequent peak labeling. In the field of atom probe these peak identification methods
+          are known as ranging definitions.
+        
+        Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
+        are well distinguished. However, the algorithms used to transform correlations between pulses and physical
+        events into actual events (detector hits) ions is a proprietary one - the so-called hit finding algorithm.
+        
+        Due to this practical inaccessibility of details, virtually all atom probe studies currently use a reporting
+        schema where the course of the specimen evaporation is documented such that quantities are a function of
+        evaporation_id i.e. actual event/ion, i.e. after having the hit finding algorithm and correlations applied.
+        That is the evaporation_id values take the role of an implicit time and course of the experiment given that
+        ion extraction physically is a sequential process.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
@@ -256,9 +284,10 @@
                     An array of elapsed time (the independent axis) of a time-temperature curve.
                     
                     This field can be used in combination with heat_treatment_temperature and
-                    heat_treatment_temperature_errors. In this case, these fields should also
-                    be stored as an array with the same dimensions as heat_treatment_time
-                    to store the dependant axes of a time-temperature curve.
+                    heat_treatment_temperature_errors as well as heat_treatment_quenching_rate
+                    and heat_treatment_quenching_rate_errors respectively. In this case, these fields
+                    should also be stored as an array with the same dimensions as heat_treatment_time
+                    to store the dependant axes of a time-temperature curve (as well as its first derivative).
                 </doc>
             </field>
             <field name="heat_treatment_temperature" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
@@ -271,28 +300,37 @@
                     treatment as a function of time is available one should better
                     rely on this information and have it stored alongside the NeXus file.
                     
-                    If heat_treatment_time is provided consult the docstring of heat_treatment_time.
+                    If heat_treatment_time is provided, the temperature.
+                    Consult the docstring of heat_treatment_time.
                 </doc>
             </field>
             <field name="heat_treatment_temperature_errors" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
                 <doc>
                     Magnitude of the standard deviation of the heat_treatment_temperature.
                     
-                    If heat_treatment_time is provided consult the docstring of heat_treatment_time.
+                    If heat_treatment_time is provided, the magnitude of the standard derivation of the
+                    temperature. Consult the docstring of heat_treatment_time.
                 </doc>
             </field>
             <field name="heat_treatment_quenching_rate" type="NX_FLOAT" optional="true" units="NX_ANY">
                 <doc>
-                    Rate of the last quenching step.
+                    If heat_treatment_time is absent, the rate of the last quenching step.
                     
                     Knowledge about this value can give an idea how the sample was heat treated.
                     However, there are many situations where one can imagine that the scalar value
                     for just the quenching rate is insufficient.
+                    
+                    If heat_treatment_time is provided, the first derivative of the time-temperature curve.
+                    Consult the docstring of heat_treatment_time for further details.
                 </doc>
             </field>
             <field name="heat_treatment_quenching_rate_errors" type="NX_FLOAT" optional="true" units="NX_ANY">
                 <doc>
                     Magnitude of the standard deviation of the heat_treatment_quenching_rate.
+                    
+                    If heat_treatment_time is provided, the magnitude of the standard deviation of
+                    the first derivative of the time-temperature curve.
+                    Consult the docstring of heat_treatment_time for further details.
                 </doc>
             </field>
             <field name="description" type="NX_CHAR" optional="true"/>
@@ -584,11 +622,55 @@
                     </group>
                 </group>
                 <!--wavelength and pulse_energy as dynamic/volatile quantities stored in event data part-->
-                <field name="comment" type="NX_CHAR">
-                    <doc>
-                        Free text field for additional comments.
-                    </doc>
-                </field>
+                <group name="stage" type="NXmanipulator" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="analysis_chamber" type="NXcomponent" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="buffer_chamber" type="NXcomponent" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="load_lock_chamber" type="NXcomponent" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="getter_pump" type="NXpump" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="roughening_pump" type="NXpump" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group name="turbomolecular_pump" type="NXpump" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
             </group>
             <group name="eventID" type="NXevent_data_apm" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                 <!--all these cannot be made required because for LEAP only stored in RHIT/HITS
@@ -796,27 +878,47 @@ we can only make recommendations-->
                 </field>
                 <field name="total_event_golden" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        CRunHeader.fTotalEventGolden
+                        Number of events of type "golden" when APSuite/IVAS was used as the
+                        software with which the measurement was performed.
+                        
+                        The value can be extracted from the CRunHeader.fTotalEventGolden
+                        field of a CamecaRoot RHIT/HITS file.
                     </doc>
                 </field>
                 <field name="total_event_incomplete" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        CRunHeader.fTotalEventIncomplete
+                        Number of events of type "incomplete" when APSuite/IVAS was used as the
+                        software with which the measurement was performed.
+                        
+                        The value can be extracted from the CRunHeader.fTotalEventIncomplete
+                        field of a CamecaRoot RHIT/HITS file.
                     </doc>
                 </field>
                 <field name="total_event_multiple" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        CRunHeader.fTotalEventMultiple
+                        Number of events of type "multiple" when APSuite/IVAS was used as the
+                        software with which the measurement was performed.
+                        
+                        The value can be extracted from the CRunHeader.fTotalEventMultiple
+                        field of a CamecaRoot RHIT/HITS file.
                     </doc>
                 </field>
                 <field name="total_event_partial" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        CRunHeader.fTotalEventPartials
+                        Number of events of type "partials" when APSuite/IVAS was used as the
+                        software with which the measurement was performed.
+                        
+                        The value can be extracted from the CRunHeader.fTotalEventPartials
+                        field of a CamecaRoot RHIT/HITS file.
                     </doc>
                 </field>
                 <field name="total_event_record" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        CRunHeader.fTotalEventRecords
+                        Number of events when APSuite/IVAS was used as the
+                        software with which the measurement was performed.
+                        
+                        The value can be extracted from the CRunHeader.fTotalEventRecords
+                        field of a CamecaRoot RHIT/HITS file.
                     </doc>
                 </field>
                 <field name="hit_quality_type" type="NX_CHAR" optional="true">
@@ -893,8 +995,8 @@ at this point the original set of events p has been filtered down to p_out-->
                         with :math:`n` the number of ions in the reconstructed volume.
                         
                         Alternatively, evaporation_id_offset is not provided but instead a
-                        a sequence of :math:`n` values is defined, these integer do not need to
-                        be sorted.
+                        a sequence of :math:`n` values is defined, these integer values
+                        do not need to be sorted.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1118,8 +1220,15 @@ at this point the original set of events p has been filtered down to p_out-->
                     </field>
                     <field name="mrp_value" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
                         <doc>
-                            MRP, mass-resolving power, `D. Larson et al.
-                            &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (p282, Eqs. D.7 and D.8).
+                            The mass-resolving power (MRP) value
+                            
+                            `D. Larson et al. &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ report Eq. D.8
+                            in page 282 :math:`MRP = \frac{1}{2\delta t} \cdot \sqrt{\frac{m}{n}\frac{1}{2eV}L}`, with :math:`\delta t` representing
+                            the timing imprecision,  :math:`\frac{m}{n}` the mass-to-charge state ratio, for an elementary charge :math:`e`,
+                            potential difference :math:`V`, and the flight path length :math:`L`.
+                            
+                            Timing imprecision is caused by variations of flight path length and voltage,
+                            the only finite precision of electronics, and a spread of the time-of-departure.
                         </doc>
                     </field>
                     <field name="mrp_mass_to_charge" type="NX_FLOAT" recommended="true" units="NX_ANY">
