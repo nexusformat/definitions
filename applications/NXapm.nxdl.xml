@@ -64,6 +64,11 @@
                 the pulse_id. This value is typically smaller than both p and p_out.
             </doc>
         </symbol>
+        <symbol name="m_r">
+            <doc>
+                Number of mass resolution values.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
         Application definition for real or simulated atom probe and field-ion microscopy
@@ -87,7 +92,7 @@
           and subsequent peak labeling. In the field of atom probe these peak identification methods
           are known as ranging definitions.
         
-        Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
+        Not only in AMETEK/Cameca's APSuite/IVAS software, which the majority of atom probers use, these concepts
         are well distinguished. However, the algorithms used to transform correlations between pulses and physical
         events into actual events (detector hits) ions is a proprietary one - the so-called hit finding algorithm.
         
@@ -96,6 +101,11 @@
         evaporation_id i.e. actual event/ion, i.e. after having the hit finding algorithm and correlations applied.
         That is the evaporation_id values take the role of an implicit time and course of the experiment given that
         ion extraction physically is a sequential process.
+        
+        This application definition includes fields that have been discussed by the atom probe community to be
+        represent best practices for reporting atom probe measurements. Exemplar mapping tables are provided
+        which translate the technical terms for concepts in the atom probe community and this NXapm application
+        definition.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
@@ -147,7 +157,7 @@
                 
                 Neither is this necessarily the specimen_name nor the experiment_identifier.
                 For Local Electrode Atom Probe (LEAP) instruments, it is recommended to use the
-                run_number from the proprietary software IVAS/APSuite of AMETEK/Cameca.
+                run_number from the proprietary software APSuite/IVAS of AMETEK/Cameca.
                 
                 For other instruments, such as the one from Stuttgart or Oxcart from Erlangen,
                 or the instruments at GPM in Rouen, use the identifier which matches
@@ -584,6 +594,7 @@
             <group name="instrument" type="NXinstrument_apm">
                 <field name="type" type="NX_CHAR" recommended="true"/>
                 <field name="location" type="NX_CHAR" recommended="true"/>
+                <field name="flight_path" type="NX_FLOAT" recommended="true"/>
                 <group name="fabrication" type="NXfabrication" recommended="true">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
@@ -752,6 +763,30 @@ the need for defining them again-->
             <group name="initial_specimen" type="NXimage" recommended="true">
                 <doc>
                     SEM or TEM image of the initial specimen (ideally taken prior data acquisition).
+                </doc>
+                <group name="image_2d" type="NXdata">
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
+                    <field name="real" type="NX_NUMBER"/>
+                    <field name="axis_j" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_j"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                    <field name="axis_i" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_i"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                </group>
+            </group>
+            <group name="final_specimen" type="NXimage" recommended="true">
+                <doc>
+                    SEM or TEM image of the final specimen (taken after completion of the
+                    measurement).
                 </doc>
                 <group name="image_2d" type="NXdata">
                     <attribute name="signal" type="NX_CHAR"/>
@@ -960,7 +995,7 @@ we can only make recommendations-->
                 </field>
             </group>
             <!--the following two quantities are relicts from ePOS files used to give some
-insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
+insight into the results of the hit_finding algorithm of APSuite/IVAS but typically
 used only in the context to learn about the multiplicity of an ion.
 pulses_since_last_ion(NX_UINT):
 dim: (n,)
@@ -1029,6 +1064,16 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="checksum" type="NX_CHAR" recommended="true"/>
                     <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
+                <!--config-->
+                <group name="config" type="NXparameters">
+                    <field name="correction_peak" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                            Reference mass-to-charge state ratio value
+                            
+                            For example 16 Da as mentioned by `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_ (page 371).
+                        </doc>
+                    </field>
+                </group>
                 <!--currently cannot be made required proprietary hardware and semantics-->
                 <field name="raw_tof" type="NX_FLOAT" recommended="true">
                     <doc>
@@ -1066,6 +1111,56 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="checksum" type="NX_CHAR" recommended="true"/>
                     <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
+                <!--config-->
+                <group name="config" type="NXparameters">
+                    <field name="mass_calibration" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                            Mass calibration in (peaks/interp.) as mentioned by `T. Blum et al.
+                            &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_ (page 371).
+                        </doc>
+                    </field>
+                    <field name="mass_resolution" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                            Inverse of the mass resolution :math:`\frac{M}{\Delta M}` as mentioned by `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_ (page 371).
+                            
+                            Multiple values can be reported but reporting each is only useful when stating also:
+                            
+                            * The full width at which :math:`{\Delta M}_{fw}` fraction of maximum this value was defined.
+                               Examples are at tenth :math:`{\Delta M}_{10}` or at half (FWHM) maximum.
+                               Consequently, mass_resolution_fw should needs to be a vector of the same length
+                               and using the same order like used for mass_resolution, i.e. the first mass resolution was
+                               defined at the maximum as defined by the first value from mass_resolution_fw.
+                            * The reference (molecular) ion e.g. :math:`{16}^{{O}_2}^{+}`
+                               As many instances of mass_resolutionION should be used with instances
+                               numbered starting from 1 up to the length of the mass_resolution vector.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="m_r"/>
+                        </dimensions>
+                    </field>
+                    <field name="mass_resolution_fw" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                            The full width at which :math:`{\Delta M}_{fw}` fraction of maximum this value was defined.
+                            Examples are at tenth :math:`{\Delta M}_{10}` or at half (FWHM) maximum.
+                            Consequently, mass_resolution_fw should needs to be a vector of the same length
+                            and using the same order like used for mass_resolution, i.e. the first mass resolution was
+                            defined at the maximum as defined by the first value from mass_resolution_fw.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="m_r"/>
+                        </dimensions>
+                    </field>
+                    <group name="mass_resolutionION" type="NXatom" nameType="partial" recommended="true">
+                        <doc>
+                            The reference (molecular) ion e.g. :math:`{16}^{{O}_2}^{+}`
+                            As many instances of mass_resolutionION should be used with instances
+                            numbered starting from 1 up to the length of the mass_resolution vector.
+                        </doc>
+                        <field name="nuclide_hash" type="NX_UINT" recommended="true"/>
+                        <field name="name" type="NX_CHAR"/>
+                    </group>
+                </group>
+                <!--results-->
                 <field name="mass_to_charge" type="NX_FLOAT">
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
@@ -1079,9 +1174,9 @@ at this point the original set of events p has been filtered down to p_out-->
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="config" type="NXnote" recommended="true">
+                <group name="source" type="NXnote" recommended="true">
                     <doc>
-                        For LEAP and IVAS/APSuite-based analyses the root file which stores
+                        For LEAP and APSuite/IVAS-based analyses the root file which stores
                         the settings whereby an RHIT/HITS file can be used to regenerate the
                         reconstructed volume that is here referred to.
                         
@@ -1095,7 +1190,7 @@ at this point the original set of events p has been filtered down to p_out-->
                 </group>
                 <group name="results" type="NXnote" recommended="true">
                     <doc>
-                        For LEAP and IVAS/APSuite-based analyses the resulting typically
+                        For LEAP and APSuite/IVAS-based analyses the resulting typically
                         file with the reconstructed positions and (calibrated) mass-to-charge
                         state ratio values.
                         
@@ -1112,7 +1207,7 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
                 <!--config-->
-                <group name="parameter" type="NXparameters" recommended="true">
+                <group name="config" type="NXparameters" recommended="true">
                     <field name="voltage_filter_initial" type="NX_FLOAT" recommended="true"/>
                     <field name="voltage_filter_final" type="NX_FLOAT" recommended="true"/>
                     <field name="protocol_name" type="NX_CHAR" recommended="true"/>
@@ -1182,7 +1277,7 @@ at this point the original set of events p has been filtered down to p_out-->
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="definitions" type="NXnote" recommended="true">
+                <group name="source" type="NXnote" recommended="true">
                     <doc>
                         The respective ranging definitions file RNG/RRNG/ENV/HDF5.
                     </doc>
@@ -1227,8 +1322,8 @@ at this point the original set of events p has been filtered down to p_out-->
                     </group>
                     <field name="background" type="NX_FLOAT" recommended="true" units="NX_ANY">
                         <doc>
-                            (Out-of-sync) background levels in ppm/ns
-                            reported by e.g. IVAS/APSuite for LEAP systems.
+                            (Out-of-sync, time-independent) background levels in ppm/ns
+                            reported by e.g. APSuite/IVAS for LEAP systems.
                         </doc>
                     </field>
                     <field name="mrp_value" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
