@@ -1111,11 +1111,22 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="checksum" type="NX_CHAR" recommended="true"/>
                     <field name="algorithm" type="NX_CHAR" recommended="true"/>
                 </group>
-                <!--config/input-->
-                <field name="parameter" type="NX_CHAR" recommended="true"/>
-                <field name="protocol_name" type="NX_CHAR" recommended="true"/>
-                <field name="crystallographic_calibration" type="NX_CHAR" recommended="true"/>
-                <field name="field_of_view" type="NX_FLOAT" recommended="true"/>
+                <!--config-->
+                <group name="parameter" type="NXparameters" recommended="true">
+                    <field name="voltage_filter_initial" type="NX_FLOAT" recommended="true"/>
+                    <field name="voltage_filter_final" type="NX_FLOAT" recommended="true"/>
+                    <field name="protocol_name" type="NX_CHAR" recommended="true"/>
+                    <field name="primary_element" type="NX_CHAR" recommended="true"/>
+                    <field name="efficiency" type="NX_FLOAT" recommended="true"/>
+                    <field name="flight_path" type="NX_FLOAT" recommended="true"/>
+                    <field name="evaporation_field" type="NX_CHAR" recommended="true"/>
+                    <field name="image_compression" type="NX_FLOAT" recommended="true"/>
+                    <field name="kfactor" type="NX_FLOAT" recommended="true"/>
+                    <field name="shank_angle" type="NX_FLOAT" recommended="true"/>
+                    <field name="ion_volume" type="NX_FLOAT" recommended="true"/>
+                    <field name="crystallographic_calibration" type="NX_CHAR" recommended="true"/>
+                    <field name="comment" type="NX_CHAR" recommended="true"/>
+                </group>
                 <field name="reconstructed_positions" type="NX_FLOAT">
                     <dimensions rank="2">
                         <dim index="1" value="n"/>
@@ -1161,6 +1172,8 @@ at this point the original set of events p has been filtered down to p_out-->
                         </field>
                     </group>
                 </group>
+                <field name="volume" type="NX_FLOAT" recommended="true"/>
+                <field name="field_of_view" type="NX_FLOAT" recommended="true"/>
             </group>
             <group name="ranging" type="NXapm_ranging" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
@@ -1222,18 +1235,31 @@ at this point the original set of events p has been filtered down to p_out-->
                         <doc>
                             The mass-resolving power (MRP) value
                             
-                            `D. Larson et al. &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ report Eq. D.8
-                            in page 282 :math:`MRP = \frac{1}{2\delta t} \cdot \sqrt{\frac{m}{n}\frac{1}{2eV}L}`, with :math:`\delta t` representing
-                            the timing imprecision,  :math:`\frac{m}{n}` the mass-to-charge state ratio, for an elementary charge :math:`e`,
-                            potential difference :math:`V`, and the flight path length :math:`L`.
+                            `D. Larson et al. &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ report Eq. D.8 in page 282:
+                            
+                            :math:`MRP = \frac{1}{2\delta t} \cdot \sqrt{\frac{m}{n}\frac{1}{2eV}L}`,
+                            
+                            with :math:`\delta t` representing the timing imprecision, :math:`\frac{m}{n}` the mass-to-charge state ratio,
+                            :math:`e` the elementary charge, :math:`V` the potential difference, and :math:`L` the flight path length.
                             
                             Timing imprecision is caused by variations of flight path length and voltage,
-                            the only finite precision of electronics, and a spread of the time-of-departure.
+                            the fact that the precision of electronics is finite and a spread of the
+                            time-of-departure of individual ions is observed.
                         </doc>
                     </field>
                     <field name="mrp_mass_to_charge" type="NX_FLOAT" recommended="true" units="NX_ANY">
                         <doc>
-                            MRP, at which mrp_value was specified.
+                            Mass-to-charge state ratio :math:`\frac{m}{n}` at which mrp_value was specified.
+                        </doc>
+                    </field>
+                    <field name="mrp_voltage" type="NX_FLOAT" recommended="true" units="NX_VOLTAGE">
+                        <doc>
+                            Potential difference :math:`V` at which mrp_value was specified.
+                        </doc>
+                    </field>
+                    <field name="mrp_flight_path_length" type="NX_FLOAT" recommended="true" units="NX_LENGTH">
+                        <doc>
+                            Flight path length :math:`L` at which mrp_value was specified.
                         </doc>
                     </field>
                 </group>
@@ -1285,6 +1311,12 @@ at this point the original set of events p has been filtered down to p_out-->
                     <field name="number_of_ion_types" type="NX_UINT"/>
                     <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT"/>
                     <group name="ionID" type="NXatom" nameType="partial" minOccurs="1" maxOccurs="256">
+                        <doc>
+                            (Molecular) ions that were ranged.
+                            
+                            The value zero is reserved for documenting that an ion was unranged.
+                            Identifier for ranged ions need to start at 1 up to number_of_ion_types.
+                        </doc>
                         <field name="nuclide_hash" type="NX_UINT"/>
                         <field name="charge_state" type="NX_INT"/>
                         <group name="charge_state_analysis" type="NXapm_charge_state_analysis" optional="true">
@@ -1306,6 +1338,18 @@ at this point the original set of events p has been filtered down to p_out-->
                         <field name="nuclide_list" type="NX_UINT" recommended="true"/>
                         <field name="name" type="NX_CHAR" recommended="true"/>
                     </group>
+                    <field name="iontypes" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                        <doc>
+                            The iontype (identifier) for each ion that was best matching;
+                            stored in the order of the evaporation_id.
+                            
+                            The value zero is reserved for documenting that an ion was unranged.
+                            Identifier for ranged ions need to start at 1 up to number_of_ion_types.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n"/>
+                        </dimensions>
+                    </field>
                 </group>
             </group>
         </group>
