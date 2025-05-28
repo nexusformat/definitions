@@ -172,6 +172,66 @@
           programs and libraries used, for documenting the libraries of virtual environments such as those used
           by conda or python virtual environment, including details about the computing hardware used, and
           documenting capabilities for performance analyses and benchmarking of the software or its parts.
+        
+        *Design choices:*
+        
+        Given that most atom probe instruments across the globe were built by AMETEK/Cameca and are delivered
+        with the AP Suite/IVAS software there is some homogeneity in how a measurement is performed and which data
+        artifacts and algorithms used for data processing. Complementary use of open-source software specifically for
+        the reconstruction, ranging, and later data processing stages contributes to a landscape of multiple tools in use.
+        Therefore, communication of atom probe research differs between user groups. This holds even more so true
+        for the sub community in atom probe which study physical mechanisms involved during ionization to the point that
+        here that almost each research work defines different simulation tools with different types of data artifacts.
+        
+        NXapm defines constraints on the existence and cardinality of concepts and its concept branches but seeks to
+        offer a compromise. The key design pattern followed is that most branches are made optional or at most recommended
+        but their child concepts are conditionally required. Thereby, NXapm can cover a variety of simple but also complex
+        use cases. An example of this parent-optional-but-childs-stronger-restricted design is the combination of the
+        optional group ``NXapm/ENTRY/measurement`` with its required child ``NXapm/ENTRY/measurement/instrument``:
+        Users which report simulations are not forced to document the instrument but users which have characterized
+        a specimen are motivated to report about the instrument. They are though not  necessarily required to report all
+        the details of the instruments' components because the design pattern is applied recursively.
+        
+        *NXapm distinguishes and stores instance data based on how long they remain unchanged:*
+        
+        ``NXapm/ENTRY/measurement`` provides two groups ``NXapm/ENTRY/measurement/instrument`` and
+        ``NXapm/ENTRY/measurement/eventID``. The first group is designed for storing metadata about the instrument
+        which do not change over the course of the session. Examples are the name of the technology partner who built
+        the tomograph or whether a laser or voltage pulser and reflectron exists or not. The second group is designed for
+        metadata and data that are collected during the session with the instrument. These, are stored as instances of
+        ``NXapm/ENTRY/measurement/eventID``, events that can be time-stamped individually. Each instance of a group
+        ``NXapm/ENTRY/measurement/eventID`` contains ``NXapm/ENTRY/measurement/instrument`` whose purpose is to
+        store those specific state and settings of the instrument that was present during the collection of the event.
+        Thereby, changing conditions such as compaigns with different target detection rate can be stored.
+        
+        Noteworthy, such an approach of the atom probe detecting groups of events and storing these as groups has also
+        been in use in the proprietary software via CamecaRoot, a set of customized data structures and file formats that use
+        the CernRoot library. By virtue of design this reduces unnecessary repetition of metadata stored in the first group.
+        
+        *NXapm/ENTRY/atom_probeID offer classes for the each task relevant task in the data processing pipeline that converts
+        raw detector event data to calibrated mass-to-charge-state-ratio values and hit_position on the detector. These include
+        ``initial_specimen``, and ``final_specimen`` locations for storing images of the specimen prior/after the measurement as
+        considered best practice by AMETEK/Cameca, ``raw_data`` for delay-line timing data, ``hit_finding`` for details of the
+        hit finding algorithm, ``hit_spatial_filtering`` a process that filters hits of too low quality and those laying outside the about
+        to be computed reconstruction volume. Furthermore, group ``voltage_and_bowl`` offers a place for documenting calibrations
+        and processing non-linearities. Group ``mass_to_charge_conversion`` is used to document the mass calibration and the
+        conversion from time-of-flight to mass-to-charge-state-ratio values.
+        
+        Finally, the groups ``reconstruction`` and ``ranging`` were designed to match and document the classical approaches how
+        from all the previous sources of input one can compute a reconstructed volume, and apply peak fitting routines on the
+        mass-to-charge-state-ratio histogram to label ions (i.e. range them) for their isotopic identity.
+        Group ``NXapm/ENTRY/atom_probeID/reconstruction/naive_discretization`` offers a standardized way to report simple
+        three-dimensional histograms. Group ``NXapm/ENTRY/atom_probeID/ranging/peak_identification/ionID`` and its
+        complementing group ``NXapm/ENTRY/atom_probeID/ranging/peak_identification/ionID/charge_state_analysis``
+        solves the issue that the ranging definitions in classical file formats are not reported for always for their isotopic identity
+        and charge state. The field ``NXapm/ENTRY/atom_probeID/ranging/peak_identification/iontypes`` provides a place for
+        storing a compact representation of the results of each ranging definition made at the level of each ion.
+        
+        *The nexus of NXapm and NXem:**
+        
+        The design of NXapm mirrors that of NXem. This was an intentional choice to support the stronger becoming connection between
+        these two materials characterization methods especially in light of recent advances in coupling atom probe and transmission electron
+        microscopes directly.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
