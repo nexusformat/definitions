@@ -132,6 +132,46 @@
         definition.
         
         ADD TWO-PAGER FROM NXEM modified for ATOM PROBE.
+        *The NeXus application definition NXapm defines a hierarchical data model with ten building blocks:*
+        
+        The data model represents a tree of concepts. The tree is constructed from groups of concepts
+        representing the branches surplus fields and attributes representing leafs. NXapm is defined by
+        composing and specializing base classes into the following ten categories:
+        
+        - The field ``NXapm/ENTRY/definition`` specifies that the data schema is NXapm. In combination with
+          administrative metadata such as the ``NXroot/@NeXus_version`` this specifies which version of
+          NXapm the instance data in a NeXus/HDF5 file are compliant with.
+        - The fields ``NXapm/ENTRY/[run_number,experiment_alias,experiment_description]`` and
+          the group ``NXapm/ENTRY/userID`` provide concepts for storing organizational metadata that
+          contextualize the work within the research workflow and humans involved in this.
+        - The fields ``NXapm/ENTRY/[start_time,end_time]`` provide concepts for framing a temporal context for the research.
+        - The groups ``NXapm/ENTRY/[citeID,noteID]`` provide concepts for adding contextual details such as citations
+          that are associated with or notes, i.e. other artifacts that are deemed relevant when reporting about a measurement
+          or simulation. These groups are useful when NXapm is used as a serialization format for technology-partner-agnostic
+          archival of data and metadata that have been collected during a session with an electron microscope or when a
+          simulation was performed.
+        - The group ``NXapm/ENTRY/sample`` and ``NXapm/ENTRY/specimen`` provides concepts for storing metadata
+          about the sample and the part that was cut out from this sample to represent the smaller part that is measured
+          with the atom probe session.
+        - The field ``NXapm/ENTRY/operation_mode`` and group ``NXapm/ENTRY/measurement`` provides concepts that
+          are useful for describing a measurement during a session with an atom probe tomograph or field-ion microscope.
+          This includes the chain of events of data and metadata that were collected during such a session.
+        - The group``NXapm/ENTRY/simulation`` provides concepts that are useful for describing a simulation of an
+          atom extraction, ionization, and ion trajectory simulation. Combined with ``NXapm/ENTRY/measurement``
+          this provides a data schema for defining a digital twin of the instrument and its setup.
+        - The groups ``NXapm/ENTRY/[consistent_rotations,\*_reference_frame\*]`` provide concepts for
+          reporting coordinate systems (frames of reference) and rotation conventions that clarify how data
+          should be interpreted specifying the rotation of orientable objects in the microscope, its components,
+          or of crystals and crystal defects in the material analyzed. These metadata support interpretation for
+          downstream or on-the-fly data analyses which electron microscopes typically nowadays perform
+          during a session.
+        - The group ``NXapm/ENTRY/atom_probeID`` provides concepts for the computational workflows that were
+          used to convert raw detector data into reconstructed ion positions and documentation of ranging definitions
+          made.
+        - The group ``NXapm/ENTRY/profiling`` provides concepts for reporting computational details such as
+          programs and libraries used, for documenting the libraries of virtual environments such as those used
+          by conda or python virtual environment, including details about the computing hardware used, and
+          documenting capabilities for performance analyses and benchmarking of the software or its parts.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
@@ -780,10 +820,14 @@ on laser atom probe was granted a Leibnitz award-->
         <group name="simulation" type="NXapm_simulation" optional="true"/>
         <!--future possibility to reuse concepts from NXinstrument_apm again without
 the need for defining them again-->
-        <group name="atom_probe" type="NXroi" recommended="true">
+        <group name="atom_probeID" type="NXroi" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <doc>
                 A region-of-interest analyzed either during or after the session for which
                 specific processed data of the measured or simulated data are available.
+                
+                If a single instance is required the group should be named atom_probe.
+                If multiple groups are required these should be named atom_probe1, atom_probe2,
+                and so on and so forth.
             </doc>
             <!--earlier comments here https://github.com/FAIRmat-NFDI/nexus_definitions/commit/a8602870f13f04b8befc902efb345afe650d8dd3-->
             <group name="initial_specimen" type="NXimage" recommended="true">
