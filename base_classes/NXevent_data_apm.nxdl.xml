@@ -73,8 +73,14 @@
             between when that pulse was fired and start_time.
             
             In summary, using start_time, end_time, delta_time, pulse_id_offset,
-            and pulse_id exactly specify the connection between when a pulse was
-            fired relative to start_time and in absolute in coordinated world time UTC.
+            and pulse_id provides temporal context information when a pulse was
+            fired relative to start_time and when it is relevant to translate this into
+            coordinated world time UTC.
+            
+            Note that pulses in reality have a shape and thus additional documentation
+            is required to assure that the entries in delta_time are always taken at
+            at points in time that, relative to the triggering of the pulse, represent an
+            as close as possible state of the pulse.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="p"/>
@@ -82,48 +88,23 @@
     </field>
     <field name="pulse_id_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
-            Integer used to name the first pulse to know if there is an
-            offset of the identifiers to zero.
-            
-            Identifiers can be defined either implicitly or explicitly.
-            For implicit indexing identifiers are defined on the interval
-            :math:`[pulse\_id\_offset, pulse\_id\_offset + c - 1]`.
-            
-            Therefore, implicit identifier are completely defined by the value of
-            pulse_id_offset and cardinality. For example if identifier run from
-            -2 to 3 the value for pulse_id_offset is -2.
-            
-            For explicit indexing the field identifier has to be used.
-            Fortran-/Matlab- and C-/Python-style indexing have specific implicit
-            identifier conventions where pulse_id_offset is 1 and 0 respectively.
+            Integer which defines the first pulse_id.
+            Typically, this is either zero or one.
         </doc>
     </field>
     <field name="pulse_id" type="NX_INT" units="NX_UNITLESS">
         <doc>
-            Identifier that contextualizes how the detector and pulser of an atom probe
-            instrument follows a sequence of pulses to trigger field evaporation.
+            An integer to identify a specific pulse in a sequence.
             
-            The pulse_id is used to associate thus an information about time
-            when quantities have been collected via sampling.
+            There are two possibilities to report pulse_id values:
+            If pulse_id_offset is provided, the pulse_id values are defined
+            by the sequence :math:`[pulse\_id\_offset, pulse\_id\_offset + p]`
+            with :math:`p` the number of pulses collected in between
+            start_time and end_time.
             
-            In virtually all cases the pulser is a blackbox. Depending on how the
-            instrument is configured during a measurement, the target
-            values and thus also the actual values may change.
-            
-            Maybe the first part of the experiment is run at a certain pulse fraction but thereafter
-            the pulse_fraction is changed. In this case the field pulse_fraction is a vector which
-            collects all measured values of the pulse_fraction, pulse_id is then an equally
-            long vector which stores the set of events (e.g. pulsing events) when that value was
-            measured.
-            
-            This may lead to several cases: In the case that e.g. the pulse_fraction is never changed
-            and also exact details not interesting, one stores the set value for the pulse_fraction
-            and a single value for the pulse_id e.g. 0 to indicate that the pulse_fraction was set
-            at the beginning and it was maintained constant during the measurement.
-            
-            If the pulse_fraction was e.g. changed after the 100000th pulse, pulse_fraction is a
-            vector with two values. One value for the first and another one for the value from the
-            100000th pulse onwards. The values of pulse_id are then [0, 99999] respectively.
+            Alternatively, pulse_id_offset is not provided but instead a sequence
+            of :math:`p` values is defined, these integer values
+            do not need to be sorted.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="p"/>

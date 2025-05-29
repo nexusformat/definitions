@@ -28,7 +28,7 @@
         </doc>
         <symbol name="n_cand">
             <doc>
-                The number of also possible but different (molecular) ions.
+                The number of (molecular) ion candidates.
             </doc>
         </symbol>
         <symbol name="n_ivec_max">
@@ -47,9 +47,10 @@
         the charge state and nuclide composition of a (molecular) ion from ranging definitions as used
         in the research field of atom probe microscopy.
         
-        A ranging definition reports classically only the mass-to-charge-state-ratio interval surplus
-        the composition of the elements but not necessarily the nuclides out of which the (molecular) ion
-        is built. As the mass-resolving-power in an atom probe instrument is finite and typically lower
+        A ranging definition classically reports only the mass-to-charge-state-ratio interval plus the
+        elemental composition, but not necessarily the nuclide that compose the (molecular) ion.
+        
+        As the mass-resolving-power in an atom probe instrument is finite and typically lower
         than for cutting edge tandem mass spectrometry it is possible that different combinations of nuclides
         are indistinguishable and thus multiple (molecular) ions in eventually even different charge states
         can be valid labels for a given mass-to-charge-state-ratio peak. Enumerating the possible combinations
@@ -58,17 +59,16 @@
     <field name="nuclides" type="NX_UINT" units="NX_UNITLESS">
         <doc>
             Parameter that defines the elements considered in the combinatorial search.
-            The array contains nuclides as many times as their multiplicity.
-
-            Nuclides are encoded using the hashing rule that is defined in :ref:`NXion`; an example:
+            The array contains nuclides as many times as their multiplicity and must not be empty.
+            
+            Nuclides are encoded using the hashing rule that is defined in :ref:`NXatom`; an example:
             A ranging definition H:2 O:1 is configured by setting nuclides to a list with entries
             :math:`1 + 0 \cdot 256`, :math:`1 + 0 \cdot 256`, :math:`8 + 0 \cdot 256`.
-            An empty list does not release the constraint. Instead, a list with all elements
-            in the periodic table (encoded as nuclide_hash values) should be used, i.e.
-            :math:`1 + 0 \cdot 256`, :math:`2 + 0 \cdot 256`, and so on and so forth.
+            Using 0 for the number of neutrons of an oxygen atom allows to encode that
+            isotopes of oxygen in general are meant, i.e. the element oxygen.
             
-            Constraining the elements or nuclides reduces the time to perform an
-            exhaustive combinatorial search.
+            Constraining the elements or nuclides instead of providing all nuclides
+            reduces the time to perform an exhaustive combinatorial search.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_variable"/>
@@ -79,9 +79,8 @@
             Parameter that defines the interval :math:`[{m/q}_{min}, {m/q}_{max}]` within which
             (molecular) ions with given mass-to-charge-state-ratio qualify as candidates.
         </doc>
-        <dimensions rank="2">
-            <dim index="1" value="1"/>
-            <dim index="2" value="2"/>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
         </dimensions>
     </field>
     <field name="min_half_life" type="NX_FLOAT" units="NX_TIME">
@@ -116,7 +115,7 @@
         <doc>
             Table of nuclide instances of which each candidate is composed.
             Each row vector is sorted in descending order.
-            Unused entries in the matrix are nullified.
+            Unused entries in the matrix should be set to 0.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_cand"/>
