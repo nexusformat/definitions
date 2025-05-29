@@ -39,10 +39,11 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
-    :ref:`NXatom` and :ref:`NXion`:
-       Base classes to describe groups of atoms and charged (molecular) ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion
-       is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
-       which all possible isotopes can be described.
+    :ref:`NXatom`:
+       Base class to describe groups of atoms and charged ions with an adjustable number of atoms/isotopes building each ion.
+       Right now the maximum number of atoms supported building a molecular ion is 32.
+       Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used
+       to map isotope to hash values with which all possible isotopes can be described.
 
     :ref:`NXchemical_composition`:
        Base class to report the chemical composition of a sample or its parts.
