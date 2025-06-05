@@ -63,7 +63,7 @@ The following base classes are proposed to support modularizing the storage of p
         A base class representing a container to hold time-stamped and instrument-specific-state-
         annotated data during a session at an electron microscope.
 
-    :ref:`NXroi`:
+    :ref:`NXroi_process`:
        Base class to report details about results obtained for a specific region of a sample a region-of-interest.
 
     :ref:`NXcomponent` and :ref:`NXfabrication`:
