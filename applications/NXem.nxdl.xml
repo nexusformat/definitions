@@ -29,8 +29,125 @@
         standardization of data and metadata collected using electron microscopy.
         
         NXem is designed to be used for documenting experiments or computer simulations in which
-        controlled electron beams are used to study electron-beam matter interactions, explore
-        physical mechanisms and phenomena, or to characterize materials with an electron microscope.
+        controlled electron beams are used to study electron-beam matter interactions, to simulate this,
+        to explore physical mechanisms and phenomena, or to characterize materials.
+        
+        *The NeXus application definition NXem defines a hierarchical data model with ten building blocks:*
+        
+        The data model represents a tree of concepts. The tree is constructed from groups of concepts
+        representing the branches surplus fields and attributes representing leafs. 
+        
+        *NXem an introduction for typical use cases in material characterization and simulation:*
+        
+        Transmission electron microscopy (TEM) and Scanning Transmission Electron Microscopy (STEM)
+        Scanning Electron Microscopy (SEM)
+        Scanning Electron Microscopy combined a Focused-Ion Beam (SEM/FIB)
+        
+        *A deeper dive into the branches of NXem:*
+        
+        NXem is constructed from composing and specializing base classes into the following ten categories:
+        
+        - The field ``definition`` specifies that the data schema is NXem. In combination with
+          administrative metadata such as the ``NeXus_version`` provided by :ref:`NXroot` this
+          specifies which version of NXem the instance data in a NeXus/HDF5 file are compliant with.
+        - The fields ``identifier_experiment``, ``experiment_alias``, ``experiment_description`` and
+          the group ``userID`` provide concepts for storing organizational metadata that
+          contextualize the work within the research workflow and humans involved in this.
+        - The fields ``start_time``, ``end_time`` provide concepts for framing a temporal context for the research.
+        - The groups ``citeID``, ``noteID`` provide concepts for adding contextual details such as citations
+          that are associated with or notes, i.e. other artifacts that are deemed relevant when reporting about a measurement
+          or simulation. These groups are useful when NXem is used as a serialization format for technology-partner-agnostic
+          archival of data and metadata that have been collected during a session with an electron microscope or when a
+          simulation was performed.
+        - The group ``sampleID`` provides concepts for storing metadata about the sample that was
+          characterized or simulated during the session.
+        - The group ``measurement`` provides concepts that are useful for describing a measurement
+          during a session with an electron microscope. This includes the chain of events of data and metadata that
+          were collected during such a session.
+        - The group``simulation`` provides concepts that are useful for describing a simulation of an
+          electron beam that interacts with matter. Combined with ``measurement`` this provides a data schema
+          for defining a digital twin of the microscope and its optical setup.
+        - The groups ``consistent_rotations``, ``NAMED_reference_frame`` provide concepts for
+          reporting coordinate systems (frames of reference) and rotation conventions that clarify how data
+          should be interpreted specifying the rotation of orientable objects in the microscope, its components,
+          or of crystals and crystal defects in the material analyzed. These metadata support interpretation for
+          downstream or on-the-fly data analyses which electron microscopes typically nowadays perform
+          during a session. Examples are the indexing of diffraction patterns, image analysis in general, or
+          analyses of the chemical composition.
+        - The group ``roiID`` provides concepts for reporting several domain- and technique-specific
+          configuration parameter and results of data processing steps that were applied.
+        - The group ``profiling`` provides concepts for reporting computational details such as
+          programs and libraries used, for documenting the libraries of virtual environments such as those used
+          by conda or python virtual environment, including details about the computing hardware used, and
+          documenting capabilities for performance analyses and benchmarking of the software or its parts.
+        
+        *Design choices:*
+        
+        Specific details about how an electron microscope was used and eventually its configuration modified differ
+        between user groups. This holds also true for computer simulations of electron-beam matter interaction.
+        Different peer groups in different sub-domains in electron microscopy consider different data and metadata
+        relevant. NXem defines constraints on the existence and cardinality of concepts and its concept branches
+        but seeks to offer a compromise. The key design pattern followed is that most branches are made optional
+        or at most recommended but their child concepts conditional required. Thereby, NXem can cover a variety
+        of simple but also complex use cases. An example of this parent-optional-but-childs-stronger-restricted design
+        is the combination of the optional group ``measurement`` with its required child
+        ``measurement/instrument``: Users which report simulations are not forced to document the instrument
+        but users which have characterized a sample are motivated to report about the instrument. They are though not
+        necessarily required to report all the details of the instruments' components because the design pattern is-used
+        applied recursively.
+        
+        *Inclusive design, one schema for scanning, focused-ion beam, and transmission electron microscopes:*
+        
+        Contrary to many other proposals of a data schema for electron microscopy, NXem seeks to highlight the similarity
+        of the three fundamental types of electron microscopes that are nowadays used most routinely in academia and
+        industry: An electron microscope is a beamline that provides a controlled beam of electrons combined with eventually
+        beams of other particles (ions) to investigate electron/ion(-beam) matter interaction.
+        This design of per-particle-type concept branches is realized in the base classes ``NXebeam_column`` and ``NXibeam_column``.
+        These provide concepts for reporting the technical components that are typically used for generating a controllable
+        (and typically scanning) beam of particles such as electrons or ions.
+        
+        Focused-ion beam capabilities are modelled by adding an optional group ``measurement/instrument/ibeam_column``.
+        We foresee that this design is beneficial also in the future when research should be documented where photon-electron
+        interactions via an electron microscope are combined. The current proposal though does not include such a
+        ``NXpbeam_column`` base class that could be used for photon-/light-beam, i.e. laser plus optical
+        beam path descriptions and components.
+        
+        We acknowledge that scanning and transmission electron microscopes are different types of instruments that have distinct differences
+        in the electron-optical setup and the components used. What remains the same from the perspective of an observer who monitors the
+        experiment inside the electron-matter interaction volume, i.e. in, on, or close to the surface of the specimen is the imaginary split
+        into an upper and a lower half-space. In the upper half-space a specific but eventually differently shaped electron beam illuminates
+        the specimen when comparing a scanning with a transmission electron microscope. In the lower half-space the beam or particles exit
+        the specimen or end up thermalized in thick specimens.
+        
+        *NXem distinguishes and stores instance data based on how long they remain unchanged:*
+        
+        ``measurement`` provides two groups ``measurement/instrument`` and ``measurement/eventID``.
+        The first group is designed for storing metadata about the instrument which do not change over the course of the session. Examples are
+        the name of the technology partner who built the microscope, the microscope's serial number, or the type of lenses mounted, etc.
+        The second group is designed for metadata and data that are collected during the microscope session. For these, specializations of
+        ``NXdata`` specifically ``NXimage`` and ``NXspectrum`` are provided. Each ``measurement/eventID`` event can be time-stamped
+        individually. Each instance of a group ``measurement/eventID`` contains ``measurement/instrument`` whose purpose
+        is to store those specific state and settings of the microscope that was present during the collection of the event.
+        This includes lens settings, apertures used, aberrations, and other components, etc.
+        By virtue of design this reduces unnecessary repetition of metadata stored in the first group like is often observed
+        in image-based archival formats like TIFF, PNG, etc.
+        
+        *NXem offers domain-specific classes for standardized reporting of method-specific configurations, data processing, and results:*
+        
+        These include ``NXem_img`` for generic and specific imaging including diffraction, ``NXem_eds`` for energy-dispersive X-ray spectroscopy,
+        ``NXem_ebsd`` for electron backscatter diffraction, as well as ``NXem_eels`` for electron energy loss spectroscopy. These branches provide
+        examples that proof how NeXus can be used for combining session-centric data storage with data processing. These examples are naturally
+        incomplete but show at different levels of technical depth and breath how standardization can be useful even to report specifically formatted
+        data representations like multi-dimensional plotting. Thereby, downstream processing using software for data analyses or research data
+        management can take advantage of a standardized reporting rather than demanding for a zoo of parsers that interconvert
+        between many representations.
+        
+        *NXem within the ecosystem of data schemata for electron microscopy:**
+        
+        We support the statement that substantially fewer standardized rather than many ad hoc schemata are required to facilitate the
+        documentation and exchange of knowledge within electron microscopy. We tailored NXem to serve the materials science and
+        materials engineering usage of electron microscopy to provide a complementary coverage to what OMERO has established for
+        the bio- and life science usage of electron microscopy.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
@@ -42,7 +159,7 @@
             <doc>
                 The configuration of the software that was used to generate this NeXus file.
             </doc>
-            <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                 <doc>
                     A collection of all programs and libraries used to generate this NeXus file.
                     Ideally, this would enable a binary recreation from the input data.
@@ -187,7 +304,7 @@
                 
                 One strategy is to store each sample and its results under an own NXem/ENTRY.
                 This is one of the most frequent use cases as during most sessions typically only a
-                single sample is investigated. In this case the name of this group should be NXem/ENTRY/sample.
+                single sample is investigated. In this case the name of this group should be sample.
                 
                 If multiple samples are investigated storing each of them in their own ENTRY group eventually will
                 demand unnecessary duplication of instrument details.
@@ -391,7 +508,7 @@
                 </enumeration>
             </field>
         </group>
-        <group name="VARIADIC_reference_frame" type="NXcoordinate_system" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+        <group name="NAMED_reference_frame" type="NXcoordinate_system" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <field name="alias" type="NX_CHAR" optional="true"/>
             <field name="type" type="NX_CHAR"/>
             <field name="origin" type="NX_CHAR" recommended="true"/>
@@ -671,12 +788,28 @@
                             <field name="serial_number" type="NX_CHAR" recommended="true"/>
                         </group>
                     </group>
-                    <group name="apertureID" type="NXaperture" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+                    <group name="apertureID" type="NXaperture" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                         <field name="name" type="NX_CHAR"/>
                         <group name="fabrication" type="NXfabrication" optional="true">
                             <field name="vendor" type="NX_CHAR"/>
                             <field name="model" type="NX_CHAR"/>
                             <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                        <field name="name" type="NX_CHAR"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR"/>
+                        </group>
+                    </group>
+                    <group name="blankerID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                        <field name="name" type="NX_CHAR"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR"/>
                         </group>
                     </group>
                     <group name="monochromatorID" type="NXmonochromator" minOccurs="0" maxOccurs="unbounded" nameType="partial">
@@ -730,7 +863,13 @@
                     <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     <group name="beamID" type="NXbeam" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                    <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                    <group name="scan_controller" type="NXscanbox_em" optional="true">
+                        <group name="fabrication" type="NXfabrication" recommended="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
                 </group>
                 <group name="ibeam_column" type="NXibeam_column" minOccurs="0" maxOccurs="1">
                     <group name="fabrication" type="NXfabrication" optional="true">
@@ -763,6 +902,22 @@
                             <field name="serial_number" type="NX_CHAR" recommended="true"/>
                         </group>
                     </group>
+                    <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                        <field name="name" type="NX_CHAR"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="blankerID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                        <field name="name" type="NX_CHAR"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
                     <group name="monochromatorID" type="NXmonochromator" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                         <field name="type" type="NX_CHAR"/>
                         <field name="name" type="NX_CHAR"/>
@@ -776,17 +931,23 @@
                     <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     <group name="beamID" type="NXbeam" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                    <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                    <group name="scan_controller" type="NXscanbox_em" optional="true">
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
                 </group>
                 <group name="detectorID" type="NXdetector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                     <field name="name" type="NX_CHAR"/>
                     <group name="fabrication" type="NXfabrication" recommended="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
-                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
+                        <field name="serial_number" type="NX_CHAR"/>
                     </group>
                 </group>
-                <group name="scan_controller" type="NXscanbox_em" optional="true">
+                <group name="gas_injector" type="NXcomponent" optional="true">
                     <group name="fabrication" type="NXfabrication" recommended="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
@@ -1152,7 +1313,7 @@
                 </group>
                 <group name="instrument" type="NXinstrument_em" recommended="true">
                     <group name="ebeam_column" type="NXebeam_column">
-                        <field name="operation_mode" type="NX_CHAR"/>
+                        <field name="operation_mode" type="NX_CHAR" recommended="true"/>
                         <group name="electron_source" type="NXsource" optional="true">
                             <field name="voltage" type="NX_NUMBER"/>
                             <field name="extraction_voltage" type="NX_NUMBER" optional="true"/>
@@ -1172,7 +1333,8 @@
                                 </doc>
                             </field>
                         </group>
-                        <!--NXaperture/size can be used as a fallback-->
+                        <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                        <group name="blankerID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="monochromatorID" type="NXmonochromator" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                             <field name="applied" type="NX_BOOLEAN"/>
                             <field name="dispersion" type="NX_NUMBER" recommended="true"/>
@@ -1305,19 +1467,23 @@
                         </group>
                         <!--we could write down how to store the aberrations but we should not force to add aberrations
 basically optional use of NXaberration therein at least some value required-->
-                        <group name="corrector_ax" type="NXcomponent" minOccurs="0" maxOccurs="1">
+                        <group name="corrector_ax" type="NXcomponent" optional="true">
                             <field name="applied" type="NX_BOOLEAN"/>
                             <field name="value_x" type="NX_NUMBER"/>
                             <field name="value_y" type="NX_NUMBER"/>
                         </group>
-                        <!--biprism(NXcomponent):-->
-                        <!--phaseplateID(NXcomponent):-->
+                        <group name="biprismID" type="NXcomponent" nameType="partial" optional="true"/>
+                        <group name="phaseplateID" type="NXcomponent" nameType="partial" optional="true"/>
                         <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="beamID" type="NXbeam" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                        <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                        <group name="scan_controller" type="NXscanbox_em" recommended="true">
+                            <field name="scan_schema" type="NX_CHAR"/>
+                            <field name="dwell_time" type="NX_NUMBER"/>
+                        </group>
                     </group>
-                    <group name="ibeam_column" type="NXibeam_column" minOccurs="0" maxOccurs="1">
+                    <group name="ibeam_column" type="NXibeam_column" optional="true">
+                        <field name="operation_mode" type="NX_CHAR" recommended="true"/>
                         <group name="ion_source" type="NXsource">
                             <group name="probe" type="NXatom"/>
                             <field name="voltage" type="NX_NUMBER"/>
@@ -1336,14 +1502,20 @@ basically optional use of NXaberration therein at least some value required-->
                                 </doc>
                             </field>
                         </group>
+                        <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                        <group name="blankerID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="monochromatorID" type="NXmonochromator" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                             <field name="applied" type="NX_BOOLEAN"/>
                         </group>
                         <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                         <group name="beamID" type="NXbeam" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                        <group name="deflectorID" type="NXdeflector" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                        <group name="scan_controller" type="NXscanbox_em" recommended="true">
+                            <field name="scan_schema" type="NX_CHAR"/>
+                            <field name="dwell_time" type="NX_NUMBER"/>
+                        </group>
                     </group>
+                    <group name="optics" type="NXoptical_system_em" recommended="true"/>
                     <group name="detectorID" type="NXdetector" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                         <field name="mode" type="NX_CHAR">
                             <doc>
@@ -1351,12 +1523,6 @@ basically optional use of NXaberration therein at least some value required-->
                             </doc>
                         </field>
                     </group>
-                    <group name="scan_controller" type="NXscanbox_em" optional="true">
-                        <field name="scan_schema" type="NX_CHAR"/>
-                        <field name="dwell_time" type="NX_NUMBER"/>
-                    </group>
-                    <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                    <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     <group name="stageID" type="NXmanipulator" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                         <field name="design" type="NX_CHAR" recommended="true"/>
                         <field name="tilt1" type="NX_NUMBER"/>
@@ -1379,7 +1545,10 @@ basically optional use of NXaberration therein at least some value required-->
                         </group>
                     </group>
                     <group name="nanoprobeID" type="NXmanipulator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
-                    <group name="optics" type="NXoptical_system_em" recommended="true"/>
+                    <group name="gas_injector" type="NXcomponent" optional="true"/>
+                    <group name="pumpID" type="NXpump" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                    <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
+                    <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                 </group>
             </group>
         </group>
