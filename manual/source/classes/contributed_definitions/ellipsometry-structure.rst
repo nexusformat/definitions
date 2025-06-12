@@ -24,7 +24,7 @@ In the application definition we provide a minimum set of description elements a
 Application Definitions
 -----------------------
 
-    :ref:`NXopt`:
+    :ref:`NXoptical_spectroscopy`:
        A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
     :ref:`NXellipsometry`:
@@ -35,14 +35,7 @@ Base Classes
 ------------
 
 This is the set of base classes for describing an optical experiment.
-
-    :ref:`NXbeam_path`
-       A beam path consisting of one or more optical elements.
-       
-       NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
-       of optical elements between the excitation source and the sample, or between
-       the sample and the detector unit.
-              
+            
     :ref:`NXbeam_splitter`
        A beam splitter, i.e. a device splitting the light into two or more beams.
        
@@ -53,7 +46,7 @@ This is the set of base classes for describing an optical experiment.
     :ref:`NXfiber`
        An optical fiber, e.g. glass fiber.
 
-    :ref:`NXlens_opt`
+    :ref:`NXoptical_lens`
        Description of an optical lens.
        
     :ref:`NXpolarizer_opt`
