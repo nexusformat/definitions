@@ -312,8 +312,8 @@ i.e. more general filters:
 
     :ref:`NXspatial_filter`:
         A proposal how a point cloud can be spatially filtered in a specific yet general manner.
-        This base class takes advantage of :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`,
-        and :ref:`NXcg_hexahedron_set` to cater for all of the most commonly used
+        This base class takes advantage of :ref:`NXcg_ellipsoid`, :ref:`NXcg_cylinder`,
+        and :ref:`NXcg_hexahedron` to cater for all of the most commonly used
         geometric primitives in atom probe.
 
     :ref:`NXsubsampling_filter`:
