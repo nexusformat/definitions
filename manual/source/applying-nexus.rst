@@ -568,11 +568,11 @@ generate the processed data in a :ref:`NXprocess` group, which has
 fields to store the name of the program used, its version number, and
 the date when it was run. If there are multiple processes recorded in
 the file, the group should also contain a sequence index to specify the
-order in which they were run. NXProcess groups can also contain one or
+order in which they were run. NXprocess groups can also contain one or
 more :ref:`NXparameters` groups to store the parameters used by the
 program as well as one or more :ref:`NXdata` groups that contain the
 results of the process. This has the advantage of encapsulating all the
 information required to preserve the provenance of the processed data in
 a single group. However, it is also acceptable to store the resulting
-data in NXdata group at the same level as the NXprocess group in the
+data in a NXdata group at the same level as the NXprocess group in the
 NeXus :index:`hierarchy <hierarchy>`.
