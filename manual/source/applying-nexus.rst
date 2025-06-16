@@ -561,12 +561,18 @@ Processed Data
    NXprocess
    Processed Data
 
-Data reduction and analysis programs are encouraged to store their results in
-NeXus data files. As far as the necessary, the normal NeXus 
-:index:`hierarchy <hierarchy>`
-is to be implemented. In addition, processed data files
-must contain a :ref:`NXprocess`
-group. This group, that documents and preserves data provenance,
-contains the name of the data processing program and the
-parameters used to run this program in order to achieve the results stored in
-this entry. Multiple processing steps must have a separate entry each.
+Data reduction and analysis programs are encouraged to store their
+results in NeXus data files, which may be the same file that contains
+the raw data. It is recommended to document the actions taken to
+generate the processed data in a :ref:`NXprocess` group, which has
+fields to store the name of the program used, its version number, and
+the date when it was run. If there are multiple processes recorded in
+the file, the group should also contain a sequence index to specify the
+order in which they were run. NXProcess groups can also contain one or
+more :ref:`NXparameters` groups to store the parameters used by the
+program as well as one or more :ref:`NXdata` groups that contain the
+results of the process. This has the advantage of encapsulating all the
+information required to preserve the provenance of the processed data in
+a single group. However, it is also acceptable to store the resulting
+data in NXdata group at the same level as the NXprocess group in the
+NeXus :index:`hierarchy <hierarchy>`.
