@@ -9,13 +9,61 @@ Electron microscopy
    EmAppDef
    EmBC
 
+Design
+######
+
+NXem provides support for documenting research with scanning electron microscopes (SEM) without or with focused-ion beam (FIB) capabilities,
+and transmission respectively scanning transmission electron microscopy (TEM and STEM). The following three figures provide each
+one schematic example how the concepts of NXem could be used for each respective type of instrument. All figures are meant for
+illustrative and educational purposes. The actual design and arrangement of individual technical components in an electron microscope
+may differ which NXem deals with by allowing for for an arbitrary number of components to be used. These modular building blocks are
+realized via specific base classes that were customized for the needs in electron microscopy. The figures build up complexity one-by-one
+starting from the simpler case of an SEM to a combination of an SEM with FIB capabilities, to an (S)TEM instrument. Capabilities that are
+illustrated for the SEM are also offered for all further cases but here not shown to make the figure concise. Thereby, the figures
+also show how NXem was designed to cope with the fact that indeed all three types of instrument have distinct technical differences,
+despite them all being instruments for achieving a controlled illumination of a sample with an electron beam:
+
+.. image:: NXem.TopLevelDoc.SEM.svg
+    :width: 100%
+
+**Fig. 1** - an example for an SEM
+It provides an example from the perspective of a typical SEM user
+whose interest is to report the metadata of the technical components of the SEM. In this example the instrument
+is constructed from an electron column that houses an electron source, a condenser and an objective lens including
+apertures for each of theses lenses. Further examples for typical technical components are a stigmator to correct
+for axial image distortions. The trajectory of the electron beam along the optical axis is simplified for illustrative
+purposes describing a beam that passes through electron-optical components and is then deflected
+based on the instructions of a scan_controller to probe specific locations on the sample surface.
+An interaction volume is formed by the electron beam upon entering the sample. Different types
+of signals are generated that are picked up by different types of detectors (three in this example).
+
+In the lower part of the figure typical further components and concepts for documenting further metadata and
+data are listed. This includes pumps and other hardware, assumptions made such as frames of references
+and transformations between these, the computing hardware and software tools used for controlling the instrument
+and performing the data analyses, as well as NXprocess instances to document specific data processing steps.
+Method-specific classes are provided that inherit from NXprocess to document the parameterization, results,
+and sequence of such steps, with examples provided for electron backscatter diffraction (NXem_ebsd),
+energy-dispersive X-ray spectroscopy (NXem_eds), different imaging modes (NXem_img),
+and electron energy loss spectroscopy (NXem_eels).
+
+.. image:: NXem.TopLevelDoc.FIB.svg
+    :width: 100%
+
+**Fig. 2** - an example for an SEM with FIB capabilities
+
+.. image:: NXem.TopLevelDoc.TEM.svg
+    :width: 100%
+
+**Fig. 3** an example for an (S)TEM
+Noteworthy is that the figure illustrates, again for educational purposes, an optical setup of a mixture of a conventional transmission electron microscope
+and scanning transmission electron microscope by showing a scan_controller. Real instruments typically have more lenses and apertures but their number and
+arrangement is instrument-specific and thus not shown for sake of rendering a concise figure and remaining educational. NXem allows that the concepts for
+all technical components can be flexibly composed depending on what is present at the specific instrument when writing instance data.
 
 .. _IntroductionEm:
 
-Introduction
-############
-
-
+Contextualization
+#################
 Partner consortia in the German National Research Data Infrastructure are here e.g.
 NFDI-MatWerk, NFDI4Ing, NFDI-BioImage, NFDI-Microbiota, NFDI4Health, and e.g. NFDI-Neuro.
 
