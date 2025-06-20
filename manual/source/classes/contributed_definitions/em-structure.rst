@@ -5,160 +5,168 @@ Electron microscopy
 =======================
 
 .. index::
-   IntroductionEm
+   Design
    EmAppDef
    EmBC
+   
+.. _EmDesign:
 
 Design
 ######
 
-NXem provides support for documenting research with scanning electron microscopes (SEM) without or with focused-ion beam (FIB) capabilities,
-and transmission respectively scanning transmission electron microscopy (TEM and STEM). The following three figures provide each
-one schematic example how the concepts of NXem could be used for each respective type of instrument. All figures are meant for
-illustrative and educational purposes. The actual design and arrangement of individual technical components in an electron microscope
-may differ which NXem deals with by allowing for for an arbitrary number of components to be used. These modular building blocks are
-realized via specific base classes that were customized for the needs in electron microscopy. The figures build up complexity one-by-one
-starting from the simpler case of an SEM to a combination of an SEM with FIB capabilities, to an (S)TEM instrument. Capabilities that are
-illustrated for the SEM are also offered for all further cases but here not shown to make the figure concise. Thereby, the figures
-also show how NXem was designed to cope with the fact that indeed all three types of instrument have distinct technical differences,
-despite them all being instruments for achieving a controlled illumination of a sample with an electron beam:
+NXem provides support for documenting research with scanning electron microscopes (SEM), scanning electron microscopes that are equipped with
+focused-ion beam (FIB) capabilities, and transmission respectively scanning transmission electron microscopy (TEM and STEM).
+The actual design of the electron-optical beam path and individual components used differ often substantially.
+Therefore, NXem allows to describe an arbitrary number of components. These modular building blocks are
+realized via using instances of base classes which offer concepts that are specific for electron microscopy.
+
+The following three figures provide one schematic example for each respective type of instrument. Specifically, how the concepts of NXem
+can be used to describe each instrument. All figures are meant for illustrative and educational purposes. The figures build up complexity
+successively starting with the simpler case of a SEM (Fig. 1), moving to a SEM with FIB capabilities (Fig. 2), arriving at
+a (S)TEM (Fig. 3). The capabilities that are illustrated for the SEM in Fig. 1 are also offered for all further cases but not
+always repeated in Figs. 2 and 3 for the sake of conciseness. The examples take the perspective of typical users who are
+interested in reporting the metadata and data that have been collected during a session with the microscope: 
 
 .. image:: NXem.TopLevelDoc.SEM.svg
     :width: 100%
 
-**Fig. 1** - an example for an SEM
-It provides an example from the perspective of a typical SEM user
-whose interest is to report the metadata of the technical components of the SEM. In this example the instrument
-is constructed from an electron column that houses an electron source, a condenser and an objective lens including
-apertures for each of theses lenses. Further examples for typical technical components are a stigmator to correct
-for axial image distortions. The trajectory of the electron beam along the optical axis is simplified for illustrative
-purposes describing a beam that passes through electron-optical components and is then deflected
-based on the instructions of a scan_controller to probe specific locations on the sample surface.
-An interaction volume is formed by the electron beam upon entering the sample. Different types
-of signals are generated that are picked up by different types of detectors (three in this example).
-
-In the lower part of the figure typical further components and concepts for documenting further metadata and
-data are listed. This includes pumps and other hardware, assumptions made such as frames of references
-and transformations between these, the computing hardware and software tools used for controlling the instrument
-and performing the data analyses, as well as NXprocess instances to document specific data processing steps.
-Method-specific classes are provided that inherit from NXprocess to document the parameterization, results,
-and sequence of such steps, with examples provided for electron backscatter diffraction (NXem_ebsd),
-energy-dispersive X-ray spectroscopy (NXem_eds), different imaging modes (NXem_img),
-and electron energy loss spectroscopy (NXem_eels).
+**Fig. 1** - an example for a SEM
+The instrument is constructed from a so-called column, a housing for all technical components such as the electron source,
+the lenses, like here shown a condenser and an objective lens, respective apertures, and further components, like a stigmator
+to correct for axial image distortions. The trajectory of the electron beam along the optical axis is simplified for
+illustrative purposes. In summary, the sample is illuminated by an electron beam that is guided along the optical axis
+through and past a set of components. A scan controller is used to deflect this beam to illuminate specific locations
+on the sample surface. In response to the electron-beam sample interaction and interaction volume is formed.
+Different types of signals are generated that are picked up by different types of detectors. Three detectors
+are shown as an example. Apart from the column, a SEM has further components. The base classes that are used for
+modeling these are listed in the lower part of the figure. These document pumps and other hardware, assumptions made
+such as frames of references and transformations between these frames, and the computing hardware and software tools
+that are used for controlling the SEM and all its connected components. Using an electron microscope demands
+processing of data. These processing steps are modelled with instances of the NXprocess base class.
+Method-specific base classes are provided that inherit from NXprocess. These are used for documenting
+the parameterization, the results, and sequence of such steps. Examples of method-specific base classes
+are NXem_ebsd for electron backscatter diffraction, NXem_eds for energy-dispersive X-ray spectroscopy, NXem_img
+for different imaging modes and NXem_eels for electron energy loss spectroscopy.
 
 .. image:: NXem.TopLevelDoc.FIB.svg
     :width: 100%
 
-**Fig. 2** - an example for an SEM with FIB capabilities
+**Fig. 2** - an example for a SEM with FIB capabilities
+Adding or flanging another column to an electron microscope equips it with focused-ion beam capabilites.
+The design of this ibeam_column follows the design of the ebeam_column, a housing with technical components, such as
+the ion source, lenses, apertures, beam distortion and beam shaping components, and an own scan controller
+for guiding the ion beam towards the sample surface. Like in Fig. 1 the trajectory of the ion beam is simplified.
 
 .. image:: NXem.TopLevelDoc.TEM.svg
     :width: 100%
 
-**Fig. 3** an example for an (S)TEM
-Noteworthy is that the figure illustrates, again for educational purposes, an optical setup of a mixture of a conventional transmission electron microscope
-and scanning transmission electron microscope by showing a scan_controller. Real instruments typically have more lenses and apertures but their number and
-arrangement is instrument-specific and thus not shown for sake of rendering a concise figure and remaining educational. NXem allows that the concepts for
-all technical components can be flexibly composed depending on what is present at the specific instrument when writing instance data.
+**Fig. 3** an example for a (S)TEM
+The design principles for the SEM as well as the FIB are used for modelling a transmission electron microscope.
+Noteworthy is that the figure illustrates an optical setup that is a mixture of a conventional TEM and a STEM.
+The presence of a scan_controller is one characteristic feature of an STEM. Given that a TEM specimen is typically
+orders of magnitude thinner than a SEM specimen, the electron beam can penetrate the material. This enables
+investing additional imaging modes and probing other characteristic electron-matter interactions the most
+prominent of which electron energy loss spectroscopy. Consequently, additional lens and components are introduced
+into the beam path of the exiting electrons.
 
-.. _IntroductionEm:
-
-Contextualization
-#################
-Partner consortia in the German National Research Data Infrastructure are here e.g.
-NFDI-MatWerk, NFDI4Ing, NFDI-BioImage, NFDI-Microbiota, NFDI4Health, and e.g. NFDI-Neuro.
-
-Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses, regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence methods are increasingly used and are becoming more closely interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy is that these steps are often executed within commercial integrated control and analysis software. This makes it difficult to keep track of workflows in a technology-partner-agnostic,
-i.e. interdisciplinary manner.
 
 .. _EmAppDef:
 
-Application Definitions
-#######################
+Application Definition
+######################
+An experiment with an electron microscope proceeds as follows: users place a sample into the microscope, calibrate the instrument,
+take measurements, may prepare their specimens with a focused ion beam, calibrate again, and take further measurements,
+they process data, until eventually their session on the instrument ends. In between, virtually all of these steps data
+are collected and stream in from different detectors. Each detector probes different physical mechanisms
+of the interaction between electrons or other types of radiation with the specimen. A microscope session ends with the scientist
+removing the specimen from the instrument or parking it so that the next user can start a session.
+Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope.
+We have provided base classes to describe these steps and events and an application definition for electron microscopy.
 
-We acknowledge that it can be difficult to agree on a single application definition which is generally enough applicable yet not unnecessarily complex and useful for applications across a variety of instruments, technology partners, and instrument use cases. In what follows, the proposal conceptualizes first the basic components of an electron microscope and the usual workflow of how an electron microscope is used for collecting data with detectors via probing radiation-specimen-matter interaction mechanisms.
-
-In summary, scientists place a specimen/sample into the microscope, calibrate the instrument, take measurements, and may perform experiments, prepare their specimens with a focused ion beam, calibrate again, and take other measurements, before their session on the instrument ends. In between virtually all of these steps data are collected and stream in from different detectors probing different physical mechanisms of the interaction between electrons or other types of radiation with the specimen.
-
-A microscope session ends with the scientist removing the specimen from the instrument or parking it so that the next user can start a session. Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope. We have provided base classes to describe these steps and events and an application definition for electron microscopy.
+A simulation of an electron microscope or of electron beam matter interaction takes a simpler perspective on many of these
+practical aspects. Typically an electron-optical setup and material is defined, assumptions about the properties and trajectory
+of the electron beam are made or simulated. The simulation analyzes the interaction volume by inspecting e.g. the trajectories of
+individual electrons or by modeling their collective behavior via computing numerical solutions or approximations for the
+beam electro-magnetic field.
 
     :ref:`NXem`:
-        A general application definition which explores the possibilities of electron microscopes.
+        A general application definition which explores the possibilities of electron microscopes for characterizing
+        electron- and ion-beam matter interactions.
 
 .. _EmBC:
 
 Base Classes
 ############
 
-The following base classes are proposed to support modularizing the storage of pieces of information with a focus on EM:
+The design of NXem makes use of several existent base class and contributed to editing them (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`,
+:ref:`NXdeflector`, :ref:`NXdetector`, :ref:`NXfabrication`, :ref:`NXmanipulator`, :ref:`NXmonochromator`, :ref:`NXnote`, :ref:`NXparameters`, :ref:`NXprocess`,
+:ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, and :ref:`NXuser`).
 
-    :ref:`NXaberration` and :ref:NXcorrector_cs`:
-        Base class to describe procedures and values for the calibration of (spherical) aberrations and the devices for achieving this technically.
+Many decisions during the design of the application definitions :ref:`NXem` and :ref:`NXapm` were aligned. Examples are the use of definition of instrument-specific
+event handling :ref:`NXevent_data_em, the grouping of measurements :ref:`NXem_measurement` and simulation :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances.
+The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets of atoms and their crystallography and allow documentation when
+such regions represent thermodynamic phases.
 
-    :ref:`NXcoordinate_system`:
-        A base class to describe different coordinate systems used and/or to be harmonized
-        or transformed into one another when interpreting the dataset.
+In addition to these considerations, several base classes were proposed to define concepts that are specific for electron microscopy:
+
+    :ref:`NXaberration`:
+        A base class to describe procedures and values for the calibration of aberrations.
 
     :ref:`NXcorrector_cs`:
-        A base class to describe details about corrective lens or compound lens devices
-        which reduce the aberration of an electron beam.
+        A base class to describe a corrective lens or compound lens sets to reduce the aberration of an electron beam.
 
     :ref:`NXebeam_column`:
-        A base class serving the possibility to group the components relevant for generating
-        and shaping the electron beam.
+        A base class to group the components relevant for generating and shaping an electron beam.
     
-    :ref:`NXevent_data_em`:
-        A base class representing a container to hold time-stamped and microscope-state-
-        annotated data during a session at an electron microscope.
-
     :ref:`NXibeam_column`:
-        A base class serving the possibility to group the components relevant for generating
-        and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
+        A base class to group the components relevant for generating and shaping an ion beam.
 
     :ref:`NXimage`:
-        Base class for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
-
+        A base class to store individual images or stacks of images.
+        
     :ref:`NXinstrument_em`:
-        A base class which defines all modular parts that make up an instrument (real or simulated) for studying
-        electron matter interaction. This base class is used in NXem in two places: One that is placed inside an ENTRY.measurement.instrument
-        group. This group holds all those (meta)data which do not change during a session, i.e. instrument name, typically identifier of 
-        hardware components or version of control software. Another one that is placed inside an ENTRY.measurements.events group.
-        This group holds all those (meta)data data change when collecting data during a session.
+        A base class to document all components that make up an instrument (real or simulated) when using it for studying
+        electron matter interaction. This base class is used in NXem in two places:
+        Firstly, inside an ENTRY/measurement/instrument group. This group holds all those (meta)data which do not change
+        during a session, i.e. instrument name, typically identifier of hardware components or version of control software.
+        Secondly, inside ENTRY/measurement/eventID groups; these hold all those (meta)data data that change during a session.
 
-    :ref:`NXatom` and :ref:`NXion`:
-        A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
-
+    :ref:`NXroi_process` and specialization :ref:`NXinteraction_volume_em`:
+        A base class to document the region-of-interest within an area or volume of material.
+        The region of material where the electron beam interacts with the sample is called the interaction volume.  
+        
     :ref:`NXlens_em`:
-        A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
-
-    :ref:`NXfabrication`:
-        A base class to bundle manufacturer/technology-partner-specific details about
-        a component or device of an instrument.
+        A base class to describe an electro-magnetic lens. In practice, an electron microscope has many such lenses.
+        It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope
+        and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of
+        software tools which strive to model the instrument e.g. to create digital twins of the instrument.
+        We understand there is still a way to go with this to arrive there though.
 
     :ref:`NXoptical_system_em`:
         A base class to store for now qualitative and quantitative values of frequent interest
         which are affected by the interplay of the components and state of an electron microscope.
-        Examples are the semiconvergence angle or the depth of field and depth of focus, the magnification, or the camera length.
-
-    :ref:`NXpeak`:
-        A base class to describe peaks mathematically so that it can be used to detail how peaks in mass-to-charge-state ratio histograms (aka mass spectra) are defined and labelled as iontypes.
+        Examples are the semiconvergence angle, the magnification, or the camera length.
 
     :ref:`NXpump`:
         A base class to describe details about a pump in an instrument.
 
     :ref:`NXscanbox_em`:
-        A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
+        A base class to represent a component that is used to deflect a beam of charged particles in a controlled manner.
+        This can be used to document the scan pattern.
 
     :ref:`NXspectrum`:
-        Base class and specializations comparable to NXimage but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
-
+        A base class to store individual spectra and stacks of spectra.
+        
 Method-specific concepts and their usage in application definitions
 ###################################################################
 
-It became clear during the design of the electron-microscopy-specific additions to NeXus that there are sets of pieces of information (data and metadata) which are relevant for a given experiment but have usually only few connections to the detailed description of the workflow of processing these data into knowledge, motivating the granularization of these pieces of information in their own application definition. In fact, one limitation of application definitions in NeXus is that they define a set of constraints on their graph of controlled concepts and terms. If we take for example diffraction experiments with an electron microscope it is usually the case that (diffraction) patterns are collected in the session at the microscope but all scientifically relevant conclusions are drawn later, i.e. through post-processing these data. These numerical and algorithmic steps define computational workflows where data from the application definitions such as NXem are used as input but many additional concepts and constraints may apply without any need for changing constraints on fields or groups of NXem. If we were to modify NXem for these cases, NXem would likely combinatorially diverge as every different combination of required constraints would demand having their own but almost similar application definition. For this reason, we propose to define the following base classes:
-
-More consolidation through the use of NXsubentry classes should be considered in the future.
+It became clear during the design of the electron-microscopy-specific additions to NeXus that there are data and metadata that are relevant for
+a given experiment but have usually only few connections to the detailed description of the workflow of processing these data into knowledge.
+This motivated the granularization of their concepts in own base classes:
 
     :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`:
-        Base class providing concepts for specific data acquistion modes and associated analysis used in electron microscopy
-        such as collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three-, X-ray spectrscopy,
-        different imaging modes, or electron energy loss spectroscopy (EELS).
+        These base classes provide concepts for specific data acquisition modes and associated analysis as they are used in electron microscopy
+        such as for collecting and indexing Kikuchi diffraction patterns into orientation maps for the two-dimensional, three-, X-ray spectrscopy,
+        different imaging modes, or electron energy loss spectroscopy (EELS). A substantial further number of such base classes
+        could be designed that build on the ideas and principles used in these four base classes to customize NXem further.
+
