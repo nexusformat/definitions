@@ -98,14 +98,13 @@ beam electro-magnetic field.
 Base Classes
 ############
 
-The design of NXem makes use of several existent base class and contributed to editing them (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`,
+The design of NXem uses several existent base class and adds edits and additions of some concepts to make these base classes applicable for the field of electron microscopy (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`,
 :ref:`NXdeflector`, :ref:`NXdetector`, :ref:`NXfabrication`, :ref:`NXmanipulator`, :ref:`NXmonochromator`, :ref:`NXnote`, :ref:`NXparameters`, :ref:`NXprocess`,
 :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, and :ref:`NXuser`).
 
-Many decisions during the design of the application definitions :ref:`NXem` and :ref:`NXapm` were aligned. Examples are the use of definition of instrument-specific
-event handling :ref:`NXevent_data_em, the grouping of measurements :ref:`NXem_measurement` and simulation :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances.
-The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets of atoms and their crystallography and allow documentation when
-such regions represent thermodynamic phases.
+Many design decisions of the application definitions :ref:`NXem` and :ref:`NXapm` are aligned. Examples are the use of base classes for instrument-specific
+events :ref:`NXevent_data_em`, the grouping of measurements :ref:`NXem_measurement` and simulations :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances to describe workflows of processing. The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets of atoms, the spatial arrangement of atoms, and offer concepts for documenting when
+regions-of-interest in a material represent thermodynamic phases.
 
 In addition to these considerations, several base classes were proposed to define concepts that are specific for electron microscopy:
 
@@ -160,13 +159,15 @@ In addition to these considerations, several base classes were proposed to defin
 Method-specific concepts and their usage in application definitions
 ###################################################################
 
-It became clear during the design of the electron-microscopy-specific additions to NeXus that there are data and metadata that are relevant for
-a given experiment but have usually only few connections to the detailed description of the workflow of processing these data into knowledge.
-This motivated the granularization of their concepts in own base classes:
+It became clear during the design of the electron-microscopy-specific additions to NeXus that many data and metadata which are relevant for
+a given experiment have usually only few connections to the detailed description of the instrument. Instead, these are steps of
+data analysis and data processing workflows. This motivated a granularization of these concepts into own method-specific base classes:
 
     :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`:
-        These base classes provide concepts for specific data acquisition modes and associated analysis as they are used in electron microscopy
-        such as for collecting and indexing Kikuchi diffraction patterns into orientation maps for the two-dimensional, three-, X-ray spectrscopy,
-        different imaging modes, or electron energy loss spectroscopy (EELS). A substantial further number of such base classes
-        could be designed that build on the ideas and principles used in these four base classes to customize NXem further.
+        These base classes provide concepts for specific data acquisition modes and associated analysis as are used in electron microscopy
+        such as for collecting and indexing Kikuchi diffraction patterns into orientation maps for two-dimensional, three-dimensional point
+        cloud data, reporting X-ray spectroscopy, different imaging modes, or documenting electron energy loss spectroscopy (EELS).
+        A substantial further number of such base class could be designed that can build on the ideas and principles that are
+        suggested via these four base classes.
+
 
