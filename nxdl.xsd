@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- Here's a procedure to validate this XSD Schema file:
+https://stackoverflow.com/a/48980995/1046449 -->
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:nx="http://definition.nexusformat.org/nxdl/3.1"
@@ -164,6 +167,34 @@
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:pattern value=".*(\w+).*" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:attributeGroup name="nameTypeAttributeGroup">
+		<xs:attribute name="nameType" use="optional" default="specified">
+			<xs:annotation>
+				<xs:documentation>
+					This interprets the ``name`` attribute as:
+
+					* ``"specified"`` = Exactly this name.
+					  Note that if no ``name`` and ``nameType`` are provided 
+					  for a group, ``nameType="any"`` becomes the default.
+					* ``"any"`` = Any name not already used in group.
+					* ``"partial"`` = The capital letters are substitutable
+					  (empty string allowed) and the lower case letters
+					  (and other allowed symbols, such as ``_``) are not.
+
+					In each case, all names in a NeXus data file must
+					follow the naming :ref:`rules&lt;Design-Naming&gt;`.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="nx:NX_CHAR">
+					<xs:enumeration value="specified" />
+					<xs:enumeration value="any" />
+					<xs:enumeration value="partial" />
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -471,7 +502,8 @@
 		<xs:attribute name="optional" use="optional" type="nx:NX_BOOLEAN" default="false" >
 			<xs:annotation>
 				<xs:documentation>
-					A synonym for minOccurs=0.
+					A value of "true" is equivalent to minOccurs=0 while a value of
+					"false" is equivalent to minOccurs>0.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -486,6 +518,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="nx:deprecatedAttributeGroup"/>
+		<xs:attributeGroup ref="nx:nameTypeAttributeGroup"/>
 	</xs:complexType>
 
 	<xs:group name="groupGroup">
@@ -660,9 +693,25 @@
 					<xs:annotation>
 						<xs:documentation>
 							String describing the engineering units.
-							The string should be appropriate for the value
-							and should conform to the NeXus rules for units.
+							The string should be appropriate for the value.
+
+							* If a unit is not provided by the list of NeXus 
+							  unit categories, instead of providing a category, 
+							  a field element can include an example of the 
+							  units directly.
+
+							* The example does not constrain the scale of the 
+							  units. For example, if the unit is ``eV/mm``, the
+							  user could specify in a data file ``eV/cm``, or any 
+							  other unit that is convertible to the example given.
+
+							It is recommended that users and application developers 
+							check if their units and their unit examples adhere to 
+							the UDUNITS standard.  [#]_
+
 							Conformance is not validated at this time.
+
+							.. [#] https://www.unidata.ucar.edu/software/udunits/
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -789,7 +838,8 @@
 				<xs:attribute name="optional" use="optional" type="nx:NX_BOOLEAN" default="false" >
 					<xs:annotation>
 						<xs:documentation>
-							A synonym for minOccurs=0.
+							A value of "true" is equivalent to minOccurs=0 while a value of
+							"false" is equivalent to minOccurs>0.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -913,21 +963,7 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
-				<xs:attribute name="nameType" use="optional" default="specified">
-					<xs:annotation>
-						<xs:documentation>
-							This interprets the name attribute as:
-							* ``specified`` = use as specified
-							* ``any`` = can be any name not already used in group
-						</xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="nx:NX_CHAR">
-							<xs:enumeration value="specified" />
-							<xs:enumeration value="any" />
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:attribute>
+				<xs:attributeGroup ref="nx:nameTypeAttributeGroup"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1006,6 +1042,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attributeGroup ref="nx:deprecatedAttributeGroup"/>
+		<xs:attributeGroup ref="nx:nameTypeAttributeGroup"/>
 	</xs:complexType>
 
 	<xs:simpleType name="nonNegativeUnbounded">
@@ -1197,7 +1234,7 @@
 				
 				(This data type is used internally in the NXDL schema 
 				to define elements and attributes to be used by users in NXDL specifications.)
-				
+		
 				::
 				
 					<field name="mode">
@@ -1209,6 +1246,20 @@
 						</enumeration>
 					</field>
 
+				Enumerations can be closed or open. A closed enumeration is one where the list of
+				values are the only ones allowed for a specification. An open enumeration is one 
+				where the list of values is incomplete and additional values other than those listed
+				are allowed. Open enumerations should be used sparingly as the designer of the enumeration
+				should try to find all possible values for a given field/attribute.
+
+				In case an open enumeration is used and the data provider wants to declare that the provided
+				value deliberately not from the given list of values, the data provider should,
+
+				* for fields, set the attribute ``@custom=True``.
+				* for attributes, set an additional attribute ``@my_attribute_custom=True``, where
+				  ``my_attribute`` is the name of the attribute with the open enumeration.
+
+				Such attributes can be used deliberately to suppress warnings in NeXus validators.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -1244,6 +1295,14 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
+		<xs:attribute name="open" use="optional" type="nx:NX_BOOLEAN" default="false" >
+			<xs:annotation>
+				<xs:documentation>
+					Is this an open enumeration?
+					An open enumeration allows additional values not listed.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	
 	<xs:complexType name="dimensionsType">

@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition category="base" extends="NXobject" name="NXdetector"
+<definition category="base" extends="NXcomponent" name="NXdetector"
             type="group"
             xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
             xmlns="http://definition.nexusformat.org/nxdl/3.1"
@@ -44,6 +44,7 @@
     <symbol name="nP"><doc>number of scan points (only present in scanning measurements)</doc></symbol>
     <symbol name="i"><doc>number of detector pixels in the first (slowest) direction</doc></symbol>
     <symbol name="j"><doc>number of detector pixels in the second (faster) direction</doc></symbol>
+    <symbol name="k"><doc>number of detector pixels in the third (if necessary, fastest) direction</doc></symbol>
     <symbol name="tof"><doc>number of bins in the time-of-flight histogram</doc></symbol>
   </symbols>
 
@@ -421,7 +422,7 @@
     </doc>
   </field>
 
-  <group name="CHANNELNAME_channel" type="NXdetector_channel">
+  <group name="CHANNELNAME_channel" type="NXdetector_channel" nameType="partial">
       <doc>
           Group containing the description and metadata for a single channel from a multi-channel
           detector.
@@ -460,9 +461,10 @@
     <field name="efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS">
       <doc>efficiency of the detector</doc>
 
-      <dimensions rank="2">
+      <dimensions rank="3">
         <dim index="1" value="i" />
         <dim index="2" value="j" />
+        <dim index="3" value="k" />
       </dimensions>
     </field>
 
@@ -480,10 +482,10 @@
            In this use case, the efficiency and wavelength arrays must
            have the same dimensionality.
       </doc>
-
-      <dimensions rank="2">
+      <dimensions rank="3">
         <dim index="1" value="i" />
         <dim index="2" value="j" />
+        <dim index="3" value="k" />
       </dimensions>
     </field>
   </group>
@@ -612,6 +614,7 @@
     <item value="event"/>
     <item value="histogrammed"/>
     <item value="decimated"/>
+    <item value="pulse counting"/>
   </enumeration>
   </field>
   <field name="angular_calibration_applied" type="NX_BOOLEAN" >
@@ -716,7 +719,7 @@
       recording the different measurements preserves the chronological order with is important for
       correct processing.
 
-      This is used for example in tomography (`:ref:`NXtomo`) sample projections,
+      This is used for example in tomography (:ref:`NXtomo`) sample projections,
       dark and flat images, a magic number is recorded per frame.
 
       The key is as follows:
@@ -930,38 +933,10 @@
       </doc>
     </group>
   </choice>
-  <attribute name="default">
-      <doc>
-          .. index:: plotting
-          
-          Declares which child group contains a path leading 
-          to a :ref:`NXdata` group.
-          
-          It is recommended (as of NIAC2014) to use this attribute
-          to help define the path to the default dataset to be plotted.
-          See https://www.nexusformat.org/2014_How_to_find_default_data.html
-          for a summary of the discussion.
-      </doc>
-  </attribute>
   <field name="depends_on" type="NX_CHAR">
       <doc>
-          NeXus positions components by applying a set of translations and rotations
-          to apply to the component starting from 0, 0, 0. The order of these operations
-          is critical and forms what NeXus calls a dependency chain. The depends_on
-          field defines the path to the top most operation of the dependency chain or the
-          string "." if located in the origin. Usually these operations are stored in a
-          NXtransformations group. But NeXus allows them to be stored anywhere.
-
           The reference point of the detector is the center of the first pixel.
           In complex geometries the NXoff_geometry groups can be used to provide an unambiguous reference.
       </doc>
   </field>
-  <group type="NXtransformations">
-      <doc>
-          This is the group recommended for holding the chain of translation
-          and rotation operations necessary to position the component within
-          the instrument. The dependency chain may however traverse similar groups in
-          other component groups.
-      </doc>
-  </group>
 </definition>
