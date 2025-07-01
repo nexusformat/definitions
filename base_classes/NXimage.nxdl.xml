@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXimage" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--set of frequently made specializations of NXdata instances for images-->
+    <symbols>
+        <symbol name="n_img">
+            <doc>
+                Number of images in the stack, for stacks the slowest dimension.
+            </doc>
+        </symbol>
+        <symbol name="n_k">
+            <doc>
+                Number of image points along the slow dimension (k equivalent to z).
+            </doc>
+        </symbol>
+        <symbol name="n_j">
+            <doc>
+                Number of image points along the fast dimension (j equivalent to y).
+            </doc>
+        </symbol>
+        <symbol name="n_i">
+            <doc>
+                Number of image points along the fastest dimension (i equivalent to x).
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Base class for reporting a set of images representing specializations of NXdata.
+        
+        The most commonly used scanning methods are supported. That is one-,
+        two-, three-dimensional ROIs discretized using regular Euclidean tilings.
+        
+        Colloquially, an image is understood as a discretized representation of intensity distribution
+        detected or simulated for some ROI. When discretized with regular Euclidean tilings, the terms
+        pixel and voxel identify the smallest discretization unit. In this case, pixel and voxel are polygonal
+        or polyhedral unit cells respectively of the underlying tiling of the ROI within the reference space.
+        For all other tilings e.g. non-equispaced, the shape and size of pixel and voxel differs. Using the term
+        image point is eventually more appropriate when working with such tilings.
+        
+        Therefore, all docstrings in this base class refer to points. Points are considered
+        exact synonyms for pixel and voxel, which are terms used for regular tilings.
+        
+        Point coordinates identify the location of the barycenter.
+        
+        For images in reciprocal space in practice, complex numbers are encoded via some formatted pair of real values.
+        Typically, fast algorithms for computing Fourier transformations (FFT) are used to encode images in reciprocal
+        (frequency) space. FFT libraries are used for implementing the key functionalities of these mathematical operations.
+        Different libraries use different representations and encoding of the images.
+        Details can be found in the respective sections of the typical FFT libraries documentations:
+        
+        * `FFTW by M. Frigo and S. G. Johnson &lt;https://www.fftw.org/fftw3_doc/Tutorial.html#Tutorial&gt;`_
+        * `Intel MKL by the Intel Co. &lt;https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2024-2/fourier-transform-functions.html&gt;`_
+        * `cuFFT by the NVidia Co. &lt;https://docs.nvidia.com/cuda/cufft/index.html&gt;`_
+        * `NFFT by the TU Chemnitz group &lt;https://www-user.tu-chemnitz.de/~potts/nfft/&gt;`_ for non-equispaced computations
+        
+        Users are strongly advised to inspect carefully which specific conventions their library uses
+        to enable storing and modifying the implementation of their code such that the serialized
+        representations as they are detailed here for NeXus match.
+        
+        It is often the case that several images are combined using processing. In this case,
+        the number of images which are combined into collections is not necessarily the same
+        for each collection. The NXimage base class addresses this logical distinction
+        through the notation of indices_image and indices_group concepts.
+        That is indices_image are always counting from offset in increments of one
+        as each image is its own entity. By contrast, a group may contain no, or several images.
+        Consequently, indices_group are not required to be contiguous.
+    </doc>
+    <group type="NXprocess">
+        <doc>
+            Details how NXdata instance were processed from detector readings/raw data.
+        </doc>
+        <group name="input" type="NXnote">
+            <doc>
+                Resolvable data artifact (e.g. file) from which all values in the :ref:`NXdata`
+                instances in this :ref:`NXimage` were loaded during parsing.
+                
+                Possibility to document from which specific other serialized resource as the source
+                pieces of information were processed when using NeXus as a semantic file format
+                to serialize that information differently.
+                
+                The group in combination with an added field *context* therein adds context.
+            </doc>
+            <field name="context" type="NX_CHAR">
+                <doc>
+                    Reference to a location inside the artifact that points to the specific group of values
+                    that were processed if the artifacts contains several groups of values and thus
+                    further resolving of ambiguities is required.
+                </doc>
+            </field>
+        </group>
+        <field name="detector_identifier" type="NX_CHAR">
+            <doc>
+                Link or name of an :ref:`NXdetector` instance with which the data were
+                collected.
+            </doc>
+        </field>
+        <group type="NXprogram">
+            <doc>
+                Program used for processing.
+            </doc>
+        </group>
+    </group>
+    <group name="image_1d" type="NXdata">
+        <doc>
+            One-dimensional image.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag  fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="image_2d" type="NXdata">
+        <doc>
+            Two-dimensional image.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_j"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_j"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_j"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag  fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_j"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fast dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="image_3d" type="NXdata">
+        <doc>
+            Three-dimensional image.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_k"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_k"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_k"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_k"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the slow dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_k"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the slow dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fast dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack_1d" type="NXdata">
+        <doc>
+            Collection of one-dimensional images.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="indices_group" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Group identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="indices_image" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Image identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Image identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack_2d" type="NXdata">
+        <doc>
+            Collection of two-dimensional images.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="indices_group" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Group identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="indices_image" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Image identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Image identifier.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fast dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack_3d" type="NXdata">
+        <doc>
+            Collection of three-dimensional images.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Intensity for real-valued images as an alternative for real.
+                Magnitude of the image intensity for complex-valued data.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Real part of the image intensity per point.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Imaginary part of the image intensity per point.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="complex" type="NX_COMPLEX" units="NX_UNITLESS">
+            <doc>
+                Image intensity as a complex number as an alternative to real and
+                imag fields if values are stored as interleaved complex numbers.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_img"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="indices_group" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Group identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="indices_image" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                Image identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Image identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the slow dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_k"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the slow dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fast dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Point coordinate along the fastest dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                    Point coordinate along the fastest dimension.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+</definition>

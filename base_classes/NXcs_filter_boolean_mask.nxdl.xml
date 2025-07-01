@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcs_filter_boolean_mask" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_objs">
+            <doc>
+                Number of entries (e.g. number of points or objects).
+            </doc>
+        </symbol>
+        <symbol name="bitdepth">
+            <doc>
+                Number of bits assumed for the container datatype used.
+            </doc>
+        </symbol>
+        <symbol name="n_total">
+            <doc>
+                Length of mask considering the eventual need for padding.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Base class for packing and unpacking booleans.
+        
+        The field mask should be constructed from packing a vector of booleans
+        (a bitfield) into unsigned integers with bytesize bitdepth. Padding to
+        an integer number of such integers is assumed.
+        
+        Thereby, this base class can be used to inform software about necessary modulo
+        operations to decode the mask to recover e.g. set membership of objects in sets
+        whose membership has been encoded as a vector of booleans.
+        
+        This is useful e.g. when processing object sets such as point cloud data.
+        If e.g. a spatial filter has been applied to a set of points, we may wish to document
+        memory-space efficiently which points were analyzed. An array of boolean values
+        is one option to achieve this. A value is true if the point is included and false otherwise.
+    </doc>
+    <field name="depends_on" type="NX_CHAR">
+        <doc>
+            Possibility to refer to which set this mask applies.
+            
+            If depends_on is not provided, it is assumed that the mask
+            applies to its direct parent.
+        </doc>
+    </field>
+    <field name="number_of_objects" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            Number of objects represented by the mask.
+        </doc>
+    </field>
+    <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            Number of bits assumed matching on a default datatype.
+            (e.g. 8 bits for a C-style uint8).
+        </doc>
+    </field>
+    <field name="mask" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+            The content of the mask. If padding is used,
+            padding bits have to be set to 0.
+        </doc>
+    </field>
+</definition>
