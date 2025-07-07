@@ -1,29 +1,29 @@
-.. _Transport-Structure:
+.. _Contributed-Transport-Structure:
 
 ===================
 Transport Phenomena
 ===================
 
 .. index::
-   IntroductionTransport
-   TransportAppDef
+   Contributed-Transport-Introduction
+   Contributed-Transport-Definitions
 
 
-.. _IntroductionTransport:
+.. _Contributed-Transport-Introduction:
 
 Introduction
 ##############
 
-
-.. _TransportAppDef:
-
-Application Definitions
-#######################
-
-We realize that many experiments in condensed-matter physics and materials engineering belong to the category
+Many experiments in condensed-matter physics and materials engineering belong to the category
 of measurements of transparent phenomena. A possible example of such experiments are temperature-dependent
 current-voltage (IV) curve measurements (or JV for engineers) measurements. In this case, electrical charge is transported
 and the temperature-dependent current response as a function of applied voltage is recorded.
+
+
+.. _Contributed-Transport-Definitions:
+
+Application Definitions
+#######################
 
 Below is an example for such an application definition for an experiment. This application definition has exemplar parts
 which show how such an experiment can be controlled with the `EPICS system <https://epics-controls.org/about-epics/>`_:
