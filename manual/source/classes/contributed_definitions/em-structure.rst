@@ -42,7 +42,7 @@ are shown as an example. Apart from the column, a SEM has further components. Th
 modeling these are listed in the lower part of the figure. These document pumps and other hardware, assumptions made
 such as frames of references and transformations between these frames, and the computing hardware and software tools
 that are used for controlling the SEM and all its connected components. Using an electron microscope demands
-processing of data. These processing steps are modelled with instances of the NXprocess base class.
+processing of data. These processing steps are modeled with instances of the NXprocess base class.
 Method-specific base classes are provided that inherit from NXprocess. These are used for documenting
 the parameterization, the results, and sequence of such steps. Examples of method-specific base classes
 are NXem_ebsd for electron backscatter diffraction, NXem_eds for energy-dispersive X-ray spectroscopy, NXem_img
@@ -51,8 +51,8 @@ for different imaging modes and NXem_eels for electron energy loss spectroscopy.
 .. image:: NXem.TopLevelDoc.FIB.svg
     :width: 100%
 
-**Fig. 2** - an example for a SEM with FIB capabilities
-Adding or flanging another column to an electron microscope equips it with focused-ion beam capabilites.
+**Fig. 2** - an example for a SEM with plasma FIB capabilities
+Adding or flanging another column to an electron microscope equips it with focused-ion beam capabilities.
 The design of this ibeam_column follows the design of the ebeam_column, a housing with technical components, such as
 the ion source, lenses, apertures, beam distortion and beam shaping components, and an own scan controller
 for guiding the ion beam towards the sample surface. Like in Fig. 1 the trajectory of the ion beam is simplified.
@@ -61,7 +61,7 @@ for guiding the ion beam towards the sample surface. Like in Fig. 1 the trajecto
     :width: 100%
 
 **Fig. 3** an example for a (S)TEM
-The design principles for the SEM as well as the FIB are used for modelling a transmission electron microscope.
+The design principles for the SEM as well as the FIB are used for modeling a transmission electron microscope.
 Noteworthy is that the figure illustrates an optical setup that is a mixture of a conventional TEM and a STEM.
 The presence of a scan_controller is one characteristic feature of an STEM. Given that a TEM specimen is typically
 orders of magnitude thinner than a SEM specimen, the electron beam can penetrate the material. This enables
