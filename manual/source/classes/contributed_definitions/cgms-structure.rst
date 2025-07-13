@@ -6,6 +6,11 @@ Geometry & Microstructure
 
 .. index::
    CgmsBC
+   
+.. literalinclude:: cube_example.txt
+    :tab-width: 4
+    :linenos:
+    :language: text
 
 .. _CgmsBC:
 
