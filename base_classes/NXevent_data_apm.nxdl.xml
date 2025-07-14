@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXevent_data_apm" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="p">
+            <doc>
+                Number of pulses collected in between start_time and end_time.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Base class to store state and (meta)data of events over the course of an atom probe experiment.
+        
+        Having at least one instance for an instance of NXapm is recommended.
+        
+        This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
+        of atom probe research. Again static and dynamic quantities are split to avoid a duplication
+        of information. Specifically, the time interval considered is the entire time
+        starting at start_time until end_time during which we assume the pulser triggered pulses.
+        These pulses are identified via the pulse_id field. The point in time when each pulse was
+        fired can be recovered from analyzing start_time and delta_time.
+        
+        Which temporal granularity is adequate depends on the situation and research question.
+        Using a model which enables a collection of events offers the most flexible way to cater for
+        both atom probe experiments or simulation. To monitor the course of an ion extraction experiment
+        (or simulation) it makes sense to track time explicitly via time stamps or implicitly
+        via e.g. a clock inside the instrument, such as the clock of the pulser and respective pulse_id.
+    </doc>
+    <field name="start_time" type="NX_DATE_TIME">
+        <doc>
+            ISO 8601 time code with local time zone offset to UTC information included
+            when the snapshot time interval started.
+            
+            If users wish to specify an interval of time that the snapshot should represent
+            during which the instrument was stable and configured using specific settings and
+            calibrations, the start_time is the start, the left bound of the time interval, while
+            the end_time specifies the end, the right bound of the time interval.
+        </doc>
+    </field>
+    <field name="end_time" type="NX_DATE_TIME">
+        <doc>
+            ISO 8601 time code with local time zone offset to UTC information included
+            when the snapshot time interval ended.
+        </doc>
+    </field>
+    <field name="delta_time" type="NX_NUMBER" units="NX_TIME">
+        <doc>
+            Delta time array which resolves for each pulse_id the time difference
+            between when that pulse was fired and start_time.
+            
+            In summary, using start_time, end_time, delta_time, pulse_id_offset,
+            and pulse_id provides temporal context information when a pulse was
+            fired relative to start_time and when it is relevant to translate this into
+            coordinated world time UTC.
+            
+            Note that pulses in reality have a shape and thus additional documentation
+            is required to assure that the entries in delta_time are always taken at
+            at points in time that, relative to the triggering of the pulse, represent an
+            as close as possible state of the pulse.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <field name="pulse_id_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+            Integer which defines the first pulse_id.
+            Typically, this is either zero or one.
+        </doc>
+    </field>
+    <field name="pulse_id" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+            An integer to identify a specific pulse in a sequence.
+            
+            There are two possibilities to report pulse_id values:
+            If pulse_id_offset is provided, the pulse_id values are defined
+            by the sequence :math:`[pulse\_id\_offset, pulse\_id\_offset + p]`
+            with :math:`p` the number of pulses collected in between
+            start_time and end_time.
+            
+            Alternatively, pulse_id_offset is not provided but instead
+            a sequence of :math:`p` values is defined.
+            These integer values do not need to be sorted.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <group name="instrument" type="NXinstrument_apm">
+        <doc>
+            Place to store dynamic metadata of the instrument to document as close as possible
+            the state of the instrument during the event, i.e. in between start_time and end_time.
+        </doc>
+    </group>
+</definition>
