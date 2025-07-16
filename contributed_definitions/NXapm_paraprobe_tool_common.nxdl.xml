@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_paraprobe_tool_common" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Base class documenting the information common to tools of the paraprobe-toolbox.
+         
+         The paraprobe-toolbox is a collection of open-source tools for performing
+         efficient analyses of point cloud data where each point can represent atoms or
+         (molecular) ions. A key application of the toolbox has been for research in the
+         field of Atom Probe Tomography (APT) and related Field Ion Microscopy (FIM):
+         
+         * `paraprobe-toolbox &lt;https://www.gitlab.com/paraprobe/paraprobe-toolbox&gt;`_
+         * `M. Kühbach et al. &lt;https://paraprobe-toolbox.readthedocs.io/en/main/&gt;`_
+         
+         The toolbox does not replace but complements existent software tools in this
+         research field. Given its capabilities of handling points as objects with
+         properties and enabling analyses of the spatial arrangement of and inter-
+         sections between geometric primitives, the software can equally be used
+         for analyzing data in Materials Science and Materials Engineering.
+         
+         The common section can be used as a place to store e.g. organizational
+         metadata and contextualization of that analysis in a research data
+         management system.
+    </doc>
+    <field name="status" type="NX_CHAR">
+        <doc>
+             A statement whether the tool executable managed to process the analysis
+             or whether this failed. Status is written to the results file after the
+             end_time beyond which point in time the tool must no longer compute
+             any further analysis results but exit.
+             
+             Only when this status message is present and its value is `success`,
+             one should consider the results of the tool. In all other cases it might
+             be that the tool has terminated prematurely or another error occurred.
+        </doc>
+        <enumeration>
+            <item value="success"/>
+            <item value="failure"/>
+        </enumeration>
+    </field>
+    <group type="NXprogram"/>
+    <group type="NXidentifier"/>
+    <field name="analysis_identifier" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Internal identifier used by the tool to refer to an analysis (aka simulation
+             id).
+        </doc>
+    </field>
+    <group name="config" type="NXserialized">
+        <doc>
+             The configuration file that was used to parameterize
+             the algorithms that this tool has executed.
+        </doc>
+    </group>
+    <group name="profiling" type="NXcs_profiling">
+        <!--results_path(NX_CHAR):
+  doc: |
+    Path where the tool stores tool-specific results. If not specified,
+   results will be stored in the current working directory.-->
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis in this results file was started,
+                 i.e. when the respective executable/tool was started as a process.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis in this results file were
+                 completed and the respective process of the tool exited.
+            </doc>
+        </field>
+        <field name="total_elapsed_time" type="NX_FLOAT" units="NX_TIME">
+            <doc>
+                 Wall-clock time.
+            </doc>
+        </field>
+    </group>
+    <group type="NXuser"/>
+    <group type="NXcoordinate_system_set">
+        <doc>
+             Details about coordinate systems (reference frames) used. In atom probe several coordinate
+             systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
+             should be documented explicitly and doing so by picking from the
+             following controlled set of names:
+             
+             * paraprobe
+             * lab
+             * specimen
+             * laser
+             * instrument
+             * detector
+             * recon
+             
+             The aim of this convention is to support users with contextualizing which reference frame
+             each instance (coordinate system) is. If needed, instances of :ref:`NXtransformations`
+             are used to detail the explicit affine transformations whereby one can convert
+             representations between different reference frames.
+             Inspect :ref:`NXtransformations` for further details.
+        </doc>
+        <group type="NXcoordinate_system">
+            <group type="NXtransformations"/>
+        </group>
+    </group>
+    <!--add further fields coming from using the charge state recovery
+workflow from the ifes_apt_tc_data_modeling library-->
+</definition>

@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_surfacer_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_alpha_values">
+            <doc>
+                 Number of alpha values (and offset values) to probe.
+            </doc>
+        </symbol>
+        <symbol name="n_values">
+            <doc>
+                 How many different match values does the filter specify.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for a configuration file of the paraprobe-surfacer tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_surfacer_config"/>
+            </enumeration>
+        </field>
+        <group name="surface_meshing" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="1">
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <!--filter that are here tool-specific parameter-->
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                    <!--leave open if scalar or matrix
+  dim: (i,)-->
+                    <field name="identifier" type="NX_UINT"/>
+                </group>
+            </group>
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <group name="preprocessing" type="NXprocess">
+                <field name="method" type="NX_CHAR">
+                    <doc>
+                         Specifies the method that is used to preprocess the point cloud
+                         prior to the alpha-shape computation. 
+                         
+                         The option *default* specifies that no such filtering is applied.
+                         The option *kuehbach* specifies that a Hoshen-Kopelman
+                         percolation analysis is used to identify points that lie closer
+                         to the edge of the dataset. Details about the methods are reported
+                         in `M. Kühbach et al. &lt;https://doi.org/10.1038/s41524-020-00486-1&gt;`_.
+                    </doc>
+                    <enumeration>
+                        <item value="default"/>
+                        <item value="kuehbach"/>
+                    </enumeration>
+                </field>
+                <field name="kernel_width" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         When using the kuehbach preprocessing, this is the width of the
+                         kernel for identifying which ions are in voxels close to the
+                         edge of the point cloud.
+                    </doc>
+                </field>
+            </group>
+            <field name="alpha_value_choice" type="NX_CHAR">
+                <doc>
+                     Specifies which method to use to define the alpha value.
+                     
+                     The value *convex_hull_naive* is the default. The setting instructs
+                     the tool to use a fast specialized algorithm for computing only
+                     the convex hull. The resulting triangles can be skinny.
+                     
+                     The value *convex_hull_refine* instructs to tool to refine the
+                     quality of the mesh resulting from *convex_hull_naive*
+                     via triangle flipping and splitting.
+                     
+                     The value *smallest_solid* instructs the CGAL library to choose a
+                     value which realizes an alpha-shape that is the smallest solid.
+                     
+                     The value *cgal_optimal* instructs the CGAL library to choose a
+                     value which the library considers as to be an optimal value.
+                     Details are defined in the respective section of the CGAL library
+                     on 3D alpha shapes.
+                     
+                     The value *set_of_values* instructs the tool to compute a list
+                     collection of alpha-shapes for the specified alpha-values.
+                     
+                     The value *set_of_alpha_wrappings* instructs the tool to generate
+                     a set of so-called alpha wrappings. These are similar to alpha-shapes
+                     but provide additional guarantees (such as watertightness and
+                     proximity constraints) on the resulting wrapping.
+                </doc>
+                <enumeration>
+                    <item value="convex_hull_naive"/>
+                    <item value="convex_hull_refine"/>
+                    <item value="smallest_solid"/>
+                    <item value="cgal_optimal"/>
+                    <item value="set_of_values"/>
+                    <item value="set_of_alpha_wrappings"/>
+                </enumeration>
+            </field>
+            <field name="alpha_values" type="NX_FLOAT" units="NX_ANY">
+                <doc>
+                     Array of alpha values to use when alpha_value_choice is 
+                     set_of_values or when alpha_value_choice is set_of_alpha_wrappings.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_alpha_values"/>
+                </dimensions>
+            </field>
+            <field name="offset_values" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Array of offset values to use when alpha_value_choice is set_of_alpha_wrappings.
+                     The array of alpha_values and offset_values define a sequence of (alpha and offset value).
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_alpha_values"/>
+                </dimensions>
+            </field>
+            <field name="has_exterior_facets" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool should compute the set of exterior triangle facets
+                     for each alpha complex (for convex hull, alpha shapes, and wrappings).
+                </doc>
+            </field>
+            <field name="has_closure" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool should check if the alpha complex of
+                     exterior triangular facets is a closed polyhedron.
+                </doc>
+            </field>
+            <field name="has_interior_tetrahedra" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool should compute all interior tetrahedra
+                     of the alpha complex (currently only for alpha shapes).
+                </doc>
+            </field>
+        </group>
+        <!--NEW ISSUE: has_facet_appearance(NX_BOOLEAN):-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+            </group>
+        </group>
+    </group>
+</definition>
