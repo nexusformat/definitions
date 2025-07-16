@@ -169,5 +169,3 @@ data analysis and data processing workflows. This motivated a granularization of
         cloud data, reporting X-ray spectroscopy, different imaging modes, or documenting electron energy loss spectroscopy (EELS).
         A substantial further number of such base class could be designed that can build on the ideas and principles that are
         suggested via these four base classes.
-
-

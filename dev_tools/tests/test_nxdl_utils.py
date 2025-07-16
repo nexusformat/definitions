@@ -33,15 +33,33 @@ def test_get_nexus_classes_units_attributes():
 def nxdl_files():
     """Fixture to load NXDL files once."""
     local_dir = Path(__file__).resolve().parent
-    return {
-        "NXtest.nxdl.xml": ET.parse(local_dir / "NXtest.nxdl.xml").getroot(),
-        "NXiv_temp.nxdl.xml": ET.parse(
-            local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
-        ).getroot(),
-        "NXem.nxdl.xml": ET.parse(
-            local_dir.parent.parent / "applications" / "NXem.nxdl.xml"
-        ).getroot(),
-    }
+    nxdl_file_path = local_dir / "NXtest.nxdl.xml"
+    elem = ET.parse(nxdl_file_path).getroot()
+    node = nexus.get_node_at_nxdl_path("/ENTRY/NXODD_name", elem=elem)
+    assert node.attrib["type"] == "NXdata"
+    assert node.attrib["name"] == "NXODD_name"
+
+    node = nexus.get_node_at_nxdl_path("/ENTRY/NXODD_name/float_value", elem=elem)
+    assert node.attrib["type"] == "NX_FLOAT"
+    assert node.attrib["name"] == "float_value"
+
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/NXODD_name/AXISNAME/long_name", elem=elem
+    )
+    assert node.attrib["name"] == "long_name"
+
+    nxdl_file_path = local_dir / "../../contributed_definitions/NXiv_temp.nxdl.xml"
+
+    elem = ET.parse(nxdl_file_path).getroot()
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
+    )
+    assert node.attrib["name"] == "voltage_controller"
+
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller/calibration_time", elem=elem
+    )
+    assert node.attrib["name"] == "calibration_time"
 
 
 @pytest.mark.parametrize(
@@ -131,37 +149,91 @@ def test_get_inherited_nodes(
     nxdl_files, file_name, nxdl_path, nx_name, expected_length
 ):
     """Test to verify if we receive the right XML element list for a given NXDL path."""
-    elem = nxdl_files[file_name]
+    local_dir = Path(__file__).resolve().parent
+    nxdl_file_path = local_dir / "NXtest.nxdl.xml"
+
+    elem = ET.parse(nxdl_file_path).getroot()
+    (_, _, elist) = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
+    assert len(elist) == 5
+
+    nxdl_file_path = (
+        local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
+    )
+
+    elem = ET.parse(nxdl_file_path).getroot()
+
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path=nxdl_path, elem=elem, nx_name=nx_name
     )
-    assert len(elist) == expected_length
+    assert len(elist) == 4
+
+    (_, _, elist) = nexus.get_inherited_nodes(
+        nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
+    )
+    assert len(elist) == 6
+
+    (_, _, elist) = nexus.get_inherited_nodes(
+        nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
+        nx_name="NXiv_temp",
+    )
+    assert len(elist) == 6
 
 
 @pytest.mark.parametrize(
-    "hdf_name,concept_name,should_fit",
+    "hdf_name,concept_name, name_type, should_fit",
     [
-        ("source_pump", "sourceType", False),
-        ("source_pump", "sourceTYPE", True),
-        ("source pump", "sourceTYPE", False),
-        ("source", "sourceTYPE", False),
-        ("source123", "SOURCE", True),
-        ("1source", "SOURCE", True),
-        ("_source", "SOURCE", True),
-        ("same_name", "same_name", True),
-        ("angular_energy_resolution", "angularNresolution", True),
-        ("angularresolution", "angularNresolution", False),
-        ("Name with some whitespaces in it", "ENTRY", False),
-        ("simple_name", "TEST", True),
-        (".test", "TEST", False),
+        ("same_name", "same_name", "specified", True),
+        ("same_name", "same_name", "any", True),
+        ("same_name", "same_name", "partial", True),
+        ("source_pump", "source", "specified", False),
+        ("source_pump", "source", "any", True),
+        ("source_pump", "source", "partial", False),
+        ("source_pump", "sourceType", "specified", False),
+        ("source_pump", "sourceType", "any", True),
+        ("source_pump", "sourceType", "partial", False),
+        ("source_pump", "sourceTYPE", "specified", False),
+        ("source_pump", "sourceTYPE", "any", True),
+        ("source_pump", "sourceTYPE", "partial", True),
+        ("source pump", "sourceTYPE", "specified", False),
+        ("source pump", "sourceTYPE", "any", False),
+        ("source pump", "sourceTYPE", "partial", False),
+        ("Name with some whitespaces in it", "ENTRY", "specified", False),
+        ("Name with some whitespaces in it", "ENTRY", "any", False),
+        ("Name with some whitespaces in it", "ENTRY", "partial", False),
+        ("source", "sourceTYPE", "specified", False),
+        ("source", "sourceTYPE", "any", True),
+        ("source", "sourceTYPE", "partial", True),
+        ("SOURCE", "SOURCE", "specified", True),
+        ("SOURCE", "SOURCE", "any", True),
+        ("SOURCE", "SOURCE", "partial", True),
+        ("source123", "SOURCE", "specified", False),
+        ("source123", "SOURCE", "any", True),
+        ("source123", "SOURCE", "partial", True),
+        ("1source", "SOURCE", "specified", False),
+        ("1source", "SOURCE", "any", True),
+        ("1source", "SOURCE", "partial", True),
+        ("_source", "SOURCE", "specified", False),
+        ("_source", "SOURCE", "any", True),
+        ("_source", "SOURCE", "partial", True),
+        ("angular_energy_resolution", "angularNresolution", "specified", False),
+        ("angular_energy_resolution", "angularNresolution", "any", True),
+        ("angular_energy_resolution", "angularNresolution", "partial", True),
+        (".test", "TEST", "specified", False),
+        (".test", "TEST", "any", False),
+        (".test", "TEST", "partial", False),
     ],
 )
-def test_namefitting(hdf_name, concept_name, should_fit):
+def test_namefitting(hdf_name, concept_name, name_type, should_fit):
     """Test namefitting of nexus concept names"""
+    name_any = name_type == "any"
+    name_partial = name_type == "partial"
+
     if should_fit:
-        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) > -1
+        assert nexus.get_nx_namefit(hdf_name, concept_name, name_any, name_partial) > -1
     else:
-        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) == -1
+        assert (
+            nexus.get_nx_namefit(hdf_name, concept_name, name_any, name_partial) == -1
+        )
 
 
 @pytest.mark.parametrize(
