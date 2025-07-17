@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcorrector_cs" extends="NXcomponent" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_img">
+            <doc>
+                Number of images taken, at least one.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Base class for a corrector reducing (spherical) aberrations in electron microscopy.
+        
+        Different technology partners use different conventions and
+        models for quantifying the aberration coefficients.
+        
+        Correctors in an electron microscope are composed of multiple lenses
+        and multipole stigmators. Their technical details are specific for the
+        technology partner as well as microscope. Most technical details are
+        proprietary knowledge.
+        
+        If one component corrects for multiple types of aberrations (like it is the case
+        reported here `CEOS &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_) follow this
+        design when using corrector and monochromator in an application definition:
+        
+        * Use :ref:`NXcorrector_cs` for spherical aberration
+        * Use :ref:`NXmonochromator` for energy filtering or chromatic aberration
+        * Use the group corrector_ax in :ref:`NXem` for axial astigmatism aberration
+    </doc>
+    <!--user perspective-->
+    <field name="applied" type="NX_BOOLEAN">
+        <doc>
+            Was the corrector used?
+        </doc>
+    </field>
+    <group name="tableauID" type="NXprocess" nameType="partial">
+        <doc>
+            Specific information about the alignment procedure. This is a process during which
+            the corrector is configured to enable calibrated usage of the instrument.
+            
+            This :ref:`NXprocess` group should also be used when one describes in a computer
+            simulation the specific details about the modelled or assumed aberrations.
+        </doc>
+        <field name="description" type="NX_CHAR">
+            <doc>
+                Discouraged free-text field to add further details about the alignment
+                procedure.
+            </doc>
+        </field>
+        <field name="tilt_angle" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                The outer tilt angle of the beam in tableau acquisition.
+                
+                TODO: The relevant axes which span the tilt_angle need a
+                cleaner description. Suggestions from the community are
+                welcome here for guiding an improvement of this base class.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+        </field>
+        <field name="exposure_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                The exposure time of single tilt images.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+        </field>
+        <field name="magnification" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+            <doc>
+                The factor of enlargement of the apparent size,
+                not the physical size, of an object.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_img"/>
+            </dimensions>
+        </field>
+        <group name="imageID" type="NXimage" nameType="partial">
+            <doc>
+                Image(s) taken during the alignment procedure
+            </doc>
+        </group>
+        <field name="model" type="NX_CHAR">
+            <doc>
+                Convention used for storing measured or estimated aberrations (for each or the final image)
+                via fields c_1, a_1, c_1_0, c_1_2_a, and so on and so forth.
+                
+                See `S. J. Pennycock and P. D. Nellist &lt;https://doi.org/10.1007/978-1-4419-7200-2&gt;`_ (page 44ff, and page 118ff)
+                for different definitions available and further details. Table 7-2 of Ibid. publication (page 305ff) documents how
+                to convert from the Nion to the CEOS definitions. Conversion tables are also summarized by `Y. Liao &lt;https://www.globalsino.com/EM/page3740.html&gt;`_.
+            </doc>
+            <enumeration>
+                <item value="ceos"/>
+                <item value="nion"/>
+            </enumeration>
+        </field>
+        <!--specifically-named aberrations following the CEOS / Typke and Dierksen convention-->
+        <group name="c_1" type="NXaberration"/>
+        <group name="a_1" type="NXaberration"/>
+        <group name="b_2" type="NXaberration"/>
+        <group name="a_2" type="NXaberration"/>
+        <group name="c_3" type="NXaberration"/>
+        <group name="s_3" type="NXaberration"/>
+        <group name="a_3" type="NXaberration"/>
+        <!--based on feedback from Thilo Remmele the following aberrations could be measured
+(enhanced mode, tilt angle > 30 mrad) but are not corrected for with-->
+        <group name="b_4" type="NXaberration"/>
+        <group name="d_4" type="NXaberration"/>
+        <group name="a_4" type="NXaberration"/>
+        <group name="c_5" type="NXaberration"/>
+        <group name="s_5" type="NXaberration"/>
+        <group name="r_5" type="NXaberration"/>
+        <group name="a_6" type="NXaberration"/>
+        <!--specifically-named aberrations following the Nion convention-->
+        <group name="c_1_0" type="NXaberration"/>
+        <group name="c_1_2_a" type="NXaberration"/>
+        <group name="c_1_2_b" type="NXaberration"/>
+        <group name="c_2_1_a" type="NXaberration"/>
+        <group name="c_2_1_b" type="NXaberration"/>
+        <group name="c_2_3_a" type="NXaberration"/>
+        <group name="c_2_3_b" type="NXaberration"/>
+        <group name="c_3_0" type="NXaberration"/>
+        <group name="c_3_2_a" type="NXaberration"/>
+        <group name="c_3_2_b" type="NXaberration"/>
+        <group name="c_3_4_a" type="NXaberration"/>
+        <group name="c_3_4_b" type="NXaberration"/>
+        <group name="c_4_1_a" type="NXaberration"/>
+        <group name="c_4_1_b" type="NXaberration"/>
+        <group name="c_4_3_a" type="NXaberration"/>
+        <group name="c_4_3_b" type="NXaberration"/>
+        <group name="c_4_5_a" type="NXaberration"/>
+        <group name="c_4_5_b" type="NXaberration"/>
+        <group name="c_5_0" type="NXaberration"/>
+        <group name="c_5_2_a" type="NXaberration"/>
+        <group name="c_5_2_b" type="NXaberration"/>
+        <group name="c_5_4_a" type="NXaberration"/>
+        <group name="c_5_4_b" type="NXaberration"/>
+        <group name="c_5_6_a" type="NXaberration"/>
+        <group name="c_5_6_b" type="NXaberration"/>
+    </group>
+    <group type="NXelectromagnetic_lens"/>
+    <group type="NXaperture"/>
+    <group type="NXdeflector"/>
+</definition>
