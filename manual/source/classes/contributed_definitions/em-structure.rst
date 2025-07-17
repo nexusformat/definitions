@@ -130,18 +130,18 @@ In addition to these considerations, several base classes were proposed to defin
         during a session, i.e. instrument name, typically identifier of hardware components or version of control software.
         Secondly, inside ENTRY/measurement/eventID groups; these hold all those (meta)data data that change during a session.
 
-    :ref:`NXroi_process` and specialization :ref:`NXinteraction_volume_em`:
+    :ref:`NXroi_process` and specialization :ref:`NXem_interaction_volume`:
         A base class to document the region-of-interest within an area or volume of material.
         The region of material where the electron beam interacts with the sample is called the interaction volume.  
         
-    :ref:`NXlens_em`:
+    :ref:`NXelectromagnetic_lens`:
         A base class to describe an electro-magnetic lens. In practice, an electron microscope has many such lenses.
         It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope
         and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of
         software tools which strive to model the instrument e.g. to create digital twins of the instrument.
         We understand there is still a way to go with this to arrive there though.
 
-    :ref:`NXoptical_system_em`:
+    :ref:`NXem_optical_system`:
         A base class to store for now qualitative and quantitative values of frequent interest
         which are affected by the interplay of the components and state of an electron microscope.
         Examples are the semiconvergence angle, the magnification, or the camera length.
@@ -149,7 +149,7 @@ In addition to these considerations, several base classes were proposed to defin
     :ref:`NXpump`:
         A base class to describe details about a pump in an instrument.
 
-    :ref:`NXscanbox_em`:
+    :ref:`NXscan_controller`:
         A base class to represent a component that is used to deflect a beam of charged particles in a controlled manner.
         This can be used to document the scan pattern.
 
