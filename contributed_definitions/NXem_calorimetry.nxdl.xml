@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -66,6 +66,7 @@ are aligned with what and how to name things-->
                 <item value="NXem_calorimetry"/>
             </enumeration>
         </field>
+        <field name="identifier_analysis" type="NX_CHAR" optional="true"/>
         <group name="profiling" type="NXcs_profiling" optional="true">
             <doc>
                 Details about performance, profiling, etc.
@@ -82,7 +83,7 @@ are aligned with what and how to name things-->
                 <attribute name="version" type="NX_CHAR"/>
             </field>
         </group>
-        <group name="environment" type="NXobject" recommended="true">
+        <group name="environment" type="NXcollection" recommended="true">
             <doc>
                 Programs and libraries representing the computational environment
             </doc>
@@ -94,14 +95,11 @@ are aligned with what and how to name things-->
         </group>
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
         <group name="sample" type="NXsample" recommended="true">
-            <field name="type" type="NX_CHAR">
+            <field name="is_simulation" type="NX_BOOLEAN">
                 <doc>
-                    A qualifier whether the sample is a real one or a virtual one.
+                    Qualifier whether the sample is a real (in which case is_simulation should be set to false)
+                    or a virtual one (in which case is_simulation should be set to true).
                 </doc>
-                <enumeration>
-                    <item value="experiment"/>
-                    <item value="simulation"/>
-                </enumeration>
             </field>
             <field name="atom_types" type="NX_CHAR">
                 <doc>
@@ -112,8 +110,7 @@ are aligned with what and how to name things-->
                     
                     The purpose of the field is to offer research data management systems an
                     opportunity to parse the relevant elements without having to interpret
-                    these from the resources pointed to by identifier_parent or walk through
-                    eventually deeply nested groups in data instances.
+                    these from the resources.
                 </doc>
             </field>
         </group>
@@ -167,7 +164,7 @@ are aligned with what and how to name things-->
                     delta_time.
                 </doc>
             </field>
-            <field name="identifier_pattern" type="NX_UINT" units="NX_UNITLESS">
+            <field name="indices_pattern" type="NX_INT" units="NX_UNITLESS">
                 <dimensions rank="1">
                     <dim index="1" value="n_p"/>
                 </dimensions>
@@ -193,18 +190,18 @@ Timestamp that is used for each diffraction pattern to correlate the results
 obtained from that pattern with associated actuator data.
 ISO8601 with local time zone information if possible and as precise as practically
 possible. The indices follow the same order as
-used for identifier_pattern.
+used for indices_pattern.
 dim: (n_p,)-->
         <group name="pattern_center" type="NXprocess">
             <doc>
-                Computation of the centre for each pattern using e.g. a Circular Hough
+                Computation of the center for each pattern using e.g. a Circular Hough
                 Transformation.
             </doc>
             <field name="sequence_index" type="NX_POSINT"/>
             <!--NXcg_point-->
             <field name="position" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                    Computed centre for each pattern.
+                    Computed center for each pattern.
                 </doc>
                 <dimensions rank="2">
                     <dim index="1" value="n_p"/>
@@ -215,7 +212,7 @@ dim: (n_p,)-->
         <!--\@units: 1/nm-->
         <group name="distortion_correction" type="NXprocess" optional="true">
             <doc>
-                Elliptical distortion correction as a step when computing the centre for
+                Elliptical distortion correction as a step when computing the center for
                 patterns.
             </doc>
             <field name="sequence_index" type="NX_POSINT"/>
@@ -223,7 +220,7 @@ dim: (n_p,)-->
 NXcg_ellipsoid-->
             <field name="center" type="NX_NUMBER" units="NX_LENGTH">
                 <doc>
-                    Computed centre for each pattern.
+                    Computed center for each pattern.
                 </doc>
                 <dimensions rank="2">
                     <dim index="1" value="n_p"/>
@@ -234,7 +231,7 @@ NXcg_ellipsoid-->
         <!--\@units: 1/nm-->
         <group name="integration" type="NXprocess">
             <doc>
-                Integrated diffraction pattern intensity as a function of radial distance from the centre
+                Integrated diffraction pattern intensity as a function of radial distance from the center
                 azimuthally integrated as a function of time.
             </doc>
             <field name="sequence_index" type="NX_POSINT"/>
@@ -253,7 +250,7 @@ NXcg_ellipsoid-->
                 <field name="intensity" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                         Integrated intensity as a function of time and the radial distance from the
-                        pattern centre.
+                        pattern center.
                     </doc>
                     <dimensions rank="2">
                         <dim index="1" value="n_p"/>
@@ -261,7 +258,7 @@ NXcg_ellipsoid-->
                     </dimensions>
                     <attribute name="long_name" type="NX_CHAR"/>
                 </field>
-                <field name="identifier_pattern" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                <field name="indices_pattern" type="NX_INT" optional="true" units="NX_UNITLESS">
                     <doc>
                         Identifier for each pattern.
                     </doc>

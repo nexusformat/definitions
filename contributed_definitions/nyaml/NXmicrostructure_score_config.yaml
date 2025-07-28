@@ -49,7 +49,8 @@ NXmicrostructure_score_config(NXobject):
       exists: ['min', '0', 'max', 'unbounded']
     sample(NXsample):
       exists: recommended
-      dimensionality(NX_UINT):
+      dimensionality(NX_POSINT):
+        unit: NX_UNITLESS
         doc: |
           Dimensionality of the simulation.
         enumeration: [3]
@@ -66,15 +67,14 @@ NXmicrostructure_score_config(NXobject):
           
           The purpose of the field is to offer research data management systems an
           opportunity to parse the relevant elements without having to interpret
-          these from the resources pointed to by identifier_parent or walk through
-          eventually deeply nested groups in data instances.
+          these from other sources.
     program1(NXprogram):
       exists: recommended
       doc: |
         Name of the program whereby this config file was created.
       program(NX_CHAR):
         \@version(NX_CHAR):
-    environment(NXobject):
+    environment(NXcollection):
       exists: recommended
       doc: |
         Programs and libraries representing the computational environment
@@ -82,7 +82,7 @@ NXmicrostructure_score_config(NXobject):
         exists: ['min', '1', 'max', 'unbounded']
         program(NX_CHAR):
           \@version(NX_CHAR):
-    material(NXobject):
+    material(NXparameters):
       doc: |
         (Mechanical) properties of the material which scale the
         amount of stored (elastic) energy in the system and
@@ -104,7 +104,7 @@ NXmicrostructure_score_config(NXobject):
         unit: NX_TEMPERATURE
         doc: |
           Melting temperature
-    deformation(NXobject):
+    deformation(NXparameters):
       doc: |
         Details about the geometry and properties of the polycrystal that represents the
         starting configuration (typically a deformed microstructure) for the simulation.
@@ -131,7 +131,7 @@ NXmicrostructure_score_config(NXobject):
         unit: NX_LENGTH
         doc: |
           Average spherical diameter when model is poisson_voronoi.
-      ensemble(NXobject):
+      ensemble(NXparameters):
         exists: optional
         doc: |
           Settings for instantiating properties of deformed grains when model is cuboidal
@@ -182,7 +182,7 @@ NXmicrostructure_score_config(NXobject):
         algorithm(NX_CHAR):
           enumeration: [sha256]
         checksum(NX_CHAR):
-    nucleation(NXobject):
+    nucleation(NXparameters):
       doc: |
         Phenomenological model according to which recrystallization nuclei
         are placed into the domain whose growth is studied with the simulation.
@@ -206,7 +206,7 @@ NXmicrostructure_score_config(NXobject):
           * random, picking randomly on the SO3
           * damask, picking based on information provided in deformation/damask
         enumeration: [ensemble, random, damask]
-      ensemble(NXobject):
+      ensemble(NXparameters):
         
         # required unless custom nucleation model
         doc: |
@@ -227,7 +227,7 @@ NXmicrostructure_score_config(NXobject):
           dimensions:
             rank: 1
             dim: (n_rx_ori,)
-    grain_boundary_mobility(NXobject):
+    grain_boundary_mobility(NXparameters):
       doc: |
         Model for the assumed mobility of grain boundaries with different disorientation
         implemented as parameterized Turnbull's model for thermally-activated
@@ -242,7 +242,7 @@ NXmicrostructure_score_config(NXobject):
         # TODO: add equation for the Sebald-Gottstein model the following equation
         # TODO: add equation for the Rollett-Holm model the following equation
         enumeration: [sebald_gottstein, rollett_holm]
-      sebald_gottstein(NXobject):
+      sebald_gottstein(NXparameters):
         exists: optional
         doc: |
           Parameter of the Sebald-Gottstein migration model.
@@ -283,7 +283,7 @@ NXmicrostructure_score_config(NXobject):
             Migration activation enthalpy for high-angle grain boundaries which in
             bicrystal or other tailored experiments showed a particular high
             mobility.
-      rollett_holm(NXobject):
+      rollett_holm(NXparameters):
         doc: |
           Parameter of the Rollett-Holm migration model.
         
@@ -308,14 +308,14 @@ NXmicrostructure_score_config(NXobject):
           unit: NX_UNITLESS
           doc: |
             Mobility scaling factor :math:`c_3`. Typically 9.
-    stored_energy_recovery(NXobject):
+    stored_energy_recovery(NXparameters):
       doc: |
         Time-dependent reduction of the stored energy to account for recovery effects.
       model(NX_CHAR):
         doc: |
           Which type of recovery model.
         enumeration: [none]
-    dispersoid_drag(NXobject):
+    dispersoid_drag(NXparameters):
       doc: |
         Reduction of the grain boundary migration speed due to the presence of dispersoids
         through which the total grain boundary area of the recrystallization front can be reduced
@@ -324,7 +324,7 @@ NXmicrostructure_score_config(NXobject):
         doc: |
           Which type of drag model.
         enumeration: [none, zener_smith]
-      zener_smith(NXobject):
+      zener_smith(NXparameters):
         
         # required when model is zener_smith
         doc: |
@@ -367,7 +367,7 @@ NXmicrostructure_score_config(NXobject):
               rank: 1
               dim: (n_drag,)
             \@long_name(NX_CHAR):
-    component_analysis(NXobject):
+    component_analysis(NXparameters):
       name(NX_CHAR):
         doc: |
           Given name of a texture component.
@@ -446,7 +446,7 @@ NXmicrostructure_score_config(NXobject):
             is discretized via equisized cubic voxels.
     
     # dim: (d,)
-    numerics(NXobject):
+    numerics(NXparameters):
       doc: |
         Criteria which enable to stop the simulation in a controlled manner.
         Whichever criterion is fulfilled first stops the simulation.
@@ -488,7 +488,7 @@ NXmicrostructure_score_config(NXobject):
         dimensions:
           rank: 1
           dim: (n_snapshot,)
-      cell_cache(NXobject):
+      cell_cache(NXparameters):
         doc: |
           Parameter which control the memory management
           of cells in the recrystallization front.
@@ -519,7 +519,7 @@ NXmicrostructure_score_config(NXobject):
           dimensions:
             rank: 1
             dim: (n_defrag,)
-    solitary_unit(NXobject):
+    solitary_unit(NXparameters):
       apply(NX_BOOLEAN):
         doc: |
           Perform a statistical analyses of the results as it was proposed
@@ -534,17 +534,10 @@ NXmicrostructure_score_config(NXobject):
         doc: |
           Into how many time steps should the real time interval be discretized upon
           during post-processing the results with the solitary unit modeling approach.
-  
-  # identifier_domain(NX_UINT):
-  # doc: |
-  # List of identifier for those CAs domains which should be sampled.
-  # Identifier start from 1.
-  # unit: NX_UNITLESS
-  # dim: (n_su,)
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 03ff6c1cc0bd458dd25c5847ee92f44c307e0f1cc54c41ac6f07e702b5ef5d01
-# <?xml version='1.0' encoding='UTF-8'?>
+# 68eef00573d978ee8505c363acca7f7c1ec47ce1c5c7fc2022fe7b87ae50ddb3
+# <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
@@ -649,7 +642,7 @@ NXmicrostructure_score_config(NXobject):
 #         <group name="profiling" type="NXcs_profiling" optional="true"/>
 #         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
 #         <group name="sample" type="NXsample" recommended="true">
-#             <field name="dimensionality" type="NX_UINT">
+#             <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
 #                 <doc>
 #                     Dimensionality of the simulation.
 #                 </doc>
@@ -675,8 +668,7 @@ NXmicrostructure_score_config(NXobject):
 #                     
 #                     The purpose of the field is to offer research data management systems an
 #                     opportunity to parse the relevant elements without having to interpret
-#                     these from the resources pointed to by identifier_parent or walk through
-#                     eventually deeply nested groups in data instances.
+#                     these from other sources.
 #                 </doc>
 #             </field>
 #         </group>
@@ -688,7 +680,7 @@ NXmicrostructure_score_config(NXobject):
 #                 <attribute name="version" type="NX_CHAR"/>
 #             </field>
 #         </group>
-#         <group name="environment" type="NXobject" recommended="true">
+#         <group name="environment" type="NXcollection" recommended="true">
 #             <doc>
 #                 Programs and libraries representing the computational environment
 #             </doc>
@@ -698,7 +690,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </field>
 #             </group>
 #         </group>
-#         <group name="material" type="NXobject">
+#         <group name="material" type="NXparameters">
 #             <doc>
 #                 (Mechanical) properties of the material which scale the
 #                 amount of stored (elastic) energy in the system and
@@ -724,7 +716,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </doc>
 #             </field>
 #         </group>
-#         <group name="deformation" type="NXobject">
+#         <group name="deformation" type="NXparameters">
 #             <doc>
 #                 Details about the geometry and properties of the polycrystal that represents the
 #                 starting configuration (typically a deformed microstructure) for the simulation.
@@ -760,7 +752,7 @@ NXmicrostructure_score_config(NXobject):
 #                     Average spherical diameter when model is poisson_voronoi.
 #                 </doc>
 #             </field>
-#             <group name="ensemble" type="NXobject" optional="true">
+#             <group name="ensemble" type="NXparameters" optional="true">
 #                 <doc>
 #                     Settings for instantiating properties of deformed grains when model is cuboidal
 #                     or poisson.
@@ -827,7 +819,7 @@ NXmicrostructure_score_config(NXobject):
 #                 <field name="checksum" type="NX_CHAR"/>
 #             </group>
 #         </group>
-#         <group name="nucleation" type="NXobject">
+#         <group name="nucleation" type="NXparameters">
 #             <doc>
 #                 Phenomenological model according to which recrystallization nuclei
 #                 are placed into the domain whose growth is studied with the simulation.
@@ -867,7 +859,7 @@ NXmicrostructure_score_config(NXobject):
 #                     <item value="damask"/>
 #                 </enumeration>
 #             </field>
-#             <group name="ensemble" type="NXobject">
+#             <group name="ensemble" type="NXparameters">
 #                 <!--required unless custom nucleation model-->
 #                 <doc>
 #                     Settings for instantiating properties of nuclei for recrystallizing grains.
@@ -893,7 +885,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </field>
 #             </group>
 #         </group>
-#         <group name="grain_boundary_mobility" type="NXobject">
+#         <group name="grain_boundary_mobility" type="NXparameters">
 #             <doc>
 #                 Model for the assumed mobility of grain boundaries with different disorientation
 #                 implemented as parameterized Turnbull's model for thermally-activated
@@ -913,7 +905,7 @@ NXmicrostructure_score_config(NXobject):
 #                     <item value="rollett_holm"/>
 #                 </enumeration>
 #             </field>
-#             <group name="sebald_gottstein" type="NXobject" optional="true">
+#             <group name="sebald_gottstein" type="NXparameters" optional="true">
 #                 <doc>
 #                     Parameter of the Sebald-Gottstein migration model.
 #                 </doc>
@@ -960,7 +952,7 @@ NXmicrostructure_score_config(NXobject):
 #                     </doc>
 #                 </field>
 #             </group>
-#             <group name="rollett_holm" type="NXobject">
+#             <group name="rollett_holm" type="NXparameters">
 #                 <doc>
 #                     Parameter of the Rollett-Holm migration model.
 #                 </doc>
@@ -992,7 +984,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </field>
 #             </group>
 #         </group>
-#         <group name="stored_energy_recovery" type="NXobject">
+#         <group name="stored_energy_recovery" type="NXparameters">
 #             <doc>
 #                 Time-dependent reduction of the stored energy to account for recovery effects.
 #             </doc>
@@ -1005,7 +997,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </enumeration>
 #             </field>
 #         </group>
-#         <group name="dispersoid_drag" type="NXobject">
+#         <group name="dispersoid_drag" type="NXparameters">
 #             <doc>
 #                 Reduction of the grain boundary migration speed due to the presence of dispersoids
 #                 through which the total grain boundary area of the recrystallization front can be reduced
@@ -1020,7 +1012,7 @@ NXmicrostructure_score_config(NXobject):
 #                     <item value="zener_smith"/>
 #                 </enumeration>
 #             </field>
-#             <group name="zener_smith" type="NXobject">
+#             <group name="zener_smith" type="NXparameters">
 #                 <!--required when model is zener_smith-->
 #                 <doc>
 #                     Parameter of the Zener-Smith drag model when model is zener_smith.
@@ -1070,7 +1062,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </group>
 #             </group>
 #         </group>
-#         <group name="component_analysis" type="NXobject">
+#         <group name="component_analysis" type="NXparameters">
 #             <field name="name" type="NX_CHAR">
 #                 <doc>
 #                     Given name of a texture component.
@@ -1163,7 +1155,7 @@ NXmicrostructure_score_config(NXobject):
 #             </group>
 #         </group>
 #         <!--dim: (d,)-->
-#         <group name="numerics" type="NXobject">
+#         <group name="numerics" type="NXparameters">
 #             <doc>
 #                 Criteria which enable to stop the simulation in a controlled manner.
 #                 Whichever criterion is fulfilled first stops the simulation.
@@ -1211,7 +1203,7 @@ NXmicrostructure_score_config(NXobject):
 #                     <dim index="1" value="n_snapshot"/>
 #                 </dimensions>
 #             </field>
-#             <group name="cell_cache" type="NXobject">
+#             <group name="cell_cache" type="NXparameters">
 #                 <doc>
 #                     Parameter which control the memory management
 #                     of cells in the recrystallization front.
@@ -1250,7 +1242,7 @@ NXmicrostructure_score_config(NXobject):
 #                 </field>
 #             </group>
 #         </group>
-#         <group name="solitary_unit" type="NXobject">
+#         <group name="solitary_unit" type="NXparameters">
 #             <field name="apply" type="NX_BOOLEAN">
 #                 <doc>
 #                     Perform a statistical analyses of the results as it was proposed
@@ -1271,10 +1263,4 @@ NXmicrostructure_score_config(NXobject):
 #             </field>
 #         </group>
 #     </group>
-#     <!--identifier_domain(NX_UINT):
-# doc: |
-# List of identifier for those CAs domains which should be sampled.
-# Identifier start from 1.
-# unit: NX_UNITLESS
-# dim: (n_su,)-->
 # </definition>

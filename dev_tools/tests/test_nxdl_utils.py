@@ -77,9 +77,6 @@ def test_get_node_at_nxdl_path():
         elem=elem,
     )
     assert node.attrib["type"] == "NX_NUMBER"
-
-    node = nexus.get_node_at_nxdl_path("/ENTRY/coordinate_system_set", elem=elem)
-    assert node.attrib["type"] == "NXcoordinate_system_set"
     """
 
     nxdl_file_path = local_dir / "../../contributed_definitions/NXiv_temp.nxdl.xml"

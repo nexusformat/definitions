@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -97,12 +97,12 @@
                 </field>
             </group>
             <group name="voronoi_cells" type="NXcg_polyhedron" optional="true">
-                <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+                <field name="dimensionality" type="NX_POSINT">
                     <enumeration>
                         <item value="3"/>
                     </enumeration>
                 </field>
-                <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS">
+                <field name="cardinality" type="NX_POSINT">
                     <doc>
                         The number of points (and thus cells).
                     </doc>
@@ -115,7 +115,7 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="identifier_process" type="NX_POSINT" optional="true" units="NX_UNITLESS">
+                <field name="process_id" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
                         Which MPI process computed which Voronoi cell.
                     </doc>
@@ -123,7 +123,7 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="identifier_thread" type="NX_POSINT" optional="true" units="NX_UNITLESS">
+                <field name="thread_id" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
                         Which OpenMP thread computed which Voronoi cell.
                     </doc>
@@ -131,7 +131,7 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="number_of_faces" type="NX_INT" optional="true" units="NX_UNITLESS">
+                <field name="number_of_faces" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
                         The number of faces for each cell. Faces of adjoining polyhedra are counted
                         for each polyhedron. This field can be used to interpret the concatenated vector
@@ -141,16 +141,16 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="identifier_offset" type="NX_INT"/>
+                <field name="index_offset" type="NX_INT"/>
                 <group name="polyhedra" type="NXcg_face_list_data_structure" optional="true">
                     <doc>
                         A simple approach to describe the entire set of polyhedra when the main
                         intention is to store the shape of the polyhedra for visualization purposes.
                     </doc>
-                    <field name="number_of_vertices" type="NX_INT"/>
-                    <field name="number_of_faces" type="NX_INT"/>
-                    <field name="identifier_vertex_offset" type="NX_INT"/>
-                    <field name="identifier_face_offset" type="NX_INT"/>
+                    <field name="number_of_vertices" type="NX_UINT"/>
+                    <field name="number_of_faces" type="NX_UINT"/>
+                    <field name="indices_offset_vertex" type="NX_INT"/>
+                    <field name="indices_offset_face" type="NX_INT"/>
                     <field name="vertices" type="NX_FLOAT"/>
                 </group>
                 <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
@@ -159,14 +159,14 @@
                         Each tuple contains encodes information to visualize using XDMF:
                         Firstly, an XDMF geometric primitive type key.
                         Secondly, the number of vertices of the polygon.
-                        Third, the sequence of identifier_vertex which define the facet.
+                        Third, the sequence of indices_vertex which define the facet.
                         Tuples encode faces faster than cells.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_f_xdmf"/>
                     </dimensions>
                 </field>
-                <field name="identifier_xdmf_cell" type="NX_UINT" units="NX_UNITLESS">
+                <field name="xdmf_cell_id" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                         Sequence of cell identifier, concatenated such that each face is
                         associated with its cell. Given that paraprobe-tessellator assigns
@@ -301,9 +301,9 @@ dim: (i,)  # one would not need to constrain this but doing so communicates that
                 <field name="end_time" type="NX_DATE_TIME"/>
                 <field name="total_elapsed_time" type="NX_FLOAT"/>
                 <field name="current_working_directory" type="NX_CHAR"/>
-                <field name="number_of_processes" type="NX_POSINT"/>
-                <field name="number_of_threads" type="NX_POSINT"/>
-                <field name="number_of_gpus" type="NX_POSINT"/>
+                <field name="number_of_processes" type="NX_UINT"/>
+                <field name="number_of_threads" type="NX_UINT"/>
+                <field name="number_of_gpus" type="NX_UINT"/>
             </group>
             <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
                 <doc>
@@ -311,26 +311,24 @@ dim: (i,)  # one would not need to constrain this but doing so communicates that
                 </doc>
                 <field name="name" type="NX_CHAR"/>
             </group>
-            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
-                <group name="paraprobe" type="NXcoordinate_system">
-                    <field name="type" type="NX_CHAR"/>
-                    <field name="handedness" type="NX_CHAR"/>
-                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
-                        <dimensions rank="1">
-                            <dim index="1" value="3"/>
-                        </dimensions>
-                    </field>
-                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
-                        <dimensions rank="1">
-                            <dim index="1" value="3"/>
-                        </dimensions>
-                    </field>
-                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
-                        <dimensions rank="1">
-                            <dim index="1" value="3"/>
-                        </dimensions>
-                    </field>
-                </group>
+            <group name="paraprobe" type="NXcoordinate_system">
+                <field name="type" type="NX_CHAR"/>
+                <field name="handedness" type="NX_CHAR"/>
+                <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
             </group>
         </group>
     </group>

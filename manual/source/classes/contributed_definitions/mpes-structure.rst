@@ -88,7 +88,7 @@ There are three related base classes that are common to other techniques:
       A base class to describe the complex manipulators used in experiments, often with > 4 degrees of freedom, 
       cryogenic cooling, and other advanced features.
 
-   :ref:`NXlens_em`:
+   :ref:`NXelectromagnetic_lens`:
       A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
    :ref:`NXdeflector`

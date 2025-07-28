@@ -29,6 +29,8 @@ NXem_calorimetry(NXobject):
     exists: ['min', '1', 'max', '1']
     definition(NX_CHAR):
       enumeration: [NXem_calorimetry]
+    identifier_analysis(NX_CHAR):
+      exists: optional
     profiling(NXcs_profiling):
       exists: optional
       doc: |
@@ -44,7 +46,7 @@ NXem_calorimetry(NXobject):
         Name of the program whereby this config file was created.
       program(NX_CHAR):
         \@version(NX_CHAR):
-    environment(NXobject):
+    environment(NXcollection):
       exists: recommended
       doc: |
         Programs and libraries representing the computational environment
@@ -56,10 +58,10 @@ NXem_calorimetry(NXobject):
       exists: ['min', '0', 'max', 'unbounded']
     sample(NXsample):
       exists: recommended
-      type(NX_CHAR):
+      is_simulation(NX_BOOLEAN):
         doc: |
-          A qualifier whether the sample is a real one or a virtual one.
-        enumeration: [experiment, simulation]
+          Qualifier whether the sample is a real (in which case is_simulation should be set to false)
+          or a virtual one (in which case is_simulation should be set to true).
       atom_types(NX_CHAR):
         doc: |
           List of comma-separated elements from the periodic table that are
@@ -69,8 +71,7 @@ NXem_calorimetry(NXobject):
           
           The purpose of the field is to offer research data management systems an
           opportunity to parse the relevant elements without having to interpret
-          these from the resources pointed to by identifier_parent or walk through
-          eventually deeply nested groups in data instances.
+          these from the resources.
     (NXcite):
       exists: ['min', '0', 'max', 'unbounded']
     
@@ -115,7 +116,7 @@ NXem_calorimetry(NXobject):
           as diffraction pattern matching with a specific state of  the sample
           (e.g. obtained temperature via the actuator) are reported through
           delta_time.
-      identifier_pattern(NX_UINT):
+      indices_pattern(NX_INT):
         unit: NX_UNITLESS
         dimensions:
           rank: 1
@@ -140,11 +141,11 @@ NXem_calorimetry(NXobject):
     # obtained from that pattern with associated actuator data.
     # ISO8601 with local time zone information if possible and as precise as practically
     # possible. The indices follow the same order as
-    # used for identifier_pattern.
+    # used for indices_pattern.
     # dim: (n_p,)
     pattern_center(NXprocess):
       doc: |
-        Computation of the centre for each pattern using e.g. a Circular Hough
+        Computation of the center for each pattern using e.g. a Circular Hough
         Transformation.
       sequence_index(NX_POSINT):
       
@@ -152,7 +153,7 @@ NXem_calorimetry(NXobject):
       position(NX_FLOAT):
         unit: NX_LENGTH
         doc: |
-          Computed centre for each pattern.
+          Computed center for each pattern.
         dimensions:
           rank: 2
           dim: (n_p, 2)
@@ -161,7 +162,7 @@ NXem_calorimetry(NXobject):
     distortion_correction(NXprocess):
       exists: optional
       doc: |
-        Elliptical distortion correction as a step when computing the centre for
+        Elliptical distortion correction as a step when computing the center for
         patterns.
       sequence_index(NX_POSINT):
       
@@ -170,7 +171,7 @@ NXem_calorimetry(NXobject):
       center(NX_NUMBER):
         unit: NX_LENGTH
         doc: |
-          Computed centre for each pattern.
+          Computed center for each pattern.
         dimensions:
           rank: 2
           dim: (n_p, 2)
@@ -178,7 +179,7 @@ NXem_calorimetry(NXobject):
     # \@units: 1/nm
     integration(NXprocess):
       doc: |
-        Integrated diffraction pattern intensity as a function of radial distance from the centre
+        Integrated diffraction pattern intensity as a function of radial distance from the center
         azimuthally integrated as a function of time.
       sequence_index(NX_POSINT):
       
@@ -200,12 +201,12 @@ NXem_calorimetry(NXobject):
           unit: NX_UNITLESS
           doc: |
             Integrated intensity as a function of time and the radial distance from the
-            pattern centre.
+            pattern center.
           dimensions:
             rank: 2
             dim: (n_p, n_f)
           \@long_name(NX_CHAR):
-        identifier_pattern(NX_UINT):
+        indices_pattern(NX_INT):
           exists: optional
           unit: NX_UNITLESS
           doc: |
@@ -240,8 +241,8 @@ NXem_calorimetry(NXobject):
       sequence_index(NX_POSINT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 43730eda1d028f9abc84758c1d15a9e8e4e23889aa0df74e32c280bebaee8723
-# <?xml version='1.0' encoding='UTF-8'?>
+# 4142f89f3701f4bac98d8ae1a748b84cd7cd9e234abf03c755544e7decfa229a
+# <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
@@ -309,6 +310,7 @@ NXem_calorimetry(NXobject):
 #                 <item value="NXem_calorimetry"/>
 #             </enumeration>
 #         </field>
+#         <field name="identifier_analysis" type="NX_CHAR" optional="true"/>
 #         <group name="profiling" type="NXcs_profiling" optional="true">
 #             <doc>
 #                 Details about performance, profiling, etc.
@@ -325,7 +327,7 @@ NXem_calorimetry(NXobject):
 #                 <attribute name="version" type="NX_CHAR"/>
 #             </field>
 #         </group>
-#         <group name="environment" type="NXobject" recommended="true">
+#         <group name="environment" type="NXcollection" recommended="true">
 #             <doc>
 #                 Programs and libraries representing the computational environment
 #             </doc>
@@ -337,14 +339,11 @@ NXem_calorimetry(NXobject):
 #         </group>
 #         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
 #         <group name="sample" type="NXsample" recommended="true">
-#             <field name="type" type="NX_CHAR">
+#             <field name="is_simulation" type="NX_BOOLEAN">
 #                 <doc>
-#                     A qualifier whether the sample is a real one or a virtual one.
+#                     Qualifier whether the sample is a real (in which case is_simulation should be set to false)
+#                     or a virtual one (in which case is_simulation should be set to true).
 #                 </doc>
-#                 <enumeration>
-#                     <item value="experiment"/>
-#                     <item value="simulation"/>
-#                 </enumeration>
 #             </field>
 #             <field name="atom_types" type="NX_CHAR">
 #                 <doc>
@@ -355,8 +354,7 @@ NXem_calorimetry(NXobject):
 #                     
 #                     The purpose of the field is to offer research data management systems an
 #                     opportunity to parse the relevant elements without having to interpret
-#                     these from the resources pointed to by identifier_parent or walk through
-#                     eventually deeply nested groups in data instances.
+#                     these from the resources.
 #                 </doc>
 #             </field>
 #         </group>
@@ -410,7 +408,7 @@ NXem_calorimetry(NXobject):
 #                     delta_time.
 #                 </doc>
 #             </field>
-#             <field name="identifier_pattern" type="NX_UINT" units="NX_UNITLESS">
+#             <field name="indices_pattern" type="NX_INT" units="NX_UNITLESS">
 #                 <dimensions rank="1">
 #                     <dim index="1" value="n_p"/>
 #                 </dimensions>
@@ -436,18 +434,18 @@ NXem_calorimetry(NXobject):
 # obtained from that pattern with associated actuator data.
 # ISO8601 with local time zone information if possible and as precise as practically
 # possible. The indices follow the same order as
-# used for identifier_pattern.
+# used for indices_pattern.
 # dim: (n_p,)-->
 #         <group name="pattern_center" type="NXprocess">
 #             <doc>
-#                 Computation of the centre for each pattern using e.g. a Circular Hough
+#                 Computation of the center for each pattern using e.g. a Circular Hough
 #                 Transformation.
 #             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
 #             <!--NXcg_point-->
 #             <field name="position" type="NX_FLOAT" units="NX_LENGTH">
 #                 <doc>
-#                     Computed centre for each pattern.
+#                     Computed center for each pattern.
 #                 </doc>
 #                 <dimensions rank="2">
 #                     <dim index="1" value="n_p"/>
@@ -458,7 +456,7 @@ NXem_calorimetry(NXobject):
 #         <!--\@units: 1/nm-->
 #         <group name="distortion_correction" type="NXprocess" optional="true">
 #             <doc>
-#                 Elliptical distortion correction as a step when computing the centre for
+#                 Elliptical distortion correction as a step when computing the center for
 #                 patterns.
 #             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
@@ -466,7 +464,7 @@ NXem_calorimetry(NXobject):
 # NXcg_ellipsoid-->
 #             <field name="center" type="NX_NUMBER" units="NX_LENGTH">
 #                 <doc>
-#                     Computed centre for each pattern.
+#                     Computed center for each pattern.
 #                 </doc>
 #                 <dimensions rank="2">
 #                     <dim index="1" value="n_p"/>
@@ -477,7 +475,7 @@ NXem_calorimetry(NXobject):
 #         <!--\@units: 1/nm-->
 #         <group name="integration" type="NXprocess">
 #             <doc>
-#                 Integrated diffraction pattern intensity as a function of radial distance from the centre
+#                 Integrated diffraction pattern intensity as a function of radial distance from the center
 #                 azimuthally integrated as a function of time.
 #             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
@@ -496,7 +494,7 @@ NXem_calorimetry(NXobject):
 #                 <field name="intensity" type="NX_FLOAT" units="NX_UNITLESS">
 #                     <doc>
 #                         Integrated intensity as a function of time and the radial distance from the
-#                         pattern centre.
+#                         pattern center.
 #                     </doc>
 #                     <dimensions rank="2">
 #                         <dim index="1" value="n_p"/>
@@ -504,7 +502,7 @@ NXem_calorimetry(NXobject):
 #                     </dimensions>
 #                     <attribute name="long_name" type="NX_CHAR"/>
 #                 </field>
-#                 <field name="identifier_pattern" type="NX_UINT" optional="true" units="NX_UNITLESS">
+#                 <field name="indices_pattern" type="NX_INT" optional="true" units="NX_UNITLESS">
 #                     <doc>
 #                         Identifier for each pattern.
 #                     </doc>
