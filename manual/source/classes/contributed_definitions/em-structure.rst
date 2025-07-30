@@ -91,7 +91,7 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities
         which modern stages of electron microscopes typically offer.
 
-    :ref:`NXinstrument_em`:
+    :ref:`NXem_instrument`:
         A base class to group the components that make up an electron microscope.
 
 Contextualizing and defining definitions of reference frames and transformations of these and rotations and orientations defined within such reference frames:
@@ -100,7 +100,7 @@ Contextualizing and defining definitions of reference frames and transformations
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
 
-    :ref:`NXevent_data_em`:
+    :ref:`NXem_event_data`:
         A base class representing a container to hold time-stamped and microscope-state-annotated
         data during a session at an electron microscope.
 
