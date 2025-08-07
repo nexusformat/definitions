@@ -231,7 +231,14 @@
                 start_time and end_time together.
             </doc>
         </field>
-        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial"/>
+        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+            <field name="author" type="NX_CHAR" optional="true">
+                <doc>
+                    The author(s) of that reference.
+                </doc>
+            </field>
+            <field name="doi" type="NX_CHAR"/>
+        </group>
         <group name="noteID" type="NXnote" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <doc>
                 Collection of serialized resources associated with the experiment.
@@ -1680,13 +1687,52 @@ is required to provide such information in this way!-->
                 <group name="indexing" type="NXprocess" optional="true">
                     <field name="number_of_scan_points" type="NX_UINT"/>
                     <field name="indexing_rate" type="NX_NUMBER" recommended="true"/>
+                    <group name="microstructureID" type="NXmicrostructure" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                        <group name="configuration" type="NXprocess">
+                            <field name="dimensionality" type="NX_POSINT"/>
+                            <field name="algorithm" type="NX_CHAR"/>
+                            <field name="disorientation_threshold" type="NX_NUMBER"/>
+                            <group name="programID" type="NXprogram" nameType="partial" recommended="true">
+                                <field name="program" type="NX_CHAR">
+                                    <attribute name="version" type="NX_CHAR"/>
+                                </field>
+                                <group name="mtex" type="NXmicrostructure_mtex_config" optional="true"/>
+                            </group>
+                        </group>
+                        <group name="grid" type="NXcg_grid" optional="true"/>
+                        <group name="points" type="NXcg_point" optional="true"/>
+                        <group name="polylines" type="NXcg_polyline" optional="true"/>
+                        <group name="triangles" type="NXcg_triangle" optional="true"/>
+                        <group name="polygons" type="NXcg_polygon" optional="true"/>
+                        <group name="polyhedra" type="NXcg_polyhedron" optional="true"/>
+                        <group name="crystals" type="NXmicrostructure_feature" optional="true">
+                            <field name="representation" type="NX_CHAR" recommended="true"/>
+                            <field name="number_of_crystals" type="NX_UINT"/>
+                            <field name="index_offset" type="NX_INT"/>
+                        </group>
+                        <group name="interfaces" type="NXmicrostructure_feature" optional="true">
+                            <field name="representation" type="NX_CHAR" recommended="true"/>
+                            <field name="number_of_interfaces" type="NX_UINT"/>
+                            <field name="index_offset" type="NX_INT"/>
+                        </group>
+                        <group name="triple_junctions" type="NXmicrostructure_feature" optional="true">
+                            <field name="representation" type="NX_CHAR" recommended="true"/>
+                            <field name="number_of_junctions" type="NX_UINT"/>
+                            <field name="index_offset" type="NX_INT"/>
+                        </group>
+                        <group name="quadruple_junctions" type="NXmicrostructure_feature" optional="true">
+                            <field name="representation" type="NX_CHAR" recommended="true"/>
+                            <field name="number_of_junctions" type="NX_UINT"/>
+                            <field name="index_offset" type="NX_INT"/>
+                        </group>
+                    </group>
                     <group name="source" type="NXnote" optional="true">
                         <field name="type" type="NX_CHAR" recommended="true"/>
                         <field name="file_name" type="NX_CHAR"/>
                         <field name="checksum" type="NX_CHAR" recommended="true"/>
                         <field name="algorithm" type="NX_CHAR" recommended="true"/>
                     </group>
-                    <!--per scan point quantities (identifier_phase, matching_phase, positions, etc.)
+                    <!--per scan point quantities (phase_id, matching_phase, positions, etc.)
 just using the implicit optional, for the database example in NOMAD we do
 not wish to duplicate all payload data-->
                     <group name="phaseID" type="NXphase" nameType="partial" minOccurs="0" maxOccurs="unbounded">
@@ -1739,11 +1785,38 @@ not wish to duplicate all payload data-->
                                 </field>
                             </group>
                         </group>
-                        <group name="odfID" type="NXmicrostructure_odf" nameType="partial" optional="true"/>
-                        <group name="pfID" type="NXmicrostructure_pf" nameType="partial" optional="true"/>
+                        <group name="odfID" type="NXmicrostructure_odf" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+                            <group name="configuration" type="NXparameters" recommended="true">
+                                <field name="crystal_symmetry_point_group" type="NX_CHAR"/>
+                                <field name="specimen_symmetry_point_group" type="NX_CHAR"/>
+                                <field name="kernel_halfwidth" type="NX_NUMBER"/>
+                                <field name="kernel_name" type="NX_CHAR"/>
+                                <field name="resolution" type="NX_NUMBER"/>
+                            </group>
+                            <group name="characteristics" type="NXprocess" optional="true">
+                                <field name="texture_index" type="NX_FLOAT"/>
+                            </group>
+                            <group name="phi_two_plot" type="NXdata">
+                                <attribute name="signal" type="NX_CHAR"/>
+                                <attribute name="axes" type="NX_CHAR"/>
+                                <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
+                                <field name="title" type="NX_CHAR" recommended="true"/>
+                                <field name="intensity" type="NX_NUMBER">
+                                    <attribute name="long_name" type="NX_CHAR"/>
+                                </field>
+                                <field name="varphi_one" type="NX_NUMBER">
+                                    <attribute name="long_name" type="NX_CHAR"/>
+                                </field>
+                                <field name="capital_phi" type="NX_NUMBER">
+                                    <attribute name="long_name" type="NX_CHAR"/>
+                                </field>
+                                <field name="varphi_two" type="NX_NUMBER">
+                                    <attribute name="long_name" type="NX_CHAR"/>
+                                </field>
+                            </group>
+                        </group>
+                        <group name="pfID" type="NXmicrostructure_pf" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                     </group>
-                    <!--microstructure of the entire ROI-->
-                    <group name="microstructureID" type="NXmicrostructure" nameType="partial" optional="true"/>
                     <group name="roi" type="NXdata" recommended="true">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>

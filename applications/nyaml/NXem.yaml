@@ -202,6 +202,11 @@ NXem(NXobject):
     citeID(NXcite):
       exists: ['min', '0', 'max', 'unbounded']
       nameType: partial
+      author(NX_CHAR):
+        exists: optional
+        doc: |
+          The author(s) of that reference.
+      doi(NX_CHAR):
     noteID(NXnote):
       exists: ['min', '0', 'max', 'unbounded']
       nameType: partial
@@ -1638,6 +1643,56 @@ NXem(NXobject):
           number_of_scan_points(NX_UINT):
           indexing_rate(NX_NUMBER):
             exists: recommended
+          microstructureID(NXmicrostructure):
+            nameType: partial
+            exists: ['min', '0', 'max', 'unbounded']
+            configuration(NXprocess):
+              dimensionality(NX_POSINT):
+              algorithm(NX_CHAR):
+              disorientation_threshold(NX_NUMBER):
+              programID(NXprogram):
+                nameType: partial
+                exists: recommended
+                program(NX_CHAR):
+                  \@version(NX_CHAR):
+                mtex(NXmicrostructure_mtex_config):
+                  exists: optional
+            grid(NXcg_grid):
+              exists: optional
+            points(NXcg_point):
+              exists: optional
+            polylines(NXcg_polyline):
+              exists: optional
+            triangles(NXcg_triangle):
+              exists: optional
+            polygons(NXcg_polygon):
+              exists: optional
+            polyhedra(NXcg_polyhedron):
+              exists: optional
+            crystals(NXmicrostructure_feature):
+              exists: optional
+              representation(NX_CHAR):
+                exists: recommended
+              number_of_crystals(NX_UINT):
+              index_offset(NX_INT):
+            interfaces(NXmicrostructure_feature):
+              exists: optional
+              representation(NX_CHAR):
+                exists: recommended
+              number_of_interfaces(NX_UINT):
+              index_offset(NX_INT):
+            triple_junctions(NXmicrostructure_feature):
+              exists: optional
+              representation(NX_CHAR):
+                exists: recommended
+              number_of_junctions(NX_UINT):
+              index_offset(NX_INT):
+            quadruple_junctions(NXmicrostructure_feature):
+              exists: optional
+              representation(NX_CHAR):
+                exists: recommended
+              number_of_junctions(NX_UINT):
+              index_offset(NX_INT):
           source(NXnote):
             exists: optional
             type(NX_CHAR):
@@ -1648,7 +1703,7 @@ NXem(NXobject):
             algorithm(NX_CHAR):
               exists: recommended
           
-          # per scan point quantities (identifier_phase, matching_phase, positions, etc.)
+          # per scan point quantities (phase_id, matching_phase, positions, etc.)
           # just using the implicit optional, for the database example in NOMAD we do
           # not wish to duplicate all payload data
           phaseID(NXphase):
@@ -1704,15 +1759,35 @@ NXem(NXobject):
                   \@long_name(NX_CHAR):
             odfID(NXmicrostructure_odf):
               nameType: partial
-              exists: optional
+              exists: ['min', '0', 'max', 'unbounded']
+              configuration(NXparameters):
+                exists: recommended
+                crystal_symmetry_point_group(NX_CHAR):
+                specimen_symmetry_point_group(NX_CHAR):
+                kernel_halfwidth(NX_NUMBER):
+                kernel_name(NX_CHAR):
+                resolution(NX_NUMBER):
+              characteristics(NXprocess):
+                exists: optional
+                texture_index(NX_FLOAT):
+              phi_two_plot(NXdata):
+                \@signal(NX_CHAR):
+                \@axes(NX_CHAR):
+                \@AXISNAME_indices(NX_UINT):
+                  nameType: partial
+                title(NX_CHAR):
+                  exists: recommended
+                intensity(NX_NUMBER):
+                  \@long_name(NX_CHAR):
+                varphi_one(NX_NUMBER):
+                  \@long_name(NX_CHAR):
+                capital_phi(NX_NUMBER):
+                  \@long_name(NX_CHAR):
+                varphi_two(NX_NUMBER):
+                  \@long_name(NX_CHAR):
             pfID(NXmicrostructure_pf):
               nameType: partial
-              exists: optional
-          
-          # microstructure of the entire ROI
-          microstructureID(NXmicrostructure):
-            nameType: partial
-            exists: optional
+              exists: ['min', '0', 'max', 'unbounded']
           roi(NXdata):
             exists: recommended
             \@signal(NX_CHAR):
@@ -1774,7 +1849,7 @@ NXem(NXobject):
   # in https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0b928c4352bc5636f673b5fb25ce990f1af8a099
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# e2e9a591eeb4374c8a4a83fcaf92d3f8f56b5c6ccb8c6c10d6a0d3c8b7a1ce9b
+# 2cbc5e6b4ca32e7bcf5ca322b46262d8747500d9eef98317c795079ead77f779
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -2008,7 +2083,14 @@ NXem(NXobject):
 #                 start_time and end_time together.
 #             </doc>
 #         </field>
-#         <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial"/>
+#         <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+#             <field name="author" type="NX_CHAR" optional="true">
+#                 <doc>
+#                     The author(s) of that reference.
+#                 </doc>
+#             </field>
+#             <field name="doi" type="NX_CHAR"/>
+#         </group>
 #         <group name="noteID" type="NXnote" minOccurs="0" maxOccurs="unbounded" nameType="partial">
 #             <doc>
 #                 Collection of serialized resources associated with the experiment.
@@ -3457,13 +3539,52 @@ NXem(NXobject):
 #                 <group name="indexing" type="NXprocess" optional="true">
 #                     <field name="number_of_scan_points" type="NX_UINT"/>
 #                     <field name="indexing_rate" type="NX_NUMBER" recommended="true"/>
+#                     <group name="microstructureID" type="NXmicrostructure" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+#                         <group name="configuration" type="NXprocess">
+#                             <field name="dimensionality" type="NX_POSINT"/>
+#                             <field name="algorithm" type="NX_CHAR"/>
+#                             <field name="disorientation_threshold" type="NX_NUMBER"/>
+#                             <group name="programID" type="NXprogram" nameType="partial" recommended="true">
+#                                 <field name="program" type="NX_CHAR">
+#                                     <attribute name="version" type="NX_CHAR"/>
+#                                 </field>
+#                                 <group name="mtex" type="NXmicrostructure_mtex_config" optional="true"/>
+#                             </group>
+#                         </group>
+#                         <group name="grid" type="NXcg_grid" optional="true"/>
+#                         <group name="points" type="NXcg_point" optional="true"/>
+#                         <group name="polylines" type="NXcg_polyline" optional="true"/>
+#                         <group name="triangles" type="NXcg_triangle" optional="true"/>
+#                         <group name="polygons" type="NXcg_polygon" optional="true"/>
+#                         <group name="polyhedra" type="NXcg_polyhedron" optional="true"/>
+#                         <group name="crystals" type="NXmicrostructure_feature" optional="true">
+#                             <field name="representation" type="NX_CHAR" recommended="true"/>
+#                             <field name="number_of_crystals" type="NX_UINT"/>
+#                             <field name="index_offset" type="NX_INT"/>
+#                         </group>
+#                         <group name="interfaces" type="NXmicrostructure_feature" optional="true">
+#                             <field name="representation" type="NX_CHAR" recommended="true"/>
+#                             <field name="number_of_interfaces" type="NX_UINT"/>
+#                             <field name="index_offset" type="NX_INT"/>
+#                         </group>
+#                         <group name="triple_junctions" type="NXmicrostructure_feature" optional="true">
+#                             <field name="representation" type="NX_CHAR" recommended="true"/>
+#                             <field name="number_of_junctions" type="NX_UINT"/>
+#                             <field name="index_offset" type="NX_INT"/>
+#                         </group>
+#                         <group name="quadruple_junctions" type="NXmicrostructure_feature" optional="true">
+#                             <field name="representation" type="NX_CHAR" recommended="true"/>
+#                             <field name="number_of_junctions" type="NX_UINT"/>
+#                             <field name="index_offset" type="NX_INT"/>
+#                         </group>
+#                     </group>
 #                     <group name="source" type="NXnote" optional="true">
 #                         <field name="type" type="NX_CHAR" recommended="true"/>
 #                         <field name="file_name" type="NX_CHAR"/>
 #                         <field name="checksum" type="NX_CHAR" recommended="true"/>
 #                         <field name="algorithm" type="NX_CHAR" recommended="true"/>
 #                     </group>
-#                     <!--per scan point quantities (identifier_phase, matching_phase, positions, etc.)
+#                     <!--per scan point quantities (phase_id, matching_phase, positions, etc.)
 # just using the implicit optional, for the database example in NOMAD we do
 # not wish to duplicate all payload data-->
 #                     <group name="phaseID" type="NXphase" nameType="partial" minOccurs="0" maxOccurs="unbounded">
@@ -3516,11 +3637,38 @@ NXem(NXobject):
 #                                 </field>
 #                             </group>
 #                         </group>
-#                         <group name="odfID" type="NXmicrostructure_odf" nameType="partial" optional="true"/>
-#                         <group name="pfID" type="NXmicrostructure_pf" nameType="partial" optional="true"/>
+#                         <group name="odfID" type="NXmicrostructure_odf" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+#                             <group name="configuration" type="NXparameters" recommended="true">
+#                                 <field name="crystal_symmetry_point_group" type="NX_CHAR"/>
+#                                 <field name="specimen_symmetry_point_group" type="NX_CHAR"/>
+#                                 <field name="kernel_halfwidth" type="NX_NUMBER"/>
+#                                 <field name="kernel_name" type="NX_CHAR"/>
+#                                 <field name="resolution" type="NX_NUMBER"/>
+#                             </group>
+#                             <group name="characteristics" type="NXprocess" optional="true">
+#                                 <field name="texture_index" type="NX_FLOAT"/>
+#                             </group>
+#                             <group name="phi_two_plot" type="NXdata">
+#                                 <attribute name="signal" type="NX_CHAR"/>
+#                                 <attribute name="axes" type="NX_CHAR"/>
+#                                 <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
+#                                 <field name="title" type="NX_CHAR" recommended="true"/>
+#                                 <field name="intensity" type="NX_NUMBER">
+#                                     <attribute name="long_name" type="NX_CHAR"/>
+#                                 </field>
+#                                 <field name="varphi_one" type="NX_NUMBER">
+#                                     <attribute name="long_name" type="NX_CHAR"/>
+#                                 </field>
+#                                 <field name="capital_phi" type="NX_NUMBER">
+#                                     <attribute name="long_name" type="NX_CHAR"/>
+#                                 </field>
+#                                 <field name="varphi_two" type="NX_NUMBER">
+#                                     <attribute name="long_name" type="NX_CHAR"/>
+#                                 </field>
+#                             </group>
+#                         </group>
+#                         <group name="pfID" type="NXmicrostructure_pf" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
 #                     </group>
-#                     <!--microstructure of the entire ROI-->
-#                     <group name="microstructureID" type="NXmicrostructure" nameType="partial" optional="true"/>
 #                     <group name="roi" type="NXdata" recommended="true">
 #                         <attribute name="signal" type="NX_CHAR"/>
 #                         <attribute name="axes" type="NX_CHAR"/>
