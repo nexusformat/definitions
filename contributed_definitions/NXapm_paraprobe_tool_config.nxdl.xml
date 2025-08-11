@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_paraprobe_tool_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Base class documenting the configuration used for a tool of the paraprobe-toolbox.
+         
+         The paraprobe-toolbox is a collection of open-source software tools for performing
+         efficient analyses of point cloud data where each point can represent atoms or
+         (molecular) ions. A key application of the toolbox has been for research in the
+         field of Atom Probe Tomography (APT) and related Field Ion Microscopy (FIM):
+         
+         * `paraprobe-toolbox &lt;https://www.gitlab.com/paraprobe/paraprobe-toolbox&gt;`_
+         * `M. Kühbach et al. &lt;https://paraprobe-toolbox.readthedocs.io/en/main/&gt;`_
+         
+         The toolbox does not replace but complements existent software tools in this
+         research field. Given its capabilities of handling points as objects with
+         properties and enabling analyses of the spatial arrangement of and inter-
+         sections between geometric primitives, the software can equally be used
+         for analyzing data in Materials Science and Materials Engineering.
+         
+         The configuration and results of a run of a tool from the toolbox is documented
+         using binary container formats. Currently, paraprobe-toolbox uses the
+         Hierarchical Data Format 5 (HDF5).
+    </doc>
+    <!--sequence_id is inherited from NXprocess-->
+    <group type="NXidentifier"/>
+    <field name="analysis_identifier" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Internal identifier used by the tool to refer to an analysis (aka simulation
+             id).
+        </doc>
+    </field>
+    <field name="description" type="NX_CHAR">
+        <doc>
+             Possibility for leaving a free-text description about this analysis.
+             
+             Although offered here for convenience we strongly encourage to
+             parameterize such descriptions as much as possible to support
+             reusage and clearer communication.
+        </doc>
+    </field>
+    <!--tool-specific input, examples for definitions for common types of input granularized into this
+base class from which tool-specific appdefs inherit-->
+    <group name="reconstruction" type="NXserialized">
+        <doc>
+             Specification of the tomographic reconstruction to use for this analysis.
+             
+             Typically, reconstructions in the field of atom probe tomography are communicated
+             via files which store at least reconstructed ion positions and mass-to-charge-state-ratio
+             values. Container files like HDF5 though can store multiple reconstructions.
+             Therefore, the position and mass_to_charge concepts point to specific instances
+             to use for this analysis.
+        </doc>
+        <field name="position" type="NX_CHAR">
+            <doc>
+                 Name of the node which resolves the reconstructed ion position
+                 values to use for this analysis.
+            </doc>
+        </field>
+        <field name="mass_to_charge" type="NX_CHAR">
+            <doc>
+                 Name of the node which resolves the mass-to-charge-state-ratio
+                 values to use for this analysis.
+            </doc>
+        </field>
+    </group>
+    <group name="ranging" type="NXserialized">
+        <doc>
+             Specification of the ranging definitions to use for this analysis.
+             
+             Ranging is the process of labeling time-of-flight data with so-called iontypes
+             (aka ion species). Ideally, iontypes specify the most likely (molecular) ion
+             that is assumed to have been evaporated given that its mass-to-charge-state ratio
+             lies within the specific mass-to-charge-state-ratio value interval of the iontype.
+             
+             The so-called UNKNOWNTYPE iontype represents the null model of an ion
+             that has not been ranged (for whatever reasons).
+             The identifier of this special iontype is always the reserved value 0.
+        </doc>
+        <field name="ranging_definitions" type="NX_CHAR">
+            <doc>
+                 Name of the (parent) node directly below which (in the hierarchy)
+                 the ranging definition for (molecular) ions are stored.
+            </doc>
+        </field>
+    </group>
+    <group name="surface" type="NXserialized">
+        <doc>
+             Specification of the triangulated surface mesh to use for this analysis.
+             
+             Such a surface mesh can be used to define the edge of the reconstructed
+             volume to account for finite size effects.
+        </doc>
+    </group>
+    <!--mesh(NX_CHAR):
+  doc: |
+    Name of the (parent) node directly below which (in the hierarchy)
+    an instance of :ref:`NXcg_triangle_set` is stored.-->
+    <group name="surface_distance" type="NXserialized">
+        <doc>
+             Specification of the point-to-triangulated-surface-mesh distances to
+             use for this analysis.
+        </doc>
+        <field name="distance" type="NX_CHAR">
+            <doc>
+                 Absolute path in the (HDF5) file that points to the distance values.
+                 The tool assumes that the values are stored in the same order as
+                 points (ions).
+            </doc>
+        </field>
+    </group>
+    <!--filters-->
+    <group type="NXspatial_filter"/>
+    <group type="NXsubsampling_filter"/>
+    <group type="NXmatch_filter"/>
+</definition>

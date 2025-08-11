@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_tessellator_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 The total number of ions in the reconstruction.
+            </doc>
+        </symbol>
+        <symbol name="n_f">
+            <doc>
+                 The total number of values required to represent all faces of each cell.
+            </doc>
+        </symbol>
+        <symbol name="n_f_xdmf">
+            <doc>
+                 The total number of values required to represent all faces of each cell
+                 (polyhedron) using XDMF.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for results files of the paraprobe-tessellator tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_tessellator_results"/>
+            </enumeration>
+        </field>
+        <!--tasks-->
+        <group name="tessellation" type="NXapm_paraprobe_tool_results" minOccurs="1" maxOccurs="1">
+            <doc>
+                 The tool can be used to compute a Voronoi tessellation the entire
+                 or of a sub-set of the reconstructed volume. Each point (ion) is wrapped
+                 in one (Voronoi) cell. The point cloud in the ROI is wrapped into an
+                 axis-aligned bounding box (AABB) that is tight. This means points at
+                 the edge of the point cloud can lay on the surface of the bounding box.
+                 The tool detects if cells make contact with the walls of this bounding box.
+                 The tessellation is computed without periodic boundary conditions.
+            </doc>
+            <!--config-->
+            <group name="window" type="NXcs_filter_boolean_mask">
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
+            <group name="wall" type="NXcg_hexahedron_set" recommended="true">
+                <doc>
+                     The (tight) axis-aligned bounding box about the point cloud.
+                </doc>
+                <field name="closest_corner" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Coordinate triplet of the corner that lays closests
+                         to the origin of the *paraprobe* coordinate system.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="farthest_corner" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Coordinate triplet of the corner that lays farthest away
+                         from the origin of the *paraprobe* coordinate system.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="voronoi_cells" type="NXcg_polyhedron_set" optional="true">
+                <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+                    <enumeration>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The number of points (and thus cells).
+                    </doc>
+                </field>
+                <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
+                    <doc>
+                         Volume of each Voronoi cell.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="process_identifier" type="NX_POSINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         Which MPI process computed which Voronoi cell.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="thread_identifier" type="NX_POSINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         Which OpenMP thread computed which Voronoi cell.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="number_of_faces" type="NX_INT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         The number of faces for each cell. Faces of adjoining polyhedra are counted
+                         for each polyhedron. This field can be used to interpret the concatenated vector
+                         with the individual values for the area of each face.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="identifier_offset" type="NX_INT"/>
+                <group name="polyhedra" type="NXcg_face_list_data_structure" optional="true">
+                    <doc>
+                         A simple approach to describe the entire set of polyhedra when the main
+                         intention is to store the shape of the polyhedra for visualization purposes.
+                    </doc>
+                    <field name="number_of_vertices" type="NX_INT"/>
+                    <field name="number_of_faces" type="NX_INT"/>
+                    <field name="vertex_identifier_offset" type="NX_INT"/>
+                    <field name="face_identifier_offset" type="NX_INT"/>
+                    <field name="vertices" type="NX_FLOAT"/>
+                </group>
+                <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Sequence of tuples, concatenated in the order of  the Voronoi cells.
+                         Each tuple contains encodes information to visualize using XDMF:
+                         Firstly, an XDMF geometric primitive type key.
+                         Secondly, the number of vertices of the polygon.
+                         Third, the sequence of vertex identifier which define the facet.
+                         Tuples encode faces faster than cells.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_f_xdmf"/>
+                    </dimensions>
+                </field>
+                <field name="xdmf_cell_identifier" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Sequence of cell identifier, concatenated such that each face is
+                         associated with its cell. Given that paraprobe-tessellator assigns
+                         each cell the evaporation_id of the ion that the cell wraps this
+                         information enables the segmentation of the tessellation and
+                         thus correlate per-ion properties with the volume that each cell
+                         represents.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_f"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="wall_contact_global" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     A bitmask that documents which of the cells are likely truncated because they
+                     share at least one face with the *aabb* of the point cloud. This field encodes the
+                     result of the boolean or operator applied to the value of all six wall_contact groups
+                     that document contact in specific outer unit normal directions of the *aabb*.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--dim: (i,)  # not necessarily n_ions because n_ions is not always an integer multiple of bitdepth
+dim: (i,)  # one would not need to constrain this but doing so communicates that all six bitfields have the same length-->
+            <group name="wall_contact_left" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     In the spirit of wall_contact_global, the left face of *aabb*.
+                     Its outer unit normal points in the opposite direction of the
+                     x-axis of the *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <group name="wall_contact_right" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     In the spirit of wall_contact_global, the right face of *aabb*.
+                     Its outer unit normal points in the direction of the x-axis
+                     of the *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <group name="wall_contact_front" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     In the spirit of wall_contact_global, the front face of *aabb*.
+                     Its outer unit normal points in the opposite direction of the
+                     y-axis of the *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <group name="wall_contact_rear" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     In the spirit of wall_contact_global, the rear face of *aabb*.
+                     Its outer unit normal points in the direction of the y-axis
+                     of the *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <group name="wall_contact_bottom" type="NXcs_filter_boolean_mask" recommended="true">
+                <doc>
+                     In the spirit of wall_contact_global, the front face of *aabb*.
+                     Its outer unit normal points in the opposite direction of the
+                     z-axis of the *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <group name="wall_contact_top" type="NXcs_filter_boolean_mask">
+                <doc>
+                     In the spirit of wall_contact_global, the front face of *aabb*.
+                     Its outer unit normal points in the direction of the z-axis of the
+                     *paraprobe* coordinate system.
+                </doc>
+                <field name="number_of_ions" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+        </group>
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
+            <group name="userID" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     If used, metadata of at least the person who performed this analysis.
+                </doc>
+                <field name="name" type="NX_CHAR"/>
+            </group>
+            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+                <group name="paraprobe" type="NXcoordinate_system">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="handedness" type="NX_CHAR"/>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>
