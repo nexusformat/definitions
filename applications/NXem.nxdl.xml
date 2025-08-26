@@ -219,7 +219,7 @@
                 may not be sufficient to infer how long the experiment took or for how long
                 data were acquired. To bookkeep more fine-grained timestamps over the
                 course of the experiment is possible with start_time and end_time fields
-                of respective :ref:`NXevent_data_em` instances.
+                of respective :ref:`NXem_event_data` instances.
             </doc>
         </field>
         <field name="end_time" type="NX_DATE_TIME" recommended="true">
@@ -231,7 +231,14 @@
                 start_time and end_time together.
             </doc>
         </field>
-        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial"/>
+        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+            <field name="author" type="NX_CHAR" optional="true">
+                <doc>
+                    The author(s) of that reference.
+                </doc>
+            </field>
+            <field name="doi" type="NX_CHAR"/>
+        </group>
         <group name="noteID" type="NXnote" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <doc>
                 Collection of serialized resources associated with the experiment.
@@ -422,7 +429,7 @@
                     For multi-layered specimens this field should only be used to describe
                     the density of the excited volume. For scanning electron microscopy
                     the usage of this field is discouraged and instead an instance of a
-                    region-of-interest connected to individual :ref:`NXevent_data_em`
+                    region-of-interest connected to individual :ref:`NXem_event_data`
                     instances can provide a cleaner description of the relevant details.
                 </doc>
             </field>
@@ -508,7 +515,7 @@
                 </enumeration>
             </field>
         </group>
-        <group name="NAMED_reference_frame" type="NXcoordinate_system" minOccurs="0" maxOccurs="unbounded" nameType="partial">
+        <group name="NAMED_reference_frameID" type="NXcoordinate_system" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <field name="alias" type="NX_CHAR" optional="true"/>
             <field name="type" type="NX_CHAR"/>
             <field name="origin" type="NX_CHAR" recommended="true"/>
@@ -747,8 +754,8 @@
             </field>
         </group>
         <group name="measurement" type="NXem_measurement" optional="true">
-            <!--voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em-->
-            <group name="instrument" type="NXinstrument_em">
+            <!--voltage like all other dynamic quantities should better be placed in instances of NXem_event_data-->
+            <group name="instrument" type="NXem_instrument">
                 <field name="name" type="NX_CHAR" recommended="true"/>
                 <field name="location" type="NX_CHAR" recommended="true"/>
                 <field name="type" type="NX_CHAR" recommended="true"/>
@@ -976,7 +983,7 @@
                 <group name="sensorID" type="NXsensor" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
                 <group name="actuatorID" type="NXactuator" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
             </group>
-            <group name="eventID" type="NXevent_data_em" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+            <group name="eventID" type="NXem_event_data" nameType="partial" minOccurs="0" maxOccurs="unbounded">
                 <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
                 <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
                 <field name="identifier_sample" type="NX_CHAR" recommended="true"/>
@@ -1341,7 +1348,7 @@
                         </field>
                     </group>
                 </group>
-                <group name="instrument" type="NXinstrument_em" recommended="true">
+                <group name="instrument" type="NXem_instrument" recommended="true">
                     <group name="ebeam_column" type="NXebeam_column">
                         <field name="operation_mode" type="NX_CHAR" recommended="true"/>
                         <group name="electron_source" type="NXsource" optional="true">
@@ -1639,8 +1646,6 @@ is required to provide such information in this way!-->
                     <field name="imaging_mode" type="NX_CHAR"/>
                 </group>
             </group>
-            <!--(NXmicrostructure):
-exists: optional-->
             <group name="ebsd" type="NXem_ebsd" optional="true">
                 <group name="gnomonic_reference_frame" type="NXcoordinate_system" recommended="true">
                     <field name="alias" type="NX_CHAR" optional="true"/>
@@ -1687,7 +1692,7 @@ exists: optional-->
                         <field name="checksum" type="NX_CHAR" recommended="true"/>
                         <field name="algorithm" type="NX_CHAR" recommended="true"/>
                     </group>
-                    <!--per scan point quantities (identifier_phase, matching_phase, positions, etc.)
+                    <!--per scan point quantities (phase_id, matching_phase, positions, etc.)
 just using the implicit optional, for the database example in NOMAD we do
 not wish to duplicate all payload data-->
                     <group name="phaseID" type="NXphase" nameType="partial" minOccurs="0" maxOccurs="unbounded">
@@ -1703,51 +1708,6 @@ not wish to duplicate all payload data-->
                             <field name="space_group" type="NX_CHAR"/>
                         </group>
                     </group>
-                    <!--foreseen place for phase-specific texture and microstructure representations and statistics
-ipfID(NXmicrostructure_ipf):
-nameType: partial
-exists: ['min', '1', 'max', 'unbounded']
-color_model(NX_CHAR):
-projection_direction(NX_NUMBER):
-map(NXdata):
-\@signal(NX_CHAR):
-\@axes(NX_CHAR):
-\@AXISNAME_indices(NX_UINT):
-nameType: partial
-title(NX_CHAR):
-exists: recommended
-data(NX_NUMBER):
-\@long_name(NX_CHAR):
-axis_x(NX_NUMBER):
-\@long_name(NX_CHAR):
-axis_y(NX_NUMBER):
-exists: optional
-\@long_name(NX_CHAR):
-axis_z(NX_NUMBER):
-exists: optional
-\@long_name(NX_CHAR):
-legend(NXdata):
-\@signal(NX_CHAR):
-\@axes(NX_CHAR):
-\@AXISNAME_indices(NX_UINT):
-nameType: partial
-title(NX_CHAR):
-exists: recommended
-data(NX_NUMBER):
-\@long_name(NX_CHAR):
-axis_x(NX_NUMBER):
-\@long_name(NX_CHAR):
-axis_y(NX_NUMBER):
-\@long_name(NX_CHAR):
-odfID(NXmicrostructure_odf):
-nameType: partial
-exists: optional
-pfID(NXmicrostructure_pf):
-nameType: partial
-exists: optional
-microstructureID(NXmicrostructure):
-nameType: partial
-exists: optional-->
                     <group name="roi" type="NXdata" recommended="true">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>
@@ -1781,7 +1741,7 @@ exists: optional-->
                         </field>
                     </group>
                     <field name="atom_types" type="NX_CHAR"/>
-                    <group name="ELEMENT_SPECIFIC_MAP" type="NXimage" minOccurs="0" maxOccurs="118">
+                    <group name="ELEMENT_SPECIFIC_MAP" type="NXimage" nameType="any" minOccurs="0" maxOccurs="118">
                         <field name="iupac_line_candidates" type="NX_CHAR" recommended="true"/>
                         <field name="energy_range" type="NX_NUMBER"/>
                         <group name="image_2d" type="NXdata">
@@ -1790,15 +1750,13 @@ exists: optional-->
                             <attribute name="AXISNAME_indices" type="NX_UINT" nameType="partial"/>
                             <field name="title" type="NX_CHAR" recommended="true"/>
                             <field name="intensity" type="NX_NUMBER">
-                                <attribute name="units" type="NX_CHAR" recommended="true"/>
+                                <attribute name="long_name" type="NX_CHAR"/>
                             </field>
                             <field name="axis_i" type="NX_NUMBER">
                                 <attribute name="long_name" type="NX_CHAR"/>
-                                <attribute name="units" type="NX_CHAR"/>
                             </field>
                             <field name="axis_j" type="NX_NUMBER">
                                 <attribute name="long_name" type="NX_CHAR"/>
-                                <attribute name="units" type="NX_CHAR"/>
                             </field>
                         </group>
                     </group>
