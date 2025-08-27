@@ -23,17 +23,12 @@ The base classes can be useful to generate data artifacts also for field-ion mic
 
 Some of the base classes are specific to APM, whereas others are used in other techniques as well.
 
-These base classes are used within the APM-related :ref:`application definitions &lt;AppDef-Apm-Definitions&gt;`
+These base classes are used within the APM-related :ref:`application definitions <appdef-apm-definitions>`.
 
 .. _BC-Apm-Classes:
 
 Base Classes
 ############
-
-    :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components.
-        A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities
-        for storing and loading specimens.
 
     :ref:`NXcoordinate_system`:
         Base class to describe different coordinate systems used and/or to be harmonized

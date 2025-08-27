@@ -21,7 +21,7 @@ and photoemission electron microscopy (PEEM).
 
 Some of the base classes are specific to MPES (like :ref:`NXelectronanalyzer`), whereas others are used in other techniques as well.
 
-These base clasess are used within the MPES-related :ref:`application definitions &lt;AppDef-Mpes-Definitions&gt;`.
+These base clasess are used within the MPES-related :ref:`application definitions <appdef-mpes-definitions>`.
 
 .. _BC-Mpes-Classes:
 

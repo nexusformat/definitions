@@ -37,5 +37,4 @@ Application Definitions
 Base classes
 #######################
 
-A specific set of base classes which are used in these application definitions can be found :ref:`here &lt;BC-Mpes-Classes&gt;`.
-
+A specific set of base classes which are used in these application definitions can be found  :ref:`here <bc-mpes-classes>`.

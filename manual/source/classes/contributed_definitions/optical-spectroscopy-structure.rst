@@ -15,7 +15,7 @@ Optical Spectroscopy
 Introduction
 ##############
 
-:ref:`Application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` and :ref:`base classes &lt;BC-Opt-Spec-Classes&gt;` 
+:ref:`Application definitions <appdef-opt-spec-definitions>` and :ref:`base classes <bc-opt-spec-classes>`
 to describe optical spectroscopy experiments are already part of the NeXus standard. In addition, there are several 
 contributed definitions that are currently under discussion.
 
@@ -24,8 +24,8 @@ contributed definitions that are currently under discussion.
 Application Definitions
 -----------------------
 
-    :ref:`NX...`:
-       text. 
+    :ref:`NXtransmission`:
+      Application definition for transmission experiments
 
 
 Base Classes

@@ -189,9 +189,6 @@ of material (area or volume) which can be useful not only for stencil-based meth
 Finally, the following base classes allow data processing software to document its input
 parameters and to summarize its performance statistics:
 
-    :ref:`NXprogram`:
-        A named and version of a program of library/component.
-
     :ref:`NXcs_filter_boolean_mask`:
         A boolean mask.
 
@@ -222,6 +219,9 @@ parameters and to summarize its performance statistics:
 
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
+
+    :ref:`NXprogram`:
+        A named and version of a program of library/component.
 
 .. _BC-Cgms-Introduction-IcmeMsModels:
 

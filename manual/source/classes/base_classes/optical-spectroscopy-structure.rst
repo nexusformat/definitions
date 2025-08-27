@@ -14,10 +14,10 @@ Optical Spectroscopy
 Introduction
 ############
 
-These are a set of base classes to describe optical spectroscopy, including :ref:`Ellipsometry &lt;AppDef-Opt-Spec-Ellipsometry&gt;`
-and :ref:`Raman spectroscopy &lt;AppDef-Opt-Spec-Raman&gt;`
+These are a set of base classes to describe optical spectroscopy, including :ref:`Ellipsometry <appdef-opt-spec-ellipsometry>`
+and :ref:`Raman spectroscopy <appdef-opt-spec-raman>`
 
-These base classes are used within the :ref:`application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` related to optical spectroscopy.
+These base classes are used within the :ref:`application definitions <appdef-opt-spec-definitions>` related to optical spectroscopy.
 
 .. _BC-Opt-Spec-Classes:
 

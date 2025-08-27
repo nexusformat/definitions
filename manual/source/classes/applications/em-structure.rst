@@ -125,4 +125,4 @@ There currently exists a single application definitions for describing EM experi
 Base classes
 #######################
 
-A specific set of base classes which are used in these applcation definitions can be found :ref:`here &lt;BC-EM-Classes&gt;`.
+A specific set of base classes which are used in these application definitions can be found :ref:`here <bc-em-classes>`.

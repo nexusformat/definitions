@@ -16,7 +16,7 @@ Introduction
 These are a set of base classes to describe components of an electron microscope and its focused-ion beam functionalities,
 as well as the associated data analysis.
 
-These base classes are used within the EM-related :ref:`application definitions &lt;AppDef-Em-Definitions&gt;`, specifically in NXem.
+These base classes are used within the EM-related :ref:`application definitions <appdef-em-definitions>`, specifically in NXem.
 
 Some of the base classes are specific to EM, whereas others are used in other techniques as well.
 
