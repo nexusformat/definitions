@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -23,32 +23,88 @@
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXunit_cell" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
-        <symbol name="n_pos">
+        <symbol name="d">
             <doc>
-                 Number of atom positions.
+                Dimensionality of the lattice.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Description of a unit cell, i.e., the crystal structure of a single
-         thermodynamic phase.
+        Base class to describe structural aspects of an arrangement of
+        atoms or ions including a crystallographic unit cell.
+        
+        Following recommendations of `CIF &lt;https://www.iucr.org/resources/cif/spec/version1.1&gt;`_ and `International Tables of Crystallography &lt;https://it.iucr.org/&gt;`_.
     </doc>
-    <field name="crystallographic_database_identifier">
+    <field name="reference_frame" type="NX_CHAR">
         <doc>
-             Identifier of an entry resolvable via crystallographic_database
-             which was used for creating this structure model.
+            Path to a reference frame in which the unit cell is defined
+            to resolve ambiguity in cases when e.g. a different reference frame
+            than the NeXus default reference frame (McStas) was chosen.
         </doc>
     </field>
-    <field name="crystallographic_database">
+    <field name="dimensionality" type="NX_POSINT">
         <doc>
-             Name of the crystallographic database to resolve
-             crystallographic_database_identifier e.g. COD, ICSD, or others.
+            Dimensionality of the structure.
+        </doc>
+        <enumeration>
+            <item value="1"/>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="a_b_c" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+            Geometry of the unit cell quantified via parameters a, b, and c.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="d"/>
+        </dimensions>
+    </field>
+    <field name="a" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+            Geometry of the unit cell quantified individually via parameter a.
         </doc>
     </field>
-    <field name="lattice_system">
+    <field name="b" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             A lattice system is a group of lattices with the same set of lattice point groups.
-             For further information, see https://en.wikipedia.org/wiki/Crystal_system.
+            Geometry of the unit cell quantified individually via parameter b.
+        </doc>
+    </field>
+    <field name="c" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+            Geometry of the unit cell quantified individually via parameter c.
+        </doc>
+    </field>
+    <field name="alpha_beta_gamma" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+            Geometry of the unit cell quantified via parameters alpha, beta, and gamma.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="d"/>
+        </dimensions>
+    </field>
+    <field name="alpha" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+            Geometry of the unit cell quantified individually via parameter alpha.
+        </doc>
+    </field>
+    <field name="beta" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+            Geometry of the unit cell quantified individually via parameter beta.
+        </doc>
+    </field>
+    <field name="gamma" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+            Geometry of the unit cell quantified individually via parameter gamma.
+        </doc>
+    </field>
+    <field name="crystal_system" type="NX_CHAR">
+        <doc>
+            Crystal system.
+            
+            For a crystal system in 2D space monoclinic is an exact synonym for oblique.
+            For a crystal system in 2D space orthorhombic is an exact synonym for rectangular.
+            For a crystal system in 2D space tetragonal is an exact synonym for square.
         </doc>
         <enumeration>
             <item value="triclinic"/>
@@ -60,166 +116,48 @@
             <item value="cubic"/>
         </enumeration>
     </field>
-    <field name="space_group">
+    <field name="laue_group" type="NX_CHAR">
         <doc>
-             Crystallographic space group.
-             A space group is the symmetry group of a repeating pattern in space.
-             For further information, see International Table for Crystallography (https://it.iucr.org/).
+            Laue group using International Table of Crystallography notation.
         </doc>
     </field>
-    <field name="point_group">
+    <!--add enumeration of all possible ones here to create a closed enum?-->
+    <field name="point_group" type="NX_CHAR">
         <doc>
-             Crystallographic point group.
-             A crystallographic point group is a set of symmetry operations, corresponding to one of the point groups in three dimensions,
-             such that each operation (perhaps followed by a translation) would leave the structure of a crystal unchanged.
-             This field should use Schoenflies notation (see Schoenflies, A., Krystallsysteme und Krystallstructur, 1891).
-             For further information, see https://dictionary.iucr.org/Point_group.
+            Point group using International Table of Crystallography notation.
         </doc>
     </field>
-    <field name="laue_group">
+    <field name="space_group" type="NX_CHAR">
         <doc>
-             Laue group (also called Laue class).
-             The Laue classes are eleven geometric crystal classes containing centrosymmetric crystallographic types of point groups and their subgroups.
-             When absorption is negligible and Friedel's law applies, it is impossible to distinguish by diffraction between a centrosymmetric point group
-             and one of its non-centrosymmetric subgroups; only point groups belonging to different Laue classes can then be distinguished.
-             For further information, see https://dictionary.iucr.org/Laue_class.
+            Space group from the International Table of Crystallography notation.
         </doc>
     </field>
-    <!--defined using which convention?-->
-    <field name="a_b_c" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>
-             Crystallography unit cell parameters a, b, and c
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="3"/>
-        </dimensions>
-    </field>
-    <field name="base_vector_a" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>
-             Crystallography unit cell vector a
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="3"/>
-        </dimensions>
-        <attribute name="depends_on">
-            <doc>
-                 For definining which coordinate system the unit cell vector a is defined in.
-            </doc>
-        </attribute>
-    </field>
-    <field name="base_vector_b" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>
-             Crystallography unit cell vector b
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="3"/>
-        </dimensions>
-        <attribute name="depends_on">
-            <doc>
-                 For definining which coordinate system the unit cell vector b is defined in.
-            </doc>
-        </attribute>
-    </field>
-    <field name="base_vector_c" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>
-             Crystallography unit cell vector c
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="3"/>
-        </dimensions>
-        <attribute name="depends_on">
-            <doc>
-                 For definining which coordinate system the unit cell vector c is defined in.
-            </doc>
-        </attribute>
-    </field>
-    <field name="alpha_beta_gamma" type="NX_FLOAT" units="NX_ANGLE">
-        <doc>
-             Crystallography unit cell angles alpha, beta, and gamma
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="3"/>
-        </dimensions>
-    </field>
-    <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
-        <doc>
-             Volume of the unit cell
-        </doc>
-    </field>
-    <!--add enumeration of all possible-->
     <field name="is_centrosymmetric" type="NX_BOOLEAN">
         <doc>
-             True if space group is considered a centrosymmetric one.
-             False if space group is considered a non-centrosymmetric one.
-             Centrosymmetric has all types and combinations of symmetry elements
-             (translation, rotational axis, mirror planes, center of inversion)
-             Non-centrosymmetric compared to centrosymmetric is constrained (no inversion).
-             Chiral compared to non-centrosymmetric is constrained (no mirror planes).
+            True if space group is considered a centrosymmetric one.
+            False if space group is considered a non-centrosymmetric one.
+            
+            Centrosymmetric has all types and combinations of symmetry elements
+            (translation, rotational axis, mirror planes, center of inversion)
+            Non-centrosymmetric compared to centrosymmetric is constrained (no inversion).
+            Chiral compared to non-centrosymmetric is constrained (no mirror planes).
         </doc>
     </field>
     <field name="is_chiral" type="NX_BOOLEAN">
         <doc>
-             True if space group is considered a chiral one.
-             False if space group is consider a non-chiral one.
+            True if space group is considered a chiral one.
+            False if space group is consider a non-chiral one.
         </doc>
     </field>
-    <field name="phase_identifier" type="NX_UINT" units="NX_UNITLESS">
+    <field name="area" type="NX_NUMBER" units="NX_AREA">
         <doc>
-             Identifier for the phase.
-             The value 0 is reserved for the unknown phase which represents the null-model
-             that no phase model was sufficiently significantly confirmed.
+            Area of the unit cell if dimensionality is 2.
         </doc>
     </field>
-    <field name="phase_name">
+    <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
         <doc>
-             Trivial name of the phase/alias.
+            Volume of the unit cell if dimensionality is 3.
         </doc>
     </field>
-    <field name="atom_identifier">
-        <doc>
-             Labels for each atom position
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="n_pos"/>
-        </dimensions>
-    </field>
-    <field name="atom" type="NX_UINT" units="NX_UNITLESS">
-        <doc>
-             The hash value :math:`H` is :math:`H = Z + N \cdot 256` with :math:`Z`
-             the number of protons and :math:`N` the number of neutrons
-             of each isotope respectively. :math:`Z` and :math:`N` have to be 8-bit unsigned integers.
-             For the rationale behind this `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="n_pos"/>
-        </dimensions>
-    </field>
-    <field name="atom_positions" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>
-             Atom positions x, y, z.
-        </doc>
-        <dimensions rank="2">
-            <dim index="1" value="n_pos"/>
-            <dim index="2" value="3"/>
-        </dimensions>
-        <attribute name="depends_on">
-            <doc>
-                 Reference to an instance of NXcoordinate_system whereby the positions can be
-                 resolved.
-            </doc>
-        </attribute>
-    </field>
-    <field name="atom_occupancy" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-        <doc>
-             Relative occupancy of the atom position.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="n_pos"/>
-        </dimensions>
-    </field>
-    <field name="depends_on">
-        <doc>
-             For definining which coordinate system the unit cell parameters are defined in.
-        </doc>
-    </field>
+    <group type="NXatom"/>
 </definition>

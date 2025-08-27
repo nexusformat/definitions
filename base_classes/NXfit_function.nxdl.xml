@@ -1,9 +1,9 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,28 +23,40 @@
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXfit_function" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-         This describes a fit function that is used to fit data to any functional form.
-         
-         A fit function is used to describe a set of data :math:`y_k, k = 1 ... M`,  which are collected as a function
-         of one or more independent variables :math:`x` at the points :math:`x_k`. The fit function :math:`f` describes
-         these data in an approximative way as :math:`y_k \approx f(a_0, . . . a_n, x_k)`,
-         where :math:`a_i, i = 0 . . . n` are the *fit parameters* (which are stored the instances of ``NXfit_parameter``).
+        This describes a fit function that is used to fit data to any functional form.
+        
+        A fit function is used to describe a set of data :math:`y_k, k = 1 ... M`,  which are collected as a function
+        of one or more independent variables :math:`x` at the points :math:`x_k`. The fit function :math:`f` describes
+        these data in an approximate way as :math:`y_k \approx f(a_0, . . . a_n, x_k)`,
+        where :math:`a_i, i = 0 . . . n` are the *fit parameters* (which are stored the instances of ``NXfit_parameter``).
     </doc>
+    <field name="function_type">
+        <doc>
+            Type of function used.
+            
+            Examples include "Gaussian" and "Lorentzian". In case a complicated functions, the the functional
+            form of the function should be given by the ``formula_description`` field . The user is also encouraged
+            to use the ``description`` field for describing the fit function in a human-readable way.
+            
+            Application definitions may limit the allowed fit functions by using an enumeration for the ``function_type`` field.
+        </doc>
+    </field>
     <field name="description">
         <doc>
-             Human-readable description of this fit function.
+            Human-readable short description of this fit function.
+            Software tools may use this field to write their local description of the fit function.
         </doc>
     </field>
-    <field name="formula">
+    <field name="formula_description">
+        <!--This should be a python parsable function. Here we should provide which keywords are available
+and a BNF of valid grammar.-->
         <doc>
-             Mathematical formula of the function, taking into account the instances of ``NXfit_parameter``.
-             
-             This should be a python parsable function. Here we should provide which keywords are available
-             and a BNF of valid grammar.
+            Description of the mathematical formula of the function, taking into account the
+            instances of ``TERM`` in ``fit_parameters``.
         </doc>
     </field>
-    <group name="fit_parameters" type="NXparameters"/>
-        <field name="TERM" nameType="any">
+    <group name="fit_parameters" type="NXparameters">
+        <field name="PARAMETER" nameType="any" type="NX_CHAR_OR_NUMBER" units="NX_ANY">
             <doc>
                 A parameter for a fit function.
                 This would typically be a variable that
@@ -55,18 +67,17 @@
                     A description of what this parameter represents.
                 </doc>
             </attribute>
-            <attribute name="value" type="NX_NUMBER" units="NX_ANY">
+            <attribute name="fixed" type="NX_BOOLEAN">
                 <doc>
-                    The value of the parameter. After fitting, this would store the
-                    optimized value.
+                    If the parameter is held constant, then this attribute should be True.
                 </doc>
             </attribute>
-            <attribute name="min_value" type="NX_NUMBER" units="NX_ANY">
+            <attribute name="min_value" type="NX_NUMBER">
                 <doc>
                     The minimal value of the parameter, to be used as a constraint during fitting.
                 </doc>
             </attribute>
-            <attribute name="max_value" type="NX_NUMBER" units="NX_ANY">
+            <attribute name="max_value" type="NX_NUMBER">
                 <doc>
                     The maximal value of the parameter, to be used as a constraint during fitting.
                 </doc>
