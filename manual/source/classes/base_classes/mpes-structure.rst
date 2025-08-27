@@ -7,6 +7,7 @@ Photoemission & core-level spectroscopy
 .. index::
    BC-Mpes-Introduction
    BC-Mpes-Classes
+   BC-MpesCommonBC
 
 
 .. _Mpes-BC-Introduction:
@@ -44,19 +45,6 @@ Base classes describing instrument components used in photemission experiments:
       :ref:`NXelectron_detector`:
          Specialization of :ref:`NXdetector` to describe electron detectors used in photoemission experiments.
 
-:ref:`NXmanipulator`:
-   A base class to describe the complex manipulators used in photoemission experiments, often with > 4 degrees of freedom, 
-   cryogenic cooling and other advanced features.
-
-:ref:`NXlens_em`:
-   A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
-
-:ref:`NXdeflector`
-   A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
-
-:ref:`NXresolution`:
-   Describes the resolution of a physical quantity, e.g. the resolution of the MPES spectrometer.
-
 Base classes (which are subclasses of :ref:`NXprocess`) to describe data (post-)processing:
 
    :ref:`NXcalibration`:
@@ -76,3 +64,25 @@ Base classes (which are subclasses of :ref:`NXprocess`) to describe data (post-)
 
       :ref:`NXpeak`:
          Base class to describe a peak, its functional form, and support values (i.e., the discretization (points) at which the function has been evaluated).
+
+
+.. _BC-MpesCommonBC:
+
+Common Base Classes
+###################
+
+There are additional base classes that were introduced in the context of photoemission spectroscopy,
+but that are commonly used in other techniques as well.
+   
+   :ref:`NXdeflector`
+      A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
+
+   :ref:`NXelectromagnetic_lens`:
+      A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
+
+   :ref:`NXmanipulator`:
+      A base class to describe the complex manipulators used in experiments, often with > 4 degrees of freedom, 
+      cryogenic cooling, and other advanced features.
+
+   :ref:`NXresolution`:
+      Describes the resolution of a physical quantity, e.g. the resolution of the MPES spectrometer.
