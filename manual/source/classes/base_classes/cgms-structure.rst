@@ -1,14 +1,14 @@
-.. _Contributed-Cgms-Structure:
+.. _BC-Cgms-Structure:
 
 =========================
 Geometry & Microstructure
 =========================
 
 .. index::
-   Contributed-Cgms-Introduction
-   Contributed-Cgms-Introduction-Physics
-   Contributed-Cgms-Introduction-Base-Classes
-   Contributed-Cgms-Introduction-IcmeMsModels
+   BC-Cgms-Introduction
+   BC-Cgms-Introduction-Physics
+   BC-Cgms-Introduction-Base-Classes
+   BC-Cgms-Introduction-IcmeMsModels
    
 .. literalinclude:: cube_example.txt
     :tab-width: 4
@@ -16,7 +16,7 @@ Geometry & Microstructure
     :language: text
    
 
-.. _Contributed-Cgms-Introduction:
+.. _BC-Cgms-Introduction:
 
 Introduction
 ############
@@ -35,7 +35,7 @@ and shapes offer a complementary alternative to the current set of base classes 
 NeXus for constructive solid geometry such as :ref:`NXcsg`, :ref:`NXoff_geometry`, 
 or :ref:`NXquadric` to name but a few.
 
-.. _Contributed-Cgms-Introduction-Physics:
+.. _BC-Cgms-Introduction-Physics:
 
 Physics background
 ##################
@@ -79,7 +79,7 @@ atoms and features turn out to yield useful descriptors. Examples include point,
 line, surface defects, such as vacancies, solute cluster, dislocations,
 disconnections, interfaces to name but a few.
 
-.. _Contributed-Cgms-Introduction-Base-Classes:
+.. _BC-Cgms-Introduction-Base-Classes:
 
 Base Classes
 ############
@@ -223,7 +223,7 @@ parameters and to summarize its performance statistics:
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
 
-.. _Contributed-Cgms-Introduction-IcmeMsModels:
+.. _BC-Cgms-Introduction-IcmeMsModels:
 
 Application definitions for ICME models
 #######################################

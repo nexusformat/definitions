@@ -66,17 +66,20 @@ def nxdl_indices() -> Dict[str, dict]:
         else:
             file = ""
             print("---------++++++++-", section)
-        if file.endswith(("applications/index.rst", "base_classes/index.rst")):
+        if file.endswith("applications/index.rst"):
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}em-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
-        if file.endswith("contributed_definitions/index.rst"):
+        if file.endswith("base_classes/index.rst"):
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}cgms-structure\n")
             rst_lines.append(f"{indentation}em-structure\n")
+            rst_lines.append(f"{indentation}mpes-structure\n")
+            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")            
+        if file.endswith("contributed_definitions/index.rst"):
+            rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
-            rst_lines.append(f"{indentation}spm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
@@ -117,6 +120,8 @@ that are used to construct a data file.
 
 Some base classes are grouped together:
   :ref:`Atom Probe Microscopy <BC-Apm-Structure>`
+
+  :ref:`Computational Geometry and Microstructures <BC-Cgms-Structure>`
 
   :ref:`Electron Microscopy <BC-Em-Structure>`
 
@@ -188,13 +193,7 @@ definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
 Some contributions are grouped together:
-  :ref:`Atom Probe Microscopy <Contributed-Apm-Structure>`
-
-  :ref:`Geometry and Microstructures <Contributed-Cgms-Structure>`
-  
   :ref:`Optical Spectroscopy <Contributed-Opt-Spec-Structure>`
-
-  :ref:`Scanning Probe Microscopy <Contributed-Spm-Structure>`
 
   :ref:`Transport Measurements <Contributed-Transport-Structure>`
 
