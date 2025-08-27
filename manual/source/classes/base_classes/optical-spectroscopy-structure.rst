@@ -17,38 +17,30 @@ Introduction
 These are a set of base classes to describe optical spectroscopy, including :ref:`Ellipsometry &lt;AppDef-Opt-Spec-Ellipsometry&gt;`
 and :ref:`Raman spectroscopy &lt;AppDef-Opt-Spec-Raman&gt;`
 
-These base classes are used within the :ref:`application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` related to optical spectroscopy
+These base classes are used within the :ref:`application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` related to optical spectroscopy.
 
 .. _BC-Opt-Spec-Classes:
-
 
 Base Classes
 ------------
 
-This is the set of base classes for describing an optical experiment.
+The  application definitions for optical spectroscopy use several existent base class and add edits and additions of some concepts to
+make these base classes applicable for the field of optical spectroscopy (:ref:`NXactuator`, :ref:`NXbeam`, :ref:`NXcalibration`, 
+:ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXenvironment`, :ref:`NXfabrication`,
+:ref:`NXhistory`, :ref:`NXinstrument`, :ref:`NXmanipulator`, :ref:`NXmonochromator`,  :ref:`NXpid_controller`, :ref:`NXprocess`,
+:ref:`NXprogram`, :ref:`NXresolution`, :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, :ref:`NXtransformations`, and :ref:`NXuser`).
 
+In addition, there exists a set of base classes to define concepts that are specific for electron microscopy:
 
-   :ref:`NXbeam`
-      Beam properties such as intensity, polarization, wavelength or direction.
+   :ref:`NXbeam_transfer_matrix_table`
+      Used to relate physical properties of two beams (:ref:`NXbeam`) which have one common optical component (:ref:`NXcomponent`)
+      inbetween.
 
-   :ref:`NXdetector`
-      A detector for signal detection.
-
-   :ref:`NXsource`
-      A light source such as laser, lamp or LED.
-
-   :ref:`NXmonochromator`
-      A monochromator is often used to energetically disperse the scattered or emitted light.
-
-   :ref:`NXlens_opt`
+   :ref:`NXoptical_lens`
       Description of an optical lens.
-       
+
+   :ref:`NXoptical_window`
+      Description of an optical window.
+
    :ref:`NXwaveplate`
       A waveplate or retarder.
-
-   :ref:`NXsensor`
-      Specify external parameters that have influenced the sample such as
-      varied parameters e.g. temperature, pressure, pH value, beam intensity, etc.
-
-
-ADD ALL CLASSES HERE

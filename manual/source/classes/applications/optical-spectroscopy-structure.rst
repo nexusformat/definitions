@@ -18,7 +18,8 @@ Ellipsometry is an optical characterization method to describe optical propertie
 The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
 Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
-In the application definition, we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+In the application definition, a minimum set of description elements allowing for a reproducible recording of ellipsometry 
+measurements is provided. 
 
 .. _AppDef-Opt-Spec-Raman:
 

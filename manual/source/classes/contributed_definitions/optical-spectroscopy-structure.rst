@@ -6,6 +6,7 @@ Optical Spectroscopy
 
 .. index::
    Contributed-Opt-Spec-Introduction
+   Contributed-Apm-Definitions
    Contributed-Opt-Spec-DispersiveMaterial
 
 
@@ -14,24 +15,23 @@ Optical Spectroscopy
 Introduction
 ##############
 
-:ref:`Application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` and :ref:`base classes &lt;BC-Opt-Spec-Classes&gt;` to describe atom-probe tomography/microscopy (APT/APM) experiments
-are already part of the NeXus standard. In addition, there are several contributed definitions that are currently
-under discussion.
+:ref:`Application definitions &lt;AppDef-Opt-Spec-Definitions&gt;` and :ref:`base classes &lt;BC-Opt-Spec-Classes&gt;` 
+to describe optical spectroscopy experiments are already part of the NeXus standard. In addition, there are several 
+contributed definitions that are currently under discussion.
 
+.. _Contributed-Opt-Spec-Definitions:
 
 Application Definitions
 -----------------------
 
-    :ref:`NXoptical_spectroscopy`:
-       A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+    :ref:`NX...`:
+       text. 
 
-    :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
 Base Classes
 ------------
 
-This is the set of base classes for describing an optical experiment.
+These are new base classes to describe additional, yet to be standardized components of optical spectroscopy experiments.
             
     :ref:`NXbeam_splitter`
        A beam splitter, i.e. a device splitting the light into two or more beams.
@@ -42,22 +42,9 @@ This is the set of base classes for describing an optical experiment.
 
     :ref:`NXfiber`
        An optical fiber, e.g. glass fiber.
-
-    :ref:`NXoptical_lens`
-       Description of an optical lens.
        
     :ref:`NXpolarizer_opt`
        An optical polarizer.
-
-    :ref:`NXwaveplate`
-       A waveplate or retarder.
-
-    :ref:`NXenvironment`
-       Specify external parameters that have influenced the sample,
-       such as the surrounding medium, and varied parameters e.g.
-       temperature, pressure, pH value, optical excitation etc.
-
-
 
 .. _DispersiveMaterial:
 
