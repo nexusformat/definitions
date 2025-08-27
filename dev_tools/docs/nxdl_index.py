@@ -76,7 +76,7 @@ def nxdl_indices() -> Dict[str, dict]:
             rst_lines.append(f"{indentation}cgms-structure\n")
             rst_lines.append(f"{indentation}em-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
-            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")            
+            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
         if file.endswith("contributed_definitions/index.rst"):
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
