@@ -5,7 +5,6 @@ Geometry & Microstructure
 =========================
 
 .. index::
-   CgmsBC
    Contributed-Cgms-Introduction
    Contributed-Cgms-Introduction-Physics
    Contributed-Cgms-Introduction-Base-Classes
@@ -166,8 +165,6 @@ of material (area or volume) which can be useful not only for stencil-based meth
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
-<<<<<<< HEAD
-=======
     :ref:`NXorientation_set`:
         A set of parameters to describe the relative orientation of members of a set of features/objects.
 
@@ -244,8 +241,11 @@ The following application definitions are proposed to support discussion on
 how materials engineering-specific data models connect to or can be mapped on
 concepts which are equally modellable with NeXus:
 
-    :ref:`NXmicrostructure`:
+    :ref:`NXms`:
         An application definition for arbitrary spatiotemporally resolved simulations.
+
+    :ref:`NXms_feature_set`:
+        Set of topological/spatial features in materials build from other features.       
 
     :ref:`NXms_score_config`:
         A specific example of how :ref:`NXapm_paraprobe_config_ranger` can be
@@ -256,6 +256,3 @@ concepts which are equally modellable with NeXus:
         A specific example of how :ref:`NXms` can be specialized for documenting
         results of computer simulations with the static recrystallization
         cellular automata model SCORE.
-
-TODO: revisit classes here if they still exist
->>>>>>> 1337c2f16 (update manual groupings)
