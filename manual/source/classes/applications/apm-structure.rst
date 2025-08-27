@@ -22,10 +22,16 @@ The data schemas can be useful to generate data artifacts also for field-ion mic
 Application Definition
 ######################
 
+There exists a single application definition to serve atom probe tomography
+and field-ion microscopy measurements, i.e. the data collection with the instrument:
+
     :ref:`NXapm`:
-       A general application definition with many detailed places for leaving metadata and computational steps described which are commonly used when reporting the measurement of atom probe data including also detector hit data, as well as how to proceed with reconstructing atom positions from these data, and how to store details about definitions made, which describe how mass-to-charge-state ratio values are mapped to iontypes in a process called ranging. The structure of the schema has been designed to also document a simulation of an atom probe
-       experiment. Having a combined schema for the measurement and the simulation is beneficial to document that
-       there are many similarities between the measurement and a computer simulation of it.
+      A general application definition with many detailed places for leaving metadata
+      and computational steps described which are commonly used when reporting the
+      measurement of atom probe data including also detector hit data, as well as how
+      to proceed with reconstructing atom positions from these data, and how to store
+      details about definitions made, which describe how mass-to-charge-state ratio
+      values are mapped to iontypes in a process called ranging.
 
 Base classes
 #######################

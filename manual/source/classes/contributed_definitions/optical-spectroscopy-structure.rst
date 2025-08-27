@@ -6,7 +6,7 @@ Optical Spectroscopy
 
 .. index::
    Contributed-Opt-Spec-Introduction
-   Contributed-Apm-Definitions
+   Contributed-Opt-Spec-Definitions
    Contributed-Opt-Spec-DispersiveMaterial
 
 
@@ -46,7 +46,7 @@ These are new base classes to describe additional, yet to be standardized compon
     :ref:`NXpolarizer_opt`
        An optical polarizer.
 
-.. _DispersiveMaterial:
+.. _Contributed-Opt-Spec-DispersiveMaterial:
 
 Dispersive Material
 ###################

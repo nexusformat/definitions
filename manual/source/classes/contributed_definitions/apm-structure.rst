@@ -1,0 +1,206 @@
+.. _Contributed-Apm-Structure:
+
+========================
+Optical Spectroscopy
+========================
+
+.. index::
+   Contributed-Apm-Introduction
+   Contributed-Apm-Definitions
+   Contributed-Apm-Paraprobe-Introduction
+   Contributed-Apm-Paraprobe-Status-Quo
+   Contributed-Apm-Paraprobe-Application-Definitions
+   Contributed-Apm-Paraprobe-German-NFDI
+
+.. _Contributed-Apm-Introduction:
+
+Introduction
+##############
+
+:ref:`Application definitions <appdef-apm-definitions>` (specifically :ref:`NXapm`) and :ref:`base classes <bc-apm-classes>`
+to describe atom probe microscopy experiments are already part of the NeXus standard. In addition, there are several 
+contributed definitions that are currently under discussion.
+
+.. _Contributed-Apm-Definitions:
+
+Base Classes
+------------
+
+Several instances of :ref:`NXprocess` were defined in :ref:`NXapm` to document processing of atom probe data
+including hit finding, voltage-and-bowl correction, combinatorial recovery of charge states, reconstruction,
+and ranging definitions. These base classes are examples that substantiate that data processing steps are
+essential when transforming atom probe measurements or simulations into knowledge. Consequently, these
+steps should be documented to enable reproducible research, if possible even numerical reproducibility
+of the results,  and to learn better the workflow. In what follows, an example is presented how an
+open-source community software can be modified to use descriptions of these computational steps.
+
+A detailed inspection of spatial and other type of filters frequently used in analysis of atom probe
+data revealed that it is better to define atom-probe-agnostic reusable concepts for filters:
+
+    :ref:`NXspatial_filter`:
+        A base class proposing how a point cloud can be spatially filtered in a specific yet general manner.
+        This base class takes advantage of :ref:`NXcg_ellipsoid`, :ref:`NXcg_cylinder`, and :ref:`NXcg_hexahedron`
+        to cater for commonly used geometric primitives in atom probe.
+        The primitives are used for defining the shape and extent of a region of interest (ROI).
+
+    :ref:`NXsubsampling_filter`:
+        A base class for a filter that can also be used for specifying how entries
+        like ions can be filtered via sub-sampling.
+
+    :ref:`NXmatch_filter`:
+        A base class for a filter that can also be used for specifying how entries
+        like ions can be filtered based on their type or other descriptors like hit multiplicity.
+
+
+.. _Contributed-Apm-Paraprobe-Introduction:
+
+Tools and applications in APM
+#############################
+
+There exist several research software tools in the APM community that deal with handling and analyzing APM data.
+
+One of these is the `paraprobe-toolbox <https://paraprobe-toolbox.readthedocs.io/>`_
+The software is developed by `M. Kühbach et al. <https://arxiv.org/abs/2205.13510>`_.
+
+The paraprobe-toolbox is an example of an open-source parallelized software for analyzing
+point cloud data, for assessing meshes in 3D continuum space, and for studying the effects of
+parameterization on descriptors of micro- and nanoscale structural features (crystal defects)
+within materials when characterized and studied with atom probe.
+
+There is a set of contributed application definitions describing each computational step in the 
+paraprobe-toolbox. These were added to describe the whole workflow in this particular software,
+but also can act as a blueprint for how computational steps of other software tool (including commercial 
+ones) could be developed further to benefit from NeXus.
+
+The need for a thorough documentation of the tools was motivated by several needs:
+
+First, users of software would like to better understand and also be able to study for themselves
+which individual parameters and settings for each tool exist and how configuring these
+affects analyses quantitatively. This stresses the aspect how to improve documentation.
+
+Second, scientific software like paraprobe-toolbox implement numerical/algorithmical
+(computational) workflows whereby data coming from multiple input sources
+(like previous analysis results) are processed and carried through more involved analyses
+within several steps inside the tool. The tool then creates output as files. This
+provenance and workflow should be documented.
+
+Individual tools of paraprobe-toolbox are developed in C/C++ and/or Python.
+Provenance tracking is useful as it is one component and requirement for making
+workflows exactly numerically reproducible and thus to enable reproducibility (the "R"
+of the FAIR principles of data stewardship).
+
+For tools of the paraprobe-toolbox each workflow step is a pair or triple of sub-steps:
+1. The creation of a configuration file. 
+2. The actual analysis using the Python/or C/C++ tools. 
+3. The optional analyses/visualization of the results based on data in NeXus/HDF5 files generated by each tool. 
+
+.. _Contributed-Apm-Paraprobe-Status-Quo:
+
+What has been achieved so far?
+##############################
+
+This proposal summarizes work of members of the FAIRmat project, which is part of the `German
+National Research Data Infrastructure <https://www.nfdi.de/?lang=en>`_. The here detailed
+proposal documents how all tools of the paraprobe-toolbox were modified to generate
+only well-defined configuration files as accepted input and yield specifically formatted output
+files according to the following NeXus application definitions.
+
+Data and metadata between the tools are exchanged with NeXus/HDF5 files. This means that data
+inside HDF5 binary containers are named, formatted, and hierarchically structured according
+to application definitions.
+
+For example the application definition :ref:`NXapm_paraprobe_config_surfacer`: specifies
+how a configuration file for the paraprobe-surfacer tool should be formatted
+and which parameters it contains including optionality and cardinality constraints.
+
+Thereby, each config file uses a controlled vocabulary of terms. Furthermore,
+the config files store a SHA256 checksum for each input file. This implements a full
+provenance tracking on the input files along the workflow.
+
+As an example, a user may first range their reconstruction and then compute spatial
+correlation functions. The config file for the ranging tool stores the files
+which hold the reconstructed ion position and ranging definitions.
+The ranging tool generates a results file with the labels of each molecular ion.
+This results file is formatted according to the tool-specific `results`
+application definition. The generated results file and the reconstruction is
+imported by the spatial statistics tool which again keeps track of all files
+and reports its results in a spatial statistics tool results file.
+
+This design makes it possible to rigorously trace which numerical results were achieved
+with specific inputs and settings using specifically-versioned tools. Noteworthy
+this includes Y-junction on a graph which is where multiple input sources are
+combined to generate new results.
+
+Defining, documenting, using, and sharing application definitions is a useful and future-proof 
+strategy for software development and data analyses as it enables automated provenance
+tracking which happens silently in the background.
+
+Base classes have been defined to group common pieces of information for each tool of the
+toolbox. For each tool we define a pair of base classes. One for the configuration (input) side
+and one for the results (output) side.
+
+.. _Contributed-Apm-Paraprobe-Application-Definitions:
+
+Application Definitions
+#######################
+
+NXapm_paraprobe application definitions are in fact pairs of application definitions.
+One for the configuration (input) side and one for the results (output) side. For each
+tool one such pair is proposed:
+
+    :ref:`NXapm_paraprobe_config_transcoder`, :ref:`NXapm_paraprobe_results_transcoder`:
+        Configuration and the results respectively of the paraprobe-transcoder tool.
+        Load POS, ePOS, APSuite APT, RRNG, RNG, and NeXus NXapm files.
+        Store reconstructed positions, ions, and charge states.
+
+    :ref:`NXapm_paraprobe_config_ranger`, :ref:`NXapm_paraprobe_results_ranger`:
+        Configuration and results respectively of the paraprobe-ranger tool.
+        Apply ranging definitions and explore possible molecular ions.
+        Store applied ranging definitions and combinatorial analyses of possible iontypes.
+
+    :ref:`NXapm_paraprobe_config_selector`, :ref:`NXapm_paraprobe_results_selector`:
+        Configuration and results respectively of the paraprobe-selector tool.
+        Defining complex spatial regions-of-interest to filter reconstructed datasets.
+        Store which points are inside or on the boundary of complex spatial regions-of-interest.
+
+    :ref:`NXapm_paraprobe_config_surfacer`, :ref:`NXapm_paraprobe_results_surfacer`:
+        Configuration and results respectively of the paraprobe-surfacer tool.
+        Create a model for the edge of a point cloud via convex hulls, alpha shapes, or alpha-wrappings.
+        Store triangulated surface meshes of models for the edge of a dataset.
+
+    :ref:`NXapm_paraprobe_config_distancer`, :ref:`NXapm_paraprobe_results_distancer`:
+        Configuration and results respectively of the paraprobe-distancer tool.
+        Compute and store analytical distances between ions to a set of triangles.
+
+    :ref:`NXapm_paraprobe_config_tessellator`, :ref:`NXapm_paraprobe_results_tessellator`:
+        Configuration and results respectively of the paraprobe-tessellator tool.
+        Compute and store Voronoi cells and properties of these for all ions in a dataset.
+
+    :ref:`NXapm_paraprobe_config_spatstat`, :ref:`NXapm_paraprobe_results_spatstat`:
+        Configuration and results respectively of the paraprobe-spatstat tool.
+        Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
+
+    :ref:`NXapm_paraprobe_config_clusterer`, :ref:`NXapm_paraprobe_results_clusterer`:
+        Configuration and results resepctively of the paraprobe-clusterer tool.
+        Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
+
+    :ref:`NXapm_paraprobe_config_nanochem`, :ref:`NXapm_paraprobe_results_nanochem`:
+        Configuration and results resepctively of the paraprobe-nanochem tool.
+        Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
+
+    :ref:`NXapm_paraprobe_config_intersector`, :ref:`NXapm_paraprobe_results_intersector`:
+        Configuration and results resepctively of the paraprobe-intersector tool.
+        Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
+        in continuum space to study the effect the parameterization of surface extraction algorithms on the resulting shape,
+        spatial arrangement, and colocation of 3D objects via graph-based techniques.
+
+.. _Contributed-Apm-Paraprobe-German-NFDI:
+
+Joint work German NFDI consortia NFDI-MatWerk and FAIRmat
+#######################################################################
+
+Members of the NFDI-MatWerk and the FAIRmat consortium of the German National Research Data Infrastructure
+are working together within the Infrastructure Use Case IUC09 of the NFDI-MatWerk project to work on examples
+how software tools in both consortia become better documented and interoperable to use. Within this project,
+we have also added the `CompositionSpace tool that has been developed at the Max-Planck-Institut für Eisenforschung
+GmbH in Düsseldorf <https://github.com/eisenforschung/CompositionSpace>`_ by A. Saxena et al.
