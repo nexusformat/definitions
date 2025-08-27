@@ -1,40 +1,37 @@
-.. _Ellipsometry-Structure:
+.. _Contributed-Opt-Spec-Structure:
 
 ========================
 Optical Spectroscopy
 ========================
 
 .. index::
-   Ellipsometry
-   DispersiveMaterial
+   Contributed-Opt-Spec-Introduction
+   Contributed-Opt-Spec-Definitions
+   Contributed-Opt-Spec-DispersiveMaterial
 
 
-.. _Ellipsometry:
+.. _Contributed-Opt-Spec-Introduction:
 
-Ellipsometry
+Introduction
 ##############
 
-Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
-The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
-Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
+:ref:`Application definitions <appdef-opt-spec-definitions>` and :ref:`base classes <bc-opt-spec-classes>`
+to describe optical spectroscopy experiments are already part of the NeXus standard. In addition, there are several 
+contributed definitions that are currently under discussion.
 
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
-
+.. _Contributed-Opt-Spec-Definitions:
 
 Application Definitions
 -----------------------
 
-    :ref:`NXoptical_spectroscopy`:
-       A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
-
-    :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+    :ref:`NXtransmission`:
+      Application definition for transmission experiments
 
 
 Base Classes
 ------------
 
-This is the set of base classes for describing an optical experiment.
+These are new base classes to describe additional, yet to be standardized components of optical spectroscopy experiments.
             
     :ref:`NXbeam_splitter`
        A beam splitter, i.e. a device splitting the light into two or more beams.
@@ -45,24 +42,11 @@ This is the set of base classes for describing an optical experiment.
 
     :ref:`NXfiber`
        An optical fiber, e.g. glass fiber.
-
-    :ref:`NXoptical_lens`
-       Description of an optical lens.
        
     :ref:`NXpolarizer_opt`
        An optical polarizer.
 
-    :ref:`NXwaveplate`
-       A waveplate or retarder.
-
-    :ref:`NXenvironment`
-       Specify external parameters that have influenced the sample,
-       such as the surrounding medium, and varied parameters e.g.
-       temperature, pressure, pH value, optical excitation etc.
-
-
-
-.. _DispersiveMaterial:
+.. _Contributed-Opt-Spec-DispersiveMaterial:
 
 Dispersive Material
 ###################
@@ -78,7 +62,6 @@ Application Definition
        An application definition to describe the dispersive properties of a material.
        The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
        to three dispersive functions or tables.
-
 
 
 Base Classes
