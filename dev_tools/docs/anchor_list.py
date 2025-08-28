@@ -118,7 +118,7 @@ class AnchorRegistry:
                 # the next line is the py3.9 supported way of getting the datetime
                 # this will become deprecated however in py3.12 for which the
                 # line above-mentioned is a fix, which however does not work in py3.9
-                datetime=datetime.datetime.utcnow().isoformat(),
+                datetime=datetime.datetime.now(datetime.UTC).isoformat(),
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, "
                 "attributes, and links.",
