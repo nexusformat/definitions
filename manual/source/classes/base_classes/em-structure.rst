@@ -33,7 +33,7 @@ applicable for the field of electron microscopy (:ref:`NXactuator`, :ref:`NXaper
 :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, and :ref:`NXuser`).
 
 Many design decisions of the application definitions :ref:`NXem` and :ref:`NXapm` are aligned. Examples are the use of base 
-classes for instrument-specific events :ref:`NXevent_data_em`, the grouping of measurements :ref:`NXem_measurement` and simulations
+classes for instrument-specific events :ref:`NXem_event_data`, the grouping of measurements :ref:`NXem_measurement` and simulations
 :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances to describe
 workflows of processing. The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets
 of atoms, the spatial arrangement of atoms, and offer concepts for documenting when regions-of-interest in a material represent
@@ -56,7 +56,7 @@ In addition to these considerations, there exists a set of base classes to defin
     :ref:`NXimage`:
         A base class to store individual images or stacks of images.
         
-    :ref:`NXinstrument_em`:
+    :ref:`NXem_instrument`:
         A base class to document all components that make up an instrument (real or simulated) when using it for studying
         electron matter interaction. This base class is used in NXem in two places:
         Firstly, inside an ENTRY/measurement/instrument group. This group holds all those (meta)data which do not change
