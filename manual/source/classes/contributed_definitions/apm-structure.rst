@@ -51,7 +51,6 @@ data revealed that it is better to define atom-probe-agnostic reusable concepts 
         A base class for a filter that can also be used for specifying how entries
         like ions can be filtered based on their type or other descriptors like hit multiplicity.
 
-
 .. _Contributed-Apm-Paraprobe-Introduction:
 
 Tools and applications in APM
