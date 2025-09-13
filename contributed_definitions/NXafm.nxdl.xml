@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -23,8 +23,7 @@
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXafm" extends="NXspm" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-        An application definition to describe atomic force microscopy (AFM) scanning
-        technique.
+        An application definition to describe atomic force microscopy (AFM).
     </doc>
     <group type="NXentry">
         <field name="definition">
@@ -35,43 +34,52 @@
                 <item value="NXafm"/>
             </enumeration>
         </field>
+        <field name="experiment_technique">
+            <doc>
+                The AFM technique.
+            </doc>
+            <enumeration>
+                <item value="AFM"/>
+            </enumeration>
+        </field>
         <field name="scan_mode">
             <doc>
                 The mode of the scan.
+                
+                contact mode: Cantilever attempts to move on the sample surface in very close contact with the sample.
+                 The cantilever deflection is usually employed to control the cantilever position using a PID feedback loop.
+                non-contact mode: Cantilever attempts to oscillate above the sample surface. Cantilever attempts to stay in the
+                 interaction (atomic force) zone therefore cantilever oscillator amplitude and frequency are deformed.
+                 The cantilever frequency or oscillation amplitude is usually employed to control the cantilever position using a PID feedback loop.
+                tapping mode: Resembles to the non-contact mode, but at every point of scan the cantilever tip comes closer
+                 to the sample surface ("taps it").
+                 The cantilever oscillation amplitude is usually employed to control the cantilever position using a PID feedback loop.
+                peak force tapping mode: Like the tapping mode, but at each point of the scan force-distance curve is recorded.
+                 The maximum force is usually employed to control the cantilever position using a PID feedback loop.
             </doc>
             <enumeration open="true">
                 <item value="contact mode"/>
                 <item value="tapping mode"/>
                 <item value="non-contact mode"/>
-                <item value="Kelvin probe"/>
-                <item value="electric force"/>
-                <item value="lateral force mode"/>
+                <item value="peak force tapping mode"/>
             </enumeration>
         </field>
         <group type="NXinstrument">
-            <doc>
-                The group explains the core instruments' setup of the AFM experiment as well as the environment of the corresponding
-                instruments.
-            </doc>
             <group name="photo_detector" type="NXdetector" optional="true">
                 <doc>
-                    Information about the quadrant photodiode deflection detector.
+                    Information about the quadrant photodiode deflection detector or interferometer.
                 </doc>
+                <group type="NXsensor" optional="true">
+                    <doc>
+                        The sensor information for the photodiode or interferometer.
+                    </doc>
+                </group>
             </group>
-            <group type="NXspm_cantilever" optional="true">
+            <group type="NXspm_cantilever" recommended="true">
                 <doc>
                     The cantilever information.
-                    
-                      Generally speaking, the cantilever resembles a leaf spring, which behaves as a simple harmonic oscillator.
-                      When the probe (tip or particle) on the end of the cantilever is close to the surface of the sample,
-                      an attractive or repulsive force appears between the cantilever and the sample, deforming the cantilever.
-                      The detector (typically a light pointer hitting a quadrant photodiode) measures this deformation and, therefore,
-                      the force acting on the cantilever.
-                      In a typical AFM scan cantilever moves toward the surface of the sample until a user-defined value of force acting
-                      on the cantilever is reached. The measured force is used as an input of a PID feedback loop, and the output of
-                      this loop controls the vertical position of the cantilever.
                 </doc>
-                <group name="cantilever_oscillator" type="NXcomponent" optional="true">
+                <group name="cantilever_oscillator" type="NXspm_cantilever_oscillator" recommended="true">
                     <doc>
                         When a cantilever is oscillated close to its resonance, this describes the oscillator properties.
                         
@@ -80,118 +88,46 @@
                         or resonance frequency are very sensitive to changes in the interaction potential field, giving rise of
                         various measurement modes, such as non-contact or intermittent-contact (tapping) modes.
                     </doc>
-                    <field name="oscillator_excitation" type="NX_NUMBER" optional="true" units="NX_VOLTAGE">
-                        <doc>
-                            Oscillator excitation also referred as driving voltage for excitation of
-                            cantilever oscillator. This excitation may initially set the amplitude, frequency, or
-                            phase of the cantilever oscillation depending on the experiment condition.
-                        </doc>
-                    </field>
-                    <group name="phase_lock_loop" type="NXspm_lockin" optional="true">
-                        <doc>
-                            Phase locked loop for cantilever lock-in device.
-                        </doc>
-                        <field name="amplitude_excitation" type="NX_NUMBER" optional="true" units="NX_ANY">
-                            <doc>
-                                The reference amplitude (also called driver amplitude) of the cantilever.
-                                Here, the amplitude excitation voltage may be the same as the oscillator
-                                excitation voltage.
-                            </doc>
-                        </field>
-                        <group name="cantilever_phase_positioner" type="NXpositioner" optional="true">
-                            <doc>
-                                The phase positioner of the cantilever.
-                            </doc>
-                        </group>
-                        <group name="cantilever_amplitude_positioner" type="NXpositioner" optional="true">
-                            <doc>
-                                The amplitude positioner of the cantilever.
-                            </doc>
-                        </group>
-                        <group name="cantilever_frequency_positioner" type="NXpositioner" optional="true">
-                            <doc>
-                                The frequency positioner of the cantilever.
-                            </doc>
-                        </group>
-                    </group>
+                    <field name="reference_amplitude" type="NX_NUMBER" units="NX_LENGTH" recommended="true"/>
+                    <field name="reference_frequency" type="NX_NUMBER" units="NX_FREQUENCY" recommended="true"/>
+                    <field name="reference_phase" type="NX_NUMBER" units="NX_ANGLE" recommended="true"/>
+                </group>
+                <group name="phase_positioner" type="NXpositioner" recommended="true">
+                    <doc>
+                        The phase positioner of the cantilever.
+                    </doc>
+                </group>
+                <group name="amplitude_positioner" type="NXpositioner" recommended="true">
+                    <doc>
+                        The amplitude positioner of the cantilever.
+                    </doc>
                 </group>
             </group>
-            <group name="scan_environment" type="NXenvironment">
+            <group name="phase_lock_loop" type="NXphase_lock_loop" recommended="true">
+                <doc>
+                    Phase locked loop for cantilever lock-in device.
+                </doc>
+            </group>
+            <group name="SCAN_ENVIRONMENT" type="NXenvironment" nameType="any">
                 <doc>
                     The environment information.
                 </doc>
-                <group name="height_piezo_sensor" type="NXsensor">
+                <group name="XYpiezo_sensor" type="NXspm_piezo_sensor" nameType="partial" optional="true">
                     <doc>
-                        Link to the group
-                        ENTRY[entry]/experiment_instrument/height_piezo_sensor.
-                        
-                        Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                        This should be a link to the concept
+                        entry/instrument/xy_piezo_sensor.
                     </doc>
                 </group>
-                <group name="XY_piezo_sensor" type="NXsensor" nameType="specified">
+                <group name="head_temperature_sensor" type="NXsensor" optional="true">
                     <doc>
-                        Link to the group
-                        ENTRY[entry]/experiment_instrument/XY_piezo_sensor.
-                        
-                        Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
-                    </doc>
-                </group>
-                <group name="tip_temp_sensor" type="NXsensor">
-                    <doc>
-                        Link to the group
-                        ENTRY[entry]/experiment_instrument/tip_temp_sensor.
-                        
-                        Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                        This should be a link to the concept
+                        entry/instrument/head_temperature_sensor.
                     </doc>
                 </group>
             </group>
-            <group name="height_piezo_sensor" type="NXsensor" optional="true">
+            <group name="head_temperature_sensor" type="NXsensor" optional="true">
                 <doc>
-                    The sensor information for the height piezo device.
-                </doc>
-                <group name="piezo_configuration" type="NXspm_piezo_config">
-                    <doc>
-                        The piezo configuration information like piezoelectric calibration and material
-                        properties.
-                    </doc>
-                    <group name="piezo_material" type="NXspm_piezoelectric_material" optional="true">
-                        <doc>
-                            The material description and properties of the piezoelectric scanner materials.
-                        </doc>
-                    </group>
-                </group>
-                <group type="NXspm_positioner">
-                    <doc>
-                        The positioner information like the position of the tip, the position of the
-                        sample, PID loop feedback etc.
-                    </doc>
-                </group>
-            </group>
-            <group name="XY_piezo_sensor" type="NXsensor" nameType="specified" optional="true">
-                <doc>
-                    The sensor information for the xy piezo device.
-                </doc>
-                <group name="piezo_configuration" type="NXspm_piezo_config">
-                    <doc>
-                        The piezo configuration information like piezoelectric calibration and material
-                        properties.
-                    </doc>
-                    <group name="piezo_material" type="NXspm_piezoelectric_material" optional="true">
-                        <doc>
-                            The material description and properties of the piezoelectric scanner materials.
-                        </doc>
-                    </group>
-                </group>
-                <group type="NXspm_positioner">
-                    <doc>
-                        The positioner information like the position of the end of the cantilever, the position of the
-                        sample, PID loop feedback etc.
-                    </doc>
-                </group>
-            </group>
-            <group name="tip_temp_sensor" type="NXsensor" optional="true">
-                <doc>
-                    The temperature of the scan environment or tip of the cantilever.
+                    The temperature of the scan environment or head of the cantilever.
                 </doc>
             </group>
         </group>
@@ -200,36 +136,28 @@
                 The group of indicators (links to the existing fields in different groups) that measure
                 the reproducibility of the experiment.
             </doc>
-            <field name="cantilever_tip_temp" type="NX_NUMBER" optional="true">
+            <field name="head_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/tip_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/head_temperature
                 </doc>
             </field>
-            <field name="cryo_bottom_temp" type="NX_NUMBER" optional="true">
+            <field name="cryo_bottom_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/cryo_bottom_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_bottom_temperature
                 </doc>
             </field>
-            <field name="cryo_shield_temp" type="NX_NUMBER" optional="true">
+            <field name="cryo_shield_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/cryo_shield_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_shield_temperature
                 </doc>
             </field>
-            <group name="cantilever_oscillator" type="NXcomponent" optional="true">
+            <group name="cantilever_oscillator" type="NXspm_cantilever_oscillator" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/cantilever_spm/cantilever_oscillator
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/cantilever_spm/cantilever_oscillator
                 </doc>
             </group>
         </group>
@@ -237,44 +165,34 @@
             <doc>
                 The group of indicators (links to the existing fields in different groups) that
             </doc>
-            <field name="cantilever_tip_temp" type="NX_NUMBER" optional="true">
+            <field name="head_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/tip_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/head_temperature
                 </doc>
             </field>
-            <field name="cryo_bottom_temp" type="NX_NUMBER" optional="true">
+            <field name="cryo_bottom_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/cryo_bottom_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_bottom_temperature
                 </doc>
             </field>
-            <field name="cryo_shield_temp" type="NX_NUMBER" optional="true">
+            <field name="cryo_shield_temperature" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/scan_environment/cryo_shield_temp
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_shield_temperature
                 </doc>
             </field>
-            <field name="oscillator_excitation" type="NX_NUMBER" optional="true">
+            <field name="cantilever_config" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/cantilever_spm/cantilever_oscillator/oscillator_excitation
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/cantilever_spm/cantilever_config
                 </doc>
             </field>
             <field name="amplitude_excitation" type="NX_NUMBER" optional="true">
                 <doc>
-                    Link to target:
-                    /ENTRY[entry]/INSTRUMENT[instrument]/cantilever_spm/cantilever_oscillator/phase_lock_loop/amplitude_excitation
-                    
-                    Note: The group name written inside the square brackets (e.g. entry in ENTRY[entry]) would be the exact instance name of the base class (e.g. NXentry) in the nexus file.
+                    This should be a link to
+                    /entry/instrument/phase_lock_loop/amplitude_excitation
                 </doc>
             </field>
         </group>

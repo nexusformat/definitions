@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXphase_lock_loop" extends="NXcomponent" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+        A base class definition for a phase-locked loop (PLL) used in AFM experiments.
+        
+        The PLL has three main components:
+          1. Phase-detector
+          2. Loop-filter
+          3. Voltage-controlled oscillator (VCO)
+          
+        Depending on the phase error from the phase detector due to the phase difference between the
+        Reference and output from the VCO signals, the PLL adjusts the output frequency to minimize the phase error.
+        
+        Measuring the phase error, the PLL can be in one of three states:
+          - Zero phase error: The output signal is in coherence with the reference signal (lock condition).
+          - Constant phase error: The output signal has a constant phase difference from the reference signal, and therefore,
+                  both reference signals have the same frequency (lock condition).
+          - Continuous increasing phase error: The output signal's phase continuously changes therefore they have different frequencies, 
+                  indicating the PLL is in an unlock condition.
+    </doc>
+    <group name="hardware" type="NXfabrication">
+        <doc>
+            Manufacturer and model of the PLL hardware or controller.
+        </doc>
+        <field name="type" type="NX_CHAR">
+            <doc>
+                Types (design parameter for circuit) of the PLL from type-1, type-2, and type-3 
+                available in device specifications (for mathmatical details: https://www.nxp.com/docs/en/application-note/AN535.pdf).
+                Type is defined by the number of poles that exist in the transfer function of the PLL.
+            </doc>
+            <enumeration>
+                <item value="type-1"/>
+                <item value="type-2"/>
+                <item value="type-3"/>
+            </enumeration>
+        </field>
+        <field name="order" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Order of the PLL. This is characteristic of circuit design and is defined as the number of roots of
+                characteristics polynomial of the PLL circuit.
+            </doc>
+        </field>
+    </group>
+    <group name="calibration" type="NXcalibration">
+        <doc>
+            Calibration information for the PLL, including any relevant parameters
+            or procedures.
+        </doc>
+    </group>
+    <field name="center_frequency" type="NX_NUMBER" units="NX_FREQUENCY">
+        <doc>
+            The center frequency of the PLL is the middle frequency of the PLL's operating
+            range.
+        </doc>
+    </field>
+    <field name="frequency_bandwidth" type="NX_NUMBER" units="NX_FREQUENCY">
+        <doc>
+            The frequency bandwidth of the PLL is where it responds or is stable.
+            If phase difference (also called phase error) is calculated from the input and output signal
+            frequencies.
+        </doc>
+    </field>
+    <field name="phase_bandwidth" type="NX_NUMBER" units="NX_FREQUENCY">
+        <doc>
+            The phase bandwidth of the PLL is where it responds or is stable.
+            If phase difference (also called phase error) is calculated from the input and output signal
+            phases.
+        </doc>
+    </field>
+    <field name="frequency_step" type="NX_NUMBER" units="NX_FREQUENCY">
+        <doc>
+            The frequency step size of the PLL determines the resolution of frequency
+            changes.
+        </doc>
+    </field>
+    <group name="phase_detector" type="NXcomponent">
+        <doc>
+            The phase detector component of the PLL, which compares the phase between the
+            reference signal generated (e.g., in AFM, generated by the cantilever) and the signal coming from the VCO.
+        </doc>
+        <field name="reference_frequency" type="NX_NUMBER" units="NX_FREQUENCY">
+            <doc>
+                The input reference frequency to the PLL through the component Phase-detector.
+            </doc>
+        </field>
+        <field name="frequency_shift" type="NX_NUMBER" units="NX_FREQUENCY">
+            <doc>
+                Measured or target shift in oscillation from the VCO. relative to the reference
+                signal.
+            </doc>
+        </field>
+        <field name="reference_phase" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                Reference phase of the input signal to the phase detector.
+            </doc>
+        </field>
+        <field name="phase_error" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                Measured phase error (also called phase difference) between the reference signal
+                and the VCO output.
+            </doc>
+        </field>
+        <field name="Kp_coefficient" type="NX_NUMBER" nameType="specified" units="V/rad">
+            <doc>
+                The gain coefficient of the phase detector which determines how much the output
+                voltage changes in response to a phase difference (V/rad).
+            </doc>
+        </field>
+    </group>
+    <group name="loop_filter" type="NXcomponent">
+        <doc>
+            The loop filter component of the PLL filters the voltage from the phase detector to the VCO.
+            It extracts the average voltage of the phase error signals emitted from the phase detector.
+        </doc>
+        <field name="Kf_coefficient" type="NX_NUMBER" nameType="specified" units="NX_UNITLESS">
+            <doc>
+                The Kf coefficient, called loop filter gain, determines the gain of the
+                loop filter circuit in the PLL.
+            </doc>
+        </field>
+    </group>
+    <group name="voltage_controlled_oscillator" type="NXcomponent">
+        <doc>
+            The voltage-controlled oscillator (VCO) component of the PLL, which generates the output signal
+            based on the filtered voltage from the loop filter.
+        </doc>
+        <field name="output_frequency_range" type="NX_NUMBER" units="NX_FREQUENCY">
+            <doc>
+                The output frequency range (written in an array of frequencies as [min, max]) of the VCO which is the range
+                of frequencies it can generate. The range is either the same as the frequency bandwidth of the PLL or shorter
+                and inside that.
+            </doc>
+        </field>
+        <field name="Kn_coefficient" type="NX_NUMBER" nameType="specified" units="NX_UNITLESS">
+            <doc>
+                The Kn coefficient, called the input-output frequency ratio, relates the input frequency to the output
+                frequency of the VCO. This coefficient is used to adjust the output frequency based on the input frequency.
+            </doc>
+        </field>
+        <field name="Ko_coefficient" type="NX_NUMBER" nameType="specified" units="ANY">
+            <doc>
+                The output voltage coefficient of the VCO, which determines how much the output
+                frequency changes in response to a change in input voltage (Hz/V).
+            </doc>
+        </field>
+    </group>
+</definition>
