@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,18 +25,21 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
     name="NXroot"
-    type="group" extends="NXobject">
-    <doc>Definition of the root NeXus group.</doc>
-    <attribute name="NX_class">
-        <doc>
-            The root of any NeXus data file is an ``NXroot`` class
-            (no other choice is allowed for a valid NeXus data file).
-            This attribute cements that definition.
-        </doc>
-        <enumeration>
-            <item value="NXroot"></item>
-        </enumeration>
-    </attribute>
+    type="group">
+    <doc>
+        The root of a NeXus file.
+
+        In the NeXus standard, only NXentry groups are allowed at the
+        root level of a file, although it is permitted to include
+        additional groups and fields that are not part of the NeXus
+        standard and will not be validated by NeXus tools. NeXus defines
+        a number of root-level attributes that can be used to annotate
+        the NeXus tree.
+
+        Note that NXroot is the only base class that does not inherit
+        from the NXobject class, since the latter permits the inclusion
+        of NeXus objects that are not allowed at the root level.
+    </doc>
     <attribute name="file_time" type="NX_DATE_TIME">
         <doc>Date and time file was originally created</doc>
     </attribute>
@@ -46,13 +49,35 @@
     <attribute name="file_update_time" type="NX_DATE_TIME">
         <doc>Date and time of last file change at close</doc>
     </attribute>
-    <attribute name="NeXus_version">
+    <attribute name="NeXus_version" deprecated="NAPI is frozen.">
         <doc>
             Version of NeXus API used in writing the file.
 
-            Only used when the NAPI has written the file.
             Note that this is different from the version of the
-            base class or application definition version number.
+            base class or application definition version number.            
+        </doc>
+    </attribute>
+    <attribute name="NeXus_repository">
+        <doc>
+            A repository containing the application definitions
+            used for creating this file.
+            If the ``NeXus_release`` attribute contains a commit distance and hash,
+            this should refer to this repository.
+        </doc>
+    </attribute>
+    <attribute name="NeXus_release">
+        <doc>
+            The version of NeXus definitions used in writing the file. This can either be a date-based
+            NeXus release (e.g., YYYY.MM), see https://github.com/nexusformat/definitions/releases or
+            a version tag that includes additional development information, such as a commit distance and
+            a Git hash. This is typically formatted as  `vYYYY.MM.post1.dev&lt;commit-distance&gt;-g&lt;git-hash&gt;`,
+            where `YYYY.MM` refers to the base version of the NeXus definitions. `post1.dev&lt;commit-distance&gt;` 
+            indicates that the definitions are based on a commit after the base version (post1), with
+            `&lt;commit-distance&gt;` being the number of commits since that version. `g&lt;git-hash&gt;` is the 
+            abbreviated Git hash that identifies the specific commit of the definitions being used.
+
+            If the version includes both a commit distance and a Git hash, the ``NeXus_repository`` 
+            attribute must be included, specifying the URL of the repository containing that version.
         </doc>
     </attribute>
     <attribute name="HDF_version">
@@ -102,4 +127,3 @@
         </doc>
     </attribute>
 </definition>
-

@@ -5,19 +5,19 @@ def dir_args(parser):
     parser.add_argument(
         "--source-root",
         type=str,
-        default=None,
+        default=directories.get_source_root(),
         help="Source root directory" f" Default: {directories.get_source_root()}",
     )
     parser.add_argument(
         "--nxdl-root",
         type=str,
-        default=None,
+        default=directories.get_nxdl_root(),
         help="NXDL root directory" f" Default: {directories.get_nxdl_root()}",
     )
     parser.add_argument(
         "--build-root",
         type=str,
-        default=None,
+        default=directories.get_build_root(),
         help="Build root directory" f" Default: {directories.get_build_root()}",
     )
 

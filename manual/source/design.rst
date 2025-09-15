@@ -519,6 +519,20 @@ But there are some base classes which have special uses which need to be mention
 These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a ``NXcollection``. All of the base classes are documented in the reference manual.
 
+.. _inheritance:
+
+Inheritance in NeXus
+--------------------
+
+Single inheritance is supported in NeXus for both base classes and application definitions (which are
+described below).  Extending a base class or application definition inherits the properties and objects of the
+parent class or definition, such as groups, fields, attributes, and symbol tables. These properties and objects
+of the parent can then be overridden by the subclass.  Only single inheritance is allowed (you can only inherit
+from a single parent).
+
+Use the ``@extends`` attribute of a definition to indicate which definition is being subclassed. Base classes
+should extend from ``NXobject`` unless they are being subclassed.
+
 .. _NXdata-facilitates-TheDefaultPlot:
 
 ``NXdata`` Facilitates Automatic Plotting
@@ -645,7 +659,7 @@ Yet another way to look at a NeXus application definition is to understand it as
 between data files and the software which uses this file. Much like an interface in the Java or other modern
 object oriented programming languages.
 
-In contrast to NeXus base classes, NeXus supports inheritance in application definitions.
+Like base classes, NeXus supports :ref:`inheritance` in application definitions.
 
 Please note that a NeXus Application Definition will only define the bare minimum of data necessary to perform
 common analysis with data. Practical files will nearly always contain more data. One of the beauties of NeXus is
