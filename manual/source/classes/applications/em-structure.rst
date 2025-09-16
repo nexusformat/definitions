@@ -1,15 +1,42 @@
-.. _Em-Structure:
+.. _AppDef-Em-Structure:
 
-=======================
+===================
 Electron microscopy
-=======================
+===================
 
 .. index::
-   Design
-   EmAppDef
-   EmBC
-   
-.. _EmDesign:
+   AppDef-Em-Introduction
+   AppDef-Em-Design
+   AppDef-Em-Definitions
+
+.. _AppDef-Em-Introduction:
+
+Introduction
+############
+
+A set of data schemas is available to describe components of an electron microscope (EM) and its potentially available focused-ion beam
+functionalities.
+
+Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as
+on-the-fly computational analyses, regularly switching between GUI-based instrument control, computational steps, and more and more using
+high-throughput stream-based processing. Also artificial intelligence methods are increasingly used and are becoming more closely
+interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy
+is that these steps are often executed within commercial integrated control and analysis software. This makes it difficult to keep
+track of workflows in a technology-partner-agnostic, i.e. interdisciplinary manner.
+
+The application definitions and associated base classes were designed from the perspective of how electron microscopes are used in the
+materials-science-branch of electron microscopy. Therefore, the focus is on the usage of electron microscopy in condensed-matter physics,
+chemical physics of solids, and materials engineering applications.
+
+The biology-/bio-materials/omics-branch of electron microscopy (which also has a mature state of discussion with respect to data
+management practices) was not the focus of the original design of the applcation definition. However, as many of the components of electron
+microscopes used in the bio-materials communities are the same or at least many components are very similar, it is likely that the application
+definition can also inspire discussion and exchange with the bio-materials community.
+
+It is acknowledged that it can be difficult to agree on a single application definition which is generally enough applicable, yet not
+unnecessarily complex and useful for applications across a variety of instruments, technology partners, and instrument use cases.
+
+.. _AppDef-Em-Design:
 
 Design
 ######
@@ -69,11 +96,11 @@ investing additional imaging modes and probing other characteristic electron-mat
 prominent of which electron energy loss spectroscopy. Consequently, additional lens and components are introduced
 into the beam path of the exiting electrons.
 
-
-.. _EmAppDef:
+.. _AppDef-Em-Definitions:
 
 Application Definition
 ######################
+
 An experiment with an electron microscope proceeds as follows: users place a sample into the microscope, calibrate the instrument,
 take measurements, may prepare their specimens with a focused ion beam, calibrate again, and take further measurements,
 they process data, until eventually their session on the instrument ends. In between, virtually all of these steps data
@@ -89,16 +116,16 @@ of the electron beam are made or simulated. The simulation analyzes the interact
 individual electrons or by modeling their collective behavior via computing numerical solutions or approximations for the
 beam electro-magnetic field.
 
+There currently exists a single application definition for describing EM experiments:
+
     :ref:`NXem`:
         A general application definition which explores the possibilities of electron microscopes for characterizing
         electron- and ion-beam matter interactions.
 
-.. _EmBC:
-
 Base Classes
 ############
 
-The design of NXem uses several existent base class and adds edits and additions of some concepts to make these base classes applicable for the field of electron microscopy (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`,
+The design of NXem was achieved using existent base classes (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`,
 :ref:`NXdeflector`, :ref:`NXdetector`, :ref:`NXfabrication`, :ref:`NXmanipulator`, :ref:`NXmonochromator`, :ref:`NXnote`, :ref:`NXparameters`, :ref:`NXprocess`,
 :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, and :ref:`NXuser`).
 
@@ -106,7 +133,7 @@ Many design decisions of the application definitions :ref:`NXem` and :ref:`NXapm
 events :ref:`NXem_event_data`, the grouping of measurements :ref:`NXem_measurement` and simulations :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances to describe workflows of processing. The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets of atoms, the spatial arrangement of atoms, and offer concepts for documenting when
 regions-of-interest in a material represent thermodynamic phases.
 
-In addition to these considerations, several base classes were proposed to define concepts that are specific for electron microscopy:
+In addition to these considerations, several new base classes were proposed that define concepts specific for electron microscopy:
 
     :ref:`NXaberration`:
         A base class to describe procedures and values for the calibration of aberrations.
