@@ -28,7 +28,6 @@ help ::
 	@echo "make autoformat         Format all files to the coding style conventions."
 	@echo "make test               Run NXDL syntax and documentation tests."
 	@echo "make clean              Remove all build files."
-	@echo "make spellcheck         Run a spellcheck across all definitions."
 	@echo "make prepare            (Re)create all build files."
 	@echo "make html               Build HTML version of manual. Requires prepare first."
 	@echo "make pdf                Build PDF version of manual. Requires prepare first."
@@ -64,11 +63,6 @@ clean ::
 	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)
-
-spellcheck ::
-	@command -v cspell >/dev/null 2>&1 || { echo >&2 "cspell is not installed. Install it with: npm install -g cspell"; exit 1; }
-	@echo "Running spellcheck with cspell..."
-	cspell --config cspell.json "${APPDEF_DIR}/**/*" "${BASE_CLASS_DIR}/**/*" "${CONTRIB_DIR}/**/*"
 
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
