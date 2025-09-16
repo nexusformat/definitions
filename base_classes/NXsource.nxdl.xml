@@ -25,8 +25,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 	name="NXsource" 
-    type="group" extends="NXobject">
-	<doc>The neutron or x-ray storage ring/facility.</doc>
+	type="group" extends="NXcomponent">
+	<doc>
+		Radiation source emitting a beam.
+
+		Examples include particle sources (electrons, neutrons, protons) or sources for electromagnetic radiation (photons).
+		This base class can also be used to describe neutron or x-ray storage ring/facilities.
+   </doc>
 	<field name="distance" type="NX_FLOAT" units="NX_LENGTH">
 		<doc>
 			Effective distance from sample
@@ -42,7 +47,7 @@
 	</field>
 	<field name="type">
 		<doc>type of radiation source (pick one from the enumerated list and spell exactly)</doc>
-		<enumeration>
+		<enumeration open="true">
 			<item value="Spallation Neutron Source" />
 			<item value="Pulsed Reactor Neutron Source" />
 			<item value="Reactor Neutron Source" />
@@ -56,12 +61,22 @@
 			<item value="Ion Source" />
 			<item value="UV Plasma Source" />
 			<item value="Metal Jet X-ray" />
-		</enumeration>
+            <item value="Laser"/>
+            <item value="Dye Laser"/>
+            <item value="Broadband Tunable Light Source"/>
+            <item value="Halogen Lamp"/>
+            <item value="LED"/>
+            <item value="Mercury Cadmium Telluride Lamp"/>
+            <item value="Deuterium Lamp"/>
+            <item value="Xenon Lamp"/>
+            <item value="Globar"/>
+        </enumeration>
 	</field>
 	<field name="probe">
 		<doc>type of radiation probe (pick one from the enumerated list and spell exactly)</doc>
 		<enumeration>
 			<item value="neutron" />
+			<item value="photon" />
 			<item value="x-ray" />
 			<item value="muon" />
 			<item value="electron" />
@@ -91,9 +106,9 @@
 	</field>
 	<field name="energy" type="NX_FLOAT" units="NX_ENERGY">
 		<doc>
-			Source energy.  
-			For storage rings, this would be the particle beam energy.
-			For X-ray tubes, this would be the excitation voltage.
+			Source energy. Typically, this would be the energy of
+			the emitted beam. For storage rings, this would be
+			the particle beam energy.
 		</doc>
 	</field>
 	<field name="current" type="NX_FLOAT" units="NX_CURRENT">
@@ -150,10 +165,9 @@
 	</group>
 	<field name="mode">
 		<doc>source operating mode</doc>
-		<enumeration>
+		<enumeration open="true">
 			<item value="Single Bunch"><doc>for storage rings</doc></item>
 			<item value="Multi Bunch"><doc>for storage rings</doc></item>
-			<!-- other sources could add to this -->
 		</enumeration>
 	</field>
 	<field name="top_up" type="NX_BOOLEAN">
@@ -163,55 +177,90 @@
 		<doc>For storage rings, the current at the end of the most recent injection.</doc>
 		<attribute name="time" type="NX_DATE_TIME"><doc>date and time of the most recent injection.</doc></attribute>
 	</field>
-        <group name="geometry" type="NXgeometry" deprecated="Use the field `depends_on` and :ref:`NXtransformations` to position the source and NXoff_geometry to describe its shape instead">
+	<field name="wavelength" type="NX_FLOAT" units="NX_WAVELENGTH">
+		<doc>
+				The wavelength of the radiation emitted by the source.
+		</doc>
+	</field>
+	<field name="pulse_energy" type="NX_FLOAT" units="NX_ENERGY">
+		<doc>
+				For pulsed sources, the energy of a single pulse.
+		</doc>
+	</field>
+	<field name="peak_power" type="NX_FLOAT" units="NX_POWER">
+		<doc>
+				For pulsed sources, the pulse energy divided
+				by the pulse duration
+		</doc>
+	</field>
+	<field name="anode_material">
+		<doc>
+				Material of the anode (for X-ray tubes).
+		</doc>
+	</field>
+	<field name="filament_current" type="NX_FLOAT" units="NX_CURRENT">
+		<doc>
+				Filament current (for X-ray tubes).
+		</doc>
+	</field>
+	<field name="emission_current" type="NX_FLOAT" units="NX_CURRENT">
+		<doc>
+				Emission current of the generated beam.
+		</doc>
+	</field>
+	<field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE">
+		<doc>
+				Gas pressure inside ionization source.
+		</doc>
+	</field>
+    <field name="previous_source" type="NX_CHAR">
+        <doc>
+             Single instance or list of instances of NXsource pointing to the sources from which a beam originated to reach this source.
+             This can be used, for example, for secondary sources to describe which other source(s) they are derived from.
+
+             An example is the white light source in transient absorption spectroscopy, which is a supercontinuum crystal that is pumped by a
+             another laser.
+
+             In case of a primary source, this field should not be filled.
+        </doc>
+    </field>
+	<group name="geometry" type="NXgeometry" deprecated="Use the field `depends_on` and :ref:`NXtransformations` to position the source and NXoff_geometry to describe its shape instead">
 		<doc>
 			"Engineering" location of source.
 		</doc>
 	</group>
-        <group type="NXoff_geometry" minOccurs="0">
-           <doc>
-               This group describes the shape of the beam line component
-            </doc>
-        </group>
+	<group type="NXaperture">
+		<doc>
+			 The size and position of an aperture inside the source.
+		</doc>
+	</group>
+	<group type="NXelectromagnetic_lens">
+		<doc>
+			Individual electromagnetic lenses inside the source.
+		</doc>
+	</group>
+	<group type="NXdeflector">
+		<doc>
+			 Deflectors inside the source.
+		</doc>
+	</group>
+	<group type="NXfabrication"/>
+	<group type="NXoff_geometry" minOccurs="0">
+		<doc>
+			This group describes the shape of the beam line component
+		</doc>
+	</group>
 	<group type="NXdata" name="distribution">
 	  <doc>The wavelength or energy distribution of the source</doc>
 	</group>
-    <attribute name="default">
-        <doc>
-            .. index:: plotting
-            
-            Declares which child group contains a path leading 
-            to a :ref:`NXdata` group.
-            
-            It is recommended (as of NIAC2014) to use this attribute
-            to help define the path to the default dataset to be plotted.
-            See https://www.nexusformat.org/2014_How_to_find_default_data.html
-            for a summary of the discussion.
-        </doc>
-    </attribute>
-    <field name="depends_on" type="NX_CHAR">
-        <doc>
-            NeXus positions components by applying a set of translations and rotations
-            to apply to the component starting from 0, 0, 0. The order of these operations
-            is critical and forms what NeXus calls a dependency chain. The depends_on
-            field defines the path to the top most operation of the dependency chain or the
-            string "." if located in the origin. Usually these operations are stored in a
-            NXtransformations group. But NeXus allows them to be stored anywhere.
+	<field name="depends_on" type="NX_CHAR">
+		<doc>
+			The reference point of the source plane is its center in the x and y axis. The source is considered infinitely thin in the
+			z axis.
 
-            The reference point of the source plane is its center in the x and y axis. The source is considered infinitely thin in the
-            z axis.
+			.. image:: source/source.png
+			  :width: 40%
 
-            .. image:: source/source.png
-              :width: 40%
-
-        </doc>
-    </field>
-    <group type="NXtransformations">
-        <doc>
-            This is the group recommended for holding the chain of translation
-            and rotation operations necessary to position the component within
-            the instrument. The dependency chain may however traverse similar groups in
-            other component groups.
-        </doc>
-    </group>
+		</doc>
+	</field>
 </definition>
