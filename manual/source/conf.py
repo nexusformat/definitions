@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath("../../../dev_tools/ext"))
 # -- Project information -----------------------------------------------------
 
 project = 'NeXus-FAIRmat'
-author = 'The FAIRmat collaboration'
+author = 'The FAIRmat consortium, a member of the German National Research Data Infrastructure (NFDI)'
 copyright = u'2022-{}, {}'.format(datetime.datetime.now().year, author)
 description = u'Proposal of NeXus expansion for FAIRmat data'
 
@@ -194,3 +194,22 @@ sphinx_gallery_conf = {
     "write_computation_times": False,  # disable computation time display
     "show_signature": False,  # disable signature
 }
+
+# -- Inject Git commit information for substitution --------------------------
+
+import subprocess
+
+def run_git_cmd(*args):
+    try:
+        out = subprocess.check_output(('git',) + args)
+        return out.decode().strip()
+    except subprocess.SubprocessError:
+        return 'unknown'
+
+commit_hash = run_git_cmd('rev-parse', '--short', 'HEAD')
+commit_time = run_git_cmd('log', '-1', '--format=%cd', '--date=iso')
+
+rst_epilog = f"""
+.. |commit_hash| replace:: {commit_hash}
+.. |commit_time| replace:: {commit_time}
+"""

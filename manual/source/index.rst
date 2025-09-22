@@ -31,9 +31,15 @@ https://www.nexusformat.org/
 
 .. rubric:: Publishing Information
 
-| This commit time code <<AUTO_INJECT_COMMIT_TC>>.
-| This commit identifier <<AUTO_INJECT_COMMIT_ID>>.
+| This commit time code |commit_time|.
+| This commit identifier |commit_hash|.
 | This manual built |today|.
+
+Noteworthy, NeXus-FAIRmat works with a fork of the official NeXus definitions.
+Therefore, expect individual definitions may differ between versions when
+comparing the official NeXus repository and the fork maintained by FAIRmat.
+FAIRmat and NeXus exchange frequently to sync up such that the FAIRmat fork
+builds always on top of the latest official NeXus release.
 
 .. rubric:: Acknowledgements
 
@@ -44,7 +50,7 @@ https://www.nexusformat.org/
 
 .. seealso:: 
 
-   The extended NeXus documentation:
+   The extended NeXus documentation of the latest official NeXus release:
    
    :HTML:
    	https://manual.nexusformat.org/
@@ -63,7 +69,7 @@ https://www.nexusformat.org/
 
    FAIRmat website:
 
-   `<https://www.fair-di.eu/fairmat/fairmat_/consortium>`_
+   `<https://www.fairmat-nfdi.eu/fairmat/about-fairmat/consortium-fairmat>`_
 
    NOMAD website:
 
