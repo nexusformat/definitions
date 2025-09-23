@@ -34,8 +34,9 @@ class NXClassDocGenerator:
         "application": "application definition",
     }
 
-    def __init__(self) -> None:
+    def __init__(self, refer_to_html_artifact: bool = True) -> None:
         self._rst_lines = None
+        self._refer_to_html_artifact = refer_to_html_artifact
         self._reset()
 
     def _reset(self):
@@ -200,7 +201,11 @@ class NXClassDocGenerator:
         nxdl_root = get_nxdl_root()
         rel_path = str(nxdl_file.relative_to(nxdl_root))
         rel_html = str(rel_path).replace(os.sep, "/")
-        self._print(f"  {REPO_URL}/{rel_html}")
+        self._print(
+            f"  {REPO_URL}/{rel_html}"
+            if self._refer_to_html_artifact
+            else f"  {os.path.abspath(nxdl_file)}"
+        )
 
         return self._rst_lines
 

@@ -30,6 +30,11 @@ def manual_args(parser):
         action="store_true",
         help="Print all changes in the generated documentation",
     )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Set path of NXDL Source to local NXDL/XML instead of online HTML artifact",
+    )
 
 
 def manual_exec(args):
@@ -40,7 +45,9 @@ def manual_exec(args):
     # XSD and NXDL document generators
     generate_docs = args.prepare or args.diff
     if generate_docs:
-        generator = NXClassDocGenerator()
+        generator = NXClassDocGenerator(
+            refer_to_html_artifact=False if args.offline else True
+        )
         xsdgenerator = XSDDocGenerator()
         if args.prepare:
             output_path = directories.manual_build_staticroot()

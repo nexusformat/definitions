@@ -86,7 +86,8 @@ impatient-guide ::
 # for developer's use on local build host
 local ::
 	$(MAKE) test
-	$(MAKE) prepare
+	$(PYTHON) -m dev_tools manual --prepare --offline --build-root $(BUILD_DIR)
+	$(PYTHON) -m dev_tools impatient --prepare --build-root $(BUILD_DIR)
 	$(MAKE) html
 
 all ::
