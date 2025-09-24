@@ -138,6 +138,14 @@ Use NeXus links liberally in data files to reduce duplication of data.
 In application definitions involving raw data,
 write the raw data in the :ref:`NXinstrument` tree and then link to it
 from the location(s) defined in the relevant application definition.
+
+Application definitions provide a data processing interface to raw data
+as well as :ref:`processed data<ProcessedData>`. For example the :ref:`NXtomoproc`
+application definition is typically (but not necessarily) an interface
+to the result of processing :ref:`NXtomo`. The :ref:`NXreflections` application
+definition is typically (but not necessarily) an interface to the result of
+processing :ref:`NXmx`. The application definitions :ref:`NXtomo` and :ref:`NXmx`
+in turn are typically (but not necessarily) interfaces to raw data.
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "contributed_definitions": """
