@@ -25,8 +25,8 @@ electric properties, and chemical composition.
 
         A schematic diagram of Scanning Tunneling Microscopy (STM) and Spectroscopy (STS) setup generate topography image and I/V curve.
 
-NXspm provides a shared structural framework for capturing essential components such as the instrument configuration, experimental, and 
-sample environments, scan data acquired during measurements, and other relevant metadata. The current version aims to ensure that 
+The application definition NXspm provides a shared structural framework for capturing essential components such as the instrument configuration, 
+experimental, and sample environments, scan data acquired during measurements, and other relevant metadata. The current version aims to ensure that 
 fundamental technical elements are inherited consistently across specific experiment types like STM, STS, and AFM.
 
 
@@ -37,7 +37,6 @@ fundamental technical elements are inherited consistently across specific experi
     .. figure:: ../../img/SPM-inheritance.png
         :alt: SPM-inheritance
 	   :width: 50%
-        :height: 50%
 	   :align: center
 
         Inheritance relationship among SPM application definitions.
