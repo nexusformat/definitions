@@ -71,6 +71,7 @@ def nxdl_indices() -> Dict[str, dict]:
             rst_lines.append(f"{indentation}ellipsometry-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}apm-structure\n")
+            rst_lines.append(f"{indentation}spm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
             rst_lines.append(f"{indentation}cgms-structure\n")
 
