@@ -41,7 +41,9 @@ SOURCE_TO_GROUPING = {
     ],
 }
 
-MOVE_LONG_FLAT_LIST_TO_OWN_GROUP = False  # True for long-flat list in own group, else for legacy support
+MOVE_LONG_FLAT_LIST_TO_OWN_GROUP = (
+    False  # True for long-flat list in own group, else for legacy support
+)
 
 
 def nxdl_indices(write_rst: bool = True) -> Dict[str, dict]:
@@ -103,9 +105,13 @@ def nxdl_indices(write_rst: bool = True) -> Dict[str, dict]:
             rst_lines.append(preample)
             rst_lines.append("\n")
             if MOVE_LONG_FLAT_LIST_TO_OWN_GROUP:
-                rst_lines.append(f"  :ref:`Complete List <{SOURCE_TO_CATEGORY[source]['sphx_id']}-Complete-Structure>`\n")
+                rst_lines.append(
+                    f"  :ref:`Complete List <{SOURCE_TO_CATEGORY[source]['sphx_id']}-Complete-Structure>`\n"
+                )
             else:
-                rst_lines.append(f"The full list of {SOURCE_TO_CATEGORY[source]['alias']}:\n")
+                rst_lines.append(
+                    f"The full list of {SOURCE_TO_CATEGORY[source]['alias']}:\n"
+                )
             rst_lines.append("\n")
         else:
             classes = sections[source]["classes"]
@@ -224,8 +230,8 @@ navigating the full list of base classes along the following topics:
 
   :ref:`Optical Spectroscopy <BC-Opt-Spec-Structure>`
     """,
-# :ref:`Complete List <BC-Complete-Structure>`
-#     """,
+    # :ref:`Complete List <BC-Complete-Structure>`
+    #     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "applications": """
 .. index::
@@ -272,8 +278,8 @@ research fields are listed in each category:
 
   :ref:`Time-of-Flight Techniques <AppDef-Tof-Structure>`
     """,
-# :ref:`Complete List <AppDef-Complete-Structure>`
-#     """,
+    # :ref:`Complete List <AppDef-Complete-Structure>`
+    #     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "contributed_definitions": """
 .. index::
@@ -316,6 +322,6 @@ research fields are listed in each category:
 
   :ref:`Microstructures Characterization and Representation <CC-Micro-Structure>`
     """,
-#   :ref:`Complete List <CC-Complete-Structure>`
-#     """,
+    #   :ref:`Complete List <CC-Complete-Structure>`
+    #     """,
 }
