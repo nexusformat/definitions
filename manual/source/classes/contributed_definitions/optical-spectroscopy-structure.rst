@@ -1,52 +1,52 @@
-.. _Contributed-Opt-Spec-Structure:
+.. _CC-Opt-Spec-Structure:
 
-========================
+====================
 Optical Spectroscopy
-========================
+====================
 
 .. index::
-   Contributed-Opt-Spec-Introduction
-   Contributed-Opt-Spec-Definitions
-   Contributed-Opt-Spec-DispersiveMaterial
+   CC-Opt-Spec-Introduction
+   CC-Opt-Spec-Definitions
+   CC-Opt-Spec-DispersiveMaterial
 
 
-.. _Contributed-Opt-Spec-Introduction:
+.. _CC-Opt-Spec-Introduction:
 
 Introduction
 ##############
 
 :ref:`Application definitions <appdef-opt-spec-definitions>` and :ref:`base classes <bc-opt-spec-classes>`
-to describe optical spectroscopy experiments are already part of the NeXus standard. In addition, there are several 
-contributed definitions that are currently under discussion.
+to describe optical spectroscopy experiments are already part of the NeXus standard.
+In addition, there are several contributed definitions that are currently under discussion.
 
-.. _Contributed-Opt-Spec-Definitions:
+.. _CC-Opt-Spec-Definitions:
 
 Application Definitions
------------------------
+#######################
 
-    :ref:`NXtransmission`:
-      Application definition for transmission experiments
+:ref:`NXtransmission`
+    Application definition for transmission experiments
 
 
 Base Classes
-------------
+############
 
 These are new base classes to describe additional, yet to be standardized components of optical spectroscopy experiments.
             
-    :ref:`NXbeam_splitter`
-       A beam splitter, i.e. a device splitting the light into two or more beams.
-       
-       Use two or more NXbeam_paths to describe the beam paths after the beam
-       splitter. In the dependency chain of the new beam paths, the first elements
-       each point to this beam splitter, as this is the previous element.
+:ref:`NXbeam_splitter`
+    A beam splitter, i.e., a device splitting the light into two or more beams.
 
-    :ref:`NXfiber`
-       An optical fiber, e.g. glass fiber.
-       
-    :ref:`NXpolarizer_opt`
-       An optical polarizer.
+Use two or more NXbeam_paths to describe the beam paths after the beam
+splitter. In the dependency chain of the new beam paths, the first elements
+each point to this beam splitter, as this is the previous element.
 
-.. _Contributed-Opt-Spec-DispersiveMaterial:
+:ref:`NXfiber`
+    An optical fiber, e.g. glass fiber.
+
+:ref:`NXpolarizer_opt`
+    An optical polarizer.
+
+.. _CC-Opt-Spec-DispersiveMaterial:
 
 Dispersive Material
 ###################
@@ -58,10 +58,10 @@ This description may be used to store optical model data from an ellipsometric a
 Application Definition
 ----------------------
 
-    :ref:`NXdispersive_material`:
-       An application definition to describe the dispersive properties of a material.
-       The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
-       to three dispersive functions or tables.
+:ref:`NXdispersive_material`
+    An application definition to describe the dispersive properties of a material.
+    The material may be isotropic, uniaxial, or biaxial. Hence, it may contain up
+    to three dispersive functions or tables.
 
 
 Base Classes
@@ -69,28 +69,28 @@ Base Classes
 
 There is a set of base classes for describing a dispersion.
 
-    :ref:`NXdispersion`
-       This is an umbrella base class for a group of dispersion functions to describe the material.
-       For a simple dispersion it may contain only on NXdispersion_function or NXdispersion_table entry.
-       If it contains multiple entries the actual dispersion is the sum of all dispersion functions and tables.
-       This allows for, e.g. splitting real and imaginary parts and describing them seperately or
-       adding a dielectric background (e.g. Sellmeier model) to an oscillator model (e.g. Lorentz).
-              
-    :ref:`NXdispersion_function`
-       This dispersion is described by a function and its single and repeated parameter values.
-       It follows a formula of the form ``eps = eps_inf + sum[A * lambda ** 2 / (lambda ** 2 - B ** 2)]`` 
-       (Sellmeier formula). See the formula grammar below for an ebnf grammar for this form.
+:ref:`NXdispersion`
+    This is an umbrella base class for a group of dispersion functions to describe the material.
+    For a simple dispersion it may contain only one NXdispersion_function or NXdispersion_table entry.
+    If it contains multiple entries the actual dispersion is the sum of all dispersion functions and tables.
+    This allows for, e.g. splitting real and imaginary parts and describing them separately or
+    adding a dielectric background (e.g. Sellmeier model) to an oscillator model (e.g. Lorentz).
+      
+:ref:`NXdispersion_function`
+    This dispersion is described by a function and its single and repeated parameter values.
+    It follows a formula of the form ``eps = eps_inf + sum[A * lambda ** 2 / (lambda ** 2 - B ** 2)]`` 
+    (Sellmeier formula). See the formula grammar below for an ebnf grammar for this form.
 
-    :ref:`NXdispersion_single_parameter`
-       This denotes a parameter which is used outside the summed part of a dispersion function,
-       e.g. ``eps_inf`` in the formula example above.
+:ref:`NXdispersion_single_parameter`
+    This denotes a parameter which is used outside the summed part of a dispersion function,
+    e.g. ``eps_inf`` in the formula example above.
 
-    :ref:`NXdispersion_repeated_parameter`
-       This denotes arrays of repeated parameters which are used to build a sum of parameter values, e.g.
-       ``A`` and ``B`` are repeated parameters in the formula above.
-       
-    :ref:`NXdispersion_table`
-       This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
+:ref:`NXdispersion_repeated_parameter`
+    This denotes arrays of repeated parameters which are used to build a sum of parameter values, e.g.
+    ``A`` and ``B`` are repeated parameters in the formula above.
+
+:ref:`NXdispersion_table`
+    This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
 
 Formula Grammar
 ---------------

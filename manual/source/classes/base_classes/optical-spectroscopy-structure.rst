@@ -30,7 +30,7 @@ make these base classes applicable for the field of optical spectroscopy (:ref:`
 :ref:`NXhistory`, :ref:`NXinstrument`, :ref:`NXmanipulator`, :ref:`NXmonochromator`,  :ref:`NXpid_controller`, :ref:`NXprocess`,
 :ref:`NXprogram`, :ref:`NXresolution`, :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, :ref:`NXtransformations`, and :ref:`NXuser`).
 
-In addition, there exists a set of base classes to define concepts that are specific for electron microscopy:
+In addition, there exist base classes to define concepts that are specific for optical spectroscopy:
 
    :ref:`NXbeam_transfer_matrix_table`
       Used to relate physical properties of two beams (:ref:`NXbeam`) which have one common optical component (:ref:`NXcomponent`)
@@ -43,4 +43,4 @@ In addition, there exists a set of base classes to define concepts that are spec
       Description of an optical window.
 
    :ref:`NXwaveplate`
-      A waveplate or retarder.
+      Description of a waveplate or retarder.

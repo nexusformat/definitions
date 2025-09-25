@@ -27,7 +27,7 @@ Raman spectroscopy
 ##################
 
 Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases, or solids. 
-The measurements is based on the inelastic light scattering due to the material's vibrations.
+The measurements are based on the inelastic light scattering due to the material's vibrations.
 Interpretation can be done based on peaks, which represent the phonon properties (intensity, center, width).
 
 The application definition contains a minimum of descriptive elements required to understand Raman spectroscopy measurements.
@@ -37,14 +37,18 @@ The application definition contains a minimum of descriptive elements required t
 Application Definitions
 -----------------------
 
-    :ref:`NXoptical_spectroscopy`:
-       A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements, but also other techniques such as photoluminescence, transmission, and reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons, and (iii) a sample.
+:ref:`NXoptical_spectroscopy`
+    A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements,
+    but also other techniques such as photoluminescence, transmission, and reflection measurements.
+    The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons,
+    and (iii) a sample.
 
-    :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
+:ref:`NXellipsometry`
+    An application definition for ellipsometry measurements, including complex systems
+    up to variable angle spectroscopic ellipsometry.
 
-    :ref:`NXraman`:
-       An application definition for Raman spectroscopy measurements.
+:ref:`NXraman`
+    An application definition for Raman spectroscopy measurements.
 
 Base classes
 #######################

@@ -1,7 +1,7 @@
 .. _BC-Em-Structure:
 
 ===================
-Electron microscopy
+Electron Microscopy
 ===================
 
 .. index::
@@ -13,21 +13,17 @@ Electron microscopy
 Introduction
 ############
 
-These are a set of base classes to describe components of an electron microscope and its focused-ion beam functionalities,
-as well as the associated data analysis.
-
-These base classes are used within the EM-related :ref:`application definitions <appdef-em-definitions>`, specifically in NXem.
-
+These are the base classes to describe components of an electron microscope and its focused-ion beam capabilities,
+as well as the associated data analyses. These base classes are used within the EM-related :ref:`application definitions <appdef-em-definitions>`, specifically in NXem.
 Some of the base classes are specific to EM, whereas others are used in other techniques as well.
-
 
 .. _BC-Em-Classes:
 
 Base Classes
 ############
 
-The design of NXem uses several existent base class and adds edits and additions of some concepts to make these base classes
-applicable for the field of electron microscopy (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`,
+The design of NXem uses several existent base class and added concepts to existent base classes to make these
+applicable for electron microscopy (:ref:`NXactuator`, :ref:`NXaperture`, :ref:`NXbeam`, :ref:`NXcite`,
 :ref:`NXcollection`, :ref:`NXcomponent`, :ref:`NXcoordinate_system`, :ref:`NXdata`, :ref:`NXdeflector`, :ref:`NXdetector`,
 :ref:`NXfabrication`, :ref:`NXmanipulator`, :ref:`NXmonochromator`, :ref:`NXnote`, :ref:`NXparameters`, :ref:`NXprocess`,
 :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXsource`, and :ref:`NXuser`).
@@ -36,10 +32,10 @@ Many design decisions of the application definitions :ref:`NXem` and :ref:`NXapm
 classes for instrument-specific events :ref:`NXem_event_data`, the grouping of measurements :ref:`NXem_measurement` and simulations
 :ref:`NXem_simulation`, and the encapsulating of :ref:`NXparameters` and :ref:`NXdata` in :ref:`NXprocess` instances to describe
 workflows of processing. The base classes :ref:`NXatom`, :ref:`NXunit_cell`, and :ref:`NXphase` were introduced to document sets
-of atoms, the spatial arrangement of atoms, and offer concepts for documenting when regions-of-interest in a material represent
+of atoms, the spatial arrangement of atoms, and offer concepts for documenting when regions-of-interest :ref:`NXroi_process` in a material represent
 thermodynamic phases.
 
-In addition to these considerations, there exists a set of base classes to define concepts that are specific for electron microscopy:
+In addition to these considerations, there exist base classes to define concepts that are specific for electron microscopy:
 
     :ref:`NXaberration`:
         A base class to describe procedures and values for the calibration of aberrations.
@@ -96,9 +92,9 @@ a given experiment have usually only few connections to the detailed description
 data analysis and data processing workflows. This motivated a granularization of these concepts into own method-specific base classes:
 
     :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`:
-        These base classes provide concepts for specific data acquisition modes and associated analysis as are used in electron microscopy
+        These base classes provide concepts for specific data acquisition modes and associated analyses as are used in electron microscopy
         such as for collecting and indexing Kikuchi diffraction patterns into orientation maps for two-dimensional, three-dimensional point
-        cloud data, reporting X-ray spectroscopy, different imaging modes, or documenting electron energy loss spectroscopy (EELS).
+        cloud data, reporting X-ray spectroscopy (EDS/EDXS), different imaging modes, or documenting electron energy loss spectroscopy (EELS).
         A substantial further number of such base class could be designed that can build on the ideas and principles that are
         suggested via these four base classes.
 

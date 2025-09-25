@@ -1,7 +1,7 @@
 .. _BC-Mpes-Structure:
 
 =======================================
-Photoemission & core-level spectroscopy
+Photoemission & Core-Level Spectroscopy
 =======================================
 
 .. index::
