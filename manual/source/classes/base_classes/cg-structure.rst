@@ -1,18 +1,23 @@
-.. _CgmsFeatures-Structure:
+.. _BC-Cgeometry-Structure:
 
-=========================
-Geometry & Microstructure
-=========================
+==============================================
+Computational and Constructive Solid Geometry
+==============================================
 
 .. index::
-   CgmsBC
-   
-.. literalinclude:: cube_example.txt
-    :tab-width: 4
-    :linenos:
-    :language: text
+   BC-Cgeometry-Introduction
+   BC-Cgeometry-Base-Classes
+    
+.. _BC-Cgeometry-Introduction:
 
-.. _CgmsBC:
+Introduction
+############
+
+A set of base classes to describe the location and shape of objects using
+concepts from the fields of computer graphics, computational geometry,
+and constructive solid geometry (CSG).
+
+.. _BC-Cg-Introduction-Base-Classes:
 
 Base Classes
 ############
@@ -58,6 +63,13 @@ for frequently used shapes and geometric primitives are proposed:
         A collection of hexahedra with capabilities to represent
         also simpler (bounding) boxes for e.g. binary trees.
 
+An example how to use these classes follows:
+
+.. literalinclude:: cube_example.txt
+    :tab-width: 4
+    :linenos:
+    :language: text
+
 These base classes describe data structures used for more complex geometries:
 
     :ref:`NXcg_face_list_data_structure`:
@@ -98,3 +110,5 @@ of material (area or volume) which can be useful not only for stencil-based meth
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
+    :ref:`NXorientation_set`:
+        A set of parameters to describe the relative orientation of members of a set of features/objects.

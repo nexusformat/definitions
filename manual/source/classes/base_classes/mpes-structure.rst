@@ -1,45 +1,34 @@
-.. _Mpes-Structure:
+.. _BC-Mpes-Structure:
 
 =======================================
-Photoemission & core-level spectroscopy
+Photoemission & Core-Level Spectroscopy
 =======================================
 
 .. index::
-   IntroductionMpes
-   MpesAppDef
-   MpesBC
-   MpesCommonBC
-   MpesExtendedBC
+   BC-Mpes-Introduction
+   BC-Mpes-Classes
+   BC-MpesCommonBC
 
 
-.. _IntroductionMpes:
+.. _Mpes-BC-Introduction:
 
 Introduction
 ############
 
-Set of data storage objects to describe photoemission experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
+These are a set of base classes to describe multidimensional photoemission (MPES) experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
 hard x-ray photoelectron spectroscopy (HAXPES), angle-resolved photoemission spectroscopy (ARPES), two-photon photoemission (2PPE) 
-and photoemission electron microscopy (PEEM). Also includes descriptors for advanced specializations, such as spin-resolution, time resolution, 
-near-ambient pressure conditions, dichroism etc.
+and photoemission electron microscopy (PEEM).
 
-.. _MpesAppDef:
+Some of the base classes are specific to MPES (like :ref:`NXelectronanalyzer`), whereas others are used in other techniques as well.
 
-Application Definitions
-#######################
+These base classes are used within the MPES-related :ref:`application definitions <appdef-mpes-definitions>`.
 
-:ref:`NXmpes`:
-   A general application definition with minimalistic metadata requirements, apt to describe all photemission experiments.
-
-:ref:`NXmpes_arpes`:
-   An application definition for angle-resolved photoemission spectroscopy (ARPES) experiments.
-
-:ref:`NXxps`:
-   An application definition for X-ray/UV photoelectron spectroscopy (XPS/UPS) experiments.
-
-.. _MpesBC:
+.. _BC-Mpes-Classes:
 
 Base Classes
 ############
+
+Base classes describing instrument components used in photemission experiments:
 
 :ref:`NXelectronanalyzer`:
    A base class to describe electron kinetic energy analyzers. Contains the collective characteristics of the instrument such as energy resolution, and includes the following classes:
@@ -56,8 +45,7 @@ Base Classes
       :ref:`NXelectron_detector`:
          Specialization of :ref:`NXdetector` to describe electron detectors used in photoemission experiments.
 
-
-Four base classes (which are subclasses of :ref:`NXprocess`) to describe data (post-)processing:
+Base classes (which are subclasses of :ref:`NXprocess`) to describe data (post-)processing:
 
    :ref:`NXcalibration`:
       Base class to describe the 1D calibration of an axis, with a function mapping a raw data scale to a calibrated scale with the same number of points.
@@ -77,19 +65,24 @@ Four base classes (which are subclasses of :ref:`NXprocess`) to describe data (p
       :ref:`NXpeak`:
          Base class to describe a peak, its functional form, and support values (i.e., the discretization (points) at which the function has been evaluated).
 
-.. _MpesCommonBC:
+
+.. _BC-MpesCommonBC:
 
 Common Base Classes
 ###################
 
-There are three related base classes that are common to other techniques:
+There are additional base classes that were introduced in the context of photoemission spectroscopy,
+but that are commonly used in other techniques as well.
    
-   :ref:`NXmanipulator`:
-      A base class to describe the complex manipulators used in experiments, often with > 4 degrees of freedom, 
-      cryogenic cooling, and other advanced features.
+   :ref:`NXdeflector`
+      A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
 
    :ref:`NXelectromagnetic_lens`:
       A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
-   :ref:`NXdeflector`
-      A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
+   :ref:`NXmanipulator`:
+      A base class to describe the complex manipulators used in experiments, often with > 4 degrees of freedom, 
+      cryogenic cooling, and other advanced features.
+
+   :ref:`NXresolution`:
+      Describes the resolution of a physical quantity, e.g. the resolution of the MPES spectrometer.
