@@ -44,6 +44,7 @@ SOURCE_TO_GROUPING = {
         "optical-spectroscopy",
         "transport",
         "micro",
+        "spm"
     ],
 }
 
