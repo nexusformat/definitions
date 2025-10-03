@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -21,82 +21,79 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXbias_spectroscopy" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXspm_bias_spectroscopy" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
         A base class for bias spectroscopy to describe the change in the physical properties
-        of the sample with respect to the sweep voltage applied on a sample of STM/AFM/... experiment.
+        of the sample with respect to the sweep voltage applied on a sample of STM/AFM/... experiments.
         
         In these experiments an electric potential is applied between the (conductive) sample and the probe
-        (tip), and the physical properties (e.g. tunnelling current) is measured as the function of this
+        (tip), and the physical properties (e.g. tunnelling current) are measured as the function of this
         potential. The potential is varied in so-called voltage sweeps and the corresponding properties are
         recorded accordingly.
     </doc>
     <field name="measurement_type">
         <doc>
-            The measurement of the I(V) curve can come in two ways:
-            1. Constant spacing: The bias voltage is swept from the start to the end with a constant
-            spacing between the tip and surface.
-            2. Variable spacing: The bias voltage is swept from the start to the end in a discretized
-            spacing between the tip and surface. (Either an array of voltages, or the steps are defined).
+            The measurement type defines how current is measured under the different input variables like
+            bias voltage (constant_spacing) or height (variadic_spacing) is applied during the measurement.
         </doc>
         <enumeration>
             <item value="constant_spacing"/>
             <item value="variadic_spacing"/>
         </enumeration>
     </field>
-    <group type="NXpositioner_spm">
+    <field name="identifier_environment" recommended="true">
         <doc>
-            The PID (proportional, integral, differential feedback system) positioner information while running
-            bias voltage-tunneling current measurement.
+            Unique identifier for the environment defined by the user or lab. When multiple scans are performed
+            in a single environment conditions or settings, the entire scan environment can be differentiated
+            by this identifier. For example, scan on a sample of TiSe2 with layered of evaporated pyrene and
+            annealed at 300K temperature for 5 min process.
+        </doc>
+    </field>
+    <group type="NXspm_positioner">
+        <doc>
+            Information about the positioner PID (proportional, integral, differential feedback system),
+            offset values, setpoint values and so on, while running bias voltage-tunneling current measurement.
             
             These components position the probe relative to the sample, thus help obtaining maps of the data
             across the sample surface.
         </doc>
-        <field name="z_offset" type="NX_NUMBER" units="NX_LENGTH">
+        <group name="z_controller" type="NXpid_controller"/>
+    </group>
+    <group type="NXcircuit">
+        <field name="acquisition_time" type="NX_NUMBER" units="NX_TIME">
             <doc>
-                The z-offset is a starting tip position before the sweep starts (typically the position of a
-                piezo element).
+                The time or period (average) to acquire the data for a single bias sweep point.
+            </doc>
+        </field>
+        <field name="animation_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                The time or period a bias sweep to be displayed.
+            </doc>
+        </field>
+        <field name="measurement_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                The time or period taken by the circuit to measure a full bias sweep
+                (duration of the voltage-current measurement measurement).
             </doc>
         </field>
     </group>
-    <group type="NXcircuit" optional="true">
-        <field name="acquisition_time" type="NX_NUMBER" optional="true" units="NX_TIME">
-            <doc>
-                The time or period is taken by a bias sweep to acquire the data for
-                a single bias sweep point (when the given point or whole sweep is started.).
-            </doc>
-        </field>
-        <field name="animation_time" type="NX_NUMBER" optional="true" units="NX_TIME">
-            <doc>
-                The time or period is taken by a bias sweep to be displayed.
-            </doc>
-        </field>
-        <field name="measurement_time" type="NX_NUMBER" optional="true" units="NX_TIME">
-            <doc>
-                The time or period is taken by the circuit to measure a full bias sweep voltage or
-                bias current. (duration of the measurement)
-            </doc>
-        </field>
-        <field name="indicators_period" type="NX_NUMBER" optional="true" units="NX_TIME">
-            <doc>
-                The time or period is taken by the circuit to indicate the bias sweep voltage
-                after measuring the voltage.
-            </doc>
-        </field>
-    </group>
-    <group name="bias_sweep" type="NXscan_control">
+    <group name="BIAS_SWEEP" type="NXspm_scan_control" nameType="any">
         <doc>
             The bias sweep scan which is is performed in the scanning probe microscopy
             experiments.
         </doc>
-        <field name="scan_type">
-            <!--I modify this text, by I may be wrong T.
-key is: I can change X,Y location at constant voltage or do a sweep
-at every X,Y coordinate, and I can define patterns how X,Y values follow
-each other (e.g. spiral)-->
+        <group name="spatial_location" type="NXcoordinate_system">
             <doc>
-                The type of scan like mesh, spiral, etc.
-                
+                The spatial location of the scan points.
+                This would be recommended to use if there are multiple bias sweep scans
+                at different locations.
+            </doc>
+            <field name="x" type="NX_NUMBER" units="NX_LENGTH"/>
+            <field name="y" type="NX_NUMBER" units="NX_LENGTH"/>
+            <field name="z" type="NX_NUMBER" units="NX_LENGTH"/>
+        </group>
+        <field name="scan_type">
+            <doc>
                 This combines not only how the voltages are changed, but how the voltage values are
                 correlated to a position across the sample surface, measuring sweeps are each spatial
                 coordinate or mapping the response at constant voltage, etc.
@@ -106,49 +103,48 @@ each other (e.g. spiral)-->
                 <item value="linear"/>
             </enumeration>
         </field>
-        <field name="sweep_number" type="NX_NUMBER">
+        <field name="number_of_sweeps" type="NX_NUMBER">
             <doc>
                 The number of sweeps (a full scan from starting bias to end bias)
                 taken during the bias spectroscopy.
             </doc>
         </field>
-        <field name="first_settling_time" type="NX_NUMBER" optional="true" units="NX_TIME">
+        <field name="first_settling_time" type="NX_NUMBER" units="NX_TIME">
             <doc>
-                The initial time is taken to settle the bias voltage at the desired value.
+                The initial time taken to settle the bias voltage at the desired value.
                 On each sweep usually, the system takes time to settle to the bias voltage
                 at the next value.
             </doc>
         </field>
-        <field name="end_settling_time" type="NX_NUMBER" optional="true" units="NX_TIME">
+        <field name="end_settling_time" type="NX_NUMBER" units="NX_TIME">
             <doc>
-                The time is taken to settle the bias voltage at the desired value.
                 The time (at the last sweep) to settle for the last value of the sweep.
             </doc>
         </field>
         <field name="settling_time" type="NX_NUMBER" units="NX_TIME">
             <doc>
-                The time is taken to settle the bias voltage at the desired value. On each sweep usually, the system
+                The time taken to settle the bias voltage at the desired value. On each sweep usually, the system
                 takes time to settle the bias voltage at the next value.
             </doc>
         </field>
-        <field name="max_slew_rate" type="NX_NUMBER" optional="true" units="NX_ANY">
+        <field name="max_slew_rate" type="NX_NUMBER" units="NX_ANY">
             <doc>
                 The rate at which the amplifier responds to the voltage change
                 (to reach at the desired value). It defines if the tip movement and
                 voltage sweep are synchronized.
             </doc>
         </field>
-        <field name="final_z" type="NX_NUMBER" recommended="true">
+        <field name="final_z" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
                 The z position after the sweeps are done.
             </doc>
         </field>
-        <field name="total_spectroscopy_time" type="NX_NUMBER" recommended="true" units="NX_TIME">
+        <field name="total_spectroscopy_time" type="NX_NUMBER" units="NX_TIME">
             <doc>
                 The total time needed for the entire voltage sweep.
             </doc>
         </field>
-        <group name="scan_region" type="NXobject">
+        <group name="scan_region" type="NXspm_scan_region">
             <doc>
                 The scan region is the area of phase space or sub-phase space where the scan is
                 performed.
@@ -178,7 +174,7 @@ each other (e.g. spiral)-->
                 </doc>
             </field>
         </group>
-        <group name="linear_sweep" type="NXobject">
+        <group name="linear_sweep" type="NXspm_scan_pattern">
             <doc>
                 In the linear sweep, the bias voltage is changed linearly from the start value
                 to the end value.
@@ -209,23 +205,25 @@ each other (e.g. spiral)-->
                     value after the sweep is completed.
                 </doc>
             </field>
-            <group name="SCAN_DATA" type="NXdata" nameType="any">
+            <group type="NXdata" nameType="any">
                 <doc>
                     The scan data is the data collected during the scan.
                     If the scan has several channels or derivatives from the channel data,
                     please duplicate this NXdata group for each.
+                    
+                    To define specific current or voltage use :ref:`DATA &lt;/NXdata/DATA-field&gt;`
+                    and :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`.
                 </doc>
-                <field name="DATA" nameType="any" units="NX_ANY">
-                    <doc>
-                        The plottable data collected during the scan.
-                    </doc>
-                </field>
-                <field name="AXISNAME" nameType="any" units="NX_VOLTAGE">
-                    <doc>
-                        The voltage axis name of the data collected during the scan.
-                    </doc>
-                </field>
             </group>
         </group>
     </group>
+    <!--current:
+unit: NX_CURRENT
+doc: |
+The tip current collected during the scan. Data to be plotted against
+the axis defined in voltage field. Use this data as signal attributes.
+voltage:
+unit: NX_VOLTAGE
+doc: |
+Applied voltage on sample during the scan.-->
 </definition>

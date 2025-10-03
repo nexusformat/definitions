@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXspm_positioner" extends="NXpositioner" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+        An extension of positioner, used to maintain a measurement signal through
+        a feedback loop, specialized for scanning probe microscopy applications.
+        
+        The component positions the spm head or cantilever tip on the surface of the sample
+        thus maps 2D scan of the sample.
+    </doc>
+    <group name="z_controller" type="NXpid_controller">
+        <doc>
+            This controller's task is to continuously adjust the Z position of tip (e.g., in topography scan in
+            STM/STS experiment) in order to keep the selected control signal as close as possible to the Set
+            Point. Different control signals lead to different controller's behavior.
+            
+            The second PID feedback loop intends to position the tip in the Z direction.
+            
+            p_gain (proportional gain) from z_controller refers to K_p value from PID controller.
+            i_gain (integral gain) from z_controller refers to K_i value from PID controller.
+            setpoint from z_controller refers to setpoint from PID controller.
+            
+            Usually, the same controller, (z_controller) will be used for positioning the tip in three dimensional
+            space. In this case, the controller coefficients (proportional, integral, differential) and other characteristic
+            constants will be the same. Otherwise, for separate controllers positioning the tip in 3D space use the
+            :ref:`feedback &lt;/NXspm_positioner/actuator/feedback-group&gt;` controller in actuator.
+        </doc>
+        <field name="D_t" type="NX_NUMBER" nameType="specified" units="NX_TIME">
+            <doc>
+                The derivative time constant of the derivative part of the PID controller. Proportional Derivative constant
+                K_d can be expressed as :math:`K_d = K_p D_t`.
+            </doc>
+        </field>
+        <field name="I_t" type="NX_NUMBER" nameType="specified" units="NX_TIME">
+            <doc>
+                The integral time constant of the integral part of the PID controller. Proportional Integral constant
+                K_i can be expressed as :math:`K_i = \frac{K_p}{I_t}`.
+            </doc>
+        </field>
+        <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                To indicate the relative tip position z between tip and sample. The tip position
+                can also be varied when the z_controller is not running.
+            </doc>
+        </field>
+        <field name="set_point" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                The set point for the z-controller to be fixed and the target value could be
+                height or current.
+            </doc>
+        </field>
+        <field name="feedback_on" type="NX_BOOLEAN" recommended="true">
+            <doc>
+                The status of the controller PID feedback system in z-axis is ON / OFF.
+                E.g., for constant height mode, the z-controller feedback system is off.
+            </doc>
+        </field>
+        <field name="tip_lift" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                If the tip is lifted from the stable point.
+            </doc>
+        </field>
+        <field name="switch_off_delay" type="NX_CHAR_OR_NUMBER" units="NX_TIME">
+            <doc>
+                The switch-off delay of the controller from its stable point.
+            </doc>
+        </field>
+        <field name="z_offset_value" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                Offset added to the initial averaged tip position on Z-axis before starting
+                scan.
+            </doc>
+        </field>
+        <field name="z_average_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                The averaging time for stabilizing the Z position.
+                Usually, the signal for z-position contains noise, to reduce the noise
+                impacts, z-position is being averaged over this time window.
+            </doc>
+        </field>
+        <field name="z_controller_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                Time taken by the Z controller to switch mode e.g., feedback off from on and vice versa.
+                In this time window, controller fixed its position if feedback changed to off mode.
+            </doc>
+        </field>
+        <field name="z_controller_hold" type="NX_BOOLEAN">
+            <doc>
+                Controller feedback system status: OFF / ON.
+                The `z_controller_hold-field` is True, refers feedback system off
+                (mostly case in STS bias spectra) and False refers feedback system on
+                (mostly case in STM constant current spectra).
+            </doc>
+        </field>
+        <field name="final_z" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                The final Z position of the tip after the scan.
+                This parameter is used to indicate any unexpected displacement of the tip.
+            </doc>
+        </field>
+        <field name="controller_label" type="NX_CHAR">
+            <doc>
+                Controller label. This label which will be displayed at places where you can
+                select a channel or controller.
+            </doc>
+        </field>
+    </group>
+    <group name="actuator" type="NXactuator">
+        <group name="feedback" type="NXpid_controller"/>
+    </group>
+</definition>
