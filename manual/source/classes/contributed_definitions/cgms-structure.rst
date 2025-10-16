@@ -93,8 +93,5 @@ of material (area or volume) which can be useful not only for stencil-based meth
         is smoothed in a controlled manner.
 
     :ref:`NXsimilarity_grouping`:
-        An alternative for NXclustering.
-
-    :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
