@@ -22,10 +22,9 @@
 # For further information, see http://www.nexusformat.org
 -->
 <!--NXms_feature_set can be used e.g. as groups inside instances of NXms_snapshot
-for an MD simulation each timestep is such snapshot all snapshot for a set
-which is the parent group that has all these NXms_snapshot instances as childs
+for an MD simulation each time step is such snapshot all snapshot for a set
+which is the parent group that has all these NXms_snapshot instances as children
   time_stamp: # simulated, physical-->
-<!--Thea, Joseph, Lauri, Dinga (TJLD) just for comparison for each group and field to what this would map in their model for the MDTutorial 2-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXms_feature_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -55,14 +54,14 @@ which is the parent group that has all these NXms_snapshot instances as childs
     <doc>
          Set of topological/spatial features in materials build from other features.
     </doc>
-    <!--TJLD: this class represents a generalization of AtomGroups
-TJLD: one such for atoms(NXms_feature_set)
-TJLD: one such for atom_groups(NXms_feature_set)
-TJLD: but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
-TJLD: clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
-TJLD: however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations-->
+    <!--this class represents a generalization of AtomGroups
+one such for atoms(NXms_feature_set)
+one such for atom_groups(NXms_feature_set)
+but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
+clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
+however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations-->
     <attribute name="depends_on">
-        <!--TJLD: not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]-->
+        <!-- not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]-->
         <doc>
              Name (or link?) to another NXms_feature_set which defines features what are
              assumed as the parents/super_features of all members in this feature set.
@@ -71,20 +70,8 @@ TJLD: however the here proposed design generalizes the arbitrary (microstructura
              represents the root feature_set of the feature tree/graph.
         </doc>
     </attribute>
-    <!--the design of this base class makes it possible to have Joseph's suggestion
-but it has the additional benefit that as it defines the set one also
-bundle the description for all features at this hierarchy level into combined
-arrays to make the eventual storage of this for instances with millions of features
-more efficient as in the current design each molecule would again be a group
-and having millions of groups comes with e.g. HDF5 with substantial overlap
-I faced this when storing grains from micro-scale continuum crystal growth simulations
-TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXms_feature_set
-TJLD: the key point we can use NXms_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
-but with the additional benefit of a much richer geometrical description and the details about the uncertainty of these descriptions
-I can also imagine that materials engineers e.g. can reuse NXms_feature_set in an application definition by just then naming
-their group e.g. grains(NXms_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description-->
     <field name="dimensionality" type="NX_UINT">
-        <!--TJLD: not needed because they assume everything is 3d-->
+        <!--not needed because they assume everything is 3d-->
         <doc>
              What is the best matching description how dimensional the feature is.
         </doc>
@@ -96,16 +83,16 @@ their group e.g. grains(NXms_feature_set) and use in the application definition 
         </enumeration>
     </field>
     <field name="cardinality" type="NX_UINT" units="NX_UNITLESS">
-        <!--TJLD: equivalent to the number of AtomGroups class instance childs-->
+        <!--equivalent to the number of AtomGroups class instance children-->
         <doc>
              How many features/members are in this set?
         </doc>
     </field>
     <field name="type_dict_keyword">
-        <!--TJLD: equivalent to the controlled vocabulary term monomer or molecule, i.e. label
-TJLD: but with the difference that in this NeXus design here different features can take different roles
-TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
-TJLD: inherits from NXms_feature_set but would need to have no dimensionality-->
+        <!--equivalent to the controlled vocabulary term monomer or molecule, i.e. label
+but with the difference that in this NeXus design here different features can take different roles
+and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
+inherits from NXms_feature_set but would need to have no dimensionality-->
         <doc>
              The keywords of the dictionary of human-readable types of features.
              Using terms from a community-agreed upon controlled vocabulary, e.g.
@@ -120,7 +107,7 @@ TJLD: inherits from NXms_feature_set but would need to have no dimensionality-->
         </dimensions>
     </field>
     <field name="type_dict_value" type="NX_UINT" units="NX_UNITLESS">
-        <!--TJLD: equivalent to the AtomGroups index-->
+        <!--equivalent to the AtomGroups index-->
         <doc>
              The integer identifier used to resolve of which type each feature is,
              i.e. the values of the dictionary of human-readable types of features.
@@ -179,12 +166,6 @@ end up as links-->
         </dimensions>
     </field>
     <group name="points" type="NXprocess">
-        <!--TJLD: this design here is different, TJLD give atom positions only (at least as of now) for the root of an object
-TJLD: while all higher-order features that are connected through their assumed topology just refer to the atoms in the root
-TJLD: via their IDs, TJLD design is ideal for systems build from atoms but would create unnecessary copies for higher-dimensional-type features
-TJLD: in fact initially I also thought it is useful to create an NXms_dislocation_set, and an NXms_atom_set but overall these are just
-specializations of NXms_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
-but here NXms_feature_set instances-->
         <doc>
              Assumptions and parameter to arrive at geometric primitives
              to locate zero-dimensional/point-(like) features which are
@@ -199,7 +180,7 @@ but here NXms_feature_set instances-->
         </group>
     </group>
     <group name="lines" type="NXprocess">
-        <!--TJLD: not conceptualized, see comments for points and what the benefit of using NeXus would be-->
+        <!--not conceptualized, see comments for points and what the benefit of using NeXus would be-->
         <doc>
              Assumptions and parameters to arrive at geometric primitives
              to locate one-dimensional/line-like features which are
@@ -244,10 +225,7 @@ but here NXms_feature_set instances-->
             </doc>
         </group>
     </group>
-    <!--Sandor and Markus agree that how trajectories are extracted should be stored in instances of NXprocess at respective places
-Sandor suggested it can be useful to also describe how one could transform system-specific atom positions from the system-focused coordinate system to a molecule- or atom-focused local coordinate system-->
-    <!--how to map results from MD simulations was already sketched by the comments from TJLD
-but ones more here stating it explicitly
+    <!--
 atoms(NXms_feature_set):
   # no \@depends_on: as everything is build spatiotemporally coarse-grained from the sampled atom positions and/or their trajectories
 dislocations(NXms_feature_set):
@@ -279,8 +257,8 @@ grains.id
 grains.phaseId to which phase does each grain belong why is it different to phase?
 grains.prop (mean and gos)
 grains.boundary
-    F, list of minmax-hashed vertex indices building the facet
-    grainId, list of pairs of grains incident at facet special value 0 marks grains with boundary contact
+    F, list of min-max-hashed vertex indices building the facet
+    grain ID, list of pairs of grains incident at facet special value 0 marks grains with boundary contact
     ebsdId, list of interpolated scan points incident
     phaseId, homo/heterophase information list of pairs of phases incident at facet
     V, list of facet support vertices, the support of the polyline
@@ -288,7 +266,7 @@ grains.boundary
     direction 3d vector (V(F(i, 1),:) - V(F(i, 2), :)) and with z = 0 and then normalized, so not respecting winding order
 grains.triplePoints
     id, list of vertex id for the location of the triple point referring to grains.V or grains.boundary.V as these lists are equivalent
-    grainid, triplet of adjoining grain ids
+    grain ID, triplet of adjoining grain ids
     boundaryId, triplet of adjoining boundary facets from grains.boundary.F
     nextVertexId, next vertex hit when walking from the triple point
     phaseId, is it a triple point between homophases or heterophases
