@@ -43,13 +43,13 @@ This is the set of base classes for describing an optical experiment.
        splitter. In the dependency chain of the new beam paths, the first elements
        each point to this beam splitter, as this is the previous element.
 
-    :ref:`NXfiber`
+    :ref:`NXoptical_fiber`
        An optical fiber, e.g. glass fiber.
 
     :ref:`NXoptical_lens`
        Description of an optical lens.
        
-    :ref:`NXpolarizer_opt`
+    :ref:`NXoptical_polarizer`
        An optical polarizer.
 
     :ref:`NXwaveplate`

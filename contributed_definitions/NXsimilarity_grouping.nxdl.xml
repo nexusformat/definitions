@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXsimilarity_grouping" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXsimilarity_grouping" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -43,29 +43,26 @@
         </symbol>
         <symbol name="n_features">
             <doc>
-                 Total number of similarity groups aka features, objects, clusters.
+                 Total number of similarity groups aka features/clusters.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Metadata to the results of a similarity grouping analysis.
+         Base class to store results obtained from applying a similarity grouping (clustering) algorithm.
          
-         Similarity grouping analyses can be supervised segmentation or machine learning
-         clustering algorithms. These are routine methods which partition the member of
-         a set of objects/geometric primitives into (sub-)groups, features of
-         different type. A plethora of algorithms have been proposed which can be applied
-         also on geometric primitives like points, triangles, or (abstract) features aka
-         objects (including categorical sub-groups).
+         Similarity grouping algorithms are segmentation or machine learning algorithms for
+         partitioning the members of a set of objects (e.g. geometric primitives) into
+         (sub-)groups aka features of different kind/type. A plethora of algorithms exists.
          
-         This base class considers metadata and results of one similarity grouping
-         analysis applied to a set in which objects are either categorized as noise
-         or belonging to a cluster.
-         As the results of the analysis each similarity group, here called feature
-         aka object can get a number of numerical and/or categorical labels.
+         This base class considers metadata and results of having a similarity grouping
+         algorithm applied to a set in which objects are either categorized as noise
+         or belonging to a cluster, i.e. members of a cluster.
+         The algorithm assigns each similarity group (feature/cluster) at least one
+         identifier (numerical or categorical labels) to distinguish different cluster.
     </doc>
-    <field name="cardinality" type="NX_UINT" units="NX_UNITLESS">
+    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS">
         <doc>
-             Number of members in the set which is partitioned into features.
+             Number of members in the set which gets partitioned into features.
         </doc>
     </field>
     <field name="number_of_numeric_labels" type="NX_UINT" units="NX_UNITLESS">
@@ -78,30 +75,29 @@
              How many categorical labels does each feature have.
         </doc>
     </field>
-    <!--features:
- doc: |
-    Reference to a set of features investigated in a cluster analysis.
-    Features need to have disjoint numeric identifier.-->
-    <field name="identifier_offset" type="NX_UINT" units="NX_UNITLESS">
+    <!--config/input
+features:
+doc: |
+Reference to a set of features investigated in a cluster analysis.
+Features need to have disjoint numeric identifier.
+results for the object set-->
+    <field name="index_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Which identifier is the first to be used to label a cluster.
+             Which numerical index is the first to be used to label a feature.
              
              The value should be chosen in such a way that special values can be resolved:
-             * identifier_offset-1 indicates an object belongs to no cluster.
-             * identifier_offset-2 indicates an object belongs to the noise category.
-             Setting for instance identifier_offset to 1 recovers the commonly used
-             case that objects of the noise category get values to -1 and unassigned points to 0.
-             Numerical identifier have to be strictly increasing.
+             * index_offset - 1 indicates that an object belongs to no cluster.
+             * index_offset - 2 indicates that an object belongs to the noise category.
+             Setting for instance index_offset to 1 recovers the commonly used
+             case that objects of the noise category get values to -1 and unassigned
+             points to 0. Numerical identifier have to be strictly increasing.
         </doc>
-        <dimensions rank="1">
-            <dim index="1" value="n_lbl_num"/>
-        </dimensions>
     </field>
-    <field name="numerical_label" type="NX_UINT" units="NX_UNITLESS">
+    <field name="numerical_label" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Matrix of numerical label for each member in the set.
              For classical clustering algorithms this can for instance
-             encode the cluster_identifier.
+             encode the indices_cluster.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="c"/>
@@ -112,8 +108,6 @@
         <doc>
              Matrix of categorical attribute data for each member in the set.
         </doc>
-        <!--list instances of base classes of an applied cluster algorithm
-e.g. (NXclustering_hdbscan):-->
         <dimensions rank="2">
             <dim index="1" value="c"/>
             <dim index="2" value="n_lbl_cat"/>
@@ -121,44 +115,39 @@ e.g. (NXclustering_hdbscan):-->
     </field>
     <group name="statistics" type="NXprocess">
         <doc>
-             In addition to the detailed storage which members was grouped to which
+             In addition to the detailed storage which objects were grouped to which
              feature/group summary statistics are stored under this group.
         </doc>
-        <!--at the level of the set-->
-        <field name="number_of_unassigned_members" type="NX_UINT" units="NX_UNITLESS">
+        <!--at the level of the object set
+at the level of the feature set-->
+        <field name="unassigned" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 Total number of members in the set which are categorized as unassigned.
+                 Total number of features categorized as unassigned.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_lbl_num"/>
-            </dimensions>
         </field>
         <field name="noise" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 Total number of members in the set which are categorized as noise.
+                 Total number of features categorized as noise.
+            </doc>
+        </field>
+        <field name="total" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Total number of features.
+            </doc>
+        </field>
+        <!--Total number of features (excluding noise and unassigned) can be trivially computed
+when knowing total, noise, and unassigned.-->
+        <field name="indices_cluster" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Array of numerical identifier of each feature.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_lbl_num"/>
-            </dimensions>
-        </field>
-        <!--at the level of the feature set-->
-        <field name="number_of_features" type="NX_UINT" units="NX_UNITLESS">
-            <doc>
-                 Total number of clusters (excluding noise and unassigned).
-            </doc>
-        </field>
-        <field name="feature_identifier" type="NX_UINT" units="NX_UNITLESS">
-            <doc>
-                 Array of numerical identifier of each feature (cluster).
-            </doc>
-            <dimensions rank="2">
                 <dim index="1" value="n_features"/>
-                <dim index="2" value="n_lbl_num"/>
             </dimensions>
         </field>
-        <field name="feature_member_count" type="NX_UINT" units="NX_UNITLESS">
+        <field name="member_count" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 Array of number of members for each feature.
+                 Array of number of objects for each feature.
             </doc>
             <dimensions rank="2">
                 <dim index="1" value="n_features"/>
