@@ -47,6 +47,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.todo",
+    "sphinx.ext.imgconverter",
     "sphinx_tabs.tabs",
     "contrib_ext",
     "chios.bolditalic",

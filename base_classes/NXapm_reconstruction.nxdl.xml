@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_reconstruction" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n">
+            <doc>
+                Number of ions spatially filtered from results of the hit_finding algorithm
+                from which an instance of a reconstructed volume has been generated.
+                These ions get new identifier assigned in the process - the so-called
+                evaporation_id, which must not be confused with the pulse_id!
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Base class for the configuration and results of a reconstruction algorithm.
+        
+        Generating a tomographic reconstruction of the specimen uses selected and
+        calibrated ion hit positions, the evaporation sequence, and voltage curve data.
+        Very often scientists use own software scripts according to published procedures,
+        so-called reconstruction protocols.
+    </doc>
+    <group type="NXprogram"/>
+    <group type="NXnote"/>
+    <!--config-->
+    <group name="config" type="NXparameters">
+        <doc>
+            Parameters that configure a reconstruction algorithm which takes
+            hit data and mass-to-charge-state ratio values to construct a model
+            of the evaporated specimen. This model is called the reconstructed volume.
+            Researchers in the field of atom probe call these algorithms reconstruction
+            protocols.
+            
+            Different such protocols exist. Although these are qualitatively similar,
+            each protocol uses and interprets the parameters slightly differently.
+            
+            The majority of reconstructions is performed with the proprietary software
+            APSuite / IVAS, the source code for the reconstruction protocols that this
+            software implements in detail is not open but the parameters and their qualitative
+            effect on the reconstructed volume follows the protocols that are discussed in
+            the atom probe literature. This group allows to document these parameters in
+            a standardized manner.
+        </doc>
+        <field name="voltage_filter_initial" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                Lowest voltage at which an ion that is considered in the reconstructed
+                volume has been extracted from the specimen.
+            </doc>
+        </field>
+        <field name="voltage_filter_final" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                Highest voltage at which an ion that is considered in the reconstructed
+                volume has been extracted from the specimen.
+            </doc>
+        </field>
+        <field name="protocol_name" type="NX_CHAR">
+            <doc>
+                Qualitative statement about which reconstruction protocol was used.
+                
+                For reconstructions performed with APSuite / IVAS the value "cameca"
+                should be used.
+            </doc>
+            <enumeration open="true">
+                <item value="bas"/>
+                <item value="geiser"/>
+                <item value="gault"/>
+                <item value="cameca"/>
+            </enumeration>
+        </field>
+        <field name="primary_element" type="NX_CHAR">
+            <doc>
+                Assumed primary element based on which the reconstruction is calibrated.
+                
+                The value can be extracted from the CAnalysis.CSpatial.fPrimaryElement
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                Assumed detection efficiency
+                
+                The value can be extracted from the CAnalysis.CSpatial.fEfficiency
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="flight_path" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Nominal flight path
+                
+                The value can be extracted from the CAnalysis.CSpatial.fFlightPath
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="evaporation_field" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                Assumed evaporation electric field
+                
+                The value can be extracted from the CAnalysis.CSpatial.fEvaporationField
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="image_compression" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                Image compression factor (ICF)
+                
+                The value can be extracted from the CAnalysis.CSpatial.fImageCompression
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="kfactor" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                The factor :math:`k` in :math:`R_0 = \frac{V}{kF}` with :math:`R_0` tip_radius_zero
+                :math:`V` the voltage and :math:`F` the evaporation field.
+                
+                The value can be extracted from the CAnalysis.CSpatial.fKfactor
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="shank_angle" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                Shank angle
+                
+                The value can be extracted from the CAnalysis.CSpatial.fShankAngle
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="ion_volume" type="NX_FLOAT" units="NX_VOLUME">
+            <doc>
+                Assumed atomic volume
+            </doc>
+        </field>
+        <field name="tip_radius" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                The value can be extracted from the CAnalysis.CSpatial.fTipRadius
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="tip_radius_zero" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                The value can be extracted from the CAnalysis.CSpatial.fTipRadius0
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="voltage_zero" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                The value can be extracted from the CAnalysis.CSpatial.fVoltage0
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+        <field name="crystallographic_calibration" type="NX_CHAR">
+            <doc>
+                Different strategies for crystallographic calibration of the
+                reconstruction are possible. Therefore, we collect first such
+                feedback before parametrizing this further.
+                
+                If no crystallographic calibration was performed, the field
+                should be filled with the n/a, meaning not applied.
+            </doc>
+        </field>
+        <field name="comment" type="NX_CHAR">
+            <doc>
+                Possibility of a free text field that allows to report additional details related to
+                the reconstruction protocol. For LEAP systems and reconstructions that are
+                performed with APSuite / IVAS see also `B. Gault et al. &lt;https://doi.org/10.1093/mam/ozae081&gt;_`
+                and `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_ (page 371).
+                for best practices on the reporting of metadata in atom probe tomography.
+                
+                The value can be extracted from the CAnalysis.CResults.fComments
+                field of a CamecaRoot ROOT file.
+            </doc>
+        </field>
+    </group>
+    <!--results-->
+    <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+            Three-dimensional positions of the ions in the reconstructed volume.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+        <attribute name="depends_on" type="NX_CHAR">
+            <doc>
+                The instance of :ref:`NXcoordinate_system` in which the positions are defined.
+            </doc>
+        </attribute>
+    </field>
+    <field name="quality" type="NX_CHAR">
+        <doc>
+            Qualitative statement about the reconstruction.
+            
+            The value can be extracted from the CAnalysis.CResults.fQuality
+            field of a CamecaRoot ROOT file.
+        </doc>
+    </field>
+    <!--plots and statistics about the reconstructed volume-->
+    <group name="naive_discretization" type="NXprocess">
+        <group type="NXprogram"/>
+        <group type="NXdata">
+            <doc>
+                Visual overview of the reconstructed dataset via a three-dimensional
+                histogram of ion counts. Ion counts are characterized using one nanometer
+                cubic bins without applying any smoothening of reconstructed positions
+                during the histogram computation.
+                
+                Such preview is useful to get an impression of the macroscopic shape of the
+                reconstructed volume. Visualizing by ion counts highlights density variations
+                the reconstructed volume that are signatures of features such as poles,
+                interfaces or irregularities of the specimen shape.
+            </doc>
+        </group>
+    </group>
+    <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
+        <doc>
+            Sum of ion volumes
+            
+            The value can be extracted from the CAnalysis.CSpatial.fRecoVolume
+            field of a CamecaRoot ROOT file.
+        </doc>
+    </field>
+    <field name="field_of_view" type="NX_FLOAT" units="NX_LENGTH">
+        <!--typically in nm reconstruction space not detector coordinates-->
+        <doc>
+            The nominal diameter of the specimen ROI which is measured in the
+            experiment. The physical specimen cannot be measured completely
+            because ions may launch but hit in locations other than the detector.
+        </doc>
+    </field>
+    <group name="obb" type="NXcollection">
+        <doc>
+            Tight, axis-aligned bounding box about the point cloud of the reconstruction.
+        </doc>
+        <field name="xmin" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Minimum coordinate value along the x-direction
+            </doc>
+        </field>
+        <field name="xmax" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Maximum coordinate value along the x-direction
+            </doc>
+        </field>
+        <field name="ymin" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Minimum coordinate value along the y-direction
+            </doc>
+        </field>
+        <field name="ymax" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Maximum coordinate value along the y-direction
+            </doc>
+        </field>
+        <field name="zmin" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Minimum coordinate value along the z-direction
+            </doc>
+        </field>
+        <field name="zmax" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                Maximum coordinate value along the z-direction
+            </doc>
+        </field>
+    </group>
+</definition>

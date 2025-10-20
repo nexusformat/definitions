@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXchemical_composition" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n">
+            <doc>
+                The number of samples or things.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Chemical composition of a sample or a set of things.
+    </doc>
+    <field name="normalization" type="NX_CHAR">
+        <doc>
+            Reporting compositions as atom and weight percent yields both
+            dimensionless quantities but their conceptual interpretation differs.
+            A normalization based on atom_percent counts relative to the
+            total number of atoms which are of a particular type.
+            By contrast, weight_percent normalization factorizes in the
+            respective mass of the elements. Software libraries that work with
+            units, like pint in Python, are challenged by these differences as
+            at.-% and wt.-% are both fractional quantities.
+        </doc>
+        <enumeration>
+            <item value="atom_percent"/>
+            <item value="weight_percent"/>
+        </enumeration>
+    </field>
+    <field name="total" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+            Total formula mass or number of atoms, depending on the
+            normalization stated in the normalization field.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n"/>
+        </dimensions>
+    </field>
+    <group name="ELEMENT" type="NXatom" minOccurs="1" maxOccurs="unbounded" nameType="any">
+        <doc>
+            If this group is used to report the composition of elements from the periodic table,
+            the group should use the chemical symbol of that element. For other case the
+            group name is unconstrained.
+        </doc>
+        <field name="amount" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                Count or weight which, when divided by total yields the composition
+                of this element, isotope, molecule, or ion.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n"/>
+            </dimensions>
+        </field>
+        <field name="composition" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                Composition value for the element/ion referred to under name.
+                Composition is reported either normalized for atomic or weight
+                percent. The field normalization should be used to communicate
+                this explicitly. Composition should be reported consistently
+                for all instances ELEMENT.
+            </doc>
+        </field>
+        <field name="composition_errors" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
+            <doc>
+                Magnitude of the standard deviation of the composition.
+            </doc>
+        </field>
+    </group>
+</definition>
