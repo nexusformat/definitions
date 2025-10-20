@@ -32,15 +32,15 @@ make these base classes applicable for the field of optical spectroscopy (:ref:`
 
 In addition, there exist base classes to define concepts that are specific for optical spectroscopy:
 
-   :ref:`NXbeam_transfer_matrix_table`
-      Used to relate physical properties of two beams (:ref:`NXbeam`) which have one common optical component (:ref:`NXcomponent`)
-      inbetween.
+:ref:`NXbeam_transfer_matrix_table`
+    Used to relate physical properties of two beams (:ref:`NXbeam`) which
+    have one common optical component (:ref:`NXcomponent`) inbetween.
 
-   :ref:`NXoptical_lens`
-      Description of an optical lens.
+:ref:`NXoptical_lens`
+    Description of an optical lens.
 
-   :ref:`NXoptical_window`
-      Description of an optical window.
+:ref:`NXoptical_window`
+    Description of an optical window.
 
-   :ref:`NXwaveplate`
-      Description of a waveplate or retarder.
+:ref:`NXwaveplate`
+    Description of a waveplate or retarder.

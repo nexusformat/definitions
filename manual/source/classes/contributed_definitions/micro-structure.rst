@@ -23,26 +23,35 @@ Application Definitions
 Base classes
 ############
 
-:ref:`NXms`
-    Application definition, spatiotemporal characterization of a microstructure.
+:ref:`NXmicrostructure`
+    Base class to describe elements of the microstructure of a material.
 
-:ref:`NXms_feature_set`
-    Set of topological/spatial features in materials built from other features.
+:ref:`NXmicrostructure_pf`, :ref:`NXmicrostructure_ipf`, :ref:`NXmicrostructure_odf`
+    Base classes for describing parameterization, results, and data from texture analysis,
+    specifically pole figure (pf), inverse pole figure (ipf),
+    and orientation distribution function (odf), respectively.
 
-:ref:`NXms_score_config`
-    Application definition to control a simulation with the SCORE model.
+:ref:`NXmicrostructure_feature`
+    Set of topological/spatial features in materials built from atoms, from coarse-grained
+    representations of atoms, or from other microstructure features.
 
-:ref:`NXms_score_results`
-    Application definition for storing results of the SCORE cellular automaton.
-
-:ref:`NXms_snapshot`
-    Base class for data on the state of the microstructure at a given time.
-
-:ref:`NXms_snapshot_set`
-    A collection of spatiotemporal microstructure data.
-
-:ref:`NXslip_system_set`
+:ref:`NXmicrostructure_slip_system`
     Base class for describing a set of crystallographic slip systems.
+
+:ref:`NXmicrostructure_mtex_config`
+    Base class for documenting the parameterization of MTex, which is
+    a software for analyzing material texture written in MATLAB.
+
+:ref:`NXmicrostructure_score_config`
+    Application definition to control a simulation with the SCORE cellular automata simulation tool.
+
+:ref:`NXmicrostructure_score_results`
+    Application definition for storing results of the SCORE cellular automata simulation tool.
+
+:ref:`NXmicrostructure_kanapy_results`
+    Application definition for storing results of the kanapy microstructure synthesis tool.
+
+
 
 
 

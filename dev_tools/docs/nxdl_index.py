@@ -29,9 +29,7 @@ SOURCE_TO_GROUPING = {
         "optical-spectroscopy",
     ],
     "contributed_definitions": [
-        "beam",
         "sample",
-        "computer",
         "danalysis",
         "cg",
         "apm",
@@ -42,7 +40,7 @@ SOURCE_TO_GROUPING = {
 }
 
 MOVE_LONG_FLAT_LIST_TO_OWN_GROUP = (
-    False  # True for long-flat list in own group, else for legacy support
+    True  # True for long-flat list in own group, else for legacy support
 )
 
 
@@ -230,8 +228,6 @@ navigating the full list of base classes along the following topics:
 
   :ref:`Optical Spectroscopy <BC-Opt-Spec-Structure>`
     """,
-    # :ref:`Complete List <BC-Complete-Structure>`
-    #     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "applications": """
 .. index::
@@ -278,8 +274,6 @@ research fields are listed in each category:
 
   :ref:`Time-of-Flight Techniques <AppDef-Tof-Structure>`
     """,
-    # :ref:`Complete List <AppDef-Complete-Structure>`
-    #     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "contributed_definitions": """
 .. index::
@@ -304,11 +298,7 @@ These contributions are grouped together based on the research fields
 where these are typically used. Definitions that address multiple
 research fields are listed in each category:
 
-  :ref:`Working with Beams <CC-Beam-Structure>`
-
   :ref:`Working with Samples <CC-Sample-Structure>`
-
-  :ref:`Working with Computers <CC-Computer-Structure>`
 
   :ref:`Conventions and Data Analysis <CC-Danalysis-Structure>`
 
@@ -322,6 +312,4 @@ research fields are listed in each category:
 
   :ref:`Microstructures Characterization and Representation <CC-Micro-Structure>`
     """,
-    #   :ref:`Complete List <CC-Complete-Structure>`
-    #     """,
 }

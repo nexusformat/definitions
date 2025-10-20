@@ -32,10 +32,10 @@ Base Classes
 
 The processing steps of ranging and reconstructing are documented as two specializations of :ref:`NXprocess`:
 
-:ref:`NXapm_input_ranging`
+:ref:`NXapm_ranging`
     Metadata to ranging definitions made for a dataset in atom probe microscopy.
 
-:ref:`NXapm_input_reconstruction`
+:ref:`NXapm_reconstruction`
     Metadata of a dataset (tomographic reconstruction) in atom probe microscopy.
 
 Spatial or other type of filters which are frequently used for atom probe to select specific atom positions
@@ -53,9 +53,11 @@ defined atom-probe-agnostic empower reuse:
 
 :ref:`NXspatial_filter`
     Base class to filter based on position. This base class takes advantage of :ref:`NXcg_ellipsoid`,
-    :ref:`NXcg_cylinder`, and :ref:`NXcg_hexahedron` to cater for commonly used geometric primitives
-    in atom probe. The primitives are used for defining the shape and extent of a
-    region of interest (ROI) :ref:`NXroi_process`.
+
+:ref:`NXcg_cylinder`, :ref:`NXcg_hexahedron`
+    Base classes to describe commonly used geometric primitives (not only) in atom probe.
+    The primitives are used for defining the shape and extent of a region of interest
+    (ROI) :ref:`NXroi_process` of material.
 
 :ref:`NXsubsampling_filter`
     Base class for a filter that can also be used for specifying how entries
@@ -111,7 +113,7 @@ In a refactoring project, within the FAIRmat project, which is part of the `Germ
 National Research Data Infrastructure <https://www.nfdi.de/?lang=en>`_, the tools of the
 paraprobe-toolbox were modified to read from and write data using NeXus application definitions.
 
-For example the application definition :ref:`NXapm_paraprobe_config_surfacer`: specifies
+For example the application definition :ref:`NXapm_paraprobe_surfacer_config`: specifies
 the expectation how a configuration file for the paraprobe-surfacer tool is formatted
 and which parameters it contains including optionality and cardinality constraints.
 
@@ -146,65 +148,59 @@ and one for the results (output) side. For each tool one such pair is proposed:
 Application Definitions
 #######################
 
-:ref:`NXapm_paraprobe_config_clusterer`, :ref:`NXapm_paraprobe_results_clusterer`
-    Configuration and results respectively of the paraprobe-clusterer tool.
-    Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
-
-:ref:`NXapm_paraprobe_config_distancer`, :ref:`NXapm_paraprobe_results_distancer`
-    Configuration and results respectively of the paraprobe-distancer tool.
-    Compute and store analytical distances between ions to a set of triangles.
-
-:ref:`NXapm_paraprobe_config_intersector`, :ref:`NXapm_paraprobe_results_intersector`
-    Configuration and results resepctively of the paraprobe-intersector tool.
-    Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
-    in continuum space to study the effect the parameterization of surface extraction algorithms on the
-    resulting shape, spatial arrangement, and colocation of 3D objects via graph-based techniques.
-
-:ref:`NXapm_paraprobe_config_nanochem`, :ref:`NXapm_paraprobe_results_nanochem`
-    Configuration and results resepctively of the paraprobe-nanochem tool.
-    Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
-
-:ref:`NXapm_paraprobe_config_ranger`, :ref:`NXapm_paraprobe_results_ranger`
+:ref:`NXapm_paraprobe_ranger_config`, :ref:`NXapm_paraprobe_ranger_results`
     Configuration and results respectively of the paraprobe-ranger tool.
     Apply ranging definitions and explore possible molecular ions.
     Store applied ranging definitions and combinatorial analyses of possible iontypes.
 
-:ref:`NXapm_paraprobe_config_selector`, :ref:`NXapm_paraprobe_results_selector`
-    Configuration and results respectively of the paraprobe-selector tool.
-    Defining complex spatial regions-of-interest to filter reconstructed datasets.
-    Store which points are inside or on the boundary of complex spatial regions-of-interest.
-
-:ref:`NXapm_paraprobe_config_spatstat`, :ref:`NXapm_paraprobe_results_spatstat`
-    Configuration and results respectively of the paraprobe-spatstat tool.
-    Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
-
-:ref:`NXapm_paraprobe_config_surfacer`, :ref:`NXapm_paraprobe_results_surfacer`
+:ref:`NXapm_paraprobe_surfacer_config`, :ref:`NXapm_paraprobe_surfacer_results`
     Configuration and results respectively of the paraprobe-surfacer tool.
     Create a model for the edge of a point cloud via convex hulls, alpha shapes, or alpha-wrappings.
     Store triangulated surface meshes of models for the edge of a dataset.
 
-:ref:`NXapm_paraprobe_config_tessellator`, :ref:`NXapm_paraprobe_results_tessellator`
+:ref:`NXapm_paraprobe_distancer_config`, :ref:`NXapm_paraprobe_distancer_results`
+    Configuration and results respectively of the paraprobe-distancer tool.
+    Compute and store analytical distances between ions to a set of triangles.
+
+:ref:`NXapm_paraprobe_tessellator_config`, :ref:`NXapm_paraprobe_tessellator_results`
     Configuration and results respectively of the paraprobe-tessellator tool.
     Compute and store Voronoi cells and properties of these for all ions in a dataset.
 
-:ref:`NXapm_paraprobe_config_transcoder`, :ref:`NXapm_paraprobe_results_transcoder`
-    Configuration and the results respectively of the paraprobe-transcoder tool.
-    Load common file formats of the atom probe community POS, ePOS, APSuite APT, RRNG, RNG,
-    and generate NeXus/HDF5 files that comply with the :ref:`NXapm` application definition.
-    Store reconstructed positions, ions, and charge states.
+:ref:`NXapm_paraprobe_selector_config`, :ref:`NXapm_paraprobe_selector_results`
+    Configuration and results respectively of the paraprobe-selector tool.
+    Defining complex spatial regions-of-interest to filter reconstructed datasets.
+    Store which points are inside or on the boundary of complex spatial regions-of-interest.
+
+:ref:`NXapm_paraprobe_spatstat_config`, :ref:`NXapm_paraprobe_spatstat_results`
+    Configuration and results respectively of the paraprobe-spatstat tool.
+    Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
+
+:ref:`NXapm_paraprobe_nanochem_config`, :ref:`NXapm_paraprobe_nanochem_results`
+    Configuration and results respectively of the paraprobe-nanochem tool.
+    Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
+
+:ref:`NXapm_paraprobe_clusterer_config`, :ref:`NXapm_paraprobe_clusterer_results`
+    Configuration and results respectively of the paraprobe-clusterer tool.
+    Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
+
+:ref:`NXapm_paraprobe_intersector_config`, :ref:`NXapm_paraprobe_intersector_results`
+    Configuration and results resepctively of the paraprobe-intersector tool.
+    Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
+    in continuum space to study the effect the parameterization of surface extraction algorithms on the
+    resulting shape, spatial arrangement, and colocation of 3D objects via graph-based techniques.
 
 .. _CC-Apm-Paraprobe-German-NFDI:
 
 Joint work German NFDI consortia NFDI-MatWerk and FAIRmat
 #######################################################################
 
-Members of the NFDI-MatWerk and the FAIRmat consortium of the German National Research Data Infrastructure
+Members of the FAIRmat and the NFDI-MatWerk consortia of the German National Research Data Infrastructure
 are working together within the Infrastructure Use Case IUC09 of the NFDI-MatWerk project to work on examples
 how software tools in both consortia become better documented and interoperable to use. Within this project,
-we have also added the `CompositionSpace` tool that has been developed at the
-Max Planck Institute for Sustainable Materials in Düsseldorf <https://github.com/eisenforschung/CompositionSpace>`_ by A. Saxena et al.
+we have also added the `CompositionSpace tool <https://github.com/eisenforschung/CompositionSpace>`_ by A. Saxena et al. that has been developed at the
+Max Planck Institute for Sustainable Materials in Düsseldorf 
 
-:ref:`NXapm_composition_space_results`
+:ref:`NXapm_compositionspace_config`, :ref:`NXapm_compositionspace_results`
     Results of a run with Alaukik Saxena's composition space tool.
 
 
