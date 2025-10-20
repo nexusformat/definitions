@@ -136,7 +136,7 @@ inspect comments behind NXmicrostructure-->
             <doc>
                 Programs and libraries representing the computational environment
             </doc>
-            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
                 </field>
@@ -379,10 +379,14 @@ unit: NX_ANY
 dim: (n_summary_stats, 3, 3)
 the typically storage-costlier snapshot data-->
             <group name="microstructureID" type="NXmicrostructure" minOccurs="1" maxOccurs="unbounded" nameType="partial">
-                <field name="time" type="NX_FLOAT"/>
+                <field name="time" type="NX_FLOAT" units="NX_TIME">
+                    <doc>
+                        Simulated physical time for this snapshot.
+                    </doc>
+                </field>
                 <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
-                        Iteration or increment counter.
+                        Iteration or increment counter of this snapshot.
                     </doc>
                 </field>
                 <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
@@ -443,7 +447,7 @@ the typically storage-costlier snapshot data-->
                     </field>
                     <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
                         <doc>
-                            Volume of each grain accounting also for partially transformed cells.
+                            Volume of each grain (partially transformed cells are accounted for).
                         </doc>
                         <dimensions rank="1">
                             <dim index="1" value="n_grains"/>
@@ -487,12 +491,17 @@ the typically storage-costlier snapshot data-->
                 </group>
                 <group name="recrystallization_front" type="NXmicrostructure_feature" recommended="true">
                     <doc>
-                        Details about those cells which in this time step represent the discrete
-                        recrystallization front.
+                        Details about those cells which in this time step
+                        represent the discrete recrystallization front.
+                        
+                        Each CA is processed by a team of OpenMP threads.
                     </doc>
                     <field name="halo_region" type="NX_UINT" optional="true" units="NX_UNITLESS">
                         <doc>
                             Which cells are currently in a halo region of threads.
+                            
+                            The halo region is a layer of cells about the sub-domain
+                            of the simulation grid evolved by a thread.
                         </doc>
                         <dimensions rank="1">
                             <dim index="1" value="n_front"/>

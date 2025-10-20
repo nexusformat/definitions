@@ -101,17 +101,19 @@
         <!--end_time(NX_DATE_TIME):
 exists: optional-->
         <group name="profiling" type="NXcs_profiling" optional="true"/>
-        <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
+        <group name="userID" type="NXuser" nameType="partial" minOccurs="0" maxOccurs="unbounded"/>
         <group name="sample" type="NXsample" recommended="true">
             <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
                 <doc>
                     Dimensionality of the simulation.
                 </doc>
                 <enumeration>
+                    <item value="1"/>
+                    <item value="2"/>
                     <item value="3"/>
                 </enumeration>
             </field>
-            <field name="type" type="NX_CHAR">
+            <field name="is_simulation" type="NX_CHAR">
                 <doc>
                     A qualifier whether the sample is a real one or a virtual one.
                 </doc>
@@ -145,7 +147,7 @@ exists: optional-->
             <doc>
                 Programs and libraries representing the computational environment
             </doc>
-            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
                 </field>
@@ -186,9 +188,9 @@ SecondOrderThermalExpCoeff-->
                 <doc>
                     Which model should be used to generate a starting microstructure.
                     
-                    * cuboidal, a regular array of equally shaped cuboidal grains
-                    * poisson_voronoi, a discretized poisson voronoi
-                    * ebsd, a microstructure synthesized based on a simulated or measured EBSD orientation map
+                    * cuboidal, a regular array of equally-shaped cuboidal grains
+                    * poisson_voronoi, a discretized Poisson Voronoi tessellation
+                    * ebsd, a microstructure synthesized based on a simulated or a measured EBSD orientation map
                     * damask, the result of a simulation from `DAMASK &lt;https://damask-multiphysics.org&gt;`_.
                 </doc>
                 <enumeration>
@@ -245,11 +247,7 @@ SecondOrderThermalExpCoeff-->
                     EBSD orientation map when model is cuboidal or poisson.
                 </doc>
                 <field name="file_name" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR">
-                    <enumeration>
-                        <item value="sha256"/>
-                    </enumeration>
-                </field>
+                <field name="algorithm" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="stepsize" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
@@ -272,18 +270,15 @@ SecondOrderThermalExpCoeff-->
                         a previously performed DAMASK simulation.
                     </doc>
                 </field>
-                <field name="algorithm" type="NX_CHAR">
-                    <enumeration>
-                        <item value="sha256"/>
-                    </enumeration>
-                </field>
+                <field name="algorithm" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
             </group>
         </group>
         <group name="nucleation" type="NXparameters">
             <doc>
                 Phenomenological model according to which recrystallization nuclei
-                are placed into the domain whose growth is studied with the simulation.
+                are placed into the domain. Studying the growth of these nuclei
+                is the main purpose of a SCORE simulation.
             </doc>
             <field name="spatial_distribution" type="NX_CHAR">
                 <doc>
@@ -300,7 +295,9 @@ SecondOrderThermalExpCoeff-->
             </field>
             <field name="incubation_time" type="NX_CHAR">
                 <doc>
-                    According to which model will the nuclei start to grow.
+                    According to which model will the nuclei start to grow:
+                    
+                    * site_saturation, instantaneously
                 </doc>
                 <enumeration>
                     <item value="site_saturation"/>
@@ -349,7 +346,7 @@ SecondOrderThermalExpCoeff-->
         <group name="grain_boundary_mobility" type="NXparameters">
             <doc>
                 Model for the assumed mobility of grain boundaries with different disorientation
-                implemented as parameterized Turnbull's model for thermally-activated
+                implemented as a parameterized Turnbull's model for thermally-activated
                 grain boundary migration.
             </doc>
             <field name="model" type="NX_CHAR">
@@ -618,10 +615,9 @@ like showing a r(t) plot-->
         <!--dim: (d,)-->
         <group name="numerics" type="NXparameters">
             <doc>
-                Criteria which enable to stop the simulation in a controlled manner.
+                Criteria which enable to stop the simulation in a controlled manner
+                and assure a stable numerical integration.
                 Whichever criterion is fulfilled first stops the simulation.
-                Furthermore, numerical configuration required to achieve
-                a stable numerical integration.
             </doc>
             <field name="max_x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                 <doc>
@@ -656,9 +652,10 @@ like showing a r(t) plot-->
                     including the assignment of grains and cells surplus the state of the
                     recrystallization front.
                     
-                    Despite these front data make up for approximately one order of magnitude
-                    less cells than represented in the domain, more numerical data have to be
-                    collected for each cell in the front than just a grain identifier.
+                    Despite these, data about the cells that define the recrystallization front make up
+                    for approximately one order of magnitude less cells than present in the domain.
+                    For the cells in this front, though, more data have to be collected
+                    than just a grain identifier.
                 </doc>
                 <dimensions rank="1">
                     <dim index="1" value="n_snapshot"/>
