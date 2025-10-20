@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -44,20 +44,14 @@ Draft NeXus application definition for transmission experiments-->
         Application definition for transmission experiments
     </doc>
     <group type="NXentry">
-        <doc>
-            This application definition
-        </doc>
         <field name="definition">
-            <doc>
-                An application definition for transmission.
-            </doc>
             <attribute name="version">
                 <doc>
                     Version number to identify which definition of this application definition was
                     used for this entry/data.
                 </doc>
             </attribute>
-            <attribute name="url">
+            <attribute name="URL" nameType="specified">
                 <doc>
                     URL where to find further material (documentation, examples) relevant to the
                     application definition.
@@ -72,10 +66,10 @@ Draft NeXus application definition for transmission experiments-->
                 Start time of the experiment.
             </doc>
         </field>
-        <field name="experiment_identifier" type="NX_CHAR">
+        <field name="experiment_identifier">
             <doc>
                 Unique identifier of the experiment, such as a (globally persistent)
-                  unique identifier.
+                unique identifier.
                 
                 * The identifier is usually defined by the facility or principle
                   investigator.
@@ -89,10 +83,6 @@ Draft NeXus application definition for transmission experiments-->
                 definition rather than in this experiment description.
             </doc>
         </field>
-        <!--TODO: Just used a NXmanufacturer, maybe
-it is nicer to introduce a general NXprogram class?
-However, a program may also be viewed as some sort
-of instrument.-->
         <group name="acquisition_program" type="NXfabrication" optional="true">
             <field name="model" type="NX_CHAR">
                 <doc>
@@ -100,7 +90,7 @@ of instrument.-->
                     used to generate the result file(s) with measured data and metadata.
                 </doc>
             </field>
-            <field name="identifier" type="NX_CHAR">
+            <field name="identifier">
                 <doc>
                     Version number of the program that was used to generate the result
                     file(s) with measured data and metadata.
@@ -112,7 +102,7 @@ of instrument.-->
                 </doc>
             </attribute>
         </group>
-        <group name="operator" type="NXuser" minOccurs="1">
+        <group type="NXuser">
             <doc>
                 Contact information of at least the user of the instrument or the investigator
                 who performed this experiment. Adding multiple users if relevant is recommended.
@@ -122,30 +112,10 @@ of instrument.-->
                     Name of the user.
                 </doc>
             </field>
-            <field name="affiliation">
+            <field name="affiliation" recommended="true">
                 <doc>
                     Name of the affiliation of the user at the point in time when the experiment was
                     performed.
-                </doc>
-            </field>
-            <field name="address">
-                <doc>
-                    Street address of the user's affiliation.
-                </doc>
-            </field>
-            <field name="email">
-                <doc>
-                    Email address of the user.
-                </doc>
-            </field>
-            <field name="url" recommended="true">
-                <doc>
-                    Author ID defined by research ID services, e.g. orcid (https://orcid.org/).
-                </doc>
-            </field>
-            <field name="telephone_number" recommended="true">
-                <doc>
-                    Telephone number of the user.
                 </doc>
             </field>
         </group>
@@ -191,20 +161,21 @@ of instrument.-->
                 <field name="wavelength" type="NX_NUMBER" units="NX_LENGTH">
                     <doc>
                         Wavelength value(s) used for the measurement.
-                        An array of 1 or more elements. Length defines N_wavelengths
+                        An array of 1 or more elements. Length defines N_wavelenghts
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="N_wavelengths"/>
                     </dimensions>
                 </field>
-                <field name="spectral_resolution" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <group name="spectral_resolution" type="NXresolution" optional="true">
                     <doc>
                         Overall spectral resolution of this spectrometer.
                         If several gratings are employed the spectral resolution
                         should rather be specified for each grating inside the
                         NXgrating group of this spectrometer.
                     </doc>
-                </field>
+                    <field name="resolution" type="NX_NUMBER" units="NX_WAVENUMBER"/>
+                </group>
                 <group type="NXgrating" optional="true">
                     <doc>
                         Diffraction grating, as could be used in a monochromator.
@@ -214,7 +185,7 @@ of instrument.-->
                         do not overlap. The dispersion should be defined for the
                         entire wavelength range of the experiment.
                     </doc>
-                    <field name="angular_dispersion" type="NX_NUMBER" optional="true">
+                    <field name="angular_dispersion" type="NX_NUMBER" optional="true" units="NX_DIMENSIONLESS">
                         <doc>
                             Dispersion of the grating in nm/mm used.
                         </doc>
@@ -224,12 +195,13 @@ of instrument.-->
                             The blaze wavelength of the grating used.
                         </doc>
                     </field>
-                    <field name="spectral_resolution" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                    <group name="spectral_resolution" type="NXresolution" optional="true">
                         <doc>
                             Overall spectral resolution of the instrument
                             when this grating is used.
                         </doc>
-                    </field>
+                        <field name="resolution" type="NX_NUMBER" units="NX_WAVENUMBER"/>
+                    </group>
                     <field name="wavelength_range" type="NX_NUMBER" units="NX_LENGTH">
                         <doc>
                             Wavelength range in which this grating was used
@@ -310,7 +282,7 @@ of instrument.-->
                     <doc>
                         The type of lamp, e.g. halogen, D2 etc.
                     </doc>
-                    <enumeration>
+                    <enumeration open="true">
                         <item value="halogen"/>
                         <item value="D2"/>
                     </enumeration>
@@ -334,8 +306,6 @@ of instrument.-->
             </group>
         </group>
         <group type="NXsample">
-            <!--TODO: This should be extended by a generic
-NXsample class.-->
             <doc>
                 Properties of the sample measured
             </doc>
