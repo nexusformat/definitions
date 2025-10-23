@@ -42,7 +42,7 @@ def test_nxdl_anchor_write_list(nxdl_file, doc_generator, anchor_registry_write)
 
 
 def test_nxdl_indices():
-    sections = nxdl_indices()
+    sections = nxdl_indices(write_rst=False)
     expected = {"base_classes", "applications", "contributed_definitions"}
     assert set(sections) == expected
 
