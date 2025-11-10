@@ -20,7 +20,6 @@ https://www.nexusformat.org/
     spm-structure
     cgms-structure
     north-structure
-    icme-structure
     napi
     history
 

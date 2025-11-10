@@ -12,4 +12,4 @@ Microscopy) in SPM domain.
 
 This is one community under the large umbrella of scanning (probe) microscopy 
 methods. A status report of these efforts will be reported here: 
-:ref:`Spm-Structure`.
+:ref:`CC-Spm-Structure`.

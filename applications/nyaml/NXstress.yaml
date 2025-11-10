@@ -1,0 +1,2177 @@
+category: application
+doc: |
+  Application definition for stress and strain analysis of crystalline material defined by the `EASI-STRESS consortium <https://easi-stress.eu>`_.
+  
+  When a crystal is loaded (applied or residual stress) its crystallographic parameters change.
+  
+  Stress and strain analysis calculates deformation (strain) and the associated force (stress)
+  from diffraction data.
+  
+  This application definition essentially standardizes the result of diffraction pattern analysis
+  from different types of diffraction experiments for the purpose of stress and strain analysis.
+  The analysis is typically some form of diffraction peak indexing and fitting.
+  The experiments are for example
+  
+  - energy-dispersive X-ray powder diffraction
+  - angular-dispersive X-ray powder diffraction
+  - angular-dispersive neutron powder diffraction
+  - time-of-flight (TOF) neutron powder diffraction.
+  
+  In addition, the application definition guarantees that the information about instrumental setups, measurement conditions, and data analysis workflows are described.
+  This ensures not only the reproducability and tracability of the measured data, but also the metadata. Since not all participating beamlines or instruments can provide an input to all the NeXus fields listed in this application definition, not all of them are "required".
+  
+  However, when possible and technically feasible, the instrument using the NXstress application definition is expected to provide the type of information outlined below.
+  
+  Sample and detector positions can be defined with :ref:`NXtransformations`. If you don't specify the direction of gravity
+  and the direction of the beam then the standard NeXus Coordinate System is used.
+  
+  It is highly recommended that when certain parameters or values are the same for all the measurements (acquistions) in the same
+  file, they are stored only in one location and then linked in the other instances. For example, if during an acquisition all
+  
+  instrumental parameters but one stay the same and only the sample table moves in one direction (e.g. Xtranslation), then all the
+  static instrumental parameters should be saved just once (e.g. in just one NXentry or in a *Shared_Information group*) and their
+  values linked to every *instrument group* under all the other acquisitions. The value for the variable that changes, Xtranslation
+  in this example, is suggested to be saved only at every instrument group under each acquistion but not in the *Shared_Information group*.
+  
+  It is not always necessary to link each field. In case all the fields with an entire group are the same, the entire group can be linked.
+symbols:
+  n_X: |
+    Number of diffractogram channels.
+  n_D: |
+    Number of diffractograms. For example the number of energy-dispersive detectors or the number of azimuthal sections in an area detector.
+  n_Peaks: |
+    Number of reflections.
+  x_Unit: |
+    Diffractogram X units.
+  y_Unit: |
+    Diffractogram Y units.
+  c_Unit: |
+    Converted diffractogram X units (could be the same as *x_Unit*).
+  n_Temp: |
+    number of temperatures
+  n_sField: |
+    number of values in applied stress field
+  nP: |
+    number of scan points (only present in scanning measurements)
+  i: |
+    number of detector pixels in the first (slowest) direction
+  j: |
+    number of detector pixels in the second (faster) direction
+type: group
+NXstress(NXobject):
+  (NXentry):
+    doc: |
+      The name of the *NXentry group(s)* can be freely chosen by the facility. The *NXentry group* can contain any form of data acquisition (e.g. a measurement point, multiple measurement points, a line scan, a mesh, all data points from one sample …).
+    definition(NX_CHAR):
+      doc: |
+        Official NeXus NXDL schema to which this file conforms
+      enumeration: [NXstress]
+    title:
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Extended title for the entry.
+    experiment_identifier:
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Unique identifier for the experiment as defined by the facility (e.g. DOI, proposal id, ...). At ILL, this could be, for example, ``exp_1-02-286``, ``exp_INDU-229``, or ``exp_INTER-569``.
+    experiment_description:
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Brief summary of the experiment, including key objectives. At least one of the following information should be provided:
+            * ``energy-dispersive X-ray powder diffraction``
+            * ``angular-dispersive X-ray powder diffraction``
+            * ``angular-dispersive neutron powder diffraction``
+            * ``time-of-flight (TOF) neutron powder diffraction``
+    start_time(NX_DATE_TIME):
+      exists: ['min', '1', 'max', '1']
+      doc: |
+        The starting time(s) of measurement(s) which can be provided in form of a list if multiple measurements are included in the same NXentry.
+    end_time(NX_DATE_TIME):
+      exists: ['min', '1', 'max', '1']
+      doc: |
+        The end time(s) of measurement(s) which can be provided in form of a list if multiple measurements are included in the same NXentry.
+    collection_identifier:
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        User or Data Acquisition defined identifier from which
+        the content of this application definition is derived. This can be freely chosen by the user or the instrument scientist and could be, for example, ``05_DA_650_AX_B3P5``, ``SENB-14``, ``Quartz``,....
+    collection_description:
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Brief summary of the collection, including grouping criteria. The information provided in this field can highlight, for example, the measurement setup or information about experimental conditions.
+    processing_type(NX_CHAR):
+      exists: ['min', '1', 'max', '1']
+      doc: |
+        Describes the way strain :math:`\varepsilon` can be calculated from the :ref:`center </NXstress/ENTRY/peaks/center-field>`
+        peak parameter.
+      enumeration:
+        two-theta:
+          doc: |
+            :math:`\varepsilon = \large \frac{sin(\mathrm{\theta}_{0})}{sin(\mathrm{\theta})}-1`
+        energy:
+          doc: |
+            :math:`\varepsilon = \large \frac{\mathrm{E}_{0}}{\mathrm{E}}-1`
+        d-spacing:
+          doc: |
+            :math:`\varepsilon = \large \frac{\mathrm{d}}{\mathrm{d}_{0}}-1`
+        time-of-flight:
+          doc: |
+            :math:`\varepsilon = \large \frac{\mathrm{TOF}}{\mathrm{TOF}_{0}}-1`
+        sin2psi:
+          doc: |
+            A description of the :math:`\mathrm{\sin}^{2}\psi` method can be found in the literature. Two examples are
+            `Fitzpatrick et al. 2005 <http://eprintspublications.npl.co.uk/id/eprint/2391>`_
+            and
+            `DIN ISO 15305:2009-01 <https://www.en-standard.eu/din-en-15305-non-destructive-testing-test-method-for-residual-stress-analysis-by-x-ray-diffraction/>`_.
+    measurement_direction(NX_CHAR):
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Describes the specific measurement direction covered by the data in this file.
+      enumeration: [radial, longitudinal, normal, tangential, multiple]
+    experiment_responsible(NXuser):
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        Information about the person who performed the experiment.
+      name(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+      role(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Role of user responsible for this entry. Suggested roes are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…
+    instrument(NXinstrument):
+      exists: ['min', '1', 'max', '1']
+      name(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Name of the diffractometer, instrument, or beamline used for the experiment. This could be, for example, *Strain Analyser for Large and Small scale engineering Applications*.
+        \@short_name:
+          exists: optional
+          doc: |
+            Short name for the instrument, perhaps the acronym, which would be for the the example above ``SALSA``.
+      CALIBRATION(NXnote):
+        nameType: any
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          This group contains information about the geometry and/or efficiency measurement(s).
+        calibration_type(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Describe the type of calibration.
+        file_name(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            File name(s) and/or path(s) (within file(s)) containing data from the last calibration(s). This can be an array.
+        data(NX_BINARY):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Calibration file content.
+        type(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Mime content type of calibration *data* field e.g. text/plain, application/json,...
+        author(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Author or creator of the calibration.
+        date(NX_DATE_TIME):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Date calibration was created/added
+      SOURCE(NXsource):
+        nameType: any
+        exists: ['min', '1', 'max', '1']
+        type(NX_CHAR):
+          exists: ['min', '1', 'max', '1']
+          doc: |
+            Type of radiation source
+          enumeration: [Spallation Neutron Source, Pulsed Reactor Neutron Source, Reactor Neutron Source, Synchrotron X-ray Source, Rotating Anode X-ray, Fixed Tube X-ray, Metal Jet X-ray]
+        probe(NX_CHAR):
+          exists: ['min', '1', 'max', '1']
+          doc: |
+            Type of radiation probe
+          enumeration: [neutron, X-ray]
+      DETECTOR(NXdetector):
+        nameType: any
+        exists: ['min', '1', 'max', 'unbounded']
+        doc: |
+          Zero or more of these groups describe the detectors used in the experiment.
+        description(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            name/manufacturer/model/etc. information
+        type(NX_CHAR):
+          doc: |
+            Description of type such as \ :sup:`3`\ He gas cylinder, \ :sup:`3`\ He PSD, scintillator, fission chamber, proportion counter, ion chamber, CCD, pixel, image plate, CMOS, …
+        distance(NX_NUMBER):
+          unit: NX_LENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            This is the distance to the previous component in the
+            instrument; most often the sample. The usage depends on the
+            nature of the detector: Most often it is the distance of the
+            detector assembly. But there are irregular detectors. In this
+            case the distance must be specified for each detector pixel.
+            
+            Note, it is recommended to use NXtransformations instead.
+          dimensions:
+            rank: 3
+            dim: (nP, i, j)
+        efficiency(NX_FLOAT):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            efficiency of the detector
+          dimensions:
+            rank: 2
+            dim: (i, j)
+        wavelength(NX_FLOAT):
+          unit: NX_WAVELENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            This field can be two things:
+            
+            1. For a pixel detector it provides the nominal wavelength
+            for which the detector has been calibrated.
+            
+            2. For other detectors this field has to be seen together with
+            the efficiency field above.
+            For some detectors, the efficiency is wavelength dependent.
+            Thus this field provides the wavelength axis for the efficiency field.
+            In this use case, the efficiency and wavelength arrays must
+            have the same dimensionality.
+          dimensions:
+            rank: 2
+            dim: (i, j)
+        dead_time(NX_FLOAT):
+          unit: NX_TIME
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Detector dead time
+          dimensions:
+            rank: 3
+            dim: (nP, i, j)
+        count_time(NX_NUMBER):
+          unit: NX_TIME
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Elapsed actual counting time
+          dimensions:
+            rank: 1
+            dim: (nP,)
+        depends_on(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            The axis on which the detector position depends may be stored
+            anywhere, but is normally stored in the *NXtransformations
+            group* within the *NXdetector group*.
+        (NXtransformations):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            This is the recommended location for detector goniometer
+            and other related axes.
+      beam_intensity_profile(NXbeam):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Defines the dimensions of the beam profile used for probing the sample which corresponds to or can be used to determine the instrumental gauge volume.
+          A description of the subsequent fields can be found in the folowing figure. The term "primary" in the subsequent fields refers to the beam path between the sample and the source. The term "secondary" refers to the beam path between the sample and the detector(s).
+          
+          .. figure:: stress/Beam_profile_sketch3.jpg
+           :width: 70%
+           :alt: Examples for the beam intensity profile.
+          
+           Some examples for the beam intensity profile. The 1D description of the beam profile on the right can equally be applied for the horizontal and vertical direction for the primary and the secondary side.
+        beam_evaluation(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            If the beam profile was measured, the filename(s) of the measurement can be specified here.
+        primary_vertical_type(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator <NXcollimator>` or a :ref:`slit <NXslit>`.
+        primary_vertical_source_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the primary beam size intensity profile on the side closer to the source in the vertical direction.
+        primary_vertical_sample_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the primary beam size intensity profile on the side closer to the sample in the vertical direction.
+        primary_vertical_distance(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the distance between the center of the gauge volume and the beam shaping device.
+        primary_vertical_evaluation(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Describes how the beam intensity profile in the primary vertical direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...
+        primary_horizontal_type(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator <NXcollimator>` or a :ref:`slit <NXslit>`.
+        primary_horizontal_source_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the primary beam size intensity profile on the side closer to the source in the horizontal direction.
+        primary_horizontal_sample_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the primary beam size intensity profile on the side closer to the sample in the horizontal direction.
+        primary_horizontal_distance(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the distance between the center of the gauge volume and the beam shaping device.
+        primary_horizontal_evaluation(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Describes how the beam intensity profile in the primary horizontal direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...
+        secondary_horizontal_type(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator <NXcollimator>` or a :ref:`slit <NXslit>`.
+        secondary_horizontal_detector_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the secondary beam size intensity profile on the side closer to the detector in the horizontal direction.
+        secondary_horizontal_sample_width(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the secondary beam size intensity profile on the side closer to the sample in the horizontal direction.
+        secondary_horizontal_distance(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Defines the distance between the center of the gauge volume and the beam shaping device.
+        secondary_horizontal_evaluation(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Describes how the beam intensity profile in the secondary horizontal direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...
+        incident_energy(NX_FLOAT):
+          unit: NX_ENERGY
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Incident energy mostly useful for monochromatic beams.
+        incident_wavelength(NX_FLOAT):
+          unit: NX_WAVELENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Incident wavelength mostly useful for monochromatic beams.
+    SAMPLE_DESCRIPTION(NXsample):
+      nameType: any
+      exists: ['min', '1', 'max', '1']
+      doc: |
+        This is the recommended location for describing parameters associated with the sample.
+      name(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Descriptive name of sample
+      chemical_formula:
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          The chemical formula specified using CIF conventions.
+          Abbreviated version of CIF standard:
+          
+          * Only recognized element symbols may be used.
+          * Each element symbol is followed by a 'count' number. A count of '1' may be omitted.
+          * A space or parenthesis must separate each cluster of (element symbol + count).
+          * Where a group of elements is enclosed in parentheses, the multiplier for the
+            group must follow the closing parentheses. That is, all element and group
+            multipliers are assumed to be printed as subscripted numbers.
+          * Unless the elements are ordered in a manner that corresponds to their chemical
+            structure, the order of the elements within any group or moiety depends on
+            whether or not carbon is present.
+          * If carbon is present, the order should be:
+          
+            - C, then H, then the other elements in alphabetical order of their symbol.
+            - If carbon is not present, the elements are listed purely in alphabetic order of their symbol.
+          
+          * This is the *Hill* system used by Chemical Abstracts.
+      temperature(NX_FLOAT):
+        unit: NX_TEMPERATURE
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Sample temperature. This could be a scanned variable
+        dimensions:
+          rank: anyRank
+          dim: (n_Temp,)
+      stress_field(NX_FLOAT):
+        unit: NX_ANY
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Applied external stress field
+        dimensions:
+          dim: (n_sField,)
+        \@direction:
+          enumeration: [x, y, z]
+      gauge_volume(NXparameters):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          The gauge volume can be described with the following parameters:
+                          .. figure:: stress/gauge_volume.png
+                           :width: 70%
+                           :alt: Gauge volume parameters and coordinate system.
+          
+                           Gauge volume parameters and coordinate system.
+        a(NX_FLOAT):
+          unit: NX_LENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Length of the first diagonal.
+        b(NX_FLOAT):
+          unit: NX_LENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Length of the second diagonal normal to :ref:`x </NXstress/ENTRY/sample_description/gauge_volume/a-field>`.
+        c(NX_FLOAT):
+          unit: NX_LENGTH
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Height of the gauge volume.
+        depends_on(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            In the local coordinate system, the beam is aligned along the X-axis,
+            and the Z-axis is oriented in the opposite direction of gravity. The origin
+            is the center to the gauge volume.
+        (NXtransformations):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            The last field typically depends on the first
+            field of the :ref:`sample transformations </NXstress/ENTRY/SAMPLE_DESCRIPTION/TRANSFORMATIONS-group>`.
+      depends_on(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          The axis on which the sample position depends may be stored
+          anywhere, but is normally stored in the NXtransformations
+          group within the NXsample group.
+      (NXtransformations):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          This is the recommended location for sample goniometer
+          and other related axes.
+    FIT(NXprocess):
+      nameType: any
+      exists: ['min', '1', 'max', 'unbounded']
+      doc: |
+        Zero or more groups to describe the data processing steps
+        to obtain the content of this application definition.
+      raw_data_file(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          The raw data file name(s) used during the data reduction process. This can be a list.
+      date(NX_DATE_TIME):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Date when the raw data was reduced and the data in the *NXstress* file format generated.
+      program(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Software package used to perform data reduction including the version number or release date.
+      integration_type(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Describes how the data was integrated.
+      bins(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Describes the type of binning used during data reduction.
+      fit_type(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Describes how the fitting of the peaks was done. For example, single peak fit, multiple peak fit, Pawley refinement, Rietveld refinement, …
+      fit_range(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Describes the data range used for peak fitting.
+      goodness_of_fit(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Type and value describing the goodness of fit. For example, Rw 0.23.
+      normalization(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Describes whether the data was normalized and if so , how. Examples of valid entries are: ``None``, ``time``, ``primary monitor``, ``detector``, …
+      data_reduction_responsible(NXuser):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Information about the person who performed the data reduction.
+        name(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+        role(NX_CHAR):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Role of user responsible for this entry. Suggested roles are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…
+      DESCRIPTION(NXnote):
+        nameType: any
+        doc: |
+          The note will contain information about how the data was processed
+          or anything about the data provenance.
+          The contents of the note can be anything that the processing code
+          can understand, or a simple text.
+          
+          The name will be numbered to allow for ordering of steps.
+      peak_parameters(NXparameters):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          This group contains all diffraction peak fit parameters.
+          This information is not required for stress and strain calculations.
+        title(NX_CHAR):
+          exists: ['min', '1', 'max', '1']
+          doc: |
+            Diffraction peak profile.
+          enumeration: [gaussian, lorentzian, voigt, pseudo-voigt, split pseudo-voigt, pearson VII]
+        area(NX_NUMBER):
+          unit: NX_ANY
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Diffraction peak area (not including the background) in *y_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *y_Unit* units
+        area_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`area </NXstress/ENTRY/fit/peak_parameters/area-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        center(NX_NUMBER):
+          unit: NX_ANY
+          exists: ['min', '1', 'max', '1']
+          doc: |
+            Diffraction peak position in *x_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *x_Unit* units
+        center_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`center </NXstress/ENTRY/fit/peak_parameters/center-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        height(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_ANY
+          doc: |
+            Diffraction peak height (not including the background) in *y_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *y_Unit* units
+        height_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`height </NXstress/ENTRY/fit/peak_parameters/height-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        fwhm(NX_NUMBER):
+          unit: NX_ANY
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Diffraction peak full width at half maximum in *x_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *x_Unit* units
+        fwhm_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`fwhm </NXstress/ENTRY/fit/peak_parameters/fwhm-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        fwhm_left(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_ANY
+          doc: |
+            Left-side FWHM for split profiles in *x_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *x_Unit* units
+        fwhm_left_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`fwhm_left </NXstress/ENTRY/fit/peak_parameters/fwhm_left-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        fwhm_right(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_ANY
+          doc: |
+            Right-side FWHM for split profiles in *x_Unit* units.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *x_Unit* units
+        fwhm_right_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`fwhm_right </NXstress/ENTRY/fit/peak_parameters/fwhm_right-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        form_factor(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            - Voigt or Pseudo-Voigt: Lorentzian fraction
+            - Pearson VII: decay parameter
+            - Other profiles: not applicable
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        form_factor_errors(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_DIMENSIONLESS
+          doc: |
+            Error value(s) asscociated with :ref:`form_factor </NXstress/ENTRY/fit/peak_parameters/form_factor-field>`
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        azimuth(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          unit: NX_ANGLE
+          doc: |
+            Angle that defines the position of the integrated sector in the diffraction cone
+            for angular-dispersive diffraction or the position of the detector for energy-dispersive
+            diffraction.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+      background_parameters(NXparameters):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          This group contains all background fit parameters.
+          This information is not required for stress and strain calculations.
+        title(NX_CHAR):
+          exists: ['min', '1', 'max', '1']
+          doc: |
+            Diffraction background profile. Required when background parameter fields are present.
+            Some example values with equations are shown below:
+            
+                - ``manual`` : No equations nor variables needed to describe this background.
+                - ``linear`` : \ :math:`\small background= A0 + A1 \cdot x`
+                - ``5-degree polynomial`` : \ :math:`\small background= A0 + A1 \cdot x + A2 \cdot \mathrm{x}^{2} + A3 \cdot \mathrm{x}^{3} + A4 \cdot \mathrm{x}^{4} + A5 \cdot \mathrm{x}^{5}`
+                - ``shape function plus polynomial`` : A shape function is not a mathematical function, it contains a manual background obtained from a fit and a polynomial part. This allows to adapt and modify the fit for subsequent measurements in the same measurement campaign. The function describing it is the following: \ :math:`\small background= as + b \cdot SHAPE(x-o)` Where SHAPE is the name of the variable used to describe the background value at the position x. x can be e.g. the scattering angle \ :math:`2\theta` in degrees.
+        A(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Background parameter(s). For example a second-degree polynomial will have fields ``A0``, ``A1`` and ``A2``.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        as(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Background parameter *constant* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        as_errors(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Error associated with background parameter *constant* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        b(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Background parameter *amplitude* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        b_errors(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Error associated with background parameter *amplitude* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        o(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Background parameter *offset* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        o_errors(NX_NUMBER):
+          unit: NX_DIMENSIONLESS
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            Error associated with background parameter *offset* for SHAPE function.
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+        background_area(NX_NUMBER):
+          unit: NX_ANY
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            The background area in *y_Unit* units, integrated over a confidence interval around the center (*0.95* by default).
+          dimensions:
+            rank: 1
+            dim: (n_Peaks,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *y_Unit* units
+        background_area_interval(NX_DIMENSIONLESS):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Confidence interval from which the background counts are integrated.
+            For example *0.95* means that the background is integrated over the range in
+            which the integrated peak area is 95% of the total peak area.
+      DIFFRACTOGRAM(NXdata):
+        nameType: any
+        exists: ['min', '1', 'max', 'unbounded']
+        doc: |
+          Diffractogram with fit results in :ref:`peak_parameters </NXstress/ENTRY/fit/peak_parameters-group>`
+          and :ref:`background_parameters </NXstress/ENTRY/fit/background_parameters-group>`.
+          This information is not required for stress and strain calculations.
+        \@axes:
+          doc: |
+            List of the one to two axes field name(s) to be used by default. The axes are further described in the fields DAXIS and XAXIS.
+        DAXIS:
+          nameType: any
+          exists: ['min', '0', 'max', 'unbounded']
+          doc: |
+            One or more fields that contain the values for the **n_D** dimension.
+            For example the azimuthal positions of different energy-dispersive detectors
+            or the average azimuth of different azimuthal sections on an area detector.
+          dimensions:
+            rank: 1
+            dim: (n_D,)
+        XAXIS(NX_NUMBER):
+          nameType: any
+          unit: NX_ANY
+          exists: ['min', '1', 'max', 'unbounded']
+          doc: |
+            One or more fields that contain the values for the **n_X** dimension in *x_Unit* units.
+            For example: MCA channels, scattering angle \ :math:`2\theta` in degrees,
+            scattering vector length q in \ :math:`\mathrm{nm}^{-1}`, ...
+          dimensions:
+            rank: 1
+            dim: (n_X,)
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *x_Unit* units
+        \@signal:
+          doc: |
+            Default field name to be plotted.
+          enumeration: [diffractogram]
+        \@auxiliary_signals:
+          doc: |
+            List of additional field names to be plotted. This could be e.g. fit, background, residuals, …
+        diffractogram(NX_NUMBER):
+          unit: NX_ANY
+          doc: |
+            Diffractogram counts in *y_Unit* units (default signal)
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+          \@interpretation(NX_CHAR):
+            enumeration: [spectrum]
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *y_Unit* units
+        diffractogram_errors(NX_NUMBER):
+          unit: NX_ANY
+          doc: |
+            Diffractogram counts error in *y_Unit* units (default signal)
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+          \@interpretation(NX_CHAR):
+            enumeration: [spectrum]
+          \@units(NX_CHAR):
+            doc: |
+              Specify the *y_Unit* units
+        fit(NX_NUMBER):
+          doc: |
+            Diffractogram fit counts (auxiliary signal).
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+          \@interpretation(NX_CHAR):
+            enumeration: [spectrum]
+        fit_errors(NX_NUMBER):
+          doc: |
+            Diffractogram fit counts error (auxiliary signal).
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+        background(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            In case the diffraction background was manually determined. Diffractogram background counts (auxiliary signal).
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+          \@interpretation(NX_CHAR):
+            enumeration: [spectrum]
+        residuals(NX_NUMBER):
+          exists: ['min', '0', 'max', '1']
+          doc: |
+            Difference between diffractogram and fit (auxiliary signal).
+          dimensions:
+            rank: 2
+            dim: (n_D, n_X)
+          \@interpretation(NX_CHAR):
+            enumeration: [spectrum]
+    NOTES(NXnote):
+      nameType: any
+      exists: ['min', '0', 'max', '1']
+      doc: |
+        User description of the data acquisitions.
+        A description of data analysis goes in the
+        :ref:`fit descriptions </NXstress/ENTRY/FIT/DESCRIPTION-group>`.
+    peaks(NXreflections):
+      exists: ['min', '1', 'max', '1']
+      doc: |
+        This group contains all diffraction peak parameters that could be needed for stress and strain calculations.
+        These parameters are derived from :ref:`peak_parameters </NXstress/ENTRY/fit/peak_parameters-group>` and additional metadata.
+      h(NX_INT):
+        unit: NX_UNITLESS
+        doc: |
+          First Miller index.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      k(NX_INT):
+        unit: NX_UNITLESS
+        doc: |
+          Second Miller index.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      l(NX_INT):
+        unit: NX_UNITLESS
+        doc: |
+          Third Miller index.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      lattice(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Crystal lattice systems (*cubic*, *hexagonal*, ...)
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      space_group(NX_CHAR):
+        exists: ['min', '0', 'max', '1']
+        doc: |
+          Crystallographic space group :math:`(Fm\bar{3}m, Im\bar{3}m, ...)`
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      phase_name(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Name of the crystallographic phase (hematite, goethite, \ :math:`\alpha`-Al\ :sub:`2`\ O\ :sub:`3`\ , ...).
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      qx(NX_NUMBER):
+        unit: NX_DIMENSIONLESS
+        doc: |
+          First component of the *normalized* scattering vector *Q* in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      qy(NX_NUMBER):
+        unit: NX_DIMENSIONLESS
+        doc: |
+          Second component of the *normalized* scattering vector *Q* in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      qz(NX_NUMBER):
+        unit: NX_DIMENSIONLESS
+        doc: |
+          Third component of the *normalized* scattering vector *Q* in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      center(NX_NUMBER):
+        unit: NX_ANY
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Diffraction peak position in *c_Unit* units.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+        \@units(NX_CHAR):
+          doc: |
+            Specify the *c_Unit* units (see :ref:`center_type </NXstress/ENTRY/peaks/center_type-field>`)
+          enumeration:
+            degrees:
+              doc: |
+                two-theta
+            keV:
+              doc: |
+                energy
+            1/angstrom:
+              doc: |
+                momentum-transfer
+            angstrom:
+              doc: |
+                d-spacing
+            microseconds:
+              doc: |
+                time-of-flight
+            '':
+              doc: |
+                channel (dimensionless)
+      center_errors(NX_NUMBER):
+        unit: NX_ANY
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          Uncentrainties on :ref:`center </NXstress/ENTRY/peaks/center-field>` in *c_Unit* units.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+        \@units(NX_CHAR):
+          doc: |
+            Specify the *c_Unit* units (see :ref:`center_type </NXstress/ENTRY/peaks/center_type-field>`)
+          enumeration:
+            degrees:
+              doc: |
+                two-theta
+            keV:
+              doc: |
+                energy
+            1/angstrom:
+              doc: |
+                momentum-transfer
+            angstrom:
+              doc: |
+                d-spacing
+            microseconds:
+              doc: |
+                time-of-flight
+            '':
+              doc: |
+                channel (dimensionless)
+      center_type(NX_CHAR):
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          The space in which :ref:`center </NXstress/ENTRY/peaks/center-field>` is defined.
+          It defines the *c_Unit* as follows
+          
+              - if *center_type="two-theta"* then *c_Unit* must have the angle unit *degrees*
+              - if *center_type="energy"* then *c_Unit* must have the unit *keV*
+              - if *center_type="momentum-transfer"* then *c_Unit* must have the unit \ :math:`Å^{-1}`
+              - if *center_type="d-spacing"* then *c_Unit* must have the unit \ :math:`Å`
+              - if *center_type="channel"* then *c_Unit* must be *dimensioness*
+              - if *center_type="time-of-flight"* then *c_Unit* must have the unit \ :math:`\mu\mathrm{s}`
+        enumeration: [two-theta, energy, momentum-transfer, d-spacing, channel, time-of-flight]
+      sx(NX_NUMBER):
+        unit: NX_LENGTH
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          First component of the sample position in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      sy(NX_NUMBER):
+        unit: NX_LENGTH
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          First component of the sample position in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+      sz(NX_NUMBER):
+        unit: NX_LENGTH
+        exists: ['min', '1', 'max', '1']
+        doc: |
+          First component of the sample position in the sample reference frame.
+          The sample reference frame is defined by the :ref:`sample transformations </NXstress/ENTRY/sample_description/TRANSFORMATIONS-group>`.
+        dimensions:
+          rank: 1
+          dim: (n_Peaks,)
+
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# 8fbf6cdaf7228adbc8f8c7eb879eed6d3c154c05a279e2bf401932a740f6d0c3
+# <?xml version="1.0" encoding="UTF-8"?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# # 
+# # Copyright (C) 2008-2025 NeXus International Advisory Committee (NIAC)
+# # 
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <definition name="NXstress" extends="NXobject" type="group" category="application"
+#     xmlns="http://definition.nexusformat.org/nxdl/3.1"
+#     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <symbols>
+#         <symbol name="n_X">
+#             <doc>Number of diffractogram channels.</doc>
+#         </symbol>
+#         <symbol name="n_D">
+#             <doc>Number of diffractograms. For example the number of energy-dispersive detectors or the number of azimuthal sections in an area detector.</doc>
+#         </symbol>
+#         <symbol name="n_Peaks">
+#             <doc>Number of reflections.</doc>
+#         </symbol>
+#         <symbol name="x_Unit">
+#             <doc>Diffractogram X units.</doc>
+#         </symbol>
+#         <symbol name="y_Unit">
+#             <doc>Diffractogram Y units.</doc>
+#         </symbol>
+#         <symbol name="c_Unit">
+#             <doc>Converted diffractogram X units (could be the same as *x_Unit*).</doc>
+#         </symbol>
+#         <symbol name="n_Temp">
+#             <doc>number of temperatures</doc>
+#         </symbol>
+# 		<symbol name="n_sField">
+#             <doc>number of values in applied stress field</doc>
+#         </symbol>
+#         <symbol name="nP">
+#             <doc>number of scan points (only present in scanning measurements)</doc>
+#         </symbol>
+#         <symbol name="i">
+#             <doc>number of detector pixels in the first (slowest) direction</doc>
+#         </symbol>
+#         <symbol name="j">
+#             <doc>number of detector pixels in the second (faster) direction</doc>
+#         </symbol>
+#     </symbols>
+#     <doc>
+#     Application definition for stress and strain analysis of crystalline material defined by the `EASI-STRESS consortium &lt;https://easi-stress.eu&gt;`_.
+# 
+#     When a crystal is loaded (applied or residual stress) its crystallographic parameters change.
+# 
+#     Stress and strain analysis calculates deformation (strain) and the associated force (stress)
+#     from diffraction data.
+# 
+#     This application definition essentially standardizes the result of diffraction pattern analysis
+#     from different types of diffraction experiments for the purpose of stress and strain analysis.
+#     The analysis is typically some form of diffraction peak indexing and fitting.
+#     The experiments are for example
+# 
+#     - energy-dispersive X-ray powder diffraction
+#     - angular-dispersive X-ray powder diffraction
+#     - angular-dispersive neutron powder diffraction
+#     - time-of-flight (TOF) neutron powder diffraction.
+# 
+#     In addition, the application definition guarantees that the information about instrumental setups, measurement conditions, and data analysis workflows are described.
+#     This ensures not only the reproducability and tracability of the measured data, but also the metadata. Since not all participating beamlines or instruments can provide an input to all the NeXus fields listed in this application definition, not all of them are "required".
+# 
+#     However, when possible and technically feasible, the instrument using the NXstress application definition is expected to provide the type of information outlined below. 
+# 
+#     Sample and detector positions can be defined with :ref:`NXtransformations`. If you don't specify the direction of gravity
+#     and the direction of the beam then the standard NeXus Coordinate System is used.
+# 
+#     It is highly recommended that when certain parameters or values are the same for all the measurements (acquistions) in the same
+#     file, they are stored only in one location and then linked in the other instances. For example, if during an acquisition all
+# 
+#     instrumental parameters but one stay the same and only the sample table moves in one direction (e.g. Xtranslation), then all the
+#     static instrumental parameters should be saved just once (e.g. in just one NXentry or in a *Shared_Information group*) and their
+#     values linked to every *instrument group* under all the other acquisitions. The value for the variable that changes, Xtranslation
+#     in this example, is suggested to be saved only at every instrument group under each acquistion but not in the *Shared_Information group*.
+# 
+#     It is not always necessary to link each field. In case all the fields with an entire group are the same, the entire group can be linked.
+#     </doc>
+# 
+#     <group type="NXentry">
+#         <doc>
+#             The name of the *NXentry group(s)* can be freely chosen by the facility. The *NXentry group* can contain any form of data acquisition (e.g. a measurement point, multiple measurement points, a line scan, a mesh, all data points from one sample …).
+#         </doc>
+#         <field name="definition" type="NX_CHAR">
+#             <doc> Official NeXus NXDL schema to which this file conforms </doc>
+#             <enumeration>
+#                 <item value="NXstress" />
+#             </enumeration>
+#         </field>
+#         <field name="title" minOccurs="0" maxOccurs="1">
+#             <doc>Extended title for the entry.</doc>
+#         </field>
+#         <field name="experiment_identifier" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Unique identifier for the experiment as defined by the facility (e.g. DOI, proposal id, ...). At ILL, this could be, for example, ``exp_1-02-286``, ``exp_INDU-229``, or ``exp_INTER-569``.
+#             </doc>
+#         </field>
+#         <field name="experiment_description" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                     Brief summary of the experiment, including key objectives. At least one of the following information should be provided:
+#                         * ``energy-dispersive X-ray powder diffraction``
+#                         * ``angular-dispersive X-ray powder diffraction``
+#                         * ``angular-dispersive neutron powder diffraction``
+#                         * ``time-of-flight (TOF) neutron powder diffraction``
+#             </doc>
+#         </field>
+# 
+#         <field name="start_time" type="NX_DATE_TIME" minOccurs="1" maxOccurs="1">
+#             <doc>
+#                 The starting time(s) of measurement(s) which can be provided in form of a list if multiple measurements are included in the same NXentry.
+#             </doc>
+#         </field>
+#         <field name="end_time" type="NX_DATE_TIME" minOccurs="1" maxOccurs="1">
+#             <doc>
+#                 The end time(s) of measurement(s) which can be provided in form of a list if multiple measurements are included in the same NXentry.
+#             </doc>
+#         </field>
+# 
+#         <field name="collection_identifier" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 User or Data Acquisition defined identifier from which
+#                 the content of this application definition is derived. This can be freely chosen by the user or the instrument scientist and could be, for example, ``05_DA_650_AX_B3P5``, ``SENB-14``, ``Quartz``,....
+#             </doc>
+#         </field>
+#         <field name="collection_description" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Brief summary of the collection, including grouping criteria. The information provided in this field can highlight, for example, the measurement setup or information about experimental conditions.
+#             </doc>       
+#         </field>
+#         <field name="processing_type" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#             <doc>
+#                 Describes the way strain :math:`\varepsilon` can be calculated from the :ref:`center &lt;/NXstress/ENTRY/peaks/center-field&gt;`
+#                 peak parameter.
+#             </doc>
+#             <enumeration>
+#                 <item value="two-theta">
+#                     <doc>
+#                         :math:`\varepsilon = \large \frac{sin(\mathrm{\theta}_{0})}{sin(\mathrm{\theta})}-1`
+#                     </doc>
+#                 </item>
+#                 <item value="energy">
+#                     <doc>
+#                         :math:`\varepsilon = \large \frac{\mathrm{E}_{0}}{\mathrm{E}}-1`
+#                     </doc>
+#                 </item>
+#                 <item value="d-spacing">
+#                     <doc>
+#                         :math:`\varepsilon = \large \frac{\mathrm{d}}{\mathrm{d}_{0}}-1`
+#                     </doc>
+#                 </item>
+#                 <item value="time-of-flight">
+#                     <doc>
+#                         :math:`\varepsilon = \large \frac{\mathrm{TOF}}{\mathrm{TOF}_{0}}-1`
+#                     </doc>
+#                 </item>
+#                 <item value="sin2psi">
+#                     <doc>
+#                         A description of the :math:`\mathrm{\sin}^{2}\psi` method can be found in the literature. Two examples are
+#                         `Fitzpatrick et al. 2005 &lt;http://eprintspublications.npl.co.uk/id/eprint/2391&gt;`_
+#                         and
+#                         `DIN ISO 15305:2009-01 &lt;https://www.en-standard.eu/din-en-15305-non-destructive-testing-test-method-for-residual-stress-analysis-by-x-ray-diffraction/&gt;`_.
+#                     </doc>
+#                 </item>
+#             </enumeration>
+#         </field>         
+#         <field name="measurement_direction" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Describes the specific measurement direction covered by the data in this file.
+#             </doc>
+#             <enumeration>
+#                 <item value="radial"/>
+#                 <item value="longitudinal"/>
+#                 <item value="normal"/>
+#                 <item value="tangential"/>
+#                 <item value="multiple"/>
+#             </enumeration>
+#         </field>
+#         <group name="experiment_responsible" type="NXuser" minOccurs="0" maxOccurs="1">
+#             <doc>Information about the person who performed the experiment.</doc>
+#             <field name="name" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#             </field>
+#             <field name="role" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>Role of user responsible for this entry. Suggested roes are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…</doc>
+#             </field>
+#         </group>
+#         <group name="instrument" type="NXinstrument" minOccurs="1" maxOccurs="1">
+#             <field name="name" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>Name of the diffractometer, instrument, or beamline used for the experiment. This could be, for example, *Strain Analyser for Large and Small scale engineering Applications*.</doc>
+#                 <attribute name="short_name" optional="true">
+#                     <doc>Short name for the instrument, perhaps the acronym, which would be for the the example above ``SALSA``.</doc>
+#                 </attribute>
+#             </field>
+#             <group name="CALIBRATION" nameType="any" type="NXnote" minOccurs="0" maxOccurs="1">
+#                 <doc>This group contains information about the geometry and/or efficiency measurement(s).</doc>
+#                 <field name="calibration_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Describe the type of calibration.</doc>
+#                 </field>
+#                 <field name="file_name" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>File name(s) and/or path(s) (within file(s)) containing data from the last calibration(s). This can be an array.</doc>
+# 
+#                 </field>
+#                 <field name="data" type="NX_BINARY" minOccurs="0" maxOccurs="1">
+#                     <doc>Calibration file content.</doc>
+#                 </field>
+#                 <field name="type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Mime content type of calibration *data* field e.g. text/plain, application/json,...</doc>
+#                 </field>
+#                 <field name="author" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Author or creator of the calibration.</doc>
+#                 </field>
+#                 <field name="date" type="NX_DATE_TIME" minOccurs="0" maxOccurs="1">
+#                     <doc>Date calibration was created/added</doc>
+#                 </field>
+#             </group>
+#             <group name="SOURCE" nameType="any" type="NXsource" minOccurs="1" maxOccurs="1">
+#                 <field name="type" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                     <doc>
+#                         Type of radiation source
+#                     </doc>
+#                     <enumeration>
+#                         <item value="Spallation Neutron Source"/>
+#                         <item value="Pulsed Reactor Neutron Source"/>
+#                         <item value="Reactor Neutron Source"/>
+#                         <item value="Synchrotron X-ray Source"/>
+#                         <item value="Rotating Anode X-ray"/>
+#                         <item value="Fixed Tube X-ray"/>
+#                         <item value="Metal Jet X-ray"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="probe" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                     <doc>
+#                         Type of radiation probe
+#                     </doc>
+#                     <enumeration>
+#                         <item value="neutron"/>
+#                         <item value="X-ray"/>
+#                     </enumeration>
+#                 </field>
+#             </group>
+#             <group name="DETECTOR" nameType="any" type="NXdetector" minOccurs="1" maxOccurs="unbounded">
+#                 <doc>Zero or more of these groups describe the detectors used in the experiment.</doc>
+#                 <field name="description" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>name/manufacturer/model/etc. information</doc>
+#                 </field>
+#                 <field name="type" type="NX_CHAR">
+# 		            <doc>
+# 			                Description of type such as \ :sup:`3`\ He gas cylinder, \ :sup:`3`\ He PSD, scintillator, fission chamber, proportion counter, ion chamber, CCD, pixel, image plate, CMOS, …
+# 		            </doc>
+# 	            </field>
+#                 <field name="distance" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                       This is the distance to the previous component in the
+#                       instrument; most often the sample. The usage depends on the
+#                       nature of the detector: Most often it is the distance of the
+#                       detector assembly. But there are irregular detectors. In this
+#                       case the distance must be specified for each detector pixel.
+# 
+#                       Note, it is recommended to use NXtransformations instead.
+#                     </doc>
+# 
+#                     <dimensions rank="3">
+#                         <dim index="1" value="nP" />
+#                         <dim index="2" value="i" />
+#                         <dim index="3" value="j" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="1">
+#                     <doc>efficiency of the detector</doc>
+#                         <dimensions rank="2">
+#                             <dim index="1" value="i" />
+#                             <dim index="2" value="j" />
+#                         </dimensions>
+#                 </field>
+#                 <field name="wavelength" type="NX_FLOAT" units="NX_WAVELENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         This field can be two things:
+# 
+#                         1. For a pixel detector it provides the nominal wavelength
+#                         for which the detector has been calibrated.
+# 
+#                         2. For other detectors this field has to be seen together with
+#                         the efficiency field above.
+#                         For some detectors, the efficiency is wavelength dependent.
+#                         Thus this field provides the wavelength axis for the efficiency field.
+#                         In this use case, the efficiency and wavelength arrays must
+#                         have the same dimensionality.
+#                     </doc>
+#                     <dimensions rank="2">
+#                       <dim index="1" value="i" />
+#                       <dim index="2" value="j" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="dead_time" type="NX_FLOAT" units="NX_TIME" minOccurs="0" maxOccurs="1">
+#                     <doc>Detector dead time</doc>
+#                     <dimensions rank="3">
+#                         <dim index="1" value="nP" />
+#                         <dim index="2" value="i" />
+#                         <dim index="3" value="j" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="count_time" type="NX_NUMBER" units="NX_TIME" minOccurs="0" maxOccurs="1">
+#                     <doc>Elapsed actual counting time</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="nP" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="depends_on" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         The axis on which the detector position depends may be stored
+#                         anywhere, but is normally stored in the *NXtransformations
+#                         group* within the *NXdetector group*.
+#                     </doc>
+#                 </field>
+#                 <group type="NXtransformations" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         This is the recommended location for detector goniometer
+#                         and other related axes.
+#                     </doc>
+#                 </group>
+#             </group>
+#             <group name="beam_intensity_profile" type="NXbeam" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                  Defines the dimensions of the beam profile used for probing the sample which corresponds to or can be used to determine the instrumental gauge volume.  
+#                  A description of the subsequent fields can be found in the folowing figure. The term "primary" in the subsequent fields refers to the beam path between the sample and the source. The term "secondary" refers to the beam path between the sample and the detector(s). 
+#                  
+#                  .. figure:: stress/Beam_profile_sketch3.jpg
+#                   :width: 70%
+#                   :alt: Examples for the beam intensity profile.
+# 
+#                   Some examples for the beam intensity profile. The 1D description of the beam profile on the right can equally be applied for the horizontal and vertical direction for the primary and the secondary side.
+# 
+#                 </doc>
+#                 <field name="beam_evaluation" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>If the beam profile was measured, the filename(s) of the measurement can be specified here. </doc>
+#                 </field>
+# 
+#                 <field name="primary_vertical_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator &lt;NXcollimator&gt;` or a :ref:`slit &lt;NXslit&gt;`.</doc>
+#                 </field>
+#                 <field name="primary_vertical_source_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the primary beam size intensity profile on the side closer to the source in the vertical direction.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_vertical_sample_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the primary beam size intensity profile on the side closer to the sample in the vertical direction.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_vertical_distance" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the distance between the center of the gauge volume and the beam shaping device.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_vertical_evaluation" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Describes how the beam intensity profile in the primary vertical direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...  
+#                     </doc>
+#                 </field>
+# 
+#                 <field name="primary_horizontal_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator &lt;NXcollimator&gt;` or a :ref:`slit &lt;NXslit&gt;`.</doc>
+#                 </field>
+#                 <field name="primary_horizontal_source_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the primary beam size intensity profile on the side closer to the source in the horizontal direction.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_horizontal_sample_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the primary beam size intensity profile on the side closer to the sample in the horizontal direction.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_horizontal_distance" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the distance between the center of the gauge volume and the beam shaping device.
+#                     </doc>
+#                 </field>
+#                 <field name="primary_horizontal_evaluation" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Describes how the beam intensity profile in the primary horizontal direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...  
+#                     </doc>
+#                 </field>
+# 
+#                 <field name="secondary_horizontal_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>Defines the last device right in front of the sample used to shape the beam. This could be, for example, a :ref:`(radial) collimator &lt;NXcollimator&gt;` or a :ref:`slit &lt;NXslit&gt;`.</doc>
+#                 </field>
+#                 <field name="secondary_horizontal_detector_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the secondary beam size intensity profile on the side closer to the detector in the horizontal direction.
+#                     </doc>
+#                 </field>
+#                 <field name="secondary_horizontal_sample_width" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the secondary beam size intensity profile on the side closer to the sample in the horizontal direction.
+#                     </doc>
+#                 </field>
+#                 <field name="secondary_horizontal_distance" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Defines the distance between the center of the gauge volume and the beam shaping device.
+#                     </doc>
+#                 </field>
+#                 <field name="secondary_horizontal_evaluation" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Describes how the beam intensity profile in the secondary horizontal direction was determined. Examples of valid entries are: ``measured``, ``theoretical``, ``estimated``, ...  
+#                     </doc>
+#                 </field>
+#                 <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY" minOccurs="0" maxOccurs="1">
+#                     <doc>Incident energy mostly useful for monochromatic beams.</doc>
+#                 </field>
+#                 <field name="incident_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>Incident wavelength mostly useful for monochromatic beams.</doc>
+#                 </field>
+#             </group>
+#         </group>
+# 
+#         <group name="SAMPLE_DESCRIPTION" nameType="any" type="NXsample" minOccurs="1" maxOccurs="1">
+#             <doc>
+#                     This is the recommended location for describing parameters associated with the sample.
+#             </doc>
+#             <field name="name" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     Descriptive name of sample
+#                 </doc>
+#             </field>
+#             <field name="chemical_formula" minOccurs="0" maxOccurs="1">
+# 		        <doc>
+# 			        The chemical formula specified using CIF conventions.
+# 			        Abbreviated version of CIF standard: 
+# 
+# 			        * Only recognized element symbols may be used.
+# 			        * Each element symbol is followed by a 'count' number. A count of '1' may be omitted.
+# 			        * A space or parenthesis must separate each cluster of (element symbol + count).
+# 			        * Where a group of elements is enclosed in parentheses, the multiplier for the 
+# 			          group must follow the closing parentheses. That is, all element and group 
+# 			          multipliers are assumed to be printed as subscripted numbers.
+# 			        * Unless the elements are ordered in a manner that corresponds to their chemical 
+# 			          structure, the order of the elements within any group or moiety depends on 
+# 			          whether or not carbon is present.
+# 			        * If carbon is present, the order should be: 
+# 
+# 			          - C, then H, then the other elements in alphabetical order of their symbol. 
+# 			          - If carbon is not present, the elements are listed purely in alphabetic order of their symbol. 
+# 
+# 			        * This is the *Hill* system used by Chemical Abstracts.
+# 		        </doc>
+# 	        </field>
+#             <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE" minOccurs="0" maxOccurs="1">
+# 		        <doc>Sample temperature. This could be a scanned variable</doc>
+# 		        <dimensions rank="anyRank">
+# 		                	<dim index="1" value="n_Temp"/><!-- could be any length -->
+# 		        </dimensions>
+# 	        </field>
+#             <field name="stress_field" type="NX_FLOAT" units="NX_ANY" minOccurs="0" maxOccurs="1">
+# 		        <doc>Applied external stress field</doc>
+# 		        <dimensions>
+# 			            <dim index="1" value="n_sField"/><!-- could be any length -->
+# 		        </dimensions>
+#                 <attribute name="direction">
+#         	        <enumeration>
+#         		        <item value="x"/>
+#         		        <item value="y"/>
+#         		        <item value="z"/>
+#         	        </enumeration>
+#                 </attribute>
+# 	        </field>
+#             <group name="gauge_volume" type="NXparameters" minOccurs="0" maxOccurs="1">
+#                 <doc> The gauge volume can be described with the following parameters:
+#                  .. figure:: stress/gauge_volume.png
+#                   :width: 70%
+#                   :alt: Gauge volume parameters and coordinate system.
+# 
+#                   Gauge volume parameters and coordinate system.
+#                 </doc>
+#                 <field name="a" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Length of the first diagonal.
+#                     </doc>
+#                 </field>
+#                 <field name="b" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Length of the second diagonal normal to :ref:`x &lt;/NXstress/ENTRY/sample_description/gauge_volume/a-field&gt;`.
+#                     </doc>
+#                 </field>
+#                 <field name="c" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Height of the gauge volume.
+#                     </doc>
+#                 </field>
+#                 <field name="depends_on" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         In the local coordinate system, the beam is aligned along the X-axis,
+#                         and the Z-axis is oriented in the opposite direction of gravity. The origin
+#                         is the center to the gauge volume.
+#                     </doc>
+#                 </field>
+#                 <group type="NXtransformations" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                     The last field typically depends on the first
+#                     field of the :ref:`sample transformations &lt;/NXstress/ENTRY/SAMPLE_DESCRIPTION/TRANSFORMATIONS-group&gt;`.
+#                     </doc>
+#                 </group>
+#             </group>
+#             <field name="depends_on" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     The axis on which the sample position depends may be stored
+#                     anywhere, but is normally stored in the NXtransformations
+#                     group within the NXsample group.
+#                 </doc>
+#             </field>
+#             <group type="NXtransformations" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                 This is the recommended location for sample goniometer
+#                 and other related axes.
+#                 </doc>
+#             </group>
+#         </group>
+# 
+#         <group name="FIT" nameType="any" type="NXprocess" minOccurs="1" maxOccurs="unbounded">
+#             <doc>
+#                 Zero or more groups to describe the data processing steps
+#                 to obtain the content of this application definition.
+#             </doc>
+#             <field name="raw_data_file" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     The raw data file name(s) used during the data reduction process. This can be a list.
+#                 </doc>
+#             </field>
+#             <field name="date" type="NX_DATE_TIME" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     Date when the raw data was reduced and the data in the *NXstress* file format generated.
+#                 </doc>
+#             </field>
+#             <field name="program" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     Software package used to perform data reduction including the version number or release date.
+#                 </doc>
+#             </field>
+#             <field name="integration_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Describes how the data was integrated.
+#                 </doc>
+#             </field>
+#             <field name="bins" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Describes the type of binning used during data reduction.
+#                 </doc>
+#             </field>
+#             <field name="fit_type" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Describes how the fitting of the peaks was done. For example, single peak fit, multiple peak fit, Pawley refinement, Rietveld refinement, …
+#                 </doc>
+#             </field>
+#             <field name="fit_range" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Describes the data range used for peak fitting.
+#                 </doc>
+#             </field>
+#             <field name="goodness_of_fit" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Type and value describing the goodness of fit. For example, Rw 0.23.
+#                 </doc>
+#             </field>
+#             <field name="normalization" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>
+#                     Describes whether the data was normalized and if so , how. Examples of valid entries are: ``None``, ``time``, ``primary monitor``, ``detector``, …
+#                 </doc>
+#             </field>
+#             <group name="data_reduction_responsible" type="NXuser" minOccurs="0" maxOccurs="1">
+#                 <doc>Information about the person who performed the data reduction.</doc>
+#                     <field name="name" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                     </field>
+#                     <field name="role" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                         <doc>Role of user responsible for this entry. Suggested roles are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…</doc>
+#                     </field>        
+#             </group>
+#             <group name="DESCRIPTION" nameType="any" type="NXnote">
+#                 <doc>
+#                     The note will contain information about how the data was processed
+#                     or anything about the data provenance. 
+#                     The contents of the note can be anything that the processing code 
+#                     can understand, or a simple text.
+#             
+#                     The name will be numbered to allow for ordering of steps.
+#                  </doc>
+#             </group>
+#             <group name="peak_parameters" type="NXparameters" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     This group contains all diffraction peak fit parameters. 
+#                     This information is not required for stress and strain calculations.
+#                 </doc>
+#                 <field name="title" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                     <doc>Diffraction peak profile.</doc>
+#                     <enumeration>
+#                         <item value="gaussian" />
+#                         <item value="lorentzian" />
+#                         <item value="voigt" />
+#                         <item value="pseudo-voigt" />
+#                         <item value="split pseudo-voigt" />
+#                         <item value="pearson VII" />
+#                     </enumeration>
+#                 </field>
+# 
+#                 <field name="area" type="NX_NUMBER" units="NX_ANY" minOccurs="0" maxOccurs="1">
+#                     <doc>Diffraction peak area (not including the background) in *y_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *y_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="area_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`area &lt;/NXstress/ENTRY/fit/peak_parameters/area-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="center" type="NX_NUMBER" units="NX_ANY" minOccurs="1" maxOccurs="1">
+#                     <doc>Diffraction peak position in *x_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *x_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="center_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`center &lt;/NXstress/ENTRY/fit/peak_parameters/center-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="height" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_ANY">
+#                     <doc>Diffraction peak height (not including the background) in *y_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *y_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="height_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`height &lt;/NXstress/ENTRY/fit/peak_parameters/height-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="fwhm" type="NX_NUMBER" units="NX_ANY" minOccurs="0" maxOccurs="1">
+#                     <doc>Diffraction peak full width at half maximum in *x_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *x_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="fwhm_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`fwhm &lt;/NXstress/ENTRY/fit/peak_parameters/fwhm-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="fwhm_left" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_ANY">
+#                     <doc>Left-side FWHM for split profiles in *x_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *x_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="fwhm_left_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`fwhm_left &lt;/NXstress/ENTRY/fit/peak_parameters/fwhm_left-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="fwhm_right" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_ANY">
+#                     <doc>Right-side FWHM for split profiles in *x_Unit* units.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *x_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="fwhm_right_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`fwhm_right &lt;/NXstress/ENTRY/fit/peak_parameters/fwhm_right-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="form_factor" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                     - Voigt or Pseudo-Voigt: Lorentzian fraction
+#                     - Pearson VII: decay parameter
+#                     - Other profiles: not applicable
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="form_factor_errors" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Error value(s) asscociated with :ref:`form_factor &lt;/NXstress/ENTRY/fit/peak_parameters/form_factor-field&gt;`
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="azimuth" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_ANGLE">
+#                     <doc>
+#                         Angle that defines the position of the integrated sector in the diffraction cone
+#                         for angular-dispersive diffraction or the position of the detector for energy-dispersive
+#                         diffraction.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#             </group>
+#             <group name="background_parameters" type="NXparameters" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     This group contains all background fit parameters. 
+#                     This information is not required for stress and strain calculations.
+#                 </doc>
+#                 <field name="title" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                     <doc>
+#                         Diffraction background profile. Required when background parameter fields are present.
+#                         Some example values with equations are shown below: 
+# 
+#                             - ``manual`` : No equations nor variables needed to describe this background.
+#                             - ``linear`` : \ :math:`\small background= A0 + A1 \cdot x`
+#                             - ``5-degree polynomial`` : \ :math:`\small background= A0 + A1 \cdot x + A2 \cdot \mathrm{x}^{2} + A3 \cdot \mathrm{x}^{3} + A4 \cdot \mathrm{x}^{4} + A5 \cdot \mathrm{x}^{5}`
+#                             - ``shape function plus polynomial`` : A shape function is not a mathematical function, it contains a manual background obtained from a fit and a polynomial part. This allows to adapt and modify the fit for subsequent measurements in the same measurement campaign. The function describing it is the following: \ :math:`\small background= as + b \cdot SHAPE(x-o)` Where SHAPE is the name of the variable used to describe the background value at the position x. x can be e.g. the scattering angle \ :math:`2\theta` in degrees. 
+#                     </doc>
+#                 </field>
+#                 <field name="A" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Background parameter(s). For example a second-degree polynomial will have fields ``A0``, ``A1`` and ``A2``.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="as" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Background parameter *constant* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="as_errors" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Error associated with background parameter *constant* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="b" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Background parameter *amplitude* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="b_errors" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Error associated with background parameter *amplitude* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="o" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Background parameter *offset* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="o_errors" type="NX_NUMBER" units="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>Error associated with background parameter *offset* for SHAPE function.</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                 </field>
+#                 <field name="background_area" type="NX_NUMBER" units="NX_ANY" minOccurs="0" maxOccurs="1">
+#                     <doc>The background area in *y_Unit* units, integrated over a confidence interval around the center (*0.95* by default).</doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_Peaks" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *y_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="background_area_interval" type="NX_DIMENSIONLESS" minOccurs="0" maxOccurs="1">
+#                     <doc>
+#                         Confidence interval from which the background counts are integrated.
+#                         For example *0.95* means that the background is integrated over the range in
+#                         which the integrated peak area is 95% of the total peak area.
+#                     </doc>
+#                 </field>
+#             </group>
+# 
+#             <group name="DIFFRACTOGRAM" nameType="any" type="NXdata" minOccurs="1" maxOccurs="unbounded">
+#                 <doc>
+#                     Diffractogram with fit results in :ref:`peak_parameters &lt;/NXstress/ENTRY/fit/peak_parameters-group&gt;`
+#                     and :ref:`background_parameters &lt;/NXstress/ENTRY/fit/background_parameters-group&gt;`.
+#                     This information is not required for stress and strain calculations.
+#                 </doc>
+#                 <attribute name="axes">
+#                     <doc>List of the one to two axes field name(s) to be used by default. The axes are further described in the fields DAXIS and XAXIS.</doc>
+#                 </attribute>
+# 
+#                 <field name="DAXIS" nameType="any" minOccurs="0" maxOccurs="unbounded">
+#                     <doc>
+#                         One or more fields that contain the values for the **n_D** dimension.
+#                         For example the azimuthal positions of different energy-dispersive detectors
+#                         or the average azimuth of different azimuthal sections on an area detector.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_D" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="XAXIS" nameType="any" type="NX_NUMBER" units="NX_ANY" minOccurs="1" maxOccurs="unbounded">
+#                     <doc>
+#                         One or more fields that contain the values for the **n_X** dimension in *x_Unit* units.
+#                         For example: MCA channels, scattering angle \ :math:`2\theta` in degrees,
+#                         scattering vector length q in \ :math:`\mathrm{nm}^{-1}`, ...
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *x_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+# 
+#                 <attribute name="signal">
+#                     <doc>Default field name to be plotted.</doc>
+#                     <enumeration>
+#                         <item value="diffractogram" />
+#                     </enumeration>
+#                 </attribute>
+# 
+#                 <attribute name="auxiliary_signals">
+#                     <doc>List of additional field names to be plotted. This could be e.g. fit, background, residuals, …</doc>
+#                 </attribute>
+# 
+#                 <field name="diffractogram" type="NX_NUMBER" units="NX_ANY">
+#                     <doc>Diffractogram counts in *y_Unit* units (default signal)</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="interpretation" type="NX_CHAR">
+#                         <enumeration>
+#                             <item value="spectrum" />
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *y_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+# 
+#                 <field name="diffractogram_errors" type="NX_NUMBER" units="NX_ANY">
+#                     <doc>Diffractogram counts error in *y_Unit* units (default signal)</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="interpretation" type="NX_CHAR">
+#                         <enumeration>
+#                             <item value="spectrum" />
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="units" type="NX_CHAR">
+#                         <doc>Specify the *y_Unit* units</doc>
+#                     </attribute>
+#                 </field>
+# 
+#                 <field name="fit" type="NX_NUMBER">
+#                     <doc>Diffractogram fit counts (auxiliary signal).</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="interpretation" type="NX_CHAR">
+#                         <enumeration>
+#                             <item value="spectrum" />
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+# 
+#                 <field name="fit_errors" type="NX_NUMBER">
+#                     <doc>Diffractogram fit counts error (auxiliary signal).</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                 </field>
+# 
+#                 <field name="background" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>In case the diffraction background was manually determined. Diffractogram background counts (auxiliary signal).</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="interpretation" type="NX_CHAR">
+#                         <enumeration>
+#                             <item value="spectrum" />
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+#                 <field name="residuals" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+#                     <doc>Difference between diffractogram and fit (auxiliary signal).</doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_D" />
+#                         <dim index="2" value="n_X" />
+#                     </dimensions>
+#                     <attribute name="interpretation" type="NX_CHAR">
+#                         <enumeration>
+#                             <item value="spectrum" />
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+#             </group>
+#         </group>
+# 
+#         <group name="NOTES" nameType="any" type="NXnote" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 User description of the data acquisitions.
+#                 A description of data analysis goes in the
+#                 :ref:`fit descriptions &lt;/NXstress/ENTRY/FIT/DESCRIPTION-group&gt;`.
+#             </doc>
+#         </group>
+# 
+#         <group name="peaks" type="NXreflections" minOccurs="1" maxOccurs="1">
+#             <doc>
+#                 This group contains all diffraction peak parameters that could be needed for stress and strain calculations. 
+#                 These parameters are derived from :ref:`peak_parameters &lt;/NXstress/ENTRY/fit/peak_parameters-group&gt;` and additional metadata.
+#             </doc>
+#             <field name="h" type="NX_INT" units="NX_UNITLESS">
+#                 <doc>First Miller index.</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="k" type="NX_INT" units="NX_UNITLESS">
+#                 <doc>Second Miller index.</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="l" type="NX_INT" units="NX_UNITLESS">
+#                 <doc>Third Miller index.</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="lattice" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>Crystal lattice systems (*cubic*, *hexagonal*, ...)</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="space_group" type="NX_CHAR" minOccurs="0" maxOccurs="1">
+#                 <doc>Crystallographic space group :math:`(Fm\bar{3}m, Im\bar{3}m, ...)`</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="phase_name" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>Name of the crystallographic phase (hematite, goethite, \ :math:`\alpha`-Al\ :sub:`2`\ O\ :sub:`3`\ , ...).</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="qx" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#                 <doc>
+#                     First component of the *normalized* scattering vector *Q* in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="qy" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#                 <doc>
+#                     Second component of the *normalized* scattering vector *Q* in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="qz" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#                 <doc>
+#                     Third component of the *normalized* scattering vector *Q* in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="center" type="NX_NUMBER" units="NX_ANY" minOccurs="1" maxOccurs="1">
+#                 <doc>Diffraction peak position in *c_Unit* units.</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#                 <attribute name="units" type="NX_CHAR">
+#                     <doc>Specify the *c_Unit* units (see :ref:`center_type &lt;/NXstress/ENTRY/peaks/center_type-field&gt;`)</doc>
+#                     <enumeration>
+#                         <item value="degrees">
+#                             <doc>two-theta</doc>
+#                         </item>
+#                         <item value="keV">
+#                             <doc>energy</doc>
+#                         </item>
+#                         <item value="1/angstrom">
+#                             <doc>momentum-transfer</doc>
+#                         </item>
+#                         <item value="angstrom">
+#                             <doc>d-spacing</doc>
+#                         </item>
+#                         <item value="microseconds">
+#                             <doc>time-of-flight</doc>
+#                         </item>
+#                         <item value="''">
+#                             <doc>channel (dimensionless)</doc>
+#                         </item>
+#                     </enumeration>
+#                 </attribute>
+#             </field>
+#             <field name="center_errors" type="NX_NUMBER" units="NX_ANY" minOccurs="1" maxOccurs="1">
+#                 <doc>Uncentrainties on :ref:`center &lt;/NXstress/ENTRY/peaks/center-field&gt;` in *c_Unit* units.</doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#                 <attribute name="units" type="NX_CHAR">
+#                     <doc>Specify the *c_Unit* units (see :ref:`center_type &lt;/NXstress/ENTRY/peaks/center_type-field&gt;`)</doc>
+#                     <enumeration>
+#                         <item value="degrees">
+#                             <doc>two-theta</doc>
+#                         </item>
+#                         <item value="keV">
+#                             <doc>energy</doc>
+#                         </item>
+#                         <item value="1/angstrom">
+#                             <doc>momentum-transfer</doc>
+#                         </item>
+#                         <item value="angstrom">
+#                             <doc>d-spacing</doc>
+#                         </item>
+#                         <item value="microseconds">
+#                             <doc>time-of-flight</doc>
+#                         </item>
+#                         <item value="''">
+#                             <doc>channel (dimensionless)</doc>
+#                         </item>
+#                     </enumeration>
+#                 </attribute>
+#             </field>
+#             <field name="center_type" type="NX_CHAR" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                         The space in which :ref:`center &lt;/NXstress/ENTRY/peaks/center-field&gt;` is defined.
+#                         It defines the *c_Unit* as follows
+# 
+#                             - if *center_type="two-theta"* then *c_Unit* must have the angle unit *degrees*
+#                             - if *center_type="energy"* then *c_Unit* must have the unit *keV*
+#                             - if *center_type="momentum-transfer"* then *c_Unit* must have the unit \ :math:`Å^{-1}`
+#                             - if *center_type="d-spacing"* then *c_Unit* must have the unit \ :math:`Å`
+#                             - if *center_type="channel"* then *c_Unit* must be *dimensioness*
+#                             - if *center_type="time-of-flight"* then *c_Unit* must have the unit \ :math:`\mu\mathrm{s}`
+#                 </doc>
+#                 <enumeration>
+#                     <item value="two-theta" />
+#                     <item value="energy" />
+#                     <item value="momentum-transfer" />
+#                     <item value="d-spacing" />
+#                     <item value="channel" />
+#                     <item value="time-of-flight" />
+#                 </enumeration>
+#             </field>
+#             <field name="sx" type="NX_NUMBER" units="NX_LENGTH" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     First component of the sample position in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             
+#             <field name="sy" type="NX_NUMBER" units="NX_LENGTH" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     First component of the sample position in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#             <field name="sz" type="NX_NUMBER" units="NX_LENGTH" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     First component of the sample position in the sample reference frame.
+#                     The sample reference frame is defined by the :ref:`sample transformations &lt;/NXstress/ENTRY/sample_description/TRANSFORMATIONS-group&gt;`.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_Peaks" />
+#                 </dimensions>
+#             </field>
+#         </group>
+# 
+#     </group>
+# </definition>
