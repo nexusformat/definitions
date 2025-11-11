@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_nanochem_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_nanochem_config" extends="NXapm_paraprobe_tool_config" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
             The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -69,20 +69,17 @@
     </symbols>
     <doc>
         Application definition for a configuration file of the paraprobe-nanochem tool.
-        
-        This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <field name="definition" type="NX_CHAR">
-            <attribute name="version" type="NX_CHAR"/>
             <enumeration>
                 <item value="NXapm_paraprobe_nanochem_config"/>
             </enumeration>
         </field>
-        <group name="delocalization" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+        <group name="delocalizationID" type="NXapm_paraprobe_tool_parameters" nameType="partial" minOccurs="0" maxOccurs="1">
             <doc>
                 Discretization and distributing of the ion point cloud on a 3D grid
-                to enable continuum-scale analyses.
+                to enable analyses at the continuum scale.
                 
                 By default, the tool computes a full kernel density estimation of decomposed
                 ions to create one discretized field for each element.
@@ -93,32 +90,15 @@
                 and three kernel_variance will compute six runs. Two sets of three with the first set using
                 the first grid_resolutions and in sequence the kernel_variance respectively.
             </doc>
-            <!--Although, this uses an efficient multithreaded algorithm the computation is costly.
+            <!--Although, this uses an efficient multithreaded algorithm, the computation is costly.
 Therefore, it can be advantageous for users to load an already computed delocalization.
 This can be achieved with the load_existent option.-->
-            <field name="identifier_analysis" type="NX_UINT" recommended="true"/>
-            <group name="reconstruction" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="position" type="NX_CHAR"/>
-                <field name="mass_to_charge" type="NX_CHAR"/>
-            </group>
-            <group name="ranging" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="ranging_definitions" type="NX_CHAR"/>
-            </group>
             <group name="surface" type="NXnote">
                 <doc>
                     A precomputed triangulated surface mesh representing a model (of the surface)
                     of the edge of the dataset. This model can be used to detect and control
                     various sources of bias in the analyses.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -139,60 +119,34 @@ This can be achieved with the load_existent option.-->
                 <doc>
                     Distance between each ion and triangulated surface mesh.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
                 <field name="distance" type="NX_CHAR"/>
             </group>
-            <group name="spatial_filter" type="NXspatial_filter">
-                <field name="windowing_method" type="NX_CHAR"/>
-                <group name="hexahedron_set" type="NXcg_hexahedron" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <group name="hexahedra" type="NXcg_face_list_data_structure">
-                        <field name="vertices" type="NX_UINT"/>
-                    </group>
-                </group>
-                <group name="cylinder_set" type="NXcg_cylinder" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="height" type="NX_NUMBER"/>
-                    <field name="radii" type="NX_NUMBER"/>
-                </group>
-                <group name="ellipsoid_set" type="NXcg_ellipsoid" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="half_axes_radii" type="NX_NUMBER"/>
-                    <field name="orientation" type="NX_NUMBER"/>
-                </group>
-                <group name="polyhedron_set" type="NXcg_polyhedron" optional="true"/>
-                <!--TODO-->
-                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
-                    <field name="number_of_objects" type="NX_UINT"/>
-                    <field name="bitdepth" type="NX_UINT"/>
-                    <field name="mask" type="NX_UINT"/>
-                </group>
-            </group>
-            <!--leave open if scalar or matrix
-dim: (i,)
-identifier(NX_UINT):-->
-            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
-                <field name="min_incr_max" type="NX_INT"/>
-            </group>
             <group name="decomposition" type="NXmatch_filter">
                 <doc>
-                    Configuration for the algorithm that defines how the multiplicity of all
-                    those ions are computed that are considered in the delocalization.
+                    Configuration for the algorithm that defines the multiplicity of
+                    each reconstructed position during the delocalization.
                 </doc>
                 <field name="method" type="NX_CHAR">
                     <doc>
-                        TODO
+                        The multiplicity of an ion at a reconstructed position is defined as follows:
+                        
+                        * resolve_unknown, multiplicity equals 1 for all ions of the unknown_type
+                          This mode is useful for segmenting regions with poor ranging.
+                        * resolve_point, multiplicity equals 1 for all ions
+                          This mode is useful for segmenting point density.
+                        * resolve_atom, multiplicity equals the number of atoms per ion
+                          This mode is useful for segmenting atomic density.
+                        * resolve_element, multiplicity equals the number of elements in the whitelist per ion
+                          This mode is useful for segmenting regions of specific elemental composition (ignoring nuclids)
+                        * resolve_element_charge, ???multiplicity like resolve_element when charge is met
+                        * resolve_isotope, multiplicity equals the number of nuclides in the whitelist per ion
+                          This mode is useful for segmenting regions of specific isotopic composition
+                        * resolve_isotope_charge, ???
+                        
+                        Other multiplicities are 0.
                     </doc>
                     <enumeration>
                         <item value="resolve_unknown"/>
@@ -209,21 +163,11 @@ identifier(NX_UINT):-->
                         TODO
                     </doc>
                 </field>
-                <!--dim: ???-->
                 <field name="charge_state_whitelist" type="NX_INT" units="NX_DIMENSIONLESS">
                     <doc>
                         TODO
                     </doc>
                 </field>
-            </group>
-            <!--dim: ???-->
-            <group name="iontype_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
-            </group>
-            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
             </group>
             <!--config-->
             <field name="method" type="NX_CHAR">
@@ -240,7 +184,6 @@ identifier(NX_UINT):-->
                     Serialized result of an already computed delocalization which is for performance
                     reasons here just loaded and not computed again.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -417,7 +360,6 @@ identifier(NX_UINT):-->
                         * candidates, total number of ions with type in the isotope_whitelist.
                         * composition, candidates but normalized by composition, i.e. at.-%
                         * concentration, candidates but normalized by voxel volume, i.e. ions/nm^3
-                        
                     </doc>
                 </field>
                 <field name="has_triangle_soup" type="NX_BOOLEAN">
@@ -575,7 +517,7 @@ identifier(NX_UINT):-->
 doc: Specifies if the tool should post-process each mesh to improve the mesh quality.
 mesh_smoothing(NXprocess):
 NEW ISSUE: here we need to specify how the meshes were smoothened-->
-        <group name="interface_meshing" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+        <group name="interface_meshingID" type="NXapm_paraprobe_tool_parameters" nameType="partial" minOccurs="0" maxOccurs="1">
             <doc>
                 Use a principle component analysis (PCA) to mesh a single free-standing interface patch within
                 the reconstructed volume that is decorated by ions of specific iontypes (e.g. solute atoms).
@@ -592,29 +534,12 @@ NEW ISSUE: here we need to specify how the meshes were smoothened-->
                 paraprobe-nanochem uses inspection functionalities which detect potential geometric
                 inconsistencies or self-interactions of the evolved DCOM mesh.
             </doc>
-            <field name="identifier_analysis" type="NX_UINT" recommended="true"/>
-            <group name="reconstruction" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="position" type="NX_CHAR"/>
-                <field name="mass_to_charge" type="NX_CHAR"/>
-            </group>
-            <group name="ranging" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="ranging_definitions" type="NX_CHAR"/>
-            </group>
             <group name="surface" type="NXnote" optional="true">
                 <doc>
                     A precomputed triangulated surface mesh representing a model (of the surface)
                     of the edge of the dataset. This model can be used to detect and control
                     various sources of bias in the analyses.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -630,54 +555,6 @@ NEW ISSUE: here we need to specify how the meshes were smoothened-->
                         of vertex indices for the triangles in that triangle_set.
                     </doc>
                 </field>
-            </group>
-            <group name="spatial_filter" type="NXspatial_filter">
-                <field name="windowing_method" type="NX_CHAR"/>
-                <group name="hexahedron_set" type="NXcg_hexahedron" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <group name="hexahedra" type="NXcg_face_list_data_structure">
-                        <field name="vertices" type="NX_UINT"/>
-                    </group>
-                </group>
-                <group name="cylinder_set" type="NXcg_cylinder" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="height" type="NX_NUMBER"/>
-                    <field name="radii" type="NX_NUMBER"/>
-                </group>
-                <group name="ellipsoid_set" type="NXcg_ellipsoid" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="half_axes_radii" type="NX_NUMBER"/>
-                    <field name="orientation" type="NX_NUMBER"/>
-                </group>
-                <group name="polyhedron_set" type="NXcg_polyhedron" optional="true"/>
-                <!--TODO-->
-                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
-                    <field name="number_of_objects" type="NX_UINT"/>
-                    <field name="bitdepth" type="NX_UINT"/>
-                    <field name="mask" type="NX_UINT"/>
-                </group>
-            </group>
-            <!--leave open if scalar or matrix
-dim: (i,)
-identifier(NX_UINT):-->
-            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
-                <field name="min_incr_max" type="NX_INT"/>
-            </group>
-            <group name="iontype_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
-            </group>
-            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
             </group>
             <!--config-->
             <field name="initialization" type="NX_CHAR">
@@ -702,7 +579,6 @@ identifier(NX_UINT):-->
                 <doc>
                     Details about the control point file used.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -788,7 +664,7 @@ identifier(NX_UINT):-->
                 </dimensions>
             </field>
         </group>
-        <group name="oned_profile" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+        <group name="oned_profileID" type="NXapm_paraprobe_tool_parameters" nameType="partial" minOccurs="0" maxOccurs="1">
             <doc>
                 Analysis of one-dimensional profiles in ROIs placed in the dataset.
                 Such analyses are useful for quantifying interfacial excess or for
@@ -820,29 +696,12 @@ identifier(NX_UINT):-->
                 intersection of triangles and convex polyhedra is a robust but currently
                 not implemented method to quantify intersections.
             </doc>
-            <field name="identifier_analysis" type="NX_UINT" recommended="true"/>
-            <group name="reconstruction" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="position" type="NX_CHAR"/>
-                <field name="mass_to_charge" type="NX_CHAR"/>
-            </group>
-            <group name="ranging" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="ranging_definitions" type="NX_CHAR"/>
-            </group>
             <group name="surface" type="NXnote" optional="true">
                 <doc>
                     A precomputed triangulated surface mesh representing a model (of the surface)
                     of the edge of the dataset. This model can be used to detect and control
                     various sources of bias in the analyses.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -863,7 +722,6 @@ identifier(NX_UINT):-->
                 <doc>
                     Distance between each ion and triangulated surface mesh.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -882,7 +740,6 @@ identifier(NX_UINT):-->
                     interface as returned e.g. by a previous interface_meshing task or the
                     mesh of an iso-surface from a previous delocalization task.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -927,7 +784,6 @@ from normals of neighboring facets, type of weighting schemes can affect results
                     mesh it is recommended to feed precomputed distances of each ion to
                     the triangles of the feature mesh.
                 </doc>
-                <field name="type" type="NX_CHAR"/>
                 <field name="file_name" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
@@ -939,56 +795,8 @@ from normals of neighboring facets, type of weighting schemes can affect results
                     </doc>
                 </field>
             </group>
-            <group name="spatial_filter" type="NXspatial_filter">
-                <field name="windowing_method" type="NX_CHAR"/>
-                <group name="hexahedron_set" type="NXcg_hexahedron" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <group name="hexahedra" type="NXcg_face_list_data_structure">
-                        <field name="vertices" type="NX_UINT"/>
-                    </group>
-                </group>
-                <group name="cylinder_set" type="NXcg_cylinder" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="height" type="NX_NUMBER"/>
-                    <field name="radii" type="NX_NUMBER"/>
-                </group>
-                <group name="ellipsoid_set" type="NXcg_ellipsoid" optional="true">
-                    <field name="dimensionality" type="NX_POSINT"/>
-                    <field name="cardinality" type="NX_POSINT"/>
-                    <field name="index_offset" type="NX_INT"/>
-                    <field name="center" type="NX_NUMBER"/>
-                    <field name="half_axes_radii" type="NX_NUMBER"/>
-                    <field name="orientation" type="NX_NUMBER"/>
-                </group>
-                <group name="polyhedron_set" type="NXcg_polyhedron" optional="true"/>
-                <!--TODO-->
-                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
-                    <field name="number_of_objects" type="NX_UINT"/>
-                    <field name="bitdepth" type="NX_UINT"/>
-                    <field name="mask" type="NX_UINT"/>
-                </group>
-            </group>
-            <!--leave open if scalar or matrix
-dim: (i,)
-identifier(NX_UINT):-->
-            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
-                <field name="min_incr_max" type="NX_INT"/>
-            </group>
-            <group name="iontype_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
-            </group>
-            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
-            </group>
             <!--config-->
-            <group name="user_defined_roi" type="NXobject" optional="true">
+            <group name="user_defined_roi" type="NXroi_process" optional="true">
                 <doc>
                     As an alternative mode the tool can be instructed to place ROIs
                     at specific locations into the dataset. This is the programmatic
@@ -1051,20 +859,6 @@ but cylinders are most frequently used-->
                     be if ROIs are placed at triangles of the feature mesh.
                 </doc>
             </field>
-        </group>
-        <group name="common" type="NXapm_paraprobe_tool_common">
-            <field name="status" type="NX_CHAR"/>
-            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
-                <field name="program" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
-                </field>
-            </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="total_elapsed_time" type="NX_FLOAT"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
-            </group>
         </group>
     </group>
 </definition>

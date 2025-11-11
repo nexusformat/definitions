@@ -41,6 +41,7 @@ NXmicrostructure_score_results(NXobject):
     definition(NX_CHAR):
       enumeration: [NXmicrostructure_score_results]
     identifier_simulation(NX_UINT):
+      exists: recommended
       doc: |
         Simulation ID as an alias to refer to this simulation.
     config(NXnote):
@@ -50,6 +51,8 @@ NXmicrostructure_score_results(NXobject):
       file_name(NX_CHAR):
       algorithm(NX_CHAR):
       checksum(NX_CHAR):
+    
+    # numerics(NXparameters):
     description(NX_CHAR):
       exists: optional
       doc: |
@@ -76,7 +79,8 @@ NXmicrostructure_score_results(NXobject):
       exists: optional
       doc: |
         Programs and libraries representing the computational environment
-      (NXprogram):
+      programID(NXprogram):
+        nameType: partial
         exists: ['min', '1', 'max', 'unbounded']
         program(NX_CHAR):
           \@version(NX_CHAR):
@@ -103,7 +107,7 @@ NXmicrostructure_score_results(NXobject):
       y_direction:
         enumeration: [in]
       z_alias:
-        enumeration: [normal direction]
+        enumeration: [normal_direction]
       z_direction:
         enumeration: [north]
     discretization(NXmicrostructure):
@@ -115,7 +119,7 @@ NXmicrostructure_score_results(NXobject):
         symmetry(NX_CHAR):
         cell_dimensions(NX_NUMBER):
         extent(NX_UINT):
-        index_offset(NX_INT):
+        index_offset_cell(NX_INT):
       boundary(NXcg_hexahedron):
         doc: |
           A tight bounding box or sphere or bounding primitive about the grid.
@@ -143,6 +147,7 @@ NXmicrostructure_score_results(NXobject):
             rank: 1
             dim: (6,)
         boundaries:
+          exists: optional
           doc: |
             Name of the boundaries. Left, right, front, back, bottom, top,
             The field must have as many entries as there are number_of_boundaries.
@@ -267,10 +272,13 @@ NXmicrostructure_score_results(NXobject):
         exists: ['min', '1', 'max', 'unbounded']
         nameType: partial
         time(NX_FLOAT):
+          unit: NX_TIME
+          doc: |
+            Simulated physical time for this snapshot.
         iteration(NX_UINT):
           unit: NX_UNITLESS
           doc: |
-            Iteration or increment counter.
+            Iteration or increment counter of this snapshot.
         temperature(NX_FLOAT):
           unit: NX_TEMPERATURE
           doc: |
@@ -329,7 +337,10 @@ NXmicrostructure_score_results(NXobject):
           volume(NX_FLOAT):
             unit: NX_VOLUME
             doc: |
-              Volume of each grain accounting also for partially transformed cells.
+              Volume of each grain (partially transformed cells are accounted for).
+              
+              Values are reported in multiples of cells, needs multiplication with
+              cell volume!
             dimensions:
               rank: 1
               dim: (n_grains,)
@@ -368,13 +379,18 @@ NXmicrostructure_score_results(NXobject):
         recrystallization_front(NXmicrostructure_feature):
           exists: recommended
           doc: |
-            Details about those cells which in this time step represent the discrete
-            recrystallization front.
+            Details about those cells which in this time step
+            represent the discrete recrystallization front.
+            
+            Each CA is processed by a team of OpenMP threads.
           halo_region(NX_UINT):
             exists: optional
             unit: NX_UNITLESS
             doc: |
               Which cells are currently in a halo region of threads.
+              
+              The halo region is a layer of cells about the sub-domain
+              of the simulation grid evolved by a thread.
             dimensions:
               rank: 1
               dim: (n_front,)
@@ -430,9 +446,16 @@ NXmicrostructure_score_results(NXobject):
             dimensions:
               rank: 1
               dim: (n_front,)
+          recrystallized_fraction(NX_FLOAT):
+            exists: recommended
+            unit: NX_DIMENSIONLESS
+            doc: |
+              The fraction to which the cell is assumed transformed.
+            dimensions:
+              rank: 1
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 609c1c0e42efe23249deed2b570fbab384ac818d1f711cb6f43319b5a4188e93
+# 3c5dbf746e80543c1b3d28330df4717e72745f61610e8be581a9e54d24b84370
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -526,7 +549,7 @@ NXmicrostructure_score_results(NXobject):
 #                 <item value="NXmicrostructure_score_results"/>
 #             </enumeration>
 #         </field>
-#         <field name="identifier_simulation" type="NX_UINT">
+#         <field name="identifier_simulation" type="NX_UINT" recommended="true">
 #             <doc>
 #                 Simulation ID as an alias to refer to this simulation.
 #             </doc>
@@ -540,6 +563,7 @@ NXmicrostructure_score_results(NXobject):
 #             <field name="algorithm" type="NX_CHAR"/>
 #             <field name="checksum" type="NX_CHAR"/>
 #         </group>
+#         <!--numerics(NXparameters):-->
 #         <field name="description" type="NX_CHAR" optional="true">
 #             <doc>
 #                 Discouraged free-text field to add further details to the computation.
@@ -571,7 +595,7 @@ NXmicrostructure_score_results(NXobject):
 #             <doc>
 #                 Programs and libraries representing the computational environment
 #             </doc>
-#             <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+#             <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
 #                 <field name="program" type="NX_CHAR">
 #                     <attribute name="version" type="NX_CHAR"/>
 #                 </field>
@@ -621,7 +645,7 @@ NXmicrostructure_score_results(NXobject):
 #             </field>
 #             <field name="z_alias">
 #                 <enumeration>
-#                     <item value="normal direction"/>
+#                     <item value="normal_direction"/>
 #                 </enumeration>
 #             </field>
 #             <field name="z_direction">
@@ -638,7 +662,7 @@ NXmicrostructure_score_results(NXobject):
 #                 <field name="symmetry" type="NX_CHAR"/>
 #                 <field name="cell_dimensions" type="NX_NUMBER"/>
 #                 <field name="extent" type="NX_UINT"/>
-#                 <field name="index_offset" type="NX_INT"/>
+#                 <field name="index_offset_cell" type="NX_INT"/>
 #             </group>
 #             <group name="boundary" type="NXcg_hexahedron">
 #                 <doc>
@@ -668,7 +692,7 @@ NXmicrostructure_score_results(NXobject):
 #                         <dim index="1" value="6"/>
 #                     </dimensions>
 #                 </field>
-#                 <field name="boundaries">
+#                 <field name="boundaries" optional="true">
 #                     <doc>
 #                         Name of the boundaries. Left, right, front, back, bottom, top,
 #                         The field must have as many entries as there are number_of_boundaries.
@@ -814,10 +838,14 @@ NXmicrostructure_score_results(NXobject):
 # dim: (n_summary_stats, 3, 3)
 # the typically storage-costlier snapshot data-->
 #             <group name="microstructureID" type="NXmicrostructure" minOccurs="1" maxOccurs="unbounded" nameType="partial">
-#                 <field name="time" type="NX_FLOAT"/>
+#                 <field name="time" type="NX_FLOAT" units="NX_TIME">
+#                     <doc>
+#                         Simulated physical time for this snapshot.
+#                     </doc>
+#                 </field>
 #                 <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
 #                     <doc>
-#                         Iteration or increment counter.
+#                         Iteration or increment counter of this snapshot.
 #                     </doc>
 #                 </field>
 #                 <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
@@ -878,7 +906,10 @@ NXmicrostructure_score_results(NXobject):
 #                     </field>
 #                     <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
 #                         <doc>
-#                             Volume of each grain accounting also for partially transformed cells.
+#                             Volume of each grain (partially transformed cells are accounted for).
+#                             
+#                             Values are reported in multiples of cells, needs multiplication with
+#                             cell volume!
 #                         </doc>
 #                         <dimensions rank="1">
 #                             <dim index="1" value="n_grains"/>
@@ -922,12 +953,17 @@ NXmicrostructure_score_results(NXobject):
 #                 </group>
 #                 <group name="recrystallization_front" type="NXmicrostructure_feature" recommended="true">
 #                     <doc>
-#                         Details about those cells which in this time step represent the discrete
-#                         recrystallization front.
+#                         Details about those cells which in this time step
+#                         represent the discrete recrystallization front.
+#                         
+#                         Each CA is processed by a team of OpenMP threads.
 #                     </doc>
 #                     <field name="halo_region" type="NX_UINT" optional="true" units="NX_UNITLESS">
 #                         <doc>
 #                             Which cells are currently in a halo region of threads.
+#                             
+#                             The halo region is a layer of cells about the sub-domain
+#                             of the simulation grid evolved by a thread.
 #                         </doc>
 #                         <dimensions rank="1">
 #                             <dim index="1" value="n_front"/>
@@ -985,6 +1021,12 @@ NXmicrostructure_score_results(NXobject):
 #                         <dimensions rank="1">
 #                             <dim index="1" value="n_front"/>
 #                         </dimensions>
+#                     </field>
+#                     <field name="recrystallized_fraction" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
+#                         <doc>
+#                             The fraction to which the cell is assumed transformed.
+#                         </doc>
+#                         <dimensions rank="1"/>
 #                     </field>
 #                 </group>
 #             </group>

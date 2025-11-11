@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_nanochem_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_nanochem_results" extends="NXapm_paraprobe_tool_results" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
             The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -80,18 +80,15 @@ The cardinality/total number of triangles in the triangle soup.-->
         </symbol>
         <symbol name="n_rois">
             <doc>
-                The total number of ROIs placed in an oned_profile task.
+                The total number of ROIs placed in a oned_profile task.
             </doc>
         </symbol>
     </symbols>
     <doc>
-        Application definition for results files of the paraprobe-nanochem tool.
-        
-        This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+        Application definition for a results file of the paraprobe-nanochem tool.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <field name="definition" type="NX_CHAR">
-            <attribute name="version" type="NX_CHAR"/>
             <enumeration>
                 <item value="NXapm_paraprobe_nanochem_results"/>
             </enumeration>
@@ -104,26 +101,6 @@ The cardinality/total number of triangles in the triangle soup.-->
                 <field name="mask" type="NX_UINT"/>
             </group>
             <!--results-->
-            <group name="weighting_model" type="NXmatch_filter">
-                <field name="weighting_method" type="NX_CHAR"/>
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_UINT"/>
-            </group>
-            <field name="normalization" type="NX_CHAR">
-                <doc>
-                    How were results of the kernel-density estimation normalized:
-                    * total, the total number (intensity) of ions or elements.
-                    * candidates, the total number (intensity) of ions matching weighting_model
-                    * composition, the value for candidates divided by the value for total,
-                    * concentration, the value for candidates divided by the volume of the cell.
-                </doc>
-                <enumeration>
-                    <item value="total"/>
-                    <item value="candidates"/>
-                    <item value="composition"/>
-                    <item value="concentration"/>
-                </enumeration>
-            </field>
             <group name="grid" type="NXcg_grid">
                 <doc>
                     The discretized domain/grid on which the delocalization is applied.
@@ -219,6 +196,22 @@ The cardinality/total number of triangles in the triangle soup.-->
                     <dimensions rank="1">
                         <dim index="1" value="3"/>
                     </dimensions>
+                </field>
+                <field name="normalization" type="NX_CHAR">
+                    <doc>
+                        How were results of the kernel-density estimation normalized:
+                        
+                        * total, the total number (intensity) of ions or elements.
+                        * candidates, the total number (intensity) of ions matching weighting_model
+                        * composition, the value for candidates divided by the value for total,
+                        * concentration, the value for candidates divided by the volume of the cell.
+                    </doc>
+                    <enumeration>
+                        <item value="total"/>
+                        <item value="candidates"/>
+                        <item value="composition"/>
+                        <item value="concentration"/>
+                    </enumeration>
                 </field>
                 <group name="bounding_box" type="NXcg_hexahedron">
                     <doc>
@@ -341,55 +334,50 @@ The cardinality/total number of triangles in the triangle soup.-->
                         The result of the delocalization :math:`\Phi = f(x, y, z)` based on which subsequent iso-surfaces
                         will be computed. In commercial software so far there is no possibility to export this information.
                         
-                        If the intensity for all matches of the weighting_model are summarized name this NXdata instance
+                        If the intensity for all matches of the weighting_model are summarized, name this NXdata instance
                         scalar_field_magn_total.
                         
-                        If the intensity is reported for each iontype one can avoid many subsequent
+                        If the intensity is reported for each iontype, one can avoid many subsequent
                         computations as individual intensities can be reinterpreted using a different weighting_model in
                         down-stream usage of the here reported values (e.g. with Python scripting).
                         In this case name the individual NXdata instances scalar_field_magn_ionID using the ID of the ion as
                         per the configuration of the ranging definitions used.
                     </doc>
-                    <attribute name="signal" type="NX_CHAR"/>
-                    <attribute name="axes" type="NX_CHAR"/>
-                    <attribute name="xpos_indices" type="NX_UINT"/>
-                    <attribute name="ypos_indices" type="NX_UINT"/>
-                    <attribute name="zpos_indices" type="NX_UINT"/>
-                    <field name="title" type="NX_CHAR"/>
-                    <field name="intensity" type="NX_FLOAT" units="NX_ANY">
-                        <doc>
-                            The actual delocalized intensity values.
-                        </doc>
-                        <dimensions rank="3">
-                            <dim index="1" value="n_z"/>
-                            <dim index="2" value="n_y"/>
-                            <dim index="3" value="n_x"/>
-                        </dimensions>
-                    </field>
-                    <field name="xpos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along x.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_x"/>
-                        </dimensions>
-                    </field>
-                    <field name="ypos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along y.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_y"/>
-                        </dimensions>
-                    </field>
-                    <field name="zpos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along z.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_z"/>
-                        </dimensions>
-                    </field>
+                    <!--MK:currently switched off as the displaying is of secondary relevance in RDM, assuming visualization with paraview/xdmf
+\@signal(NX_CHAR):
+\@axes(NX_CHAR):
+\@xpos_indices(NX_UINT):
+\@ypos_indices(NX_UINT):
+\@zpos_indices(NX_UINT):
+title(NX_CHAR):
+intensity(NX_FLOAT):
+unit: NX_ANY
+doc: |
+The actual delocalized intensity values.
+dimensions:
+rank: 3
+dim: (n_z, n_y, n_x)
+xpos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along x.
+dimensions:
+rank: 1
+dim: (n_x,)
+ypos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along y.
+dimensions:
+rank: 1
+dim: (n_y,)
+zpos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along z.
+dimensions:
+rank: 1
+dim: (n_z,)-->
                     <field name="xdmf_intensity" type="NX_FLOAT" optional="true" units="NX_ANY">
                         <doc>
                             Intensity of the field at given point
@@ -398,7 +386,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                             <dim index="1" value="n_xyz"/>
                         </dimensions>
                     </field>
-                    <field name="xdmf_xyz" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+                    <field name="xdmf_xyz" type="NX_FLOAT" optional="true" units="NX_LENGTH">
                         <doc>
                             Center of mass positions of each voxel for rendering the scalar field
                             via XDMF in e.g. Paraview.
@@ -423,47 +411,41 @@ The cardinality/total number of triangles in the triangle soup.-->
                         The three-dimensional gradient :math:`\nabla \Phi`.
                         Follow the naming convention of scalar_field_magn_SUFFIX to report parallel structures.
                     </doc>
-                    <attribute name="signal" type="NX_CHAR"/>
-                    <attribute name="axes" type="NX_CHAR"/>
-                    <attribute name="xpos_indices" type="NX_CHAR"/>
-                    <attribute name="ypos_indices" type="NX_CHAR"/>
-                    <attribute name="zpos_indices" type="NX_CHAR"/>
-                    <field name="title" type="NX_CHAR"/>
-                    <field name="intensity" type="NX_FLOAT" units="NX_ANY">
-                        <doc>
-                            The actual point-wise component values.
-                        </doc>
-                        <dimensions rank="4">
-                            <dim index="1" value="n_z"/>
-                            <dim index="2" value="n_y"/>
-                            <dim index="3" value="n_x"/>
-                            <dim index="4" value="3"/>
-                        </dimensions>
-                    </field>
-                    <field name="xpos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along x.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_x"/>
-                        </dimensions>
-                    </field>
-                    <field name="ypos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along y.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_y"/>
-                        </dimensions>
-                    </field>
-                    <field name="zpos" type="NX_FLOAT" units="NX_LENGTH">
-                        <doc>
-                            Cell center of mass positions along z.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="n_z"/>
-                        </dimensions>
-                    </field>
+                    <!--MK:currently switched off as the displaying is of secondary relevance in RDM, assuming visualization with paraview/xdmf
+\@signal(NX_CHAR):
+\@axes(NX_CHAR):
+\@xpos_indices(NX_CHAR):
+\@ypos_indices(NX_CHAR):
+\@zpos_indices(NX_CHAR):
+title(NX_CHAR):
+intensity(NX_FLOAT):
+unit: NX_ANY
+doc: |
+The actual point-wise component values.
+dimensions:
+rank: 4
+dim: (n_z, n_y, n_x, 3)
+xpos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along x.
+dimensions:
+rank: 1
+dim: (n_x,)
+ypos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along y.
+dimensions:
+rank: 1
+dim: (n_y,)
+zpos(NX_FLOAT):
+unit: NX_LENGTH
+doc: |
+Cell center of mass positions along z.
+dimensions:
+rank: 1
+dim: (n_z,)-->
                     <field name="xdmf_gradient" type="NX_FLOAT" optional="true" units="NX_ANY">
                         <doc>
                             The gradient vector formatted for direct visualization via XDMF in e.g.
@@ -512,7 +494,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                             The threshold or iso-contour value :math:`\varphi`.
                         </doc>
                     </field>
-                    <field name="marching_cubes" type="NX_CHAR">
+                    <field name="marching_cubes" type="NX_CHAR" optional="true">
                         <doc>
                             Reference to the specific implementation of marching cubes used.
                             The value placed here should be a DOI. If there are no specific
@@ -531,8 +513,8 @@ The cardinality/total number of triangles in the triangle soup.-->
                         <group name="triangles" type="NXcg_face_list_data_structure">
                             <field name="number_of_vertices" type="NX_POSINT"/>
                             <field name="number_of_faces" type="NX_POSINT"/>
-                            <field name="identifier_vertex_offset" type="NX_INT"/>
-                            <field name="identifier_face_offset" type="NX_INT"/>
+                            <field name="vertex_index_offset" type="NX_INT"/>
+                            <field name="face_index_offset" type="NX_INT"/>
                             <field name="vertices" type="NX_NUMBER" units="NX_LENGTH">
                                 <doc>
                                     Positions of the vertices.
@@ -722,7 +704,7 @@ dim: (k,)-->
                                     In the second step, the tool can be used to analyze the proximity of these objects to a
                                     model of the surface (edge) of the dataset.
                                 </doc>
-                                <field name="identifier_triangle_cluster" type="NX_UINT" units="NX_UNITLESS">
+                                <field name="indices_triangle_cluster" type="NX_UINT" units="NX_UNITLESS">
                                     <doc>
                                         The identifier which the triangle_soup connectivity analysis
                                         returned, which constitutes the first step of the
@@ -882,7 +864,7 @@ MK::namely k != i each OBB has eight vertices-->
                                                     <dim index="1" value="k"/>
                                                 </dimensions>
                                             </field>
-                                            <field name="indices_feature_xdmf" type="NX_INT" units="NX_UNITLESS" recommended="true">
+                                            <field name="xdmf_indices_feature" type="NX_INT" units="NX_UNITLESS" recommended="true">
                                                 <dimensions rank="1">
                                                     <dim index="1" value="k"/>
                                                 </dimensions>
@@ -931,12 +913,7 @@ MK::namely k != i each OBB has eight vertices-->
                 </group>
             </group>
         </group>
-        <group name="interface_meshing" type="NXapm_paraprobe_tool_results" minOccurs="0" maxOccurs="1">
-            <group name="window" type="NXcs_filter_boolean_mask">
-                <field name="number_of_ions" type="NX_UINT"/>
-                <field name="bitdepth" type="NX_UINT"/>
-                <field name="mask" type="NX_UINT"/>
-            </group>
+        <group name="interface_meshingID" type="NXapm_paraprobe_tool_process" nameType="partial" minOccurs="0" maxOccurs="1">
             <!--results-->
             <field name="ion_multiplicity" type="NX_UINT" optional="true" units="NX_UNITLESS">
                 <doc>
@@ -1097,12 +1074,7 @@ MK::namely k != i each OBB has eight vertices-->
                 </field>
             </group>
         </group>
-        <group name="oned_profile" type="NXapm_paraprobe_tool_results" minOccurs="0" maxOccurs="1">
-            <group name="window" type="NXcs_filter_boolean_mask" optional="true">
-                <field name="number_of_ions" type="NX_UINT"/>
-                <field name="bitdepth" type="NX_UINT"/>
-                <field name="mask" type="NX_UINT"/>
-            </group>
+        <group name="oned_profileID" type="NXapm_paraprobe_tool_process" nameType="partial" minOccurs="0" maxOccurs="1">
             <!--results-->
             <group name="xdmf_cylinder" type="NXcg_polyhedron">
                 <doc>
@@ -1199,55 +1171,6 @@ MK::namely k != i each OBB has eight vertices-->
                         </field>
                     </group>
                 </group>
-            </group>
-        </group>
-        <group name="common" type="NXapm_paraprobe_tool_common">
-            <field name="status" type="NX_CHAR"/>
-            <field name="identifier_analysis" type="NX_UINT"/>
-            <group name="config" type="NXnote">
-                <field name="type" type="NX_CHAR"/>
-                <field name="file_name" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-            </group>
-            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
-                <field name="program" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
-                </field>
-            </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="total_elapsed_time" type="NX_FLOAT"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
-                <field name="number_of_processes" type="NX_UINT"/>
-                <field name="number_of_threads" type="NX_UINT"/>
-                <field name="number_of_gpus" type="NX_UINT"/>
-            </group>
-            <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
-                <doc>
-                    If used, metadata of at least the person who performed this analysis.
-                </doc>
-                <field name="name" type="NX_CHAR"/>
-            </group>
-            <group name="paraprobe" type="NXcoordinate_system">
-                <field name="type" type="NX_CHAR"/>
-                <field name="handedness" type="NX_CHAR"/>
-                <field name="x" type="NX_NUMBER" units="NX_LENGTH">
-                    <dimensions rank="1">
-                        <dim index="1" value="3"/>
-                    </dimensions>
-                </field>
-                <field name="y" type="NX_NUMBER" units="NX_LENGTH">
-                    <dimensions rank="1">
-                        <dim index="1" value="3"/>
-                    </dimensions>
-                </field>
-                <field name="z" type="NX_NUMBER" units="NX_LENGTH">
-                    <dimensions rank="1">
-                        <dim index="1" value="3"/>
-                    </dimensions>
-                </field>
             </group>
         </group>
     </group>

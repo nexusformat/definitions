@@ -1,8 +1,8 @@
-category: base
+category: application
 doc: |
-  Base class documenting the configuration used for a tool of the paraprobe-toolbox.
+  Application definition for a (configuration) file of a tool from the paraprobe-toolbox.
   
-  The paraprobe-toolbox is a collection of open-source software tools for performing
+  The paraprobe-toolbox is a collection of open-source tools for performing
   efficient analyses of point cloud data where each point can represent atoms or
   (molecular) ions. A key application of the toolbox has been for research in the
   field of Atom Probe Tomography (APT) and related Field Ion Microscopy (FIM):
@@ -15,96 +15,96 @@ doc: |
   properties and enabling analyses of the spatial arrangement of and inter-
   sections between geometric primitives, the software can equally be used
   for analyzing data in Materials Science and Materials Engineering.
-   
-  The configuration and results of a run of a tool from the toolbox is documented
-  using binary container formats. Currently, paraprobe-toolbox uses the
-  Hierarchical Data Format 5 (HDF5).
 type: group
 NXapm_paraprobe_tool_config(NXobject):
-  
-  # sequence_id is inherited from NXprocess
-  identifier_analysis(NX_UINT):
-    unit: NX_UNITLESS
-    doc: |
-      Internal identifier used by the tool to refer to an analysis (aka simulation
-      id).
-  description(NX_CHAR):
-    doc: |
-      Possibility for leaving a free-text description about this analysis.
-      
-      Although offered here for convenience we strongly encourage to
-      parameterize such descriptions as much as possible to support
-      reusage and clearer communication.
-  
-  # tool-specific input, examples for definitions for common types of input granularized into this
-  # base class from which tool-specific application definitions inherit
-  reconstruction(NXnote):
-    doc: |
-      Specification of the tomographic reconstruction to use for this analysis.
-      
-      Typically, reconstructions in the field of atom probe tomography are communicated
-      via files which store at least reconstructed ion positions and mass-to-charge-state-ratio
-      values. Container files like HDF5 though can store multiple reconstructions.
-      Therefore, the position and mass_to_charge concepts point to specific instances
-      to use for this analysis.
-    position(NX_CHAR):
+  (NXentry):
+    exists: ['min', '1', 'max', '1']
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+    TASKCONFIG(NXapm_paraprobe_tool_parameters):
+      nameType: any
+      exists: ['min', '1', 'max', 'unbounded']
       doc: |
-        Name of the node which resolves the reconstructed ion position
-        values to use for this analysis.
-    mass_to_charge(NX_CHAR):
-      doc: |
-        Name of the node which resolves the mass-to-charge-state-ratio
-        values to use for this analysis.
-  ranging(NXnote):
-    doc: |
-      Specification of the ranging definitions to use for this analysis.
-      
-      Ranging is the process of labeling time-of-flight data with so-called iontypes
-      (aka ion species). Ideally, iontypes specify the most likely (molecular) ion
-      that is assumed to have been evaporated given that its mass-to-charge-state ratio
-      lies within the specific mass-to-charge-state-ratio value interval of the iontype.
-      
-      The so-called UNKNOWNTYPE iontype represents the null model of an ion
-      that has not been ranged (for whatever reasons).
-      The identifier of this special iontype is always the reserved value 0.
-    ranging_definitions(NX_CHAR):
-      doc: |
-        Name of the (parent) node directly below which (in the hierarchy)
-        the ranging definition for (molecular) ions are stored.
-  surface(NXnote):
-    doc: |
-      Specification of the triangulated surface mesh to use for this analysis.
-      
-      Such a surface mesh can be used to define the edge of the reconstructed
-      volume to account for finite size effects.
-  
-  # mesh(NX_CHAR):
-  # doc: |
-  # Name of the (parent) node directly below which (in the hierarchy)
-  # an instance of :ref:`NXcg_triangle_set` is stored.
-  surface_distance(NXnote):
-    doc: |
-      Specification of the point-to-triangulated-surface-mesh distances to
-      use for this analysis.
-    distance(NX_CHAR):
-      doc: |
-        Absolute path in the (HDF5) file that points to the distance values.
-        The tool assumes that the values are stored in the same order as
-        points (ions).
-  
-  # filters
-  (NXspatial_filter):
-  (NXsubsampling_filter):
-  (NXmatch_filter):
+        A specific configuration to achieve a processing result
+      identifier_analysis(NX_UINT):
+        exists: recommended
+      reconstruction(NXnote):
+        file_name(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+        position(NX_CHAR):
+        mass_to_charge(NX_CHAR):
+      ranging(NXnote):
+        file_name(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+        ranging_definitions(NX_CHAR):
+      spatial_filter(NXspatial_filter):
+        windowing_method(NX_CHAR):
+        hexahedron_set(NXcg_hexahedron):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          index_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+            vertices(NX_UINT):
+        cylinder_set(NXcg_cylinder):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          index_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        ellipsoid_set(NXcg_ellipsoid):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          index_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        polyhedron_set(NXcg_polyhedron):
+          exists: optional
+        bitmask(NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+        min(NX_INT):
+        increment(NX_INT):
+        max(NX_INT):
+      iontype_filter(NXmatch_filter):
+        exists: optional
+        method(NX_CHAR):
+        match(NX_NUMBER):
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+        method(NX_CHAR):
+        match(NX_NUMBER):
+    common(NXapm_paraprobe_tool_common):
+      status(NX_CHAR):
+      programID(NXprogram):
+        nameType: partial
+        exists: ['min', '1', 'max', 'unbounded']
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 5b1e870ad6840ca73ed2b481cad11f2db20697da8de53c9e68785f4e7ec21a9e
+# 6c285e190e068a891ed7cf82c89d7eaba019c7ba2516600bd8fbc0d8f0e8d4e0
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
 # #
-# # Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
+# # Copyright (C) 2025-2025 NeXus International Advisory Committee (NIAC)
 # #
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
@@ -122,11 +122,11 @@ NXapm_paraprobe_tool_config(NXobject):
 # #
 # # For further information, see http://www.nexusformat.org
 # -->
-# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_paraprobe_tool_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_tool_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <doc>
-#         Base class documenting the configuration used for a tool of the paraprobe-toolbox.
+#         Application definition for a (configuration) file of a tool from the paraprobe-toolbox.
 #         
-#         The paraprobe-toolbox is a collection of open-source software tools for performing
+#         The paraprobe-toolbox is a collection of open-source tools for performing
 #         efficient analyses of point cloud data where each point can represent atoms or
 #         (molecular) ions. A key application of the toolbox has been for research in the
 #         field of Atom Probe Tomography (APT) and related Field Ion Microscopy (FIM):
@@ -139,99 +139,88 @@ NXapm_paraprobe_tool_config(NXobject):
 #         properties and enabling analyses of the spatial arrangement of and inter-
 #         sections between geometric primitives, the software can equally be used
 #         for analyzing data in Materials Science and Materials Engineering.
-#          
-#         The configuration and results of a run of a tool from the toolbox is documented
-#         using binary container formats. Currently, paraprobe-toolbox uses the
-#         Hierarchical Data Format 5 (HDF5).
 #     </doc>
-#     <!--sequence_id is inherited from NXprocess-->
-#     <field name="identifier_analysis" type="NX_UINT" units="NX_UNITLESS">
-#         <doc>
-#             Internal identifier used by the tool to refer to an analysis (aka simulation
-#             id).
-#         </doc>
-#     </field>
-#     <field name="description" type="NX_CHAR">
-#         <doc>
-#             Possibility for leaving a free-text description about this analysis.
-#             
-#             Although offered here for convenience we strongly encourage to
-#             parameterize such descriptions as much as possible to support
-#             reusage and clearer communication.
-#         </doc>
-#     </field>
-#     <!--tool-specific input, examples for definitions for common types of input granularized into this
-# base class from which tool-specific application definitions inherit-->
-#     <group name="reconstruction" type="NXnote">
-#         <doc>
-#             Specification of the tomographic reconstruction to use for this analysis.
-#             
-#             Typically, reconstructions in the field of atom probe tomography are communicated
-#             via files which store at least reconstructed ion positions and mass-to-charge-state-ratio
-#             values. Container files like HDF5 though can store multiple reconstructions.
-#             Therefore, the position and mass_to_charge concepts point to specific instances
-#             to use for this analysis.
-#         </doc>
-#         <field name="position" type="NX_CHAR">
-#             <doc>
-#                 Name of the node which resolves the reconstructed ion position
-#                 values to use for this analysis.
-#             </doc>
+#     <group type="NXentry" minOccurs="1" maxOccurs="1">
+#         <field name="definition" type="NX_CHAR">
+#             <attribute name="version" type="NX_CHAR"/>
 #         </field>
-#         <field name="mass_to_charge" type="NX_CHAR">
+#         <group name="TASKCONFIG" type="NXapm_paraprobe_tool_parameters" nameType="any" minOccurs="1" maxOccurs="unbounded">
 #             <doc>
-#                 Name of the node which resolves the mass-to-charge-state-ratio
-#                 values to use for this analysis.
+#                 A specific configuration to achieve a processing result
 #             </doc>
-#         </field>
+#             <field name="identifier_analysis" type="NX_UINT" recommended="true"/>
+#             <group name="reconstruction" type="NXnote">
+#                 <field name="file_name" type="NX_CHAR"/>
+#                 <field name="checksum" type="NX_CHAR"/>
+#                 <field name="algorithm" type="NX_CHAR"/>
+#                 <field name="position" type="NX_CHAR"/>
+#                 <field name="mass_to_charge" type="NX_CHAR"/>
+#             </group>
+#             <group name="ranging" type="NXnote">
+#                 <field name="file_name" type="NX_CHAR"/>
+#                 <field name="checksum" type="NX_CHAR"/>
+#                 <field name="algorithm" type="NX_CHAR"/>
+#                 <field name="ranging_definitions" type="NX_CHAR"/>
+#             </group>
+#             <group name="spatial_filter" type="NXspatial_filter">
+#                 <field name="windowing_method" type="NX_CHAR"/>
+#                 <group name="hexahedron_set" type="NXcg_hexahedron" optional="true">
+#                     <field name="dimensionality" type="NX_POSINT"/>
+#                     <field name="cardinality" type="NX_POSINT"/>
+#                     <field name="index_offset" type="NX_INT"/>
+#                     <group name="hexahedra" type="NXcg_face_list_data_structure">
+#                         <field name="vertices" type="NX_UINT"/>
+#                     </group>
+#                 </group>
+#                 <group name="cylinder_set" type="NXcg_cylinder" optional="true">
+#                     <field name="dimensionality" type="NX_POSINT"/>
+#                     <field name="cardinality" type="NX_POSINT"/>
+#                     <field name="index_offset" type="NX_INT"/>
+#                     <field name="center" type="NX_NUMBER"/>
+#                     <field name="height" type="NX_NUMBER"/>
+#                     <field name="radii" type="NX_NUMBER"/>
+#                 </group>
+#                 <group name="ellipsoid_set" type="NXcg_ellipsoid" optional="true">
+#                     <field name="dimensionality" type="NX_POSINT"/>
+#                     <field name="cardinality" type="NX_POSINT"/>
+#                     <field name="index_offset" type="NX_INT"/>
+#                     <field name="center" type="NX_NUMBER"/>
+#                     <field name="half_axes_radii" type="NX_NUMBER"/>
+#                     <field name="orientation" type="NX_NUMBER"/>
+#                 </group>
+#                 <group name="polyhedron_set" type="NXcg_polyhedron" optional="true"/>
+#                 <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+#                     <field name="number_of_objects" type="NX_UINT"/>
+#                     <field name="bitdepth" type="NX_UINT"/>
+#                     <field name="mask" type="NX_UINT"/>
+#                 </group>
+#             </group>
+#             <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+#                 <field name="min" type="NX_INT"/>
+#                 <field name="increment" type="NX_INT"/>
+#                 <field name="max" type="NX_INT"/>
+#             </group>
+#             <group name="iontype_filter" type="NXmatch_filter" optional="true">
+#                 <field name="method" type="NX_CHAR"/>
+#                 <field name="match" type="NX_NUMBER"/>
+#             </group>
+#             <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+#                 <field name="method" type="NX_CHAR"/>
+#                 <field name="match" type="NX_NUMBER"/>
+#             </group>
+#         </group>
+#         <group name="common" type="NXapm_paraprobe_tool_common">
+#             <field name="status" type="NX_CHAR"/>
+#             <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+#                 <field name="program" type="NX_CHAR">
+#                     <attribute name="version" type="NX_CHAR"/>
+#                 </field>
+#             </group>
+#             <group name="profiling" type="NXcs_profiling" recommended="true">
+#                 <field name="start_time" type="NX_DATE_TIME"/>
+#                 <field name="end_time" type="NX_DATE_TIME"/>
+#                 <field name="total_elapsed_time" type="NX_FLOAT"/>
+#             </group>
+#         </group>
 #     </group>
-#     <group name="ranging" type="NXnote">
-#         <doc>
-#             Specification of the ranging definitions to use for this analysis.
-#             
-#             Ranging is the process of labeling time-of-flight data with so-called iontypes
-#             (aka ion species). Ideally, iontypes specify the most likely (molecular) ion
-#             that is assumed to have been evaporated given that its mass-to-charge-state ratio
-#             lies within the specific mass-to-charge-state-ratio value interval of the iontype.
-#             
-#             The so-called UNKNOWNTYPE iontype represents the null model of an ion
-#             that has not been ranged (for whatever reasons).
-#             The identifier of this special iontype is always the reserved value 0.
-#         </doc>
-#         <field name="ranging_definitions" type="NX_CHAR">
-#             <doc>
-#                 Name of the (parent) node directly below which (in the hierarchy)
-#                 the ranging definition for (molecular) ions are stored.
-#             </doc>
-#         </field>
-#     </group>
-#     <group name="surface" type="NXnote">
-#         <doc>
-#             Specification of the triangulated surface mesh to use for this analysis.
-#             
-#             Such a surface mesh can be used to define the edge of the reconstructed
-#             volume to account for finite size effects.
-#         </doc>
-#     </group>
-#     <!--mesh(NX_CHAR):
-# doc: |
-# Name of the (parent) node directly below which (in the hierarchy)
-# an instance of :ref:`NXcg_triangle_set` is stored.-->
-#     <group name="surface_distance" type="NXnote">
-#         <doc>
-#             Specification of the point-to-triangulated-surface-mesh distances to
-#             use for this analysis.
-#         </doc>
-#         <field name="distance" type="NX_CHAR">
-#             <doc>
-#                 Absolute path in the (HDF5) file that points to the distance values.
-#                 The tool assumes that the values are stored in the same order as
-#                 points (ions).
-#             </doc>
-#         </field>
-#     </group>
-#     <!--filters-->
-#     <group type="NXspatial_filter"/>
-#     <group type="NXsubsampling_filter"/>
-#     <group type="NXmatch_filter"/>
 # </definition>
