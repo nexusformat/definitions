@@ -14,9 +14,15 @@ NXbeam
 ..
     Contributors List
 
-    .. |contrib_name| replace:: Aaron Brewster|phyy-nx|https://avatars.githubusercontent.com/u/13471434?v=4|2022-06-17
+    .. |contrib_name| replace:: Peter Chang|PeterC-DLS|https://avatars.githubusercontent.com/u/1381719?v=4|2025-05-16
 
-    .. |contrib_name| replace:: Peter Chang|PeterC-DLS|https://avatars.githubusercontent.com/u/1381719?v=4|2022-06-17
+    .. |contrib_name| replace:: Lukas Pielsticker|lukaspie|https://avatars.githubusercontent.com/u/50139597?v=4|2025-02-17
+
+    .. |contrib_name| replace:: Peter Chang|PeterC-DLS|https://avatars.githubusercontent.com/u/1381719?v=4|2024-09-28
+
+    .. |contrib_name| replace:: Pete R Jemian|prjemian|https://avatars.githubusercontent.com/u/2279984?v=4|2024-02-18
+
+    .. |contrib_name| replace:: Aaron Brewster|phyy-nx|https://avatars.githubusercontent.com/u/13471434?v=4|2022-06-17
 
 **Status**:
 
@@ -38,9 +44,9 @@ NXbeam
       :ref:`NXinstrument`, in which case it is recommended that the position of the beam is specified by an 
       :ref:`NXtransformations` group, unless the beam is at the origin (which is the sample).
 
-      Note that incident_wavelength and related fields can be a scalar values or arrays, depending on the use case.
+      Note that ``incident_wavelength``, ``incident_energy``, and related fields can be a scalar values or arrays, depending on the use case.
       To support these use cases, the explicit dimensionality of these fields is not specified, but it can be inferred
-      by the presense of and shape of accompanying fields, such as incident_wavelength_weights for a polychromatic beam.
+      by the presence of and shape of accompanying fields, such as incident_wavelength_weights for a polychromatic beam.
 
 **Symbols**:
 
@@ -59,24 +65,6 @@ NXbeam
 
 **Structure**:
 
-  .. _/NXbeam@default-attribute:
-
-  .. index:: default (file attribute)
-
-  **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
-
-    .. collapse:: Declares which child group contains a path leading  ...
-
-        .. index:: plotting
-
-        Declares which child group contains a path leading 
-        to a :ref:`NXdata` group.
-
-        It is recommended (as of NIAC2014) to use this attribute
-        to help define the path to the default dataset to be plotted.
-        See https://www.nexusformat.org/2014_How_to_find_default_data.html
-        for a summary of the discussion.
-
   .. _/NXbeam/distance-field:
 
   .. index:: distance (field)
@@ -91,7 +79,37 @@ NXbeam
 
   **incident_energy**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [m]) {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} 
 
-    Energy carried by each particle of the beam on entering the beamline component
+    .. collapse:: Energy carried by each particle of the beam on entering the given location. ...
+
+        Energy carried by each particle of the beam on entering the given location.
+
+        Several use cases are permitted, depending on the presence or absence of
+        other ``incident_energy_X`` fields. The usage should follow that of
+        :ref:`incident_wavelength </NXbeam/incident_wavelength-field>`.
+
+  .. _/NXbeam/incident_energy_spread-field:
+
+  .. index:: incident_energy_spread (field)
+
+  **incident_energy_spread**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} 
+
+    .. collapse:: The energy spread FWHM for the corresponding energy(ies) in incident_energy. ...
+
+        The energy spread FWHM for the corresponding energy(ies) in incident_energy.
+        The usage of this field should follow that of
+        :ref:`incident_wavelength </NXbeam/incident_wavelength-field>`.
+
+  .. _/NXbeam/incident_energy_weights-field:
+
+  .. index:: incident_energy_weights (field)
+
+  **incident_energy_weights**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} :ref:`⤆ </NXobject/FIELDNAME_weights-field>`
+
+    .. collapse:: Relative weights of the corresponding energies in ``incident_energy``. ...
+
+        Relative weights of the corresponding energies in ``incident_energy``.
+        The usage of this field should follow that of
+        :ref:`incident_wavelength </NXbeam/incident_wavelength-field>`.
 
   .. _/NXbeam/final_energy-field:
 
@@ -99,7 +117,7 @@ NXbeam
 
   **final_energy**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [m]) {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} 
 
-    Energy carried by each particle of the beam on leaving the beamline component
+    Energy carried by each particle of the beam on leaving the given location
 
   .. _/NXbeam/energy_transfer-field:
 
@@ -210,7 +228,11 @@ NXbeam
     .. collapse:: Size of the beam entering this component. Note this represents ...
 
         Size of the beam entering this component. Note this represents
-        a rectangular beam aperture, and values represent FWHM
+        a rectangular beam aperture, and values represent FWHM.
+        If applicable, the first dimension shall represent the extent
+        in the direction parallel to the azimuthal reference plane
+        (by default it is [1,0,0]), and the second dimension shall be
+        the normal to the reference plane (by default it is  [0,1,0]).
 
   .. _/NXbeam/final_wavelength-field:
 
@@ -301,6 +323,116 @@ NXbeam
 
     flux incident on beam plane area
 
+  .. _/NXbeam/pulse_energy-field:
+
+  .. index:: pulse_energy (field)
+
+  **pulse_energy**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} 
+
+    Energy of a single pulse at the given location.
+
+  .. _/NXbeam/average_power-field:
+
+  .. index:: average_power (field)
+
+  **average_power**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_POWER <NX_POWER>`} 
+
+    Average power at the at the given location.
+
+  .. _/NXbeam/fluence-field:
+
+  .. index:: fluence (field)
+
+  **fluence**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=mJ/cm^2} 
+
+    Incident energy fluence at the given location.
+
+  .. _/NXbeam/pulse_duration-field:
+
+  .. index:: pulse_duration (field)
+
+  **pulse_duration**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`} 
+
+    FWHM duration of the pulses at the given location.
+
+  .. _/NXbeam/pulse_delay-field:
+
+  .. index:: pulse_delay (field)
+
+  **pulse_delay**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`} 
+
+    Delay time between two pulses of a pulsed beam.
+
+    .. _/NXbeam/pulse_delay@reference_beam-attribute:
+
+    .. index:: reference_beam (field attribute)
+
+    **@reference_beam**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
+
+      .. collapse:: A reference to the beam in relation to which the delay is. ...
+
+          A reference to the beam in relation to which the delay is.
+
+          This should be the path to another instance of ``NXbeam``. The use
+          of this attribute should be similar to that of the
+          :ref:`depends_on attribute </NXtransformations/AXISNAME@depends_on-attribute>`.
+          in NXtransformations.
+
+  .. _/NXbeam/frog_trace-field:
+
+  .. index:: frog_trace (field)
+
+  **frog_trace**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 2, Dimensions: [nx, ny]) 
+
+    .. collapse:: FROG (frequency-resolved optical gating) trace of the pulse. ...
+
+        FROG (frequency-resolved optical gating) trace of the pulse.
+
+        This is to be used for ultrashort laser pulses in a
+        FROG (frequency-resolved optical gating) setup.
+
+  .. _/NXbeam/frog_delays-field:
+
+  .. index:: frog_delays (field)
+
+  **frog_delays**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [nx]) {units=\ :ref:`NX_TIME <NX_TIME>`} 
+
+    .. collapse:: Horizontal axis of a FROG trace, i.e. delay. ...
+
+        Horizontal axis of a FROG trace, i.e. delay.
+
+        This is to be used for ultrashort laser pulses in a
+        FROG (frequency-resolved optical gating) setup.
+
+  .. _/NXbeam/frog_frequencies-field:
+
+  .. index:: frog_frequencies (field)
+
+  **frog_frequencies**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [ny]) {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`} 
+
+    .. collapse:: Vertical axis of a FROG trace, i.e. frequency. ...
+
+        Vertical axis of a FROG trace, i.e. frequency.
+
+        This is to be used for ultrashort laser pulses in a
+        FROG (frequency-resolved optical gating) setup.
+
+  .. _/NXbeam/chirp_type-field:
+
+  .. index:: chirp_type (field)
+
+  **chirp_type**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
+
+    The type of chirp implemented
+
+  .. _/NXbeam/chirp_GDD-field:
+
+  .. index:: chirp_GDD (field)
+
+  **chirp_GDD**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`} 
+
+    Group delay dispersion of the pulse for linear chirp
+
   .. _/NXbeam/depends_on-field:
 
   .. index:: depends_on (field)
@@ -318,7 +450,7 @@ NXbeam
 
   .. _/NXbeam/DATA-group:
 
-  **DATA**: (optional) :ref:`NXdata` 
+  :bolditalic:`DATA`: (optional) :ref:`NXdata` :ref:`⤆ </NXobject/DATA-group>`
 
     .. collapse:: Distribution of beam with respect to relevant variable e.g. wavelength. This i ...
 
@@ -328,34 +460,26 @@ NXbeam
 
   .. _/NXbeam/TRANSFORMATIONS-group:
 
-  **TRANSFORMATIONS**: (optional) :ref:`NXtransformations` 
+  :bolditalic:`TRANSFORMATIONS`: (optional) :ref:`NXtransformations` 
 
     .. collapse:: Direction (and location) for the beam. The location of the beam can be given b ...
 
         Direction (and location) for the beam. The location of the beam can be given by
         any point which it passes through as its offset attribute.
 
-    .. _/NXbeam/TRANSFORMATIONS/DIRECTION-field:
+    .. _/NXbeam/TRANSFORMATIONS/BEAMdirection-field:
 
-    .. index:: DIRECTION (field)
+    .. index:: BEAMdirection (field)
 
-    **DIRECTION**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+    :bolditalic:`BEAM`\ **direction**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
 
       .. collapse:: Direction of beam vector, its value is ignored. If missing, then the beam di ...
 
           Direction of beam vector, its value is ignored. If missing, then the beam direction is defined as [0,0,1]
-          and passes through the origin
+          and passes through the origin. Note, this field should be referenced by the parent group's ``depends_on`` field; also,
+          as this field is a direction, its ``transformation_type`` attribute should be omitted.
 
-      .. _/NXbeam/TRANSFORMATIONS/DIRECTION@transformation_type-attribute:
-
-      .. index:: transformation_type (field attribute)
-
-      **@transformation_type**: (optional) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
-
-
-        Obligatory value: ``translation``
-
-      .. _/NXbeam/TRANSFORMATIONS/DIRECTION@vector-attribute:
+      .. _/NXbeam/TRANSFORMATIONS/BEAMdirection@vector-attribute:
 
       .. index:: vector (field attribute)
 
@@ -363,7 +487,7 @@ NXbeam
 
         Three values that define the direction of beam vector
 
-      .. _/NXbeam/TRANSFORMATIONS/DIRECTION@offset-attribute:
+      .. _/NXbeam/TRANSFORMATIONS/BEAMdirection@offset-attribute:
 
       .. index:: offset (field attribute)
 
@@ -371,7 +495,7 @@ NXbeam
 
         Three values that define the location of a point through which the beam passes
 
-      .. _/NXbeam/TRANSFORMATIONS/DIRECTION@depends_on-attribute:
+      .. _/NXbeam/TRANSFORMATIONS/BEAMdirection@depends_on-attribute:
 
       .. index:: depends_on (field attribute)
 
@@ -386,22 +510,14 @@ NXbeam
 
     .. index:: reference_plane (field)
 
-    **reference_plane**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+    **reference_plane**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
 
       .. collapse:: Direction of normal to reference plane used to measure azimuth relative to t ...
 
           Direction of normal to reference plane used to measure azimuth relative to the beam, its value is ignored.
           This also defines the parallel and perpendicular components of the beam's polarization.
-          If missing, then the reference plane normal is defined as [0,1,0] and passes through the origin
-
-      .. _/NXbeam/TRANSFORMATIONS/reference_plane@transformation_type-attribute:
-
-      .. index:: transformation_type (field attribute)
-
-      **@transformation_type**: (optional) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
-
-
-        Obligatory value: ``translation``
+          If missing, then the reference plane normal is defined as [0,1,0].
+          Note, as this field is a direction, its ``transformation_type`` attribute should be omitted.
 
       .. _/NXbeam/TRANSFORMATIONS/reference_plane@vector-attribute:
 
@@ -410,14 +526,6 @@ NXbeam
       **@vector**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
 
         Three values that define the direction of reference plane normal
-
-      .. _/NXbeam/TRANSFORMATIONS/reference_plane@offset-attribute:
-
-      .. index:: offset (field attribute)
-
-      **@offset**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@offset-attribute>`
-
-        Not required as beam direction offset locates the plane
 
       .. _/NXbeam/TRANSFORMATIONS/reference_plane@depends_on-attribute:
 
@@ -438,6 +546,9 @@ List of hypertext anchors for all groups, fields,
 attributes, and links defined in this class.
 
 
+* :ref:`/NXbeam/average_power-field </NXbeam/average_power-field>`
+* :ref:`/NXbeam/chirp_GDD-field </NXbeam/chirp_GDD-field>`
+* :ref:`/NXbeam/chirp_type-field </NXbeam/chirp_type-field>`
 * :ref:`/NXbeam/DATA-group </NXbeam/DATA-group>`
 * :ref:`/NXbeam/depends_on-field </NXbeam/depends_on-field>`
 * :ref:`/NXbeam/distance-field </NXbeam/distance-field>`
@@ -449,26 +560,32 @@ attributes, and links defined in this class.
 * :ref:`/NXbeam/final_polarization_stokes-field </NXbeam/final_polarization_stokes-field>`
 * :ref:`/NXbeam/final_wavelength-field </NXbeam/final_wavelength-field>`
 * :ref:`/NXbeam/final_wavelength_spread-field </NXbeam/final_wavelength_spread-field>`
+* :ref:`/NXbeam/fluence-field </NXbeam/fluence-field>`
 * :ref:`/NXbeam/flux-field </NXbeam/flux-field>`
+* :ref:`/NXbeam/frog_delays-field </NXbeam/frog_delays-field>`
+* :ref:`/NXbeam/frog_frequencies-field </NXbeam/frog_frequencies-field>`
+* :ref:`/NXbeam/frog_trace-field </NXbeam/frog_trace-field>`
 * :ref:`/NXbeam/incident_beam_divergence-field </NXbeam/incident_beam_divergence-field>`
 * :ref:`/NXbeam/incident_energy-field </NXbeam/incident_energy-field>`
+* :ref:`/NXbeam/incident_energy_spread-field </NXbeam/incident_energy_spread-field>`
+* :ref:`/NXbeam/incident_energy_weights-field </NXbeam/incident_energy_weights-field>`
 * :ref:`/NXbeam/incident_polarization-field </NXbeam/incident_polarization-field>`
 * :ref:`/NXbeam/incident_polarization_stokes-field </NXbeam/incident_polarization_stokes-field>`
 * :ref:`/NXbeam/incident_wavelength-field </NXbeam/incident_wavelength-field>`
 * :ref:`/NXbeam/incident_wavelength_spread-field </NXbeam/incident_wavelength_spread-field>`
 * :ref:`/NXbeam/incident_wavelength_weights-field </NXbeam/incident_wavelength_weights-field>`
+* :ref:`/NXbeam/pulse_delay-field </NXbeam/pulse_delay-field>`
+* :ref:`/NXbeam/pulse_delay@reference_beam-attribute </NXbeam/pulse_delay@reference_beam-attribute>`
+* :ref:`/NXbeam/pulse_duration-field </NXbeam/pulse_duration-field>`
+* :ref:`/NXbeam/pulse_energy-field </NXbeam/pulse_energy-field>`
 * :ref:`/NXbeam/TRANSFORMATIONS-group </NXbeam/TRANSFORMATIONS-group>`
-* :ref:`/NXbeam/TRANSFORMATIONS/DIRECTION-field </NXbeam/TRANSFORMATIONS/DIRECTION-field>`
-* :ref:`/NXbeam/TRANSFORMATIONS/DIRECTION@depends_on-attribute </NXbeam/TRANSFORMATIONS/DIRECTION@depends_on-attribute>`
-* :ref:`/NXbeam/TRANSFORMATIONS/DIRECTION@offset-attribute </NXbeam/TRANSFORMATIONS/DIRECTION@offset-attribute>`
-* :ref:`/NXbeam/TRANSFORMATIONS/DIRECTION@transformation_type-attribute </NXbeam/TRANSFORMATIONS/DIRECTION@transformation_type-attribute>`
-* :ref:`/NXbeam/TRANSFORMATIONS/DIRECTION@vector-attribute </NXbeam/TRANSFORMATIONS/DIRECTION@vector-attribute>`
+* :ref:`/NXbeam/TRANSFORMATIONS/BEAMdirection-field </NXbeam/TRANSFORMATIONS/BEAMdirection-field>`
+* :ref:`/NXbeam/TRANSFORMATIONS/BEAMdirection@depends_on-attribute </NXbeam/TRANSFORMATIONS/BEAMdirection@depends_on-attribute>`
+* :ref:`/NXbeam/TRANSFORMATIONS/BEAMdirection@offset-attribute </NXbeam/TRANSFORMATIONS/BEAMdirection@offset-attribute>`
+* :ref:`/NXbeam/TRANSFORMATIONS/BEAMdirection@vector-attribute </NXbeam/TRANSFORMATIONS/BEAMdirection@vector-attribute>`
 * :ref:`/NXbeam/TRANSFORMATIONS/reference_plane-field </NXbeam/TRANSFORMATIONS/reference_plane-field>`
 * :ref:`/NXbeam/TRANSFORMATIONS/reference_plane@depends_on-attribute </NXbeam/TRANSFORMATIONS/reference_plane@depends_on-attribute>`
-* :ref:`/NXbeam/TRANSFORMATIONS/reference_plane@offset-attribute </NXbeam/TRANSFORMATIONS/reference_plane@offset-attribute>`
-* :ref:`/NXbeam/TRANSFORMATIONS/reference_plane@transformation_type-attribute </NXbeam/TRANSFORMATIONS/reference_plane@transformation_type-attribute>`
 * :ref:`/NXbeam/TRANSFORMATIONS/reference_plane@vector-attribute </NXbeam/TRANSFORMATIONS/reference_plane@vector-attribute>`
-* :ref:`/NXbeam@default-attribute </NXbeam@default-attribute>`
 
 **NXDL Source**:
   https://github.com/nexusformat/definitions/blob/main/base_classes/NXbeam.nxdl.xml

@@ -14,17 +14,15 @@ NXtransformations
 ..
     Contributors List
 
+    .. |contrib_name| replace:: Peter Chang|PeterC-DLS|https://avatars.githubusercontent.com/u/1381719?v=4|2025-05-16
+
+    .. |contrib_name| replace:: Lukas Pielsticker|lukaspie|https://avatars.githubusercontent.com/u/50139597?v=4|2025-04-14
+
+    .. |contrib_name| replace:: Pete R Jemian|prjemian|https://avatars.githubusercontent.com/u/2279984?v=4|2024-02-18
+
     .. |contrib_name| replace:: Woutdenolf|woutdenolf|https://avatars.githubusercontent.com/u/7264703?v=4|2023-06-20
 
     .. |contrib_name| replace:: Aaron Brewster|phyy-nx|https://avatars.githubusercontent.com/u/13471434?v=4|2022-08-25
-
-    .. |contrib_name| replace:: Peter Chang|PeterC-DLS|https://avatars.githubusercontent.com/u/1381719?v=4|2022-02-01
-
-    .. |contrib_name| replace:: Pete R Jemian|prjemian|https://avatars.githubusercontent.com/u/2279984?v=4|2022-01-28
-
-    .. |contrib_name| replace:: Tobias Richter|zjttoefs|https://avatars.githubusercontent.com/u/856440?v=4|2018-05-15
-
-    .. |contrib_name| replace:: Herbert J. Bernstein|yayahjb|https://avatars.githubusercontent.com/u/4448769?v=4|2017-01-23
 
 **Status**:
 
@@ -60,10 +58,10 @@ NXtransformations
       type has been specified.
 
       The entry point (``depends_on``) will be outside of this class and point to a
-      field in here. Following the chain may also require following ``depends_on``
-      links to transformations outside, for example to a common base table.  If
-      a relative path is given, it is relative to the group enclosing the ``depends_on``
-      specification.
+      field in here (or to an instance of ``NX_coordinate_system``). Following the
+      chain may also require following ``depends_on``	links to transformations outside,
+      for example to a common base table.  If a relative path is given, it is relative
+      to the group enclosing the ``depends_on`` specification.
 
       For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
       and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
@@ -94,11 +92,11 @@ NXtransformations
       Collecting the motors of a sample table or xyz-stage in an NXtransformations
       group is equally possible.
 
-      Following the section on the general dscription of axis in NXtransformations is a section which
+      Following the section on the general description of axis in NXtransformations is a section which
       documents the fields commonly used within NeXus for positioning purposes and their meaning. Whenever
       there is a need for positioning a beam line component please use the existing names. Use as many fields
       as needed in order to position the component. Feel free to add more axis if required. In the description
-      given below, only those atttributes which are defined through the name are spcified. Add the other attributes
+      given below, only those attributes which are defined through the name are specified. Add the other attributes
       of the full set:
 
       * vector
@@ -107,6 +105,14 @@ NXtransformations
       * depends_on
 
       as needed.
+
+      NOTE
+
+      ``NXtransformations`` follows the **active** transformation convention. This means that the transformation describes
+      how an object is moved or rotated within the coordinate system. In other words, the transformation
+      actively changes the position or orientation of the object itself. This is in contrast to a **passive** transformation,
+      which changes the frame of reference or coordinate system, while the object remains fixed. In case it is needed 
+      to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
 
 **Symbols**:
 
@@ -117,29 +123,11 @@ NXtransformations
 
 **Structure**:
 
-  .. _/NXtransformations@default-attribute:
-
-  .. index:: default (file attribute)
-
-  **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
-
-    .. collapse:: Declares which child group contains a path leading  ...
-
-        .. index:: plotting
-
-        Declares which child group contains a path leading 
-        to a :ref:`NXdata` group.
-
-        It is recommended (as of NIAC2014) to use this attribute
-        to help define the path to the default dataset to be plotted.
-        See https://www.nexusformat.org/2014_How_to_find_default_data.html
-        for a summary of the discussion.
-
   .. _/NXtransformations/AXISNAME-field:
 
   .. index:: AXISNAME (field)
 
-  **AXISNAME**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} 
+  :bolditalic:`AXISNAME`: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} 
 
     .. collapse:: Units need to be appropriate for translation or rotation ...
 
@@ -151,7 +139,7 @@ NXtransformations
         by HDF5.
 
         The values given should be the start points of exposures for the corresponding
-        frames.  The end points should be given in ``AXISNAME_end``.
+        frames. The end points should be given in ``AXISNAME_end``.
 
     .. _/NXtransformations/AXISNAME@transformation_type-attribute:
 
@@ -166,7 +154,7 @@ NXtransformations
           in which case the values are angular rotations around the axis.
 
           If this attribute is omitted, this is an axis for which there
-          is no motion to be specifies, such as the direction of gravity,
+          is no motion to be specified, such as the direction of gravity,
           or the direction to the source, or a basis vector of a
           coordinate frame. In this case the value of the ``AXISNAME`` field
           is not used and can be set to the number ``NaN``.
@@ -183,11 +171,32 @@ NXtransformations
 
           Three values that define the axis for this transformation.
           The axis should be normalized to unit length, making it
-          dimensionless.  For ``rotation`` axes, the direction should be
-          chosen for a right-handed rotation with increasing angle.
+          dimensionless.
           For ``translation`` axes the direction should be chosen for
           increasing displacement. For general axes, an appropriate direction
           should be chosen.
+
+          By default, for ``rotation`` axes that do not explicitly depend on a coordinate system,
+          the direction should be chosen for a right-handed rotation with increasing angle. Note,
+          McStas is a right handed coordinate system.
+
+          If the ``NXtransformation`` depends on a coordinate system (i.e., its ``depends_on`` 
+          attribute (or a ``depends_on`` further up the transformation chain) points to an instance
+          of :ref:`NXcoordinate_system`), the rotation convention is the same as the handedness
+          of the coordinate system (as defined by the determinant of its base vectors):
+
+          * Rotations in left-handed coordinate systems are left-handed (i.e., they follow the 
+            left-hand grip rule). In a left-handed coordinate system, positive rotation about an
+            axis is clockwise when looking from a point on the positive axis towards
+            its origin (from infinity towards the origin).
+
+          * Rotations in right-handed coordinate systems are right-handed (i.e., they follow the 
+            right-hand grip rule). In a right-handed coordinate system, positive rotation about an
+            axis is counter-clockwise when looking from a point on the positive axis towards
+            its origin (from infinity towards the origin).
+
+          Note that by using this convention, the transformation matrices in both left- and
+          right-handed coordinate systems are the same.
 
     .. _/NXtransformations/AXISNAME@offset-attribute:
 
@@ -215,10 +224,14 @@ NXtransformations
 
     **@depends_on**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
 
-      .. collapse:: Points to the path to a field defining the axis on which this ...
+      .. collapse:: Points to the path of a field defining the axis on which this instance of ...
 
-          Points to the path to a field defining the axis on which this
-          depends or the string ".".
+          Points to the path of a field defining the axis on which this instance of
+          NXtransformations depends or the string ".". It can also point to an instance of
+          ``NX_coordinate_system`` if this transformation depends on it.
+
+          If it is the string ".", it is explicitly pointing towards the default 
+          `NeXus coordinate system <https://manual.nexusformat.org/design.html#the-nexus-coordinate-system>`_.
 
     .. _/NXtransformations/AXISNAME@equipment_component-attribute:
 
@@ -238,7 +251,7 @@ NXtransformations
 
   .. index:: AXISNAME_end (field)
 
-  **AXISNAME_end**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} 
+  :bolditalic:`AXISNAME`\ **_end**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} 
 
     .. collapse:: ``AXISNAME_end`` is a placeholder for a name constructed from the actual ...
 
@@ -252,7 +265,7 @@ NXtransformations
 
   .. index:: AXISNAME_increment_set (field)
 
-  **AXISNAME_increment_set**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} 
+  :bolditalic:`AXISNAME`\ **_increment_set**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TRANSFORMATION <NX_TRANSFORMATION>`} :ref:`⤆ </NXobject/FIELDNAME_set-field>`
 
     .. collapse:: ``AXISNAME_increment_set`` is a placeholder for a name constructed from the ac ...
 
@@ -263,7 +276,7 @@ NXtransformations
         the corresponding axis moves during the exposure of a frame.  Ideally, the
         value of this field added to each value of ``AXISNAME`` would agree with the
         corresponding values of ``AXISNAME_end``, but there is a possibility of significant
-        differences.  Use of ``AXISNAME_end`` is recommended.
+        differences. Use of ``AXISNAME_end`` is recommended.
 
 
 Hypertext Anchors
@@ -282,7 +295,6 @@ attributes, and links defined in this class.
 * :ref:`/NXtransformations/AXISNAME@vector-attribute </NXtransformations/AXISNAME@vector-attribute>`
 * :ref:`/NXtransformations/AXISNAME_end-field </NXtransformations/AXISNAME_end-field>`
 * :ref:`/NXtransformations/AXISNAME_increment_set-field </NXtransformations/AXISNAME_increment_set-field>`
-* :ref:`/NXtransformations@default-attribute </NXtransformations@default-attribute>`
 
 **NXDL Source**:
   https://github.com/nexusformat/definitions/blob/main/base_classes/NXtransformations.nxdl.xml
