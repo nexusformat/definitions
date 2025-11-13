@@ -63,33 +63,33 @@ for an example.
 .. index:: subentry; NXsubentry, use of, multi-modal data
 
 To write a data file with an application definition, start with either
-a :ref:`NXentry` (or :ref:`NXsubentry`) group [#]_ and write the name of the
+a :ref:`NXentry` (or :ref:`NXsubentry`) group and write the name of the
 application definition in the ``definition`` field.  Then write data into 
 this group according to the specifications of the application definition.
 
-.. [#] For data files involving just an application definition, use
-   the :ref:`NXentry` group.  Such as this structure::
-   
-      entry:NXentry
+For data files involving just an application definition, use
+the :ref:`NXentry` group.  Such as this structure::
+
+   entry:NXentry
+      definition="NXsas"
+
+For files that describe multi-modal
+data and require use of two or more application definitions
+(such as :ref:`NXsas` *and* :ref:`NXcanSAS`), you must place each
+application definition in a :ref:`NXsubentry` of the :ref:`NXentry` group.
+Such as this structure::
+
+   entry:NXentry
+      raw:NXsubentry
          definition="NXsas"
-   
-   For files that describe multi-modal
-   data and require use of two or more application definitions
-   (such as :ref:`NXsas` *and* :ref:`NXcanSAS`), you must place each
-   application definition in a :ref:`NXsubentry` of the :ref:`NXentry` group.
-   Such as this structure::
-   
-      entry:NXentry
-         raw:NXsubentry
-            definition="NXsas"
-         reduced:NXsubentry
-            definition="NXcanSAS"
-         fluo:NXsubentry
-            definition="NXfluo"
-   
-   If you anticipate your data file will eventually require an additional
-   application definition, you should start with each application definition
-   in a :ref:`NXsubentry` group.
+      reduced:NXsubentry
+         definition="NXcanSAS"
+      fluo:NXsubentry
+         definition="NXfluo"
+
+If you anticipate your data file will eventually require an additional
+application definition, you should start with each application definition
+in a :ref:`NXsubentry` group.
 
 .. rubric:: :styleh2:`Contributed Definitions`
 
