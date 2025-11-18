@@ -474,14 +474,16 @@ type, some more steps are required:
 
 - Correct your definition per the comments of the NIAC
 
-- Cure and use the definition for a year
+- Cure and use the definition to verify it is ready
 
 - After a final review, it becomes the standard
 
 The NIAC must review an application definition before it is accepted as a
-standard. The one year curation period is in place in order to gain practical
+standard. The curation period is in place in order to gain practical
 experience with the definition and to sort out bugs from Step 1. In this period,
-data shall be written and analyzed using the new application definition.
+data shall be written and analyzed using the new application definition. No
+specific time limit is required, but generally the standard should be well
+vetted by your community and the NIAC.
 
 .. _NXDL_Tutorial-WoniNxdl:
 
