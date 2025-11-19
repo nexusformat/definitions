@@ -317,6 +317,8 @@ research fields are listed in each category:
 
   :ref:`Optical Spectroscopy <CC-Opt-Spec-Structure>`
 
+  :ref:`Scanning Probe Microscopy <CC-Spm-Structure>`
+
   :ref:`Transport Measurements <CC-Transport-Structure>`
 
   :ref:`Microstructures Characterization and Representation <CC-Micro-Structure>`

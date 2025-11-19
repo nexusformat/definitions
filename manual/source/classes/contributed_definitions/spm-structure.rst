@@ -1,13 +1,14 @@
-.. _Spm-Structure:
+.. _CC-Spm-Structure:
 
 ===============================
 Scanning Probe Microscopy
 ===============================
 
 .. index::
-   SpmAppDef
+   CC-SpmAppDef
+   CC-SpmNewBC
 
-.. _SpmAppDef:
+.. _CC-SpmAppDef:
 
 Scanning probe microscopy (SPM) is a branch of microscopes that forms images of surfaces using a physical probe that scans the specimen.
 Using proper instrument setup, SPM can be used to measure various properties of the material surface, such as its topography, magnetic and 
@@ -61,7 +62,7 @@ Application Definition
          An application definition for Atomic Force Microscopy experiments inherited
          from the :ref:`NXspm`.
 
-.. _SpmNewBC:
+.. _CC-SpmNewBC:
 
 Base Classes
 ############
