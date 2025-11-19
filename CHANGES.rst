@@ -34,6 +34,74 @@ which provides links to the Release Notes (itemized list of changes) for any rel
   * Add nameType="partial" to NXDL schema.
   * Use 'nameType' attribute in fields, groups, and attributes.
 
+v2025.11
+++++++++
+
+released *2025-11-13*
+
+This release is the result of [NIAC2024](https://www.nexusformat.org/NIAC2024.html)
+and contains substantial contributions from the
+[FAIRmat consortium](https://www.fairmat-nfdi.eu/fairmat/) and the wider NeXus
+community. It marks the first release of new base classes and application
+definitions in the fields of atom probe microscopy, photoemission & core-level
+spectroscopy, optical spectroscopy, electron microscopy, and, computational and
+constructive solid geometry.
+
+Summary statistics from the GitHub definitions repository show this activity
+since the (previous) v2024.02 release:
+
+=============   ========
+activity        quantity
+=============   ========
+Pull Requests   118
+Issues          10
+Commits         592
+=============   ========
+
+See the wiki for more details:
+https://github.com/nexusformat/definitions/wiki/releasenotes__v2025.11
+
+New Features
+------------
+
+New application definitions include ``NXapm``, ``NXazint1d``, ``NXazint2d``,
+``NXem``, ``NXellipsometry``, ``NXmpes``, ``NXmpes_arpes``,
+``NXoptical_spectroscopy``, ``NXstress``, and ``NXxps``. Accompanying them are
+numerous new base classes.
+
+``NXobject`` now has some optional groups and formalizes field names using the
+new partial name types to reserve their accompanying fields. Also new optional
+identifier fields have been added. ``NXcomponent`` has been introduced as a
+superclass for constituent parts of any instruments and many base classes now
+extend that. ``NXcoordinate_system`` allows local coordinate frames to be
+specified and used in ``NXtransformations`` chains.
+
+
+Fixes
+-----
+
+In base classes, any field units attribute can be specified as concrete
+example units in place of the limited set of NeXus defined categories.
+Enumerations can be open allowing new custom values to be used if an
+appropriate attribute is set.
+
+
+Maintenance
+-----------
+
+Documentation for ``NXdata`` has been rewritten with new examples of its usage
+across data of differing dimensions. ``NeXus_repository`` and ``NeXus_release``
+fields have added to ``NXroot``. Rotation fields in ``NXtransformations`` for left handed
+coordinate systems has been specified.
+
+Deprecations
+------------
+
+Removed remaining pages from previous website. In ``NXdata``,
+``scaling_factor`` and ``offset`` have been deprecated. In ``NXroot``,
+``NeXus_version`` is no longer of use with the frozen state of the NeXus API.
+
+
 v2024.02
 ++++++++
 

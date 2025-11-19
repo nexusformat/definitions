@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2025-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_distancer_results" extends="NXapm_paraprobe_tool_results" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+            The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                The total number of points, i.e. ions in the reconstruction.
+            </doc>
+        </symbol>
+        <symbol name="n_tri">
+            <doc>
+                The total number of triangles in the set.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+        Application definition for a results file of the paraprobe-distancer tool.
+        
+        The tool paraprobe-distancer tool evaluates exactly the shortest Euclidean distance for each
+        member of a set of points against a set of triangles.
+        
+        Triangles can represent for instance the facets of a triangulated surface mesh like those returned by
+        paraprobe-surfacer or any other set of triangles. Triangles do not have to be connected.
+        
+        Currently, paraprobe-distancer does not check if the respectively specified triangle sets are consistent,
+        what their topology is, or whether or not these triangles are consistently oriented.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <enumeration>
+                <item value="NXapm_paraprobe_distancer_results"/>
+            </enumeration>
+        </field>
+        <group name="point_to_triangleID" type="NXapm_paraprobe_tool_process" nameType="partial" minOccurs="1" maxOccurs="1">
+            <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                    The shortest analytical distance of each point to their
+                    respectively closest triangle from the joint triangle set.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ions"/>
+                </dimensions>
+            </field>
+            <field name="indices_triangle" type="NX_INT" optional="true" units="NX_UNITLESS">
+                <doc>
+                    For each point the identifier of the triangle for which the
+                    shortest distance was found.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ions"/>
+                </dimensions>
+            </field>
+            <field name="indices_point" type="NX_INT" optional="true" units="NX_UNITLESS">
+                <doc>
+                    A support field to enable the visualization of each point
+                    by an explicit identifier on the interval [0, n_ions - 1].
+                    The field can be used to visualize the points as a function
+                    of their distance to the triangle set (e.g. via XDMF/Paraview).
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ions"/>
+                </dimensions>
+            </field>
+            <group name="sign_valid" type="NXcs_filter_boolean_mask" optional="true">
+                <doc>
+                    A bitmask that identifies which of the distance values is
+                    assumed to have a consistent sign because the closest
+                    triangle had a consistent outer unit normal defined.
+                    
+                    For points whose bit is set to 0 the distance is correct
+                    but the sign is not reliable.
+                </doc>
+                <field name="number_of_triangles" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                        Number of triangles covered by the mask.
+                    </doc>
+                </field>
+                <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                        Bitdepth of the elementary datatype that is used to store
+                        the information content of the mask (typically 8 bit, uint8).
+                    </doc>
+                </field>
+                <field name="mask" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                        The content of the mask. Like for all masks used in the tools
+                        of the paraprobe-toolbox, padding is used when number_of_objects
+                        is not an integer multiple of bitdepth. If padding is used,
+                        padded bits are set to 0.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="window_triangles" type="NXcs_filter_boolean_mask" optional="true">
+                <doc>
+                    A bitmask that identifies which of the triangles in the set were
+                    considered when certain triangles have been filtered out.
+                </doc>
+                <field name="number_of_objects" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <!--the following field shows a good example of base class inheritance used,
+the field mask of the NXcs_filter_boolean_mask is inherited that means its docstring,
+its unit category only the dimensions are constrained strong to match the number of objects
+triangles in this case-->
+                <field name="mask" type="NX_UINT">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_tri"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+    </group>
+</definition>
