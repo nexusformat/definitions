@@ -15,7 +15,15 @@ SOURCE_TO_CATEGORY = {
 }
 
 SOURCE_TO_GROUPING = {
-    "applications": ["apm", "diff", "em", "mpes", "optical-spectroscopy", "sas", "tof"],
+    "applications": [
+        "apm",
+        "diff",
+        "em",
+        "imaging",
+        "mpes",
+        "optical-spectroscopy",
+        "tof",
+    ],
     "base_classes": [
         "core",
         "tech",
@@ -262,15 +270,15 @@ research fields are listed in each category:
 
   :ref:`Atom Probe Microscopy <AppDef-Apm-Structure>`
 
-  :ref:`Diffraction Techniques <AppDef-Diff-Structure>`
+  :ref:`Diffraction & Scattering Techniques <AppDef-Diff-Structure>`
 
   :ref:`Electron Microscopy <AppDef-Em-Structure>`
+
+  :ref:`Imaging Techniques <AppDef-Imaging-Structure>`
 
   :ref:`Multi-Dimensional Photoemission Spectroscopy <AppDef-Mpes-Structure>`
 
   :ref:`Optical Spectroscopy <AppDef-Opt-Spec-Structure>`
-
-  :ref:`Scattering Techniques <AppDef-Sas-Structure>`
 
   :ref:`Time-of-Flight Techniques <AppDef-Tof-Structure>`
     """,
