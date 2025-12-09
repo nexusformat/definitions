@@ -1,8 +1,8 @@
 .. _AppDef-Diff-Structure:
 
-==================================
-Diffraction Techniques
-==================================
+===================================
+Diffraction & Scattering Techniques
+===================================
 
 .. index::
    AppDef-Diff-Introduction
@@ -13,7 +13,7 @@ Diffraction Techniques
 Introduction
 ############
 
-Application definitions for different diffraction techniques
+Application definitions for different diffraction and (small-angle) scattering techniques
 
 .. _AppDef-Diff-Definitions:
 
@@ -28,17 +28,6 @@ Application Definitions
 
 :ref:`NXmonopd`
     Monochromatic Neutron and X-Ray Powder diffractometer.
-
-:ref:`NXtomo`
-    This is the application definition for x-ray or neutron tomography raw data.
-
-:ref:`NXtomophase`
-    This is the application definition for x-ray or neutron tomography raw data
-    with phase contrast variation at each point.
-
-:ref:`NXtomoproc`
-    This is an application definition for the final result of a tomography experiment:
-    a 3D construction of some volume of physical properties.
 
 :ref:`NXxbase`
     This definition covers the common parts of all monochromatic single crystal raw data application definitions.
@@ -61,6 +50,11 @@ Application Definitions
 :ref:`NXxrot`
     Raw data from a rotation camera, extends :ref:`NXxbase`.
 
-    
+:ref:`NXcanSAS`
+    Implementation of the canSAS standard to store reduced small-angle scattering data of any dimension.
 
-    
+:ref:`NXsas`
+    Raw, monochromatic 2-D SAS data with an area detector.
+
+:ref:`NXsastof`
+    Raw 2-D SAS data with an area detector with a time-of-flight source.
