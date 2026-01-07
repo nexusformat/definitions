@@ -112,13 +112,10 @@ class AnchorRegistry:
         """Write the in-memory registry to files"""
         if not self._writing_enabled:
             return
+        utcnow = datetime.datetime.now(datetime.timezone.utc).isoformat()
         contents = dict(
             _metadata=dict(
-                # datetime=datetime.datetime.now(datetime.UTC).isoformat(),
-                # the next line is the py3.9 supported way of getting the datetime
-                # this will become deprecated however in py3.12 for which the
-                # line above-mentioned is a fix, which however does not work in py3.9
-                datetime=datetime.datetime.now(datetime.UTC).isoformat(),
+                datetime=utcnow,
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, "
                 "attributes, and links.",
