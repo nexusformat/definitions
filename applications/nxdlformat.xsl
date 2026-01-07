@@ -200,7 +200,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
 <!--
      # NeXus - Neutron and X-ray Common Data Format
      # 
-     # Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
+     # Copyright (C) 2011-2026 NeXus International Advisory Committee (NIAC)
      # 
      # This library is free software; you can redistribute it and/or
      # modify it under the terms of the GNU Lesser General Public
