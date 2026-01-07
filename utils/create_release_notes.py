@@ -86,7 +86,8 @@ def getRepositoryInfo():
 def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     """mine the Github API for information about this release"""
     organization_name, repository_name = getRepositoryInfo()
-    gh = github.Github(token)  # GitHub Personal Access Token
+    auth = github.Auth.Token(token)  # GitHub Personal Access Token
+    gh = github.Github(auth=auth)
 
     user = gh.get_user(organization_name)
     logger.debug(f"user: {user}")
@@ -266,9 +267,9 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("commit | date | message")
         print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, commit in commits.items():
-            message = commit.commit.message.splitlines()[0]
+            message = commit.commit.message.splitlines()
             when = commit.raw_data["commit"]["committer"]["date"].split("T")[0]
-            print(f"[{k[:7]}]({commit.html_url}) | {when} | {message}")
+            print(f"[{k[:7]}]({commit.html_url}) | {when} | {message[0] if message else ""}")
 
 
 def main(base=None, head=None, milestone=None, token=None, debug=False):
