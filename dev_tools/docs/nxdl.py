@@ -723,6 +723,16 @@ class NXClassDocGenerator:
         except FileNotFoundError:
             return ""
         if len(parents) > 1:
+            for parent in parents:
+                # iterate back and check tag matches
+                if not parent.tag.endswith(tag) and not parent.tag.endswith(
+                    "definition"
+                ):
+                    print(
+                        f"Warning: {path} has a mismatching inherited node - {parent.tag} cf {tag}"
+                    )
+                    return ""
+
             parent = parents[1]
             parent_path = parent_display_name = parent.attrib["nxdlpath"]
             parent_path_segments = parent_path[1:].split("/")
