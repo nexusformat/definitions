@@ -624,132 +624,144 @@ class NXClassDocGenerator:
         :param indent: to keep track of indentation level
         :param parent_path: NX class path of parent nodes
         """
-        for node in parent.xpath("nx:field", namespaces=ns):
-            name = node.get("name")
-            formatted_name = get_rst_formatted_name(node)
-            index_name = name
-            dims = self._analyze_dimensions(ns, node)
+        # Process children in document order to preserve XML ordering.
+        for node in parent.xpath("nx:field|nx:group|nx:choice|nx:link", namespaces=ns):
+            tag = node.tag.split("}")[-1]
 
-            optional_text = self._get_required_or_optional_text(node)
-            self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'field')}")
-            self._print(f"{indent}.. index:: {index_name} (field)\n")
-            self._print(
-                f"{indent}{formatted_name}: "
-                f"{optional_text}"
-                f"{self._format_type(node)}"
-                f"{dims}"
-                f"{self._format_units(node)}"
-                f" {self.get_first_parent_ref(f'{parent_path}/{name}', 'field')}"
-                "\n"
-            )
+            if tag == "field":
+                name = node.get("name")
+                formatted_name = get_rst_formatted_name(node)
+                index_name = name
+                dims = self._analyze_dimensions(ns, node)
 
-            self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc_enum(indent, ns, node)
-
-            for subnode in node.xpath("nx:attribute", namespaces=ns):
-                optional = self._get_required_or_optional_text(subnode)
-                self._print_attribute(
-                    ns,
-                    "field",
-                    subnode,
-                    optional,
-                    indent + self._INDENTATION_UNIT,
-                    parent_path + "/" + name,
+                optional_text = self._get_required_or_optional_text(node)
+                self._print(
+                    f"{indent}{self._hyperlink_target(parent_path, name, 'field')}"
+                )
+                self._print(f"{indent}.. index:: {index_name} (field)\n")
+                self._print(
+                    f"{indent}{formatted_name}: "
+                    f"{optional_text}"
+                    f"{self._format_type(node)}"
+                    f"{dims}"
+                    f"{self._format_units(node)}"
+                    f" {self.get_first_parent_ref(f'{parent_path}/{name}', 'field')}"
+                    "\n"
                 )
 
-        for node in parent.xpath("nx:group", namespaces=ns):
-            name = node.get("name", "")
-            formatted_name = get_rst_formatted_name(node)
-            typ = node.get("type", "untyped (this is an error; please report)")
+                self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
+                self._print_doc_enum(indent, ns, node)
 
-            optional_text = self._get_required_or_optional_text(node)
-            if typ.startswith("NX"):
-                if name == "":
-                    name = typ.lstrip("NX").upper()
-                typ = f":ref:`{typ}`"
-            hTarget = self._hyperlink_target(parent_path, name, "group")
-            # target = hTarget.replace(".. _", "").replace(":\n", "")
-            # TODO: https://github.com/nexusformat/definitions/issues/1057
-            self._print(f"{indent}{hTarget}")
-            self._print(
-                f"{indent}{formatted_name}: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
-            )
+                for subnode in node.xpath("nx:attribute", namespaces=ns):
+                    optional = self._get_required_or_optional_text(subnode)
+                    self._print_attribute(
+                        ns,
+                        "field",
+                        subnode,
+                        optional,
+                        indent + self._INDENTATION_UNIT,
+                        parent_path + "/" + name,
+                    )
 
-            self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc_enum(indent, ns, node)
+            elif tag == "group":
+                name = node.get("name", "")
+                formatted_name = get_rst_formatted_name(node)
+                typ = node.get("type", "untyped (this is an error; please report)")
 
-            for subnode in node.xpath("nx:attribute", namespaces=ns):
-                optional = self._get_required_or_optional_text(subnode)
-                self._print_attribute(
-                    ns,
-                    "group",
-                    subnode,
-                    optional,
-                    indent + self._INDENTATION_UNIT,
-                    parent_path + "/" + name,
-                )
-
-            nodename = "%s/%s" % (name, node.get("type"))
-            self._print_full_tree(
-                ns,
-                node,
-                nodename,
-                indent + self._INDENTATION_UNIT,
-                parent_path + "/" + name,
-            )
-
-        for node in parent.xpath("nx:link", namespaces=ns):
-            name = node.get("name")
-            formatted_name = get_rst_formatted_name(node)
-            self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'link')}")
-            self._print(
-                f"{indent}{formatted_name}: "
-                ":ref:`link<Design-Links>` "
-                f"(suggested target: ``{node.get('target')}``)"
-                "\n"
-            )
-            self._print_doc_enum(indent, ns, node)
-
-        for node in parent.xpath("nx:choice", namespaces=ns):
-            name = node.get("name", "")
-            hTarget = self._hyperlink_target(parent_path, name, "choice")
-            self._print(f"{indent}{hTarget}")
-            optional_text = self._get_required_or_optional_text(node).strip("() ")
-            self._print(
-                f"{indent}**{name}**: ({optional_text}) "
-                "Only one of the following groups may be present:\n"
-            )
-            self._print_doc_enum(indent, ns, node)
-
-            # Print each group option within the choice.
-            for subnode in node.xpath("nx:group", namespaces=ns):
-                subname = subnode.get("name", "")
-                typ = subnode.get(
-                    "type", "untyped (this is an error; please report)"
-                )
+                optional_text = self._get_required_or_optional_text(node)
                 if typ.startswith("NX"):
-                    if subname == "":
-                        subname = typ.lstrip("NX").upper()
-                    typ_ref = f":ref:`{typ}`"
-                else:
-                    typ_ref = typ
-                sub_indent = indent + self._INDENTATION_UNIT
-                subTarget = self._hyperlink_target(
-                    parent_path + "/" + name, subname, "group"
+                    if name == "":
+                        name = typ.lstrip("NX").upper()
+                    typ = f":ref:`{typ}`"
+                hTarget = self._hyperlink_target(parent_path, name, "group")
+                # target = hTarget.replace(".. _", "").replace(":\n", "")
+                # TODO: https://github.com/nexusformat/definitions/issues/1057
+                self._print(f"{indent}{hTarget}")
+                self._print(
+                    f"{indent}{formatted_name}: {optional_text}{typ} "
+                    f"{self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
                 )
-                self._print(f"{sub_indent}{subTarget}")
-                self._print(f"{sub_indent}**{subname}**: {typ_ref}\n")
-                self._print_doc_enum(sub_indent, ns, subnode)
 
-                # Recursively print any content within this group option.
-                nodename = "%s/%s" % (subname, subnode.get("type"))
+                self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
+                self._print_doc_enum(indent, ns, node)
+
+                for subnode in node.xpath("nx:attribute", namespaces=ns):
+                    optional = self._get_required_or_optional_text(subnode)
+                    self._print_attribute(
+                        ns,
+                        "group",
+                        subnode,
+                        optional,
+                        indent + self._INDENTATION_UNIT,
+                        parent_path + "/" + name,
+                    )
+
+                nodename = "%s/%s" % (name, node.get("type"))
                 self._print_full_tree(
                     ns,
-                    subnode,
+                    node,
                     nodename,
-                    sub_indent + self._INDENTATION_UNIT,
-                    parent_path + "/" + name + "/" + subname,
+                    indent + self._INDENTATION_UNIT,
+                    parent_path + "/" + name,
                 )
+
+            elif tag == "choice":
+                name = node.get("name", "")
+                hTarget = self._hyperlink_target(parent_path, name, "choice")
+                self._print(f"{indent}{hTarget}")
+                optional_text = self._get_required_or_optional_text(node).strip("() ")
+                self._print(
+                    f"{indent}**{name}**: ({optional_text}) "
+                    "Only one of the following groups may be present:\n"
+                )
+                self._print_doc_enum(indent, ns, node)
+
+                # Print each group option within the choice.
+                for subnode in node.xpath("nx:group", namespaces=ns):
+                    subname = subnode.get("name", "")
+                    typ = subnode.get(
+                        "type", "untyped (this is an error; please report)"
+                    )
+                    if typ.startswith("NX"):
+                        if subname == "":
+                            subname = typ.lstrip("NX").upper()
+                        typ_ref = f":ref:`{typ}`"
+                    else:
+                        typ_ref = typ
+                    sub_indent = indent + self._INDENTATION_UNIT
+                    subTarget = self._hyperlink_target(
+                        parent_path + "/" + name, subname, "group"
+                    )
+                    self._print(f"{sub_indent}{subTarget}")
+                    self._print(f"{sub_indent}**{subname}**: {typ_ref}\n")
+                    self._print_doc_enum(sub_indent, ns, subnode)
+
+                    # Recursively print any content within this group option.
+                    nodename = "%s/%s" % (subname, subnode.get("type"))
+                    self._print_full_tree(
+                        ns,
+                        subnode,
+                        nodename,
+                        sub_indent + self._INDENTATION_UNIT,
+                        parent_path + "/" + name + "/" + subname,
+                    )
+
+            elif tag == "link":
+                name = node.get("name")
+                formatted_name = get_rst_formatted_name(node)
+                self._print(
+                    f"{indent}{self._hyperlink_target(parent_path, name, 'link')}"
+                )
+                self._print(
+                    f"{indent}{formatted_name}: "
+                    ":ref:`link<Design-Links>` "
+                    f"(suggested target: ``{node.get('target')}``)"
+                    "\n"
+                )
+                self._print_doc_enum(indent, ns, node)
+
+            else:
+                raise ValueError(f"Unknown node type: {tag}")
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
