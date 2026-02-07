@@ -364,7 +364,7 @@ class NXClassDocGenerator:
         :returns: formatted text
         """
         tag = node.tag.split("}")[-1]
-        if tag in ("field", "group"):
+        if tag in ("field", "group", "choice"):
             optional_default = not self._use_application_defaults
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
@@ -709,6 +709,47 @@ class NXClassDocGenerator:
                 "\n"
             )
             self._print_doc_enum(indent, ns, node)
+
+        for node in parent.xpath("nx:choice", namespaces=ns):
+            name = node.get("name", "")
+            hTarget = self._hyperlink_target(parent_path, name, "choice")
+            self._print(f"{indent}{hTarget}")
+            optional_text = self._get_required_or_optional_text(node).strip("() ")
+            self._print(
+                f"{indent}**{name}**: ({optional_text}) "
+                "Only one of the following groups may be present:\n"
+            )
+            self._print_doc_enum(indent, ns, node)
+
+            # Print each group option within the choice.
+            for subnode in node.xpath("nx:group", namespaces=ns):
+                subname = subnode.get("name", "")
+                typ = subnode.get(
+                    "type", "untyped (this is an error; please report)"
+                )
+                if typ.startswith("NX"):
+                    if subname == "":
+                        subname = typ.lstrip("NX").upper()
+                    typ_ref = f":ref:`{typ}`"
+                else:
+                    typ_ref = typ
+                sub_indent = indent + self._INDENTATION_UNIT
+                subTarget = self._hyperlink_target(
+                    parent_path + "/" + name, subname, "group"
+                )
+                self._print(f"{sub_indent}{subTarget}")
+                self._print(f"{sub_indent}**{subname}**: {typ_ref}\n")
+                self._print_doc_enum(sub_indent, ns, subnode)
+
+                # Recursively print any content within this group option.
+                nodename = "%s/%s" % (subname, subnode.get("type"))
+                self._print_full_tree(
+                    ns,
+                    subnode,
+                    nodename,
+                    sub_indent + self._INDENTATION_UNIT,
+                    parent_path + "/" + name + "/" + subname,
+                )
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
