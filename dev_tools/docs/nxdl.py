@@ -582,7 +582,7 @@ class NXClassDocGenerator:
     def _print_doc_enum(self, indent, ns, node, required=False):
         collapse_indent = indent
         node_list = node.xpath("nx:enumeration", namespaces=ns)
-        (doclen, line, blocks) = self.long_doc(ns, node, len(indent))
+        doclen, line, blocks = self.long_doc(ns, node, len(indent))
         if len(node_list) + doclen > 1:
             collapse_indent = f"{indent}    "
             self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
