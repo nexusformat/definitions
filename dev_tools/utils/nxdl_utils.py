@@ -552,7 +552,7 @@ def check_attr_name_nxdl(param):
     """Check for ATTRIBUTENAME_units in NXDL (normal).
     If not defined, check for ATTRIBUTENAME to see if the ATTRIBUTE
     is in the SCHEMA, but no units category were defined."""
-    (logger, elem, nxdl_path, doc, attr, req_str) = param
+    logger, elem, nxdl_path, doc, attr, req_str = param
     orig_elem = elem
     elem2 = get_nxdl_child(elem, attr, nexus_type="attribute")
     if elem2 is not None:  # check for ATTRIBUTENAME_units in NXDL (normal)
@@ -846,7 +846,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         and hdf_node.parent is not None
         and decode_or_not(hdf_node.parent.attrs.get("NX_class")) == "NXdata"
     ):
-        (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
+        fnd_child, fit = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
         if fnd_child is not None:
             return (fnd_child, fit)
     for child in nxdl_elem:
@@ -880,7 +880,7 @@ def walk_elist(elist, html_name):
             for potential_direct_parent in elist:
                 main_child = get_direct_child(potential_direct_parent, html_name)
                 if main_child is not None:
-                    (fitting_child, _) = get_best_child(
+                    fitting_child, _ = get_best_child(
                         elist[ind],
                         None,
                         html_name,
@@ -941,7 +941,7 @@ def get_node_at_nxdl_path(
         if nxdl_path.count("/") == 1 and not nxdl_path.upper().startswith("/ENTRY"):
             elem = None
             nx_name = "NXroot"
-        (class_path, nxdlpath, elist) = get_inherited_nodes(nxdl_path, nx_name, elem)
+        class_path, nxdlpath, elist = get_inherited_nodes(nxdl_path, nx_name, elem)
     except ValueError as value_error:
         if exc:
             raise NxdlAttributeNotFoundError(

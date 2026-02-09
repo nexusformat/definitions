@@ -67,7 +67,7 @@ def test_get_inherited_nodes():
     nxdl_file_path = local_dir / "NXtest.nxdl.xml"
 
     elem = ET.parse(nxdl_file_path).getroot()
-    (_, _, elist) = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
+    _, _, elist = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
     assert len(elist) == 5
 
     nxdl_file_path = (
@@ -75,17 +75,17 @@ def test_get_inherited_nodes():
     )
 
     elem = ET.parse(nxdl_file_path).getroot()
-    (_, _, elist) = nexus.get_inherited_nodes(
+    _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT", elem=elem
     )
     assert len(elist) == 4
 
-    (_, _, elist) = nexus.get_inherited_nodes(
+    _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
     )
     assert len(elist) == 6
 
-    (_, _, elist) = nexus.get_inherited_nodes(
+    _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
         nx_name="NXiv_temp",
     )
