@@ -23,16 +23,62 @@ which provides links to the Release Notes (itemized list of changes) for any rel
 
 .. incoming change for next release
 
-  v2025.mm
+  v2026.mm
   ++++++++
 
-  for release sometime in *2025*
+  for release sometime in *2026*
 
-  Maintenance
-  -----------
+v2026.01
+++++++++
 
-  * Add nameType="partial" to NXDL schema.
-  * Use 'nameType' attribute in fields, groups, and attributes.
+released *2026-02-19*
+
+This is a patch release and contains new contributions from the
+[FAIRmat consortium](https://www.fairmat-nfdi.eu/fairmat/) and the wider NeXus
+community.
+
+Summary statistics from the GitHub definitions repository show this activity
+since the (previous) v2025.11 release:
+
+=============   ========
+activity        quantity
+=============   ========
+Pull Requests   15
+Issues          4
+Commits         28
+=============   ========
+
+See the wiki for more details:
+https://github.com/nexusformat/definitions/wiki/releasenotes__v2026.01
+
+New Features
+------------
+
+New contributed application definitions include ``NXspm``, ``NXafm``, ``NXstm``,
+and ``NXstm`` accompanied by some new base classes.
+
+The parameter fields in ``NXparameter`` now has some optional attributes to store optimization
+metadata and ``NXfit_function`` has been updated to match.
+
+Fixes
+-----
+
+Make documentation of deprecated attributes visible. The one year curation
+requirement for contributions is now lifted.
+
+Maintenance
+-----------
+
+Documentation for some application definitions has been recategorized. Make
+tooling work for newer Python. Fix incorrect referencing of inherited nodes of
+different tag type.
+
+Deprecations
+------------
+
+The ``NXnote`` called ``thumbnail`` in ``NXentry`` has a ``type`` attribute that
+is now deprecated in favour of a field of the same name.
+
 
 v2025.11
 ++++++++
