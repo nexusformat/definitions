@@ -1,8 +1,8 @@
 """Writes a NeXus HDF5 file using h5py"""
 
 import datetime
-import h5py  # HDF5 support
 
+import h5py  # HDF5 support
 
 RAW_MR_SCAN = """
 17.92608    1037
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     data = {"mr": [], "I00": []}
     buffer = RAW_MR_SCAN.strip().split("\n")
     for row in buffer:
-        (x, y) = row.split()
+        x, y = row.split()
         data["mr"].append(float(x))
         data["I00"].append(float(y))
 

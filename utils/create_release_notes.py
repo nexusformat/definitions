@@ -16,10 +16,10 @@ Create release notes for a new release of this GitHub repository.
 
 import argparse
 import datetime
-import github
 import logging
 import os
 
+import github
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("create_release_notes")
@@ -28,12 +28,12 @@ logger = logging.getLogger("create_release_notes")
 def findGitConfigFile():
     """
     return full path to .git/config file
-    
+
     must be in current working directory or some parent directory
-    
-    This is a simplistic search that could be improved by using 
+
+    This is a simplistic search that could be improved by using
     an open source package.
-    
+
     Needs testing for when things are wrong.
     """
     path = os.getcwd()
@@ -63,10 +63,10 @@ def parse_git_url(url):
 def getRepositoryInfo():
     """
     return (organization, repository) tuple from .git/config file
-    
-    This is a simplistic search that could be improved by using 
+
+    This is a simplistic search that could be improved by using
     an open source package.
-    
+
     Needs testing for when things are wrong.
     """
     config_file = findGitConfigFile()
@@ -149,8 +149,7 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
         for i in repo.get_issues(milestone=milestone, state="closed")
         if (
             (milestone is not None or i.closed_at > earliest)
-            and
-            i.number not in pulls
+            and i.number not in pulls
         )
     }
     # fmt: on
@@ -185,12 +184,12 @@ def parse_command_line():
     help_text += ' (default="main")'
     # fmt: off
     parser.add_argument(
-        "--head", 
-        action='store', 
+        "--head",
+        action='store',
         dest='head',
-        nargs='?', 
-        help = help_text, 
-        default="main"
+        nargs='?',
+        help=help_text,
+        default="main",
     )
     # fmt: on
 
@@ -269,7 +268,9 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         for k, commit in commits.items():
             message = commit.commit.message.splitlines()
             when = commit.raw_data["commit"]["committer"]["date"].split("T")[0]
-            print(f"[{k[:7]}]({commit.html_url}) | {when} | {message[0] if message else ""}")
+            print(
+                f"[{k[:7]}]({commit.html_url}) | {when} | {message[0] if message else ""}"
+            )
 
 
 def main(base=None, head=None, milestone=None, token=None, debug=False):

@@ -47,13 +47,13 @@ install ::
 	$(PYTHON) -m pip install -r requirements.txt
 
 style ::
-	$(PYTHON) -m black --check dev_tools
-	$(PYTHON) -m flake8 dev_tools
-	$(PYTHON) -m isort --check dev_tools
+	$(PYTHON) -m black --check .
+	$(PYTHON) -m flake8 .
+	$(PYTHON) -m isort --check .
 
 autoformat ::
-	$(PYTHON) -m black dev_tools
-	$(PYTHON) -m isort dev_tools
+	$(PYTHON) -m black .
+	$(PYTHON) -m isort .
 
 test ::
 	$(PYTHON) -m pytest dev_tools
