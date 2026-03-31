@@ -474,14 +474,16 @@ type, some more steps are required:
 
 - Correct your definition per the comments of the NIAC
 
-- Cure and use the definition for a year
+- Cure and use the definition to verify it is ready
 
 - After a final review, it becomes the standard
 
 The NIAC must review an application definition before it is accepted as a
-standard. The one year curation period is in place in order to gain practical
+standard. The curation period is in place in order to gain practical
 experience with the definition and to sort out bugs from Step 1. In this period,
-data shall be written and analyzed using the new application definition.
+data shall be written and analyzed using the new application definition. No
+specific time limit is required, but generally the standard should be well
+vetted by your community and the NIAC.
 
 .. _NXDL_Tutorial-WoniNxdl:
 
@@ -561,12 +563,18 @@ Processed Data
    NXprocess
    Processed Data
 
-Data reduction and analysis programs are encouraged to store their results in
-NeXus data files. As far as the necessary, the normal NeXus 
-:index:`hierarchy <hierarchy>`
-is to be implemented. In addition, processed data files
-must contain a :ref:`NXprocess`
-group. This group, that documents and preserves data provenance,
-contains the name of the data processing program and the
-parameters used to run this program in order to achieve the results stored in
-this entry. Multiple processing steps must have a separate entry each.
+Data reduction and analysis programs are encouraged to store their
+results in NeXus data files, which may be the same file that contains
+the raw data. It is recommended to document the actions taken to
+generate the processed data in a :ref:`NXprocess` group, which has
+fields to store the name of the program used, its version number, and
+the date when it was run. If there are multiple processes recorded in
+the file, the group should also contain a sequence index to specify the
+order in which they were run. NXprocess groups can also contain one or
+more :ref:`NXparameters` groups to store the parameters used by the
+program as well as one or more :ref:`NXdata` groups that contain the
+results of the process. This has the advantage of encapsulating all the
+information required to preserve the provenance of the processed data in
+a single group. However, it is also acceptable to store the resulting
+data in a NXdata group at the same level as the NXprocess group in the
+NeXus :index:`hierarchy <hierarchy>`.

@@ -112,9 +112,10 @@ class AnchorRegistry:
         """Write the in-memory registry to files"""
         if not self._writing_enabled:
             return
+        utcnow = datetime.datetime.now(datetime.timezone.utc).isoformat()
         contents = dict(
             _metadata=dict(
-                datetime=datetime.datetime.utcnow().isoformat(),
+                datetime=utcnow,
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, "
                 "attributes, and links.",

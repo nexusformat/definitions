@@ -5,6 +5,7 @@ from .apps import dir_app
 from .apps import impatient_app
 from .apps import manual_app
 from .apps import nxclass_app
+from .apps import test_app
 
 
 def main(argv=None):
@@ -30,23 +31,27 @@ def main(argv=None):
     impatient_app.impatient_args(impatient_parser)
     dir_app.dir_args(impatient_parser)
 
+    nxtest_parser = subparsers.add_parser("nxtest", help="Test definition files")
+    test_app.nxtest_args(nxtest_parser)
+    dir_app.dir_args(nxtest_parser)
+
     if argv is None:
         argv = sys.argv
     args = parser.parse_args(argv[1:])
 
-    if args.command == "nxclass":
-        dir_app.dir_exec(args)
-        nxclass_app.nxclass_exec(args)
-    elif args.command == "manual":
-        dir_app.dir_exec(args)
-        manual_app.manual_exec(args)
-    elif args.command == "impatient":
-        dir_app.dir_exec(args)
-        impatient_app.impatient_exec(args)
-    else:
+    app_exec = {
+        "nxclass": nxclass_app.nxclass_exec,
+        "manual": manual_app.manual_exec,
+        "impatient": impatient_app.impatient_exec,
+        "nxtest": test_app.nxtest_exec,
+    }.get(args.command)
+
+    if app_exec is None:
         parser.print_help()
         return 1
-    return 0
+
+    dir_app.dir_exec(args)
+    return 0 if not app_exec(args) else 1
 
 
 if __name__ == "__main__":
