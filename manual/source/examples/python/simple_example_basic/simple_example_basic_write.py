@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """Writes a NeXus HDF5 file using h5py and numpy"""
 
-from pathlib import Path
 import datetime
+from pathlib import Path
+
 import h5py  # HDF5 support
 import numpy
 

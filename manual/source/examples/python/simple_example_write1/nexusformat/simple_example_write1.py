@@ -10,8 +10,10 @@ in the Introduction chapter
 from pathlib import Path
 
 import numpy
-
-from nexusformat.nexus import NXdata, NXentry, NXfield, nxopen
+from nexusformat.nexus import NXdata
+from nexusformat.nexus import NXentry
+from nexusformat.nexus import NXfield
+from nexusformat.nexus import nxopen
 
 filename = str(Path(__file__).absolute().parent.parent / "simple_example.dat")
 buffer = numpy.loadtxt(filename).T

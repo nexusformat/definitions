@@ -2,7 +2,6 @@
 
 import h5py  # HDF5 support
 
-
 testFiles = ("simple_example_test.nexus.hdf5",)
 
 GROUP_TYPE_MATCH = "<class 'h5py.highlevel.Group'>"

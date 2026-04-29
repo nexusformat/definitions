@@ -10,9 +10,10 @@ This is the bash command to find all matching lines::
 See copyright text at bottom of this file for example.
 """
 
-import os, sys
-import mimetypes
 import datetime
+import mimetypes
+import os
+import sys
 
 YEAR = datetime.datetime.now().year
 LEFT_SIDE_TEXT_MATCH = "Copyright (C) "
@@ -78,7 +79,10 @@ def update(filename):
         fp.writelines(buf)
         fp.close()
 
+
 NOT_ALLOWED = ("/.git", "/kits", "cache")
+
+
 def find_source_files(path):
     """walk the source_path directories accumulating files to be checked"""
     file_list = []
@@ -100,7 +104,6 @@ def sift_file_list(file_list):
     .dia .vsdx .h5 .nx .hdf5 .hdf .nx5 .pyc
     """.strip().split()
     for fn in file_list:
-        _fn = os.path.split(fn)[-1]
         mime = mimetypes.guess_type(fn)[0]
         if fn.find("/.git") >= 0:
             continue
@@ -155,7 +158,7 @@ def command_args():
 def main():
     """
     standard command-line processing
-    
+
     source directory (NeXus definitions dir) named as command line argument
     target directory is specified (or defaults to present working directory)
     """
@@ -170,8 +173,6 @@ def main():
 
 def __developer_build_setup__():
     """for use with source-code debugger ONLY"""
-    import shutil
-
     # sys.argv.append('-h')
     sys.argv.append("..")
 
