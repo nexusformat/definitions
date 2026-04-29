@@ -7,6 +7,7 @@ import lxml.etree
 from ..globals import directories
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import XSD_NAMESPACE
+from ..utils import xml_utils
 from ..utils.types import PathLike
 
 
@@ -116,9 +117,7 @@ class XSDDocGenerator:
         if parent_name is None:
             return
 
-        simple_tag = parent.tag[
-            parent.tag.find("}") + 1 :
-        ]  # cut off the namespace identifier
+        simple_tag = xml_utils.get_local_name(parent)
 
         # <varlistentry> ...
         name = parent_name  # + ' data type'
