@@ -13,7 +13,7 @@ to be made before commiting the change:
  1. check whether the change does not violate any syntax rules
  2. verify whether the change looks as intended in the HTML documentation
 
-First install the test and build requirements with this command (only run once)
+First install the test and build requirements with this command (only run once).  This will install linting tools such as black and flake8 as well.
 
     make install
 
@@ -76,3 +76,7 @@ utils/                         | various tools used in the definitions tree
 www/                           | launch (home) page of NeXus WWW site
 xslt/                          | various XML stylesheet transformations
 dev_tools/                     | developer tools for testing and building
+
+## Linting
+
+We use flake8 and black for linting our Python code.  When running `git commit` these tools will automatically apply formatting.
