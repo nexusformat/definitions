@@ -380,7 +380,7 @@ languages that will allow low level programmatic access to the data structures.
       Editor <https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web>`__
     * On-line visualization with NeXus file (using ``h5wasm``):
       `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https://raw.githubusercontent.com/nexusformat/definitions/main/manual/source/examples/python/simple_example_basic/simple_example_basic.nexus.hdf5>`__
-    * `H5Web demonstration site <https://h5web.panosc.eu>`__
+    * `H5Web public implementation site <https://myhdf5.hdfgroup.org>`__
 
 .. index::
 	HDF; tools
