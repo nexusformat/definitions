@@ -17,8 +17,8 @@ def _read_xml_file(normalized_path: Path) -> ET.Element:
     try:
         return ET.parse(normalized_path).getroot()
     except OSError:
-        # Not sure this is still necessary
-        with open(normalized_path, "r") as f:
+        # libxml2 failed to open the file directly; retry with Python's open().
+        with open(normalized_path, "rb") as f:
             return ET.parse(f).getroot()
 
 
