@@ -12,9 +12,9 @@ from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
+from ..utils import nxdl_utils
+from ..utils import xml_utils
 from ..utils.github import get_file_contributors_via_api
-from ..utils.nxdl_utils import get_inherited_nodes
-from ..utils.nxdl_utils import get_rst_formatted_name
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
@@ -363,8 +363,8 @@ class NXClassDocGenerator:
         :param obj node: instance of lxml.etree._Element
         :returns: formatted text
         """
-        tag = node.tag.split("}")[-1]
-        if tag in ("field", "group", "choice"):
+        nxdl_element_type = nxdl_utils.get_nxdl_element_type(node)
+        if nxdl_element_type in ("field", "group", "choice"):
             optional_default = not self._use_application_defaults
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
@@ -379,7 +379,7 @@ class NXClassDocGenerator:
                 # this is unexpected and remarkable
                 # TODO: add a remark to the log
                 optional_text = f"(``minOccurs={str(minOccurs)}``) "
-        elif tag in ("attribute",):
+        elif nxdl_element_type in ("attribute",):
             optional_default = not self._use_application_defaults
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
@@ -387,7 +387,7 @@ class NXClassDocGenerator:
             if recommended:
                 optional_text = "(recommended) "
         else:
-            optional_text = "(unknown tag: " + str(tag) + ") "
+            optional_text = "(unknown tag: " + str(nxdl_element_type) + ") "
         return optional_text
 
     def _analyze_dimensions(self, ns, parent) -> str:
@@ -596,7 +596,7 @@ class NXClassDocGenerator:
 
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
-        formatted_name = get_rst_formatted_name(node)
+        formatted_name = nxdl_utils.get_rst_formatted_name(node)
         index_name = name
         self._print(
             f"{indent}" f"{self._hyperlink_target(parent_path, name, 'attribute')}"
@@ -626,11 +626,11 @@ class NXClassDocGenerator:
         """
         # Process children in document order to preserve XML ordering.
         for node in parent.xpath("nx:field|nx:group|nx:choice|nx:link", namespaces=ns):
-            tag = node.tag.split("}")[-1]
+            nxdl_element_type = nxdl_utils.get_nxdl_element_type(node)
 
-            if tag == "field":
+            if nxdl_element_type == "field":
                 name = node.get("name")
-                formatted_name = get_rst_formatted_name(node)
+                formatted_name = nxdl_utils.get_rst_formatted_name(node)
                 index_name = name
                 dims = self._analyze_dimensions(ns, node)
 
@@ -663,9 +663,9 @@ class NXClassDocGenerator:
                         parent_path + "/" + name,
                     )
 
-            elif tag == "group":
+            elif nxdl_element_type == "group":
                 name = node.get("name", "")
-                formatted_name = get_rst_formatted_name(node)
+                formatted_name = nxdl_utils.get_rst_formatted_name(node)
                 typ = node.get("type", "untyped (this is an error; please report)")
 
                 optional_text = self._get_required_or_optional_text(node)
@@ -705,7 +705,7 @@ class NXClassDocGenerator:
                     parent_path + "/" + name,
                 )
 
-            elif tag == "choice":
+            elif nxdl_element_type == "choice":
                 name = node.get("name", "")
                 hTarget = self._hyperlink_target(parent_path, name, "choice")
                 self._print(f"{indent}{hTarget}")
@@ -746,9 +746,9 @@ class NXClassDocGenerator:
                         parent_path + "/" + name + "/" + subname,
                     )
 
-            elif tag == "link":
+            elif nxdl_element_type == "link":
                 name = node.get("name")
-                formatted_name = get_rst_formatted_name(node)
+                formatted_name = nxdl_utils.get_rst_formatted_name(node)
                 self._print(
                     f"{indent}{self._hyperlink_target(parent_path, name, 'link')}"
                 )
@@ -761,7 +761,7 @@ class NXClassDocGenerator:
                 self._print_doc_enum(indent, ns, node)
 
             else:
-                raise ValueError(f"Unknown node type: {tag}")
+                raise ValueError(f"Unknown node type: {nxdl_element_type}")
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
@@ -772,15 +772,13 @@ class NXClassDocGenerator:
         path = path[path.find("/", 1) :]
 
         try:
-            parents = get_inherited_nodes(path, nx_name)[2]
+            parents = nxdl_utils.get_inherited_nodes(path, nx_name)[2]
         except FileNotFoundError:
             return ""
         if len(parents) > 1:
             for parent in parents:
                 # iterate back and check tag matches
-                if not parent.tag.endswith(tag) and not parent.tag.endswith(
-                    "definition"
-                ):
+                if xml_utils.get_local_name(parent) not in (tag, "definition"):
                     print(
                         f"Warning: {path} has a mismatching inherited node - {parent.tag} cf {tag}"
                     )
