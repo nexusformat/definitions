@@ -7,9 +7,13 @@ according to the example from Figure 2.1 in the Design chapter
 from pathlib import Path
 
 import numpy
-
-from nexusformat.nexus import (NXdata, NXdetector, NXentry, NXfield,
-                               NXinstrument, NXlink, nxopen)
+from nexusformat.nexus import NXdata
+from nexusformat.nexus import NXdetector
+from nexusformat.nexus import NXentry
+from nexusformat.nexus import NXfield
+from nexusformat.nexus import NXinstrument
+from nexusformat.nexus import NXlink
+from nexusformat.nexus import nxopen
 
 filename = str(Path(__file__).absolute().parent.parent / "simple_example.dat")
 buffer = numpy.loadtxt(filename).T
@@ -25,6 +29,8 @@ with nxopen("simple_example_write2.hdf5", "w") as f:  # create the HDF5 NeXus fi
     f["entry/instrument/detector/two_theta"] = NXfield(tthData, units="degrees")
     f["entry/instrument/detector/counts"] = NXfield(countsData, units="counts")
 
-    f["entry/data"] = NXdata(NXlink("/entry/instrument/detector/counts"),
-                             NXlink("/entry/instrument/detector/two_theta"))
+    f["entry/data"] = NXdata(
+        NXlink("/entry/instrument/detector/counts"),
+        NXlink("/entry/instrument/detector/two_theta"),
+    )
     f["entry/data"].set_default()

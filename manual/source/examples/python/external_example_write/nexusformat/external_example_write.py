@@ -9,9 +9,13 @@ from pathlib import Path
 
 import h5py
 import numpy
-
-from nexusformat.nexus import (NXdata, NXdetector, NXentry, NXfield,
-                               NXinstrument, NXlink, nxopen)
+from nexusformat.nexus import NXdata
+from nexusformat.nexus import NXdetector
+from nexusformat.nexus import NXentry
+from nexusformat.nexus import NXfield
+from nexusformat.nexus import NXinstrument
+from nexusformat.nexus import NXlink
+from nexusformat.nexus import nxopen
 
 FILE_HDF5_MASTER = "external_master.hdf5"
 FILE_HDF5_ANGLES = "external_angles.hdf5"
@@ -37,14 +41,14 @@ with nxopen(FILE_HDF5_COUNTS, "w") as f:
     f["entry/instrument"] = NXinstrument()
     f["entry/instrument/detector"] = NXdetector()
     f["entry/instrument/detector/counts"] = NXfield(countsData, units="counts")
-    f["entry/instrument/detector/two_theta"] = NXlink("/angles",
-                                                      FILE_HDF5_ANGLES)
+    f["entry/instrument/detector/two_theta"] = NXlink("/angles", FILE_HDF5_ANGLES)
 
 # create a master NeXus HDF5 file
 with nxopen(FILE_HDF5_MASTER, "w") as f:
     f["entry"] = NXentry()
-    counts = NXlink("/entry/instrument/detector/counts", FILE_HDF5_COUNTS,
-                    name="counts")
+    counts = NXlink(
+        "/entry/instrument/detector/counts", FILE_HDF5_COUNTS, name="counts"
+    )
     two_theta = NXlink("/angles", FILE_HDF5_ANGLES, name="two_theta")
     f["entry/data"] = NXdata(counts, two_theta)
     f["entry/data"].set_default()
