@@ -23,6 +23,7 @@ SOURCE_TO_GROUPING = {
         "mpes",
         "optical-spectroscopy",
         "tof",
+        "spm",
     ],
     "base_classes": [
         "core",
@@ -35,6 +36,7 @@ SOURCE_TO_GROUPING = {
         "em",
         "mpes",
         "optical-spectroscopy",
+        "spm",
     ],
     "contributed_definitions": [
         "sample",
@@ -44,7 +46,6 @@ SOURCE_TO_GROUPING = {
         "optical-spectroscopy",
         "transport",
         "micro",
-        "spm",
     ],
 }
 
@@ -281,6 +282,8 @@ research fields are listed in each category:
 
   :ref:`Optical Spectroscopy <AppDef-Opt-Spec-Structure>`
 
+  :ref:`Scanning Probe Microscopy <AppDef-Spm-Structure>`
+
   :ref:`Time-of-Flight Techniques <AppDef-Tof-Structure>`
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -316,8 +319,6 @@ research fields are listed in each category:
   :ref:`Atom Probe Microscopy <CC-Apm-Structure>`
 
   :ref:`Optical Spectroscopy <CC-Opt-Spec-Structure>`
-
-  :ref:`Scanning Probe Microscopy <CC-Spm-Structure>`
 
   :ref:`Transport Measurements <CC-Transport-Structure>`
 
