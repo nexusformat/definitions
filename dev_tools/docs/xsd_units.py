@@ -53,7 +53,7 @@ def generate_xsd_units_doc(
                 content += f",\n\texample: {examples_str}"
             elif examples:
                 examples_str = " | ".join(examples)
-                content += f",\n\texample(s): {examples_str}"
+                content += f",\n\texamples: {examples_str}"
 
             db[node_name] = content
 
