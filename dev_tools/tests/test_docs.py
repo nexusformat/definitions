@@ -6,6 +6,7 @@ from ..docs import XSDDocGenerator
 from ..docs import nxdl_indices
 from ..globals.directories import get_xsd_file
 from ..nxdl import iter_definitions
+from .utils import pytest_path_param_id
 
 
 @pytest.fixture(scope="module")
@@ -26,17 +27,23 @@ def anchor_registry_write(tmpdir_factory):
     reg.write()
 
 
-@pytest.mark.parametrize("nxdl_file", list(iter_definitions()))
+@pytest.mark.parametrize(
+    "nxdl_file", list(iter_definitions()), ids=pytest_path_param_id
+)
 def test_nxdl_generate_doc(nxdl_file, doc_generator):
     assert doc_generator(nxdl_file)
 
 
-@pytest.mark.parametrize("nxdl_file", list(iter_definitions()))
+@pytest.mark.parametrize(
+    "nxdl_file", list(iter_definitions()), ids=pytest_path_param_id
+)
 def test_nxdl_anchor_list(nxdl_file, doc_generator, anchor_registry):
     assert doc_generator(nxdl_file, anchor_registry=anchor_registry)
 
 
-@pytest.mark.parametrize("nxdl_file", list(iter_definitions()))
+@pytest.mark.parametrize(
+    "nxdl_file", list(iter_definitions()), ids=pytest_path_param_id
+)
 def test_nxdl_anchor_write_list(nxdl_file, doc_generator, anchor_registry_write):
     assert doc_generator(nxdl_file, anchor_registry=anchor_registry_write)
 
