@@ -4,6 +4,7 @@ from ..nxdl import find_definition
 from ..nxdl import iter_definitions
 from ..nxdl import nxdl_schema
 from ..nxdl import validate_definition
+from ..nxdl import validate_nxdl
 from .utils import pytest_path_param_id
 
 
@@ -26,8 +27,12 @@ def xml_schema():
     return nxdl_schema()
 
 
+def test_nxdl_syntax():
+    validate_nxdl()
+
+
 @pytest.mark.parametrize(
     "nxdl_file", list(iter_definitions()), ids=pytest_path_param_id
 )
-def test_nxdl_syntax(nxdl_file, xml_schema):
+def test_nexus_syntax(nxdl_file, xml_schema):
     validate_definition(nxdl_file, xml_schema)

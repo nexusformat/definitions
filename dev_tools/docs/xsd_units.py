@@ -43,16 +43,19 @@ def generate_xsd_units_doc(
         if node_name is None:
             continue
         if "nxdl:" + node_name in members:
-            words = node.xpath("xs:annotation/xs:documentation", namespaces=ns)[0]
-            examples = []
-            for example in words.iterchildren():
-                nm = example.attrib.get("name")
-                if nm is not None and nm == "example":
-                    examples.append("``" + example.text + "``")
-            a = words.text
-            if len(examples) > 0:
-                a = " ".join(a.split()) + ",\n\texample(s): " + " | ".join(examples)
-            db[node_name] = a
+            doc = _extract_xsd_doc(node, ns)
+            examples = _extract_xsd_examples(node, ns)
+
+            content = " ".join(doc.split())
+
+            if len(examples) == 1:
+                examples_str = examples[0]
+                content += f",\n\texample: {examples_str}"
+            elif examples:
+                examples_str = " | ".join(examples)
+                content += f",\n\texample(s): {examples_str}"
+
+            db[node_name] = content
 
             # for item in node.xpath("xs:restriction//xs:enumeration", namespaces=ns):
             #    key = "%s" % item.get("value")
@@ -69,3 +72,23 @@ def generate_xsd_units_doc(
             rst_lines.append(f"    {line}\n")
         rst_lines.append("\n")
     return rst_lines
+
+
+def _extract_xsd_doc(node, ns):
+    """
+    Extracts documentation text from an XSD annotation.
+    """
+    doc_nodes = node.xpath("xs:annotation/xs:documentation", namespaces=ns)
+    if not doc_nodes:
+        return ""
+
+    return " ".join(doc_nodes[0].itertext()).strip()
+
+
+def _extract_xsd_examples(node, ns):
+    """
+    Extracts examples from an XSD annotation.
+    """
+    examples = node.xpath("xs:annotation/xs:appinfo/example/text()", namespaces=ns)
+
+    return [f"``{ex}``" for ex in examples if ex]
