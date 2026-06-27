@@ -20,7 +20,7 @@ with any of these data types. The default type ``NX_CHAR`` is applied in cases
 where a field or attribute is defined in an NXDL specification without explicit assignment of a ``type``.
 
 ..  Generated from ../nxdlTypes.xsd via a custom Python tool
-    ../../utils/types2rst.py ../../nxdlTypes.xsd > types.table
+    dev_tools.docs.xsd_units.generate_xsd_units_doc
 
 .. index::
    seealso: binary data; NX_BINARY
