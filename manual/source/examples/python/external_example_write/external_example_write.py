@@ -6,6 +6,7 @@ This example is based on ``writer_2_1``.
 """
 
 from pathlib import Path
+
 import h5py
 import numpy
 

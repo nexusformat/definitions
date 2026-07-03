@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from nexusformat.nexus import nxopen
 
 filename = str(
@@ -12,7 +13,7 @@ with nxopen(filename) as f:
     signal = nx_data.nxsignal
     axes = nx_data.nxaxes[0]
 
-nx_data.plot() # plot the data using Matplotlib
+nx_data.plot()  # plot the data using Matplotlib
 
 print(f"file: {f.nxfilename}")
 print(f"signal: {signal.nxname}")

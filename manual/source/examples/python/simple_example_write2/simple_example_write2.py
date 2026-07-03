@@ -5,6 +5,7 @@ according to the example from Figure 2.1 in the Design chapter
 """
 
 from pathlib import Path
+
 import h5py
 import numpy
 

@@ -2,10 +2,12 @@
 """Writes a NeXus HDF5 file using h5py and numpy"""
 
 from pathlib import Path
-from re import X
-import numpy
 
-from nexusformat.nexus import NXdata, NXentry, NXfield, nxopen
+import numpy
+from nexusformat.nexus import NXdata
+from nexusformat.nexus import NXentry
+from nexusformat.nexus import NXfield
+from nexusformat.nexus import nxopen
 
 print("Write a NeXus HDF5 file")
 fileName = "simple_example_basic.nexus.hdf5"
@@ -25,8 +27,7 @@ with nxopen(fileName, "w") as f:
 
     # create the NXdata group
     x = NXfield(mr_arr, name="mr", units="degrees", long_name="USAXS mr (degrees)")
-    y = NXfield(i00_arr, name="I00", units="counts",
-                long_name="USAXS I00 (counts)")
+    y = NXfield(i00_arr, name="I00", units="counts", long_name="USAXS I00 (counts)")
     f["entry/mr_scan"] = NXdata(y, x)
 
 print("wrote file:", fileName)

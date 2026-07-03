@@ -35,9 +35,10 @@ Explanation:
 x = [0.5, 1.5, 2.5, 4, 5, 6.5, 7, 8]
 y = [4.8, 5.5, 3.5, 4.6, 6.5, 6.6, 2.6]
 
+import matplotlib.pyplot as plt  # noqa E402
+
 # Plot
 import numpy as np  # noqa E402
-import matplotlib.pyplot as plt  # noqa E402
 
 plt.style.use("_mpl-gallery")
 
