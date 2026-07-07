@@ -42,6 +42,7 @@ SOURCE_TO_GROUPING = {
         "cg",
         "apm",
         "optical-spectroscopy",
+        "xas",
         "transport",
         "micro",
         "spm",
@@ -316,6 +317,8 @@ research fields are listed in each category:
   :ref:`Atom Probe Microscopy <CC-Apm-Structure>`
 
   :ref:`Optical Spectroscopy <CC-Opt-Spec-Structure>`
+
+  :ref:`X-ray Absorption Spectroscopy <CC-Xas-Structure>`
 
   :ref:`Scanning Probe Microscopy <CC-Spm-Structure>`
 
