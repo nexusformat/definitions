@@ -1,4 +1,4 @@
-.. _CC-Spm-Structure:
+.. _AppDef-Spm-Structure:
 
 ===============================
 Scanning Probe Microscopy
