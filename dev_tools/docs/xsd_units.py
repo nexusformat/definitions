@@ -43,14 +43,11 @@ def generate_xsd_units_doc(
         if node_name is None:
             continue
         if "nxdl:" + node_name in members:
-            doc = _extract_xsd_doc(node, ns)
+            content = _extract_xsd_doc(node, ns)
             examples = _extract_xsd_examples(node, ns)
 
-            content = " ".join(doc.split())
-
             if len(examples) == 1:
-                examples_str = examples[0]
-                content += f",\n\texample: {examples_str}"
+                content += f",\n\texample: {examples[0]}"
             elif examples:
                 examples_str = " | ".join(examples)
                 content += f",\n\texamples: {examples_str}"
