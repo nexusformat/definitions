@@ -43,8 +43,11 @@ def generate_xsd_units_doc(
         if node_name is None:
             continue
         if "nxdl:" + node_name in members:
-            content = _extract_xsd_doc(node, ns)
+            doc = _extract_xsd_doc(node, ns)
             examples = _extract_xsd_examples(node, ns)
+
+            # Replacing other whitespace characters to remove Sphinx warnings.
+            content = " ".join(doc.split())
 
             if len(examples) == 1:
                 content += f",\n\texample: {examples[0]}"
