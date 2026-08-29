@@ -63,6 +63,8 @@ readbility and comprehension for those whom are new to an NXDL file, the followi
 guidelines are strongly encouraged:
 
 * All symbols used in the application definition are defined in a single ``Symbols`` table.
+  This is enforced when building the documentation: every symbol that appears as the size
+  of a dimension must be in the ``Symbols`` table of the same NXDL file.
 * The :ref:`name <validItemName>` of a symbol uses camel case without any white space or underscores.
 
   examples: 
@@ -113,6 +115,51 @@ guidelines are strongly encouraged:
 			<field name="title"  minOccurs="0" maxOccurs="1"/>  	
 		...
 							
+
+When a :ref:`reused concept <Design-ReusedConcepts>` has dimensions expressed in symbols
+of the class that defines it, those symbols are taken over with the ``reused_from``
+attribute instead of repeating their documentation:
+
+.. code-block:: xml
+    :linenos:
+
+		<symbols>
+			<symbol name="nP" reused_from="NXdetector"/>
+		</symbols>
+
+.. _Design-ReusedConcepts:
+
+Reusing concepts of other classes
+=================================
+
+A class takes over everything defined by the class it ``extends`` and by the base
+classes of the groups it uses, without repeating any of it.  Only what a class defines
+itself is shown in its documentation.  When a group, field or attribute of another
+class is worth showing without changing anything about it, list it in the
+``reused_concepts`` list instead of repeating its definition:
+
+.. code-block:: xml
+    :linenos:
+
+		<reused_concepts>
+			<reuse path="/ENTRY/INSTRUMENT/SOURCE/type"/>
+			<reuse path="/ENTRY/INSTRUMENT/SOURCE/probe"/>
+			<reuse path="/ENTRY/SAMPLE/TRANSFORMATIONS" children="direct"/>
+		</reused_concepts>
+
+Each ``path`` starts at the root of the class and spells every name as in the class that
+defines it (an attribute is separated from its parent by ``@``, anything else by ``/``).
+The groups in between are shown as well, whether they are defined by this class or not.
+The ``children`` attribute selects which children of a reused group or field are shown
+too: ``none`` (the default), ``direct`` or ``all``.  Show a subset of the children by
+listing them separately.
+
+Reused concepts are marked *(reused)* in the documentation and link to the class that
+defines them.  The class itself is not affected: reusing a concept changes neither the
+class nor the validation of data files.  Define a concept in the class itself instead
+of reusing it whenever anything about it changes, including its documentation.  It is
+an error to reuse a concept that the class defines itself, or one that does not exist in
+the class.
 
 Annotated Structure
 ===================
