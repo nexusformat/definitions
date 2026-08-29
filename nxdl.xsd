@@ -238,10 +238,20 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="reused_concepts" type="nx:reusedConceptsType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Use a ``reused_concepts`` list to show groups, fields and attributes
+						that this class takes over from other classes without redefining
+						them.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						In addition to an optional ``symbols`` list,
+						In addition to an optional ``symbols`` list
+						and an optional ``reused_concepts`` list,
 						a ``definition`` may contain any of the items
 						allowed in a ``group``.
 					</xs:documentation>
@@ -1215,6 +1225,114 @@ https://stackoverflow.com/a/48980995/1046449 -->
 								Mnemonic variable name for this array index symbol.
 							</xs:documentation>
 						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="reused_from" use="optional" type="nx:validNXClassName">
+						<xs:annotation>
+							<xs:documentation>
+								Name of the NeXus class from which the documentation of this
+								``symbol`` is taken.  Use this when a concept that is reused by
+								this class (see the ``reused_concepts`` element) has dimensions
+								expressed in symbols of that class.  A ``symbol`` with a
+								``reused_from`` attribute must not have a ``doc`` element:
+								provide a ``doc`` element instead when the meaning of the
+								symbol differs from the meaning it has in that class.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="reusedConceptsType">
+		<xs:annotation>
+			<xs:documentation>
+				A class takes over everything defined by the class it ``extends`` and by the
+				base classes of the groups it uses, without repeating any of it.  Only what
+				a class defines itself is shown in its documentation.  A ``reused_concepts``
+				list points at concepts that a class reuses unchanged but that are worth
+				showing in its documentation anyway.  For example::
+
+					<reused_concepts>
+						<reuse path="/ENTRY/INSTRUMENT/SOURCE/type"/>
+						<reuse path="/ENTRY/INSTRUMENT/SOURCE/probe"/>
+						<reuse path="/ENTRY/SAMPLE/beam" children="direct"/>
+					</reused_concepts>
+
+				The documentation of each ``reuse`` path is rendered at its place in the
+				structure of this class, marked as reused and with a link to the class that
+				defines it.  Groups and fields in between (``INSTRUMENT`` and ``SOURCE`` in
+				the example above) are shown as well, even when they are neither defined by
+				this class nor listed here.  Nothing else changes: reusing a concept has no
+				effect on the class or on the validation of data files.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Describe the purpose of this list of reused concepts.
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reuse" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						One group, field or attribute of another class to be shown in
+						the documentation of this class.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="path" use="required" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>
+								Path of the concept, relative to the root of this class and
+								starting with ``/``.  Each name in the path must be spelled as
+								in the class that defines it (for example
+								``/ENTRY/INSTRUMENT/SOURCE/type``).  Attributes are separated
+								from their parent by ``@``.
+
+								It is an error when the concept at this path does not exist in
+								this class or when this class defines it itself: remove the
+								definition or remove this ``reuse`` element.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="children" use="optional" default="none">
+						<xs:annotation>
+							<xs:documentation>
+								Which children of the reused group or field are shown in the
+								documentation as well.  Show a subset of the children by
+								listing them separately.  Children that every group takes over from
+								:ref:`NXobject` are never shown, they can only be listed.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="none">
+									<xs:annotation>
+										<xs:documentation>
+											No children are shown (default).
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="direct">
+									<xs:annotation>
+										<xs:documentation>
+											The direct children are shown, but not their children.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="all">
+									<xs:annotation>
+										<xs:documentation>
+											All children are shown recursively.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+							</xs:restriction>
+						</xs:simpleType>
 					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
