@@ -22,6 +22,9 @@ from .anchor_list import AnchorRegistry
 MIN_COLLAPSE_HINT_LINE_LENGTH = 20
 MAX_COLLAPSE_HINT_LINE_LENGTH = 80
 
+_BACKTICK_RUN = re.compile(r"`+")
+_ASTERISK_RUN = re.compile(r"\*+")
+
 
 class NXClassDocGenerator:
     """Generate documentation in reStructuredText markup
@@ -576,8 +579,41 @@ class NXClassDocGenerator:
             for single_line in lines:
                 if len(single_line) > 2 and single_line[0] != "." and not fnd:
                     fnd = True
-                    line = single_line[:max_characters]
+                    line = self._truncate_rst_line(single_line, max_characters)
         return (length, line, blocks)
+
+    @staticmethod
+    def _has_unbalanced_runs(text: str, pattern: "re.Pattern[str]") -> bool:
+        """Whether text has an odd number of matching delimiter runs, e.g. a `role` or ``literal``
+        cut off before its closing backticks."""
+        stack: List[str] = []
+        for run in pattern.findall(text):
+            if stack and stack[-1] == run:
+                stack.pop()
+            else:
+                stack.append(run)
+        return bool(stack)
+
+    @staticmethod
+    def _truncate_rst_line(text: str, max_length: int) -> str:
+        """Truncate text to at most max_length characters without leaving unterminated RST inline
+        markup (a role/link cut mid-``target``) or a dangling implicit hyperlink reference (word_).
+        """
+        candidate = text[:max_length]
+        while candidate:
+            stripped = candidate.rstrip()
+            if (
+                not stripped.endswith("_")
+                and not NXClassDocGenerator._has_unbalanced_runs(
+                    stripped, _BACKTICK_RUN
+                )
+                and not NXClassDocGenerator._has_unbalanced_runs(
+                    stripped, _ASTERISK_RUN
+                )
+            ):
+                return candidate
+            candidate = candidate.rsplit(" ", 1)[0] if " " in candidate else ""
+        return candidate
 
     def _print_doc_enum(self, indent, ns, node, required=False):
         collapse_indent = indent
