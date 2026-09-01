@@ -585,7 +585,7 @@ class NXClassDocGenerator:
     @staticmethod
     def _has_unbalanced_runs(text: str, pattern: "re.Pattern[str]") -> bool:
         """Whether text has an odd number of matching delimiter runs, e.g. a `role` or ``literal``
-        cut off before its closing backticks."""
+        cut off before its closing delimiters."""
         stack: List[str] = []
         for run in pattern.findall(text):
             if stack and stack[-1] == run:
