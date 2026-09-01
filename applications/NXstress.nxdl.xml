@@ -43,12 +43,8 @@
         <symbol name="c_Unit">
             <doc>Converted diffractogram X units (could be the same as *x_Unit*).</doc>
         </symbol>
-        <symbol name="n_Temp">
-            <doc>number of temperatures</doc>
-        </symbol>
-		<symbol name="n_sField">
-            <doc>number of values in applied stress field</doc>
-        </symbol>
+        <symbol name="n_Temp" reused_from="NXsample"/>
+        <symbol name="n_sField" reused_from="NXsample"/>
         <symbol name="nP">
             <doc>number of scan points (only present in scanning measurements)</doc>
         </symbol>
@@ -59,6 +55,20 @@
             <doc>number of detector pixels in the second (faster) direction</doc>
         </symbol>
     </symbols>
+    <reused_concepts>
+        <doc>
+            Concepts that this application definition does not add anything to, but that
+            are documented here because they are relevant for stress and strain analysis.
+        </doc>
+        <reuse path="/ENTRY/title"/>
+        <reuse path="/ENTRY/experiment_responsible/name"/>
+        <reuse path="/ENTRY/instrument/DETECTOR/description"/>
+        <reuse path="/ENTRY/instrument/DETECTOR/dead_time"/>
+        <reuse path="/ENTRY/instrument/DETECTOR/count_time"/>
+        <reuse path="/ENTRY/SAMPLE_DESCRIPTION/chemical_formula"/>
+        <reuse path="/ENTRY/SAMPLE_DESCRIPTION/temperature"/>
+        <reuse path="/ENTRY/FIT/data_reduction_responsible/name"/>
+    </reused_concepts>
     <doc>
     Application definition for stress and strain analysis of crystalline material defined by the `EASI-STRESS consortium &lt;https://easi-stress.eu&gt;`_.
 
@@ -105,9 +115,6 @@
             <enumeration>
                 <item value="NXstress" />
             </enumeration>
-        </field>
-        <field name="title" minOccurs="0" maxOccurs="1">
-            <doc>Extended title for the entry.</doc>
         </field>
         <field name="experiment_identifier" minOccurs="0" maxOccurs="1">
             <doc>
@@ -196,10 +203,8 @@
         </field>
         <group name="experiment_responsible" type="NXuser" minOccurs="0" maxOccurs="1">
             <doc>Information about the person who performed the experiment.</doc>
-            <field name="name" type="NX_CHAR" minOccurs="0" maxOccurs="1">
-            </field>
             <field name="role" type="NX_CHAR" minOccurs="0" maxOccurs="1">
-                <doc>Role of user responsible for this entry. Suggested roes are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…</doc>
+                <doc>Role of user responsible for this entry. Suggested roles are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…</doc>
             </field>
         </group>
         <group name="instrument" type="NXinstrument" minOccurs="1" maxOccurs="1">
@@ -258,9 +263,6 @@
             </group>
             <group name="DETECTOR" nameType="any" type="NXdetector" minOccurs="1" maxOccurs="unbounded">
                 <doc>Zero or more of these groups describe the detectors used in the experiment.</doc>
-                <field name="description" type="NX_CHAR" minOccurs="0" maxOccurs="1">
-                    <doc>name/manufacturer/model/etc. information</doc>
-                </field>
                 <field name="type" type="NX_CHAR">
 		            <doc>
 			                Description of type such as \ :sup:`3`\ He gas cylinder, \ :sup:`3`\ He PSD, scintillator, fission chamber, proportion counter, ion chamber, CCD, pixel, image plate, CMOS, …
@@ -307,20 +309,6 @@
                     <dimensions rank="2">
                       <dim index="1" value="i" />
                       <dim index="2" value="j" />
-                    </dimensions>
-                </field>
-                <field name="dead_time" type="NX_FLOAT" units="NX_TIME" minOccurs="0" maxOccurs="1">
-                    <doc>Detector dead time</doc>
-                    <dimensions rank="3">
-                        <dim index="1" value="nP" />
-                        <dim index="2" value="i" />
-                        <dim index="3" value="j" />
-                    </dimensions>
-                </field>
-                <field name="count_time" type="NX_NUMBER" units="NX_TIME" minOccurs="0" maxOccurs="1">
-                    <doc>Elapsed actual counting time</doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="nP" />
                     </dimensions>
                 </field>
                 <field name="depends_on" type="NX_CHAR" minOccurs="0" maxOccurs="1">
@@ -442,34 +430,6 @@
                     Descriptive name of sample
                 </doc>
             </field>
-            <field name="chemical_formula" minOccurs="0" maxOccurs="1">
-		        <doc>
-			        The chemical formula specified using CIF conventions.
-			        Abbreviated version of CIF standard: 
-
-			        * Only recognized element symbols may be used.
-			        * Each element symbol is followed by a 'count' number. A count of '1' may be omitted.
-			        * A space or parenthesis must separate each cluster of (element symbol + count).
-			        * Where a group of elements is enclosed in parentheses, the multiplier for the 
-			          group must follow the closing parentheses. That is, all element and group 
-			          multipliers are assumed to be printed as subscripted numbers.
-			        * Unless the elements are ordered in a manner that corresponds to their chemical 
-			          structure, the order of the elements within any group or moiety depends on 
-			          whether or not carbon is present.
-			        * If carbon is present, the order should be: 
-
-			          - C, then H, then the other elements in alphabetical order of their symbol. 
-			          - If carbon is not present, the elements are listed purely in alphabetic order of their symbol. 
-
-			        * This is the *Hill* system used by Chemical Abstracts.
-		        </doc>
-	        </field>
-            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE" minOccurs="0" maxOccurs="1">
-		        <doc>Sample temperature. This could be a scanned variable</doc>
-		        <dimensions rank="anyRank">
-		                	<dim index="1" value="n_Temp"/><!-- could be any length -->
-		        </dimensions>
-	        </field>
             <field name="stress_field" type="NX_FLOAT" units="NX_ANY" minOccurs="0" maxOccurs="1">
 		        <doc>Applied external stress field</doc>
 		        <dimensions>
@@ -587,8 +547,6 @@
             </field>
             <group name="data_reduction_responsible" type="NXuser" minOccurs="0" maxOccurs="1">
                 <doc>Information about the person who performed the data reduction.</doc>
-                    <field name="name" type="NX_CHAR" minOccurs="0" maxOccurs="1">
-                    </field>
                     <field name="role" type="NX_CHAR" minOccurs="0" maxOccurs="1">
                         <doc>Role of user responsible for this entry. Suggested roles are, for example, ``local contact``, ``beamline_scientist``, ``post_doc``,…</doc>
                     </field>        
