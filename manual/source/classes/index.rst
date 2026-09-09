@@ -14,7 +14,7 @@ application definitions (groupings of objects for a particular technique) and
 contributed_definitions (proposed definitions from the community)
 
 The complete :index:`!vocabulary` of terms used in NeXus NXDL files (names of
-groups, fields, attributes, and links) is available for :ref:`download
+groups, fields, attributes, links, and symbols) is available for :ref:`download
 <classes.vocabulary.downloads>`.
 
 .. rubric:: :styleh2:`Base classes`

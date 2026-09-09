@@ -3,8 +3,11 @@ import re
 from collections import OrderedDict
 from html import parser as HTMLParser
 from pathlib import Path
+from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import lxml
 
@@ -22,8 +25,64 @@ from .anchor_list import AnchorRegistry
 MIN_COLLAPSE_HINT_LINE_LENGTH = 20
 MAX_COLLAPSE_HINT_LINE_LENGTH = 80
 
+# how a concept that is shown in the documentation of a class that does not
+# define it is marked
+REUSED_MARKER = "*(reused)*"
+
+# which children are shown along with a reused concept
+REUSE_CHILDREN_MODES = ("none", "direct", "all")
+
+# maximal number of levels below a reused concept with `children="all"`
+MAX_REUSE_DEPTH = 5
+
+# maximal number of reused concepts in one class
+MAX_REUSED_CONCEPTS = 200
+
+# symbol names in a dimension size, which can be an expression like "nP+1"
+SYMBOL_PATTERN = re.compile(r"[A-Za-z_][A-Za-z_0-9]*")
+
+# characters that may precede or follow inline markup in reStructuredText
+RST_INLINE_PREFIX = " \t-:/'\"<([{"
+RST_INLINE_SUFFIX = " \t-.,:;!?\\/'\")]}>"
+
 _BACKTICK_RUN = re.compile(r"`+")
 _ASTERISK_RUN = re.compile(r"\*+")
+
+
+class ReusedConcept:
+    """A group, field or attribute that a class does not define itself but that is
+    shown in its documentation.
+
+    A class takes over everything defined by the class it ``extends`` and by the base
+    classes of the groups it uses, without repeating any of it. Only what a class
+    defines itself is shown in its documentation. The ``reused_concepts`` element of
+    NXDL points at concepts that a class takes over unchanged, so that they are shown
+    as well. Reusing a concept changes nothing about the class itself.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        is_attribute: bool,
+        parent: Optional["ReusedConcept"],
+        node: lxml.etree._Element,
+        defined_here: bool,
+    ) -> None:
+        self.name = name
+        self.is_attribute = is_attribute
+        self.parent = parent
+        self.node = node
+        self.defined_here = defined_here
+        parent_path = parent.path if parent is not None else ""
+        self.path = f"{parent_path}{'@' if is_attribute else '/'}{name}"
+        self.nxdl_path = f"{parent.nxdl_path if parent is not None else ''}/{name}"
+        self.listed = False
+        self.children_mode = "none"
+        self.children: Dict[str, "ReusedConcept"] = OrderedDict()
+
+    @property
+    def element_type(self) -> str:
+        return xml_utils.get_local_name(self.node)
 
 
 class NXClassDocGenerator:
@@ -45,6 +104,14 @@ class NXClassDocGenerator:
         self._anchor_registry = None
         self._listing_category = None
         self._use_application_defaults = None
+        self._nxclass_name = None
+        self._nxdl_file = None
+        self._root_element = None
+        self._reused_concepts = OrderedDict()
+        self._reused_index = dict()
+        self._reused_count = 0
+        self._declared_symbols = set()
+        self._used_symbols = dict()
 
     def __call__(
         self, nxdl_file: PathLike, anchor_registry: Optional[AnchorRegistry] = None
@@ -57,8 +124,8 @@ class NXClassDocGenerator:
         try:
             try:
                 self._parse_nxdl_file(nxdl_file)
-            except Exception:
-                raise NXDLParseError(nxdl_file)
+            except Exception as e:
+                raise NXDLParseError(f"{nxdl_file}: {e}") from e
         finally:
             self._reset()
         return self._rst_lines
@@ -86,6 +153,9 @@ class NXClassDocGenerator:
         self._listing_category = self._CATEGORY_TO_LISTING[category]
         self._use_application_defaults = category == "application"
         self._contribution = nxdl_file.parent.name == "contributed_definitions"
+        self._nxclass_name = nxclass_name
+        self._nxdl_file = nxdl_file
+        self._root_element = root
 
         # print ReST comments and section header
         source = os.path.relpath(nxdl_file, get_nxdl_root())
@@ -157,11 +227,25 @@ class NXClassDocGenerator:
         else:
             self._print_doc_enum("", ns, node_list[0])
             for node in node_list[0].xpath("nx:symbol", namespaces=ns):
-                doc = self._get_doc_line(ns, node)
-                self._print(f"  **{node.get('name')}**", end="")
+                name = node.get("name")
+                reused_from = node.get("reused_from")
+                self._declared_symbols.add(name)
+                if reused_from:
+                    doc = self._reused_symbol_doc(ns, node, name, reused_from)
+                    suffix = f" :ref:`⤆ </{reused_from}/{name}-symbol>` {REUSED_MARKER}"
+                else:
+                    doc = self._get_doc_line(ns, node)
+                    suffix = ""
+                self._print(
+                    f"  {self._hyperlink_target(f'/{nxclass_name}', name, 'symbol')}"
+                )
+                self._print(f"  **{name}**", end="")
                 if doc:
                     self._print(f": {doc}", end="")
-                self._print("\n")
+                self._print(f"{suffix}\n")
+
+        # concepts of other classes that are shown in the documentation of this one
+        self._parse_reused_concepts(ns, root)
 
         # print group references
         self._print("**Groups cited**:")
@@ -169,6 +253,12 @@ class NXClassDocGenerator:
         groups = []
         for node in node_list:
             g = node.get("type")
+            if g.startswith("NX") and g not in groups:
+                groups.append(g)
+        for concept in self._iter_reused_concepts():
+            if concept.element_type != "group":
+                continue
+            g = concept.node.get("type")
             if g.startswith("NX") and g not in groups:
                 groups.append(g)
         if len(groups) == 0:
@@ -186,6 +276,7 @@ class NXClassDocGenerator:
 
         # print full tree
         self._print("**Structure**:\n")
+        self._print_reuse_legend()
         for subnode in root.xpath("nx:attribute", namespaces=ns):
             optional = self._get_required_or_optional_text(subnode)
             self._print_attribute(
@@ -194,6 +285,8 @@ class NXClassDocGenerator:
         self._print_full_tree(
             ns, root, nxclass_name, self._INDENTATION_UNIT, parent_path
         )
+
+        self._check_symbols()
 
         self._print_anchor_list()
 
@@ -220,7 +313,7 @@ class NXClassDocGenerator:
         self._print("-----------------\n")
         self._print(
             "List of hypertext anchors for all groups, fields,\n"
-            "attributes, and links defined in this class.\n\n"
+            "attributes, links, and symbols defined in this class.\n\n"
         )
 
         def sorter(key):
@@ -347,31 +440,37 @@ class NXClassDocGenerator:
             return self._handle_multiline_docstring(blocks)
         return blocks[0].replace("\n", " ")
 
-    def _get_minOccurs(self, node):
+    def _get_minOccurs(self, node, use_application_defaults=None):
         """
         get the value for the ``minOccurs`` attribute
 
         :param obj node: instance of lxml.etree._Element
+        :param use_application_defaults: defaults of the class defining the node
         :returns str: value of the attribute (or its default)
         """
         # TODO: can we improve on the default by examining nxdl.xsd?
-        minOccurs_default = str(int(self._use_application_defaults))
+        if use_application_defaults is None:
+            use_application_defaults = self._use_application_defaults
+        minOccurs_default = str(int(use_application_defaults))
         minOccurs = node.get("minOccurs", minOccurs_default)
         return minOccurs
 
-    def _get_required_or_optional_text(self, node):
+    def _get_required_or_optional_text(self, node, use_application_defaults=None):
         """
         make clear if a reported item is required or optional
 
         :param obj node: instance of lxml.etree._Element
+        :param use_application_defaults: defaults of the class defining the node
         :returns: formatted text
         """
+        if use_application_defaults is None:
+            use_application_defaults = self._use_application_defaults
         nxdl_element_type = nxdl_utils.get_nxdl_element_type(node)
         if nxdl_element_type in ("field", "group", "choice"):
-            optional_default = not self._use_application_defaults
+            optional_default = not use_application_defaults
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
-            minOccurs = self._get_minOccurs(node)
+            minOccurs = self._get_minOccurs(node, use_application_defaults)
             if recommended:
                 optional_text = "(recommended) "
             elif minOccurs in ("0", 0) or optional:
@@ -383,7 +482,7 @@ class NXClassDocGenerator:
                 # TODO: add a remark to the log
                 optional_text = f"(``minOccurs={str(minOccurs)}``) "
         elif nxdl_element_type in ("attribute",):
-            optional_default = not self._use_application_defaults
+            optional_default = not use_application_defaults
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
             optional_text = {True: "(optional) ", False: "(required) "}[optional]
@@ -452,6 +551,9 @@ class NXClassDocGenerator:
 
             # Dimension symbol
             dim = subnode.get("value")  # integer or symbol from the table
+            if dim:
+                self._register_dimension_symbols(dim, parent)
+                dim = self._link_dimension_symbols(dim)
             if not dim:
                 ref = subnode.get("ref")
                 if ref:
@@ -630,7 +732,9 @@ class NXClassDocGenerator:
                 collapse_indent + self._INDENTATION_UNIT, ns, node_list[0]
             )
 
-    def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
+    def _print_attribute(
+        self, ns, kind, node, optional, indent, parent_path, reused=False
+    ):
         name = node.get("name")
         formatted_name = nxdl_utils.get_rst_formatted_name(node)
         index_name = name
@@ -638,8 +742,12 @@ class NXClassDocGenerator:
             f"{indent}" f"{self._hyperlink_target(parent_path, name, 'attribute')}"
         )
         self._print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
+        if reused:
+            reference = f"{self._reused_ref(node, 'attribute')} {REUSED_MARKER}"
+        else:
+            reference = self.get_first_parent_ref(f"{parent_path}/{name}", "attribute")
         self._print(
-            f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
+            f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {reference}\n"
         )
         self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
         self._print_doc_enum(indent, ns, node)
@@ -660,9 +768,27 @@ class NXClassDocGenerator:
         :param indent: to keep track of indentation level
         :param parent_path: NX class path of parent nodes
         """
+        # Reused concepts are shown where the class would define them: attributes
+        # right after the ones of the class itself, fields before the first group
+        # and groups last.
+        reused = self._reused_index.get(parent_path, ())
+        reused_attributes = [c for c in reused if c.element_type == "attribute"]
+        reused_fields = [c for c in reused if c.element_type in ("field", "link")]
+        reused_groups = [c for c in reused if c.element_type == "group"]
+        for concept in reused_attributes:
+            self._print_reused_concept(ns, concept, indent)
+        fields_printed = False
+
         # Process children in document order to preserve XML ordering.
         for node in parent.xpath("nx:field|nx:group|nx:choice|nx:link", namespaces=ns):
             nxdl_element_type = nxdl_utils.get_nxdl_element_type(node)
+            if not fields_printed and xml_utils.get_local_name(node) in (
+                "group",
+                "choice",
+            ):
+                fields_printed = True
+                for concept in reused_fields:
+                    self._print_reused_concept(ns, concept, indent)
 
             if nxdl_element_type == "field":
                 name = node.get("name")
@@ -698,6 +824,10 @@ class NXClassDocGenerator:
                         indent + self._INDENTATION_UNIT,
                         parent_path + "/" + name,
                     )
+
+                self._print_reused_concepts(
+                    ns, indent + self._INDENTATION_UNIT, parent_path + "/" + name
+                )
 
             elif nxdl_element_type == "group":
                 name = node.get("name", "")
@@ -798,6 +928,389 @@ class NXClassDocGenerator:
 
             else:
                 raise ValueError(f"Unknown node type: {nxdl_element_type}")
+
+        if not fields_printed:
+            for concept in reused_fields:
+                self._print_reused_concept(ns, concept, indent)
+        for concept in reused_groups:
+            self._print_reused_concept(ns, concept, indent)
+
+    def _parse_reused_concepts(self, ns, root) -> None:
+        """Parse the ``reused_concepts`` element: concepts of other classes that are
+        shown in the documentation of this class.
+        """
+        node_list = root.xpath("nx:reused_concepts", namespaces=ns)
+        if not node_list:
+            return
+        if len(node_list) > 1:
+            raise ValueError(f"Invalid reused_concepts list in {self._nxclass_name}")
+
+        listed = list()
+        for node in node_list[0].xpath("nx:reuse", namespaces=ns):
+            path = node.get("path")
+            children_mode = node.get("children", "none")
+            if children_mode not in REUSE_CHILDREN_MODES:
+                raise ValueError(
+                    f"'{path}': children='{children_mode}' is not one of "
+                    f"{', '.join(REUSE_CHILDREN_MODES)}"
+                )
+            concept = None
+            concepts = self._reused_concepts
+            for name, is_attribute in self._split_reuse_path(path):
+                key = f"@{name}" if is_attribute else name
+                child = concepts.get(key)
+                if child is None:
+                    child = self._create_reused_concept(concept, name, is_attribute)
+                    concepts[key] = child
+                concept = child
+                concepts = concept.children
+            if concept.listed:
+                raise ValueError(f"'{path}' is reused more than once")
+            if concept.defined_here:
+                raise ValueError(
+                    f"'{path}' is defined by {self._nxclass_name} itself: remove the "
+                    "definition or remove it from the 'reused_concepts' list"
+                )
+            concept.listed = True
+            concept.children_mode = children_mode
+            listed.append(concept)
+
+        for concept in listed:
+            self._expand_reused_concept(ns, concept, concept.children_mode, 1)
+        self._index_reused_concepts(self._reused_concepts, f"/{self._nxclass_name}")
+
+    @staticmethod
+    def _split_reuse_path(path: str) -> List[Tuple[str, bool]]:
+        """Split a ``reuse`` path into ``(name, is_attribute)`` per level."""
+        if not path or not path.startswith("/"):
+            raise ValueError(f"reuse path '{path}' must start with '/'")
+        segments = list()
+        for part in path[1:].split("/"):
+            names = part.split("@")
+            if len(names) > 2 or not all(names):
+                raise ValueError(f"'{path}' is not a valid reuse path")
+            segments.append((names[0], False))
+            if len(names) == 2:
+                segments.append((names[1], True))
+        return segments
+
+    def _create_reused_concept(
+        self, parent: Optional[ReusedConcept], name: str, is_attribute: bool
+    ) -> ReusedConcept:
+        nxdl_path = f"{parent.nxdl_path if parent is not None else ''}/{name}"
+        elist = nxdl_utils.get_inherited_nodes(nxdl_path, None, self._root_element)[2]
+        if not elist:
+            raise ValueError(f"'{nxdl_path}' does not exist in {self._nxclass_name}")
+        node = elist[0]
+        element_type = xml_utils.get_local_name(node)
+        if element_type == "choice":
+            raise ValueError(
+                f"'{nxdl_path}' is a choice, which cannot be highlighted in the "
+                "documentation"
+            )
+        if is_attribute != (element_type == "attribute"):
+            raise ValueError(
+                f"'{nxdl_path}' is a {element_type}: an attribute is separated from "
+                "its parent with '@', anything else with '/'"
+            )
+        defined_name = nxdl_utils.get_node_name(node)
+        if defined_name != name:
+            raise ValueError(
+                f"'{nxdl_path}' must be spelled '{defined_name}' as in the class that defines it"
+            )
+        # nodes of the class being documented have an empty 'nxdlbase'
+        defined_here = not node.get("nxdlbase")
+        if not defined_here:
+            self._check_not_renamed(parent, node, name, nxdl_path)
+        return ReusedConcept(name, is_attribute, parent, node, defined_here)
+
+    def _check_not_renamed(
+        self, parent: Optional[ReusedConcept], node, name: str, nxdl_path: str
+    ) -> None:
+        """A concept that this class redefines under another name, such as a group
+        with a flexible name that the class names itself, is not the same concept."""
+        if parent is None:
+            parent_node = self._root_element
+        elif parent.defined_here:
+            parent_node = parent.node
+        else:
+            # this class does not define the parent, so it cannot redefine its children
+            return
+        own_node, _ = nxdl_utils.get_best_child(
+            parent_node,
+            None,
+            name,
+            nxdl_utils.get_nx_class(node),
+            nxdl_utils.get_nxdl_element_type(node),
+        )
+        if own_node is None:
+            return
+        own_name = nxdl_utils.get_node_name(own_node)
+        if own_name != name:
+            raise ValueError(
+                f"'{nxdl_path}' is redefined by {self._nxclass_name} as "
+                f"'{own_name}': reuse that concept instead"
+            )
+
+    def _expand_reused_concept(
+        self, ns, concept: ReusedConcept, children_mode: str, level: int
+    ) -> None:
+        """Add the children of a reused concept that are shown as well."""
+        if children_mode == "none" or concept.element_type not in ("group", "field"):
+            return
+        if level > MAX_REUSE_DEPTH:
+            raise ValueError(
+                f"'{concept.nxdl_path}' shows more than {MAX_REUSE_DEPTH} levels of "
+                "children: list the concepts to be shown instead of using "
+                "children='all'"
+            )
+        child_mode = "all" if children_mode == "all" else "none"
+        for name, node in self._reused_children_nodes(ns, concept).items():
+            if name in concept.children:
+                continue
+            child = ReusedConcept(name, False, concept, node, not node.get("nxdlbase"))
+            if child.defined_here or self._reused_cycle(child):
+                # documented where it is defined or already documented above
+                continue
+            child.listed = True
+            child.children_mode = child_mode
+            concept.children[name] = child
+            self._reused_count += 1
+            if self._reused_count > MAX_REUSED_CONCEPTS:
+                raise ValueError(
+                    f"more than {MAX_REUSED_CONCEPTS} concepts are reused: list the "
+                    "concepts to be shown instead of using children='all'"
+                )
+            self._expand_reused_concept(ns, child, child_mode, level + 1)
+
+    def _reused_children_nodes(self, ns, concept: ReusedConcept) -> Dict:
+        """The groups, fields and links of a reused concept, including those of the
+        class it is typed as but excluding those that every group takes over from
+        NXobject."""
+        elist = nxdl_utils.get_inherited_nodes(
+            concept.nxdl_path, None, self._root_element
+        )[2]
+        nodes = OrderedDict()
+        for elem in elist:
+            if elem.get("name") == "NXobject":
+                # every group has these, showing them everywhere is noise
+                continue
+            for child in elem.xpath("nx:field|nx:group|nx:link", namespaces=ns):
+                name = nxdl_utils.get_node_name(child)
+                if name not in nodes:
+                    nodes[name] = nxdl_utils.set_nxdlpath(child, elem)
+        return nodes
+
+    @staticmethod
+    def _reused_cycle(concept: ReusedConcept) -> bool:
+        """A concept or its group type is already reused by one of its own ancestors
+        (like NXsample in NXsample)."""
+
+        def source(concept):
+            return concept.node.get("nxdlbase"), concept.node.get("nxdlpath")
+
+        key = source(concept)
+        nxclass_name = (
+            concept.node.get("type") if concept.element_type == "group" else None
+        )
+        parent = concept.parent
+        while parent is not None:
+            if source(parent) == key:
+                return True
+            if nxclass_name is not None and parent.node.get("type") == nxclass_name:
+                return True
+            parent = parent.parent
+        return False
+
+    def _index_reused_concepts(self, concepts, doc_parent_path: str) -> None:
+        """Index the concepts by the path at which they are documented. The children
+        of a concept that this class defines are documented below that definition."""
+        for concept in concepts.values():
+            if concept.defined_here:
+                self._index_reused_concepts(
+                    concept.children, f"{doc_parent_path}/{concept.name}"
+                )
+            else:
+                self._reused_index.setdefault(doc_parent_path, list()).append(concept)
+
+    def _iter_reused_concepts(self, concepts=None) -> Iterator[ReusedConcept]:
+        if concepts is None:
+            concepts = self._reused_concepts
+        for concept in concepts.values():
+            if not concept.defined_here:
+                yield concept
+            yield from self._iter_reused_concepts(concept.children)
+
+    def _print_reuse_legend(self) -> None:
+        if not self._reused_concepts:
+            return
+        # the same indentation as the structure tree, else the tree ends up
+        # inside the note
+        indent = self._INDENTATION_UNIT
+        self._print(
+            f"{indent}.. note:: The ⤆ link points at the class a concept comes from. "
+            f"Items marked {REUSED_MARKER} are not defined by this class at all: they "
+            "are used exactly as that class defines them. Items with a ⤆ link but no "
+            "marker are defined by this class, which may change what they mean.\n"
+        )
+
+    def _print_reused_concepts(self, ns, indent: str, parent_path: str) -> None:
+        for concept in self._reused_index.get(parent_path, ()):
+            self._print_reused_concept(ns, concept, indent)
+
+    def _print_reused_concept(self, ns, concept: ReusedConcept, indent: str) -> None:
+        node = concept.node
+        element_type = concept.element_type
+        name = concept.name
+        tag = "field" if element_type == "link" else element_type
+        doc_parent_path = f"/{self._nxclass_name}" + (
+            concept.parent.path if concept.parent is not None else ""
+        )
+        # occurrences follow the defaults of the class that defines the concept
+        use_application_defaults = node.get("nxdlbase_class") == "application"
+        optional_text = self._get_required_or_optional_text(
+            node, use_application_defaults
+        )
+
+        if element_type == "attribute":
+            self._print_attribute(
+                ns,
+                concept.parent.element_type if concept.parent is not None else "file",
+                node,
+                optional_text,
+                indent,
+                doc_parent_path,
+                reused=True,
+            )
+            return
+
+        marker = f"{self._reused_ref(node, tag)} {REUSED_MARKER}"
+        formatted_name = nxdl_utils.get_rst_formatted_name(node)
+        self._print(f"{indent}{self._hyperlink_target(doc_parent_path, name, tag)}")
+        if element_type == "group":
+            typ = node.get("type", "untyped (this is an error; please report)")
+            if typ.startswith("NX"):
+                typ = f":ref:`{typ}`"
+            self._print(f"{indent}{formatted_name}: {optional_text}{typ} {marker}\n")
+        elif element_type == "link":
+            self._print(
+                f"{indent}{formatted_name}: "
+                ":ref:`link<Design-Links>` "
+                f"(suggested target: ``{node.get('target')}``)"
+                f" {marker}\n"
+            )
+        else:
+            self._print(f"{indent}.. index:: {name} (field)\n")
+            self._print(
+                f"{indent}{formatted_name}: "
+                f"{optional_text}"
+                f"{self._format_type(node)}"
+                f"{self._analyze_dimensions(ns, node)}"
+                f"{self._format_units(node)}"
+                f" {marker}"
+                "\n"
+            )
+
+        self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
+
+        if concept.listed:
+            self._print_doc_enum(indent, ns, node)
+            for subnode in node.xpath("nx:attribute", namespaces=ns):
+                if f"@{subnode.get('name')}" in concept.children:
+                    continue
+                nxdl_utils.set_nxdlpath(subnode, node)
+                optional = self._get_required_or_optional_text(
+                    subnode, use_application_defaults
+                )
+                self._print_attribute(
+                    ns,
+                    element_type,
+                    subnode,
+                    optional,
+                    indent + self._INDENTATION_UNIT,
+                    f"/{self._nxclass_name}{concept.path}",
+                    reused=True,
+                )
+
+        for child in concept.children.values():
+            self._print_reused_concept(ns, child, indent + self._INDENTATION_UNIT)
+
+    @staticmethod
+    def _reused_ref(node, tag: str) -> str:
+        """Reference to the concept in the class that defines it."""
+        nxdlbase = node.get("nxdlbase")
+        nxdlpath = node.get("nxdlpath")
+        if not nxdlbase or not nxdlpath:
+            return ""
+        nxclass_name = Path(nxdlbase).name.split(".")[0]
+        if tag == "attribute":
+            pos = nxdlpath.rfind("/")
+            nxdlpath = f"{nxdlpath[:pos]}@{nxdlpath[pos + 1:]}"
+        return f":ref:`⤆ </{nxclass_name}{nxdlpath}-{tag}>`"
+
+    def _reused_symbol_doc(self, ns, node, name: str, nxclass_name: str) -> str:
+        """Documentation of a symbol that is taken from another class."""
+        if node.xpath("nx:doc", namespaces=ns):
+            raise ValueError(
+                f"symbol '{name}' has a 'doc' element as well as "
+                f"reused_from='{nxclass_name}'"
+            )
+        nxdl_file = nxdl_utils.find_definition_file(nxclass_name)
+        if nxdl_file is None:
+            raise ValueError(
+                f"symbol '{name}' is reused from unknown class '{nxclass_name}'"
+            )
+        root = xml_utils.read_xml_file(nxdl_file)
+        for symbol in root.xpath("nx:symbols/nx:symbol", namespaces=ns):
+            if symbol.get("name") == name:
+                return self._get_doc_line(ns, symbol)
+        raise ValueError(f"'{nxclass_name}' does not define the symbol '{name}'")
+
+    def _link_dimension_symbols(self, size: str) -> str:
+        """Turn the symbols in the size of a dimension into links to the symbol
+        table of this class.
+        """
+        parts = []
+        end = 0
+        for match in SYMBOL_PATTERN.finditer(size):
+            name = match.group()
+            if name not in self._declared_symbols:
+                continue
+            before = size[end : match.start()]
+            parts.append(before)
+            if before and before[-1] not in RST_INLINE_PREFIX:
+                parts.append("\\ ")
+            parts.append(f":ref:`{name} </{self._nxclass_name}/{name}-symbol>`")
+            end = match.end()
+            if end < len(size) and size[end] not in RST_INLINE_SUFFIX:
+                parts.append("\\ ")
+        parts.append(size[end:])
+        return "".join(parts)
+
+    def _register_dimension_symbols(self, size: str, node) -> None:
+        """Register the symbols used in the size of a dimension."""
+        for symbol in SYMBOL_PATTERN.findall(size):
+            self._used_symbols.setdefault(symbol, nxdl_utils.get_node_name(node))
+
+    def _check_symbols(self) -> None:
+        """All symbols that appear in the documentation must be in the symbol table."""
+        missing = {
+            symbol: used_by
+            for symbol, used_by in self._used_symbols.items()
+            if symbol not in self._declared_symbols
+        }
+        if not missing:
+            return
+        details = ", ".join(
+            f"'{symbol}' (dimension of '{used_by}')"
+            for symbol, used_by in sorted(missing.items())
+        )
+        raise ValueError(
+            f"{self._nxclass_name} documents symbols that are missing from its symbol "
+            f"table: {details}. Add them to the 'symbols' element, with a 'doc' element "
+            "or with a 'reused_from' attribute naming the class that documents the "
+            "symbol."
+        )
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
