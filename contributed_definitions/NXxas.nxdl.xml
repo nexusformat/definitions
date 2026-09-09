@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2024-2026 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition name="NXxas" extends="NXobject" type="group" category="application"
+    xmlns="http://definition.nexusformat.org/nxdl/3.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd ">
+    <symbols>
+        <doc>
+		    The symbol(s) listed here will be used below to coordinate datasets
+		    with the same shape.
+        </doc>
+        <symbol name="nP">
+            <doc>
+                Number of stacked spectra (scan points). This is the growable
+                first dimension: data could be appended along it during acquisition.
+                It is absent when a single spectrum is stored.
+            </doc>
+        </symbol>
+        <symbol name="nEnergy">
+            <doc>Number of energy data points</doc>
+        </symbol>
+        <symbol name="dataRank">
+            <doc>
+                Rank of the ``intensity`` field: 1 for a single spectrum
+                ``[nEnergy]`` or 2 for a stack of spectra ``[nP, nEnergy]``.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+      This is a generic application definition for X-ray absorption
+      spectroscopy. Technique-specific application definitions extend this base
+      definition.
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <doc> Official NeXus NXDL schema to which this file conforms.</doc>
+            <enumeration>
+                <item value="NXxas"></item>
+            </enumeration>
+        </field>
+        <field name="title" type="NX_CHAR" recommended="true">
+            <doc>Human-readable title for the measurement or calculation.</doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME" optional="true">
+            <doc>
+                Start time of the measurement. Omit for calculated or
+                reconstructed spectra.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME" optional="true">
+            <doc>End time of the measurement.</doc>
+        </field>
+        <group type="NXelement" name="element">
+            <doc>
+                The element being probed by the incident X-rays.
+            </doc>
+            <field name="symbol"/>
+        </group>
+        <group type="NXabsorption_edge" name="edge">
+            <doc>
+                The absorption edge being probed, defined by the principal
+                quantum number and orbital symmetry of the photoionized
+                electron (for example ``K``, ``L1``, ``L2``, ``L3``, or the
+                combined ``L2,3``). Together with the element, it uniquely
+                identifies the probed electronic transition.
+            </doc>
+            <field name="name"></field>
+        </group>
+        <field name="is_experimental" type="NX_BOOLEAN">
+            <doc>
+                Specify if the data comes from an experiment. Use ``true`` for
+                data acquired at a beamline or laboratory instrument, and
+                ``false`` for spectra calculated/simulated using a
+                computational tool, reconstructed from a linear combination
+                of reference components, etc. Record finer provenance (for
+                example the simulation code and parameters, or the reference
+                components and their weights for a linear combination) in an
+                ``NXprocess`` group.
+            </doc>
+        </field>
+        <field name="energy" type="NX_FLOAT" units="NX_ENERGY">
+            <doc>
+                The energy axis of the spectrum.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="nEnergy" />
+            </dimensions>
+        </field>
+        <field name="intensity" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                The intensity of the spectrum. The precise definition of what is
+                meant by intensity depends on the acquisition mode, and will be
+                specified by each subclass application definition.
+            </doc>
+            <dimensions rank="dataRank">
+                <doc>
+                    ``dataRank`` is 1 for a single spectrum, shape
+                    ``[nEnergy]``, or 2 for a stack of ``nP`` spectra,
+                    shape ``[nP, nEnergy]``.
+                </doc>
+            </dimensions>
+        </field>
+        <field name="intensity_errors" type="NX_FLOAT" units="NX_ANY" optional="true">
+            <doc>
+                The estimated uncertainty associated with each ``intensity`` value,
+                expressed as a standard deviation.
+            </doc>
+            <dimensions rank="dataRank">
+                <doc>
+                    Same shape as ``intensity``: ``[nEnergy]`` when
+                    ``dataRank`` is 1, or ``[nP, nEnergy]`` when
+                    ``dataRank`` is 2.
+                </doc>
+            </dimensions>
+        </field>
+        <group type="NXsample">
+            <field name="name">
+                <doc>Descriptive name of the sample</doc>
+            </field>
+            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE" optional="true">
+                <doc>
+                    Sample temperature.
+                </doc>
+                <dimensions rank="dataRank">
+                    <doc>
+                        Scalar for a single spectrum (``dataRank`` is 1);
+                        ``[nP]`` for a stack of ``nP`` spectra
+                        (``dataRank`` is 2), matching the leading ``nP``
+                        axis of ``intensity``.
+                    </doc>
+                </dimensions>
+            </field>
+        </group>
+        <group type="NXdata" name="data" optional="true">
+            <attribute name="signal" type="NX_CHAR">
+                <doc>Name of the field to plot: the absorption ``intensity``.</doc>
+                <enumeration>
+                    <item value="intensity"/>
+                </enumeration>
+            </attribute>
+            <doc>
+                Plot of the X-ray absorption ``intensity`` versus ``energy``.
+
+                For a single spectrum ``intensity`` is ``[nEnergy]`` with
+                ``energy`` as the only axis (``@energy_indices = 0``). For a
+                stack it is ``[nP, nEnergy]``: ``energy`` has
+                ``@energy_indices = 1`` and the quantity that varies across the
+                stack (a time series, a spatial map, an operando series, ...)
+                is the leading axis with ``@AXISNAME_indices = 0``.
+
+                That quantity is stored in its standard NeXus location (for
+                example ``NXsample/temperature``, ``NXsample/electric_field``,
+                an ``NXsample/NXtransformations`` axis, or an ``NXbeam``
+                polarization field) and linked here. The application definition
+                does not enumerate these coordinates: any of them, including
+                ones not listed, is declared by adding the field in its
+                base-class location and wiring it into this group.
+            </doc>
+            <link name="energy" target="/NXentry/energy"/>
+            <link name="intensity" target="/NXentry/intensity"/>
+        </group>
+    </group>
+</definition>
