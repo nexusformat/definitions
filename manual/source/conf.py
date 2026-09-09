@@ -127,9 +127,11 @@ latex_elements = {
 sphinx_gallery_conf = {
     "examples_dirs": [
         "../../galleries/nxdata",
+        "../../galleries/nxtransformations",
     ],  # paths with .py files that generate plots
     "gallery_dirs": [
         "classes/base_classes/data",
+        "classes/base_classes/transformations",
     ],  # paths where to save gallery generated output
     "download_all_examples": False,  # disable download buttons
     "write_computation_times": False,  # disable computation time display
