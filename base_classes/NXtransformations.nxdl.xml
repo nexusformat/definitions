@@ -223,61 +223,132 @@
 
 		Note that as these are point detectors, we only have one coordinate :math:`X_d=[0,0,0,1]^T`.
 
-		.. code-block::
+		The laboratory reference frame can be described in two ways:
 
-		  entry:NXentry
-		    instrument:NXinstrument
-		      vertical:NXdetector
-		        depends_on=position/distance
-		        position:NXtransformations
-		          distance=10            # move downstream from the sample
-		            @depends_on=polar
-		            @transformation_type=translation
-		            @units=cm
-		            @vector=[1 0 0]
-		          polar=5                # tilt above the horizontal plane
-		            @depends_on=azimuth
-		            @transformation_type=rotation
-		            @units=degrees
-		            @vector=[0 -1 0]
-		          azimuth=0              # stay in the vertical plane
-		            @depends_on=/entry/coordinate_system/beam
-		            @transformation_type=rotation
-		            @units=degrees
-		            @vector=[-1 0 0]
-		      horizontal:NXdetector
-		        depends_on=position/distance
-		        position:NXtransformations
-		          distance=11            # move downstream from the sample
-		            @depends_on=polar
-		            @transformation_type=translation
-		            @units=cm
-		            @vector=[1 0 0]
-		          polar=6                # tilt above the horizontal plane
-		            @depends_on=azimuth
-		            @transformation_type=rotation
-		            @units=degrees
-		            @vector=[0 -1 0]
-		          azimuth=90             # rotate to the horizontal plane
-		            @depends_on=/entry/coordinate_system/beam
-		            @transformation_type=rotation
-		            @units=degrees
-		            @vector=[-1 0 0]
-		      transmission:NXdetector
-		        depends_on=position/distance
-		        position:NXtransformations
-		          distance=20            # move downstream from the sample
-		            @depends_on=/entry/coordinate_system/beam
-		            @transformation_type=translation
-		            @units=cm
-		            @vector=[1 0 0]
-		    coordinate_system:NXtransformations
-		      beam=NaN                   # value is never used
-		        @depends_on=gravity
-		        @vector=[1 0 0]          # X-axis points in the beam direction
-		      gravity=NaN                # value is never used
-		        @depends_on=.            # end of the chain
-		        @vector=[0 0 -1]         # Z-axis points up
+		.. tabs::
+
+		  .. tab:: NXtransformations
+
+		    The reference frame is documented by direction axes, on which the detector
+		    transformation chains depend.
+
+		    .. code-block::
+
+		      entry:NXentry
+		        instrument:NXinstrument
+		          vertical:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=10            # move downstream from the sample
+		                @depends_on=polar
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		              polar=5                # tilt above the horizontal plane
+		                @depends_on=azimuth
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[0 -1 0]
+		              azimuth=0              # stay in the vertical plane
+		                @depends_on=/entry/lab/beam
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[-1 0 0]
+		          horizontal:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=11            # move downstream from the sample
+		                @depends_on=polar
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		              polar=6                # tilt above the horizontal plane
+		                @depends_on=azimuth
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[0 -1 0]
+		              azimuth=90             # rotate to the horizontal plane
+		                @depends_on=/entry/lab/beam
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[-1 0 0]
+		          transmission:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=20            # move downstream from the sample
+		                @depends_on=/entry/lab/beam
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		        lab:NXtransformations
+		          beam=NaN                   # value is never used
+		            @depends_on=gravity
+		            @vector=[1 0 0]          # X-axis points in the beam direction
+		          gravity=NaN                # value is never used
+		            @depends_on=.            # end of the chain
+		            @vector=[0 0 -1]         # Z-axis points up
+
+		  .. tab:: NXcoordinate_system
+
+		    The reference frame is defined as a change of basis with respect to the default
+		    :ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;`, the basis vectors being
+		    the columns of the change-of-basis matrix.
+
+		    .. code-block::
+
+		      entry:NXentry
+		        instrument:NXinstrument
+		          vertical:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=10            # move downstream from the sample
+		                @depends_on=polar
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		              polar=5                # tilt above the horizontal plane
+		                @depends_on=azimuth
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[0 -1 0]
+		              azimuth=0              # stay in the vertical plane
+		                @depends_on=/entry/lab
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[-1 0 0]
+		          horizontal:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=11            # move downstream from the sample
+		                @depends_on=polar
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		              polar=6                # tilt above the horizontal plane
+		                @depends_on=azimuth
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[0 -1 0]
+		              azimuth=90             # rotate to the horizontal plane
+		                @depends_on=/entry/lab
+		                @transformation_type=rotation
+		                @units=degrees
+		                @vector=[-1 0 0]
+		          transmission:NXdetector
+		            depends_on=position/distance
+		            position:NXtransformations
+		              distance=20            # move downstream from the sample
+		                @depends_on=/entry/lab
+		                @transformation_type=translation
+		                @units=cm
+		                @vector=[1 0 0]
+		        lab:NXcoordinate_system
+		          x=[0 0 1]                  # X-axis points in the beam direction
+		          x_direction="direction of the primary beam"
+		          y=[1 0 0]
+		          z=[0 1 0]                  # Z-axis points up
+		          z_direction="opposite to gravity"
+		          depends_on=.               # basis vectors given in the default NeXus frame
 
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
