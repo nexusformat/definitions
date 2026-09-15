@@ -41,8 +41,22 @@ Application Definitions
 Base Classes
 ############
 
+:ref:`NXelement`
+    A chemical element of the periodic table, identified by its atomic number as a species and not as
+    a specific isotope.
+
 :ref:`NXabsorption_edge`
     Description of an X-ray absorption edge, the sharp discontinuity in the absorption spectrum that
     occurs when the incident photon energy reaches the threshold for exciting an atom from its neutral
     ground state to a core-vacancy state.
+
+:ref:`NXemission_line`
+    An emission line, which arises from the radiative decay of an atom with a core hole: an electron
+    from a higher level fills the hole and a photon is emitted with an energy characteristic of the
+    atom.
+
+:ref:`NXauger_line`
+    An Auger line, which arises from the non-radiative decay of an atom with a core hole: an electron
+    from a higher level fills the hole and another electron, the Auger electron, is ejected with a
+    kinetic energy characteristic of the atom.
 
