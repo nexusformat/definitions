@@ -68,7 +68,11 @@ def test_get_inherited_nodes():
 
     elem = ET.parse(nxdl_file_path).getroot()
     _, _, elist = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
-    assert len(elist) == 5
+    _assert_inherited_nodes(
+        elist,
+        application_nodes=[("", "/ENTRY/NXODD_name")],
+        classes=["NXdata", "NXobject"],
+    )
 
     nxdl_file_path = (
         local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
@@ -78,18 +82,60 @@ def test_get_inherited_nodes():
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT", elem=elem
     )
-    assert len(elist) == 5
+    _assert_inherited_nodes(
+        elist,
+        application_nodes=[
+            ("", "/ENTRY/INSTRUMENT/ENVIRONMENT"),
+            ("NXsensor_scan", "/ENTRY/INSTRUMENT/ENVIRONMENT"),
+        ],
+        classes=["NXenvironment", "NXobject"],
+    )
 
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
     )
-    assert len(elist) == 6
+    _assert_inherited_nodes(
+        elist,
+        application_nodes=[
+            ("", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller"),
+            ("NXsensor_scan", "/ENTRY/INSTRUMENT/ENVIRONMENT/SENSOR"),
+        ],
+        classes=["NXsensor", "NXcomponent", "NXobject"],
+    )
 
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
         nx_name="NXiv_temp",
     )
-    assert len(elist) == 6
+    _assert_inherited_nodes(
+        elist,
+        application_nodes=[
+            ("NXiv_temp", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller"),
+            ("NXsensor_scan", "/ENTRY/INSTRUMENT/ENVIRONMENT/SENSOR"),
+        ],
+        classes=["NXsensor", "NXcomponent", "NXobject"],
+    )
+
+
+def _assert_inherited_nodes(
+    elist: list[ET._Element],
+    application_nodes: list[tuple[str, str]],
+    classes: list[str],
+) -> None:
+    """Assert that ``elist`` starts with ``application_nodes``, given as
+    ``(definition name, nxdlpath)``, and that its class definitions are ``classes``.
+    """
+    # Nodes of groups in intermediate base classes are not checked, so adding a
+    # group to a base class does not break the test.
+    actual = [
+        (
+            Path(node.get("nxdlbase")).name.removesuffix(".nxdl.xml"),
+            node.get("nxdlpath"),
+        )
+        for node in elist
+    ]
+    assert actual[: len(application_nodes)] == application_nodes, actual
+    assert [name for name, path in actual if not path] == classes, actual
 
 
 @pytest.mark.parametrize(
