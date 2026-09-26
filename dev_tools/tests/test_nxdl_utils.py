@@ -63,12 +63,21 @@ def test_get_node_at_nxdl_path():
 
 def test_get_inherited_nodes():
     """Test to verify if we receive the right XML element list for a given NXDL path."""
+    # Only check the application definitions and the class chain of each node:
+    # asserting the exact list breaks whenever a group is added to a base class.
     local_dir = Path(__file__).resolve().parent
     nxdl_file_path = local_dir / "NXtest.nxdl.xml"
 
     elem = ET.parse(nxdl_file_path).getroot()
     _, _, elist = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
-    assert len(elist) == 5
+    _assert_inherited_nodes(
+        elist,
+        [
+            ("", "/ENTRY/NXODD_name"),
+            ("NXdata", ""),
+            ("NXobject", ""),
+        ],
+    )
 
     nxdl_file_path = (
         local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
@@ -78,18 +87,61 @@ def test_get_inherited_nodes():
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT", elem=elem
     )
-    assert len(elist) == 4
+    _assert_inherited_nodes(
+        elist,
+        [
+            ("", "/ENTRY/INSTRUMENT/ENVIRONMENT"),
+            ("NXsensor_scan", "/ENTRY/INSTRUMENT/ENVIRONMENT"),
+            ("NXenvironment", ""),
+            ("NXobject", ""),
+        ],
+    )
+
+    sensor_chain = [
+        ("NXsensor_scan", "/ENTRY/INSTRUMENT/ENVIRONMENT/SENSOR"),
+        ("NXsensor", ""),
+        ("NXcomponent", ""),
+        ("NXobject", ""),
+    ]
 
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
     )
-    assert len(elist) == 6
+    _assert_inherited_nodes(
+        elist,
+        [("", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller"), *sensor_chain],
+    )
 
     _, _, elist = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
         nx_name="NXiv_temp",
     )
-    assert len(elist) == 6
+    _assert_inherited_nodes(
+        elist,
+        [
+            ("NXiv_temp", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller"),
+            *sensor_chain,
+        ],
+    )
+
+
+def _assert_inherited_nodes(
+    elist: list[ET._Element], expected: list[tuple[str, str]]
+) -> None:
+    """Assert that the ``(definition name, nxdlpath)`` items of ``expected`` appear
+    in order in ``elist``, including its first and last node."""
+    actual = [
+        (
+            Path(node.get("nxdlbase")).name.removesuffix(".nxdl.xml"),
+            node.get("nxdlpath"),
+        )
+        for node in elist
+    ]
+    assert actual[0] == expected[0], actual
+    assert actual[-1] == expected[-1], actual
+    remaining = iter(actual)
+    missing = [item for item in expected if item not in remaining]
+    assert not missing, f"{missing} not found in order in {actual}"
 
 
 @pytest.mark.parametrize(
