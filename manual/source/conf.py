@@ -55,6 +55,11 @@ extensions = [
     "sphinx_gallery.gen_gallery",
 ]
 
+# Styles items excluded with maxOccurs=0 (see _static/nxdl_not_allowed.css)
+rst_prolog = """
+.. role:: nxdl-not-allowed
+"""
+
 # Show `.. todo` directives in the output
 # todo_include_todos = True
 
@@ -96,6 +101,7 @@ html_sidebars = {
 
 def setup(app):
     app.add_css_file("details_summary_hide.css")
+    app.add_css_file("nxdl_not_allowed.css")
 
 
 # The name of an image file (within the static path) to use as favicon of the
