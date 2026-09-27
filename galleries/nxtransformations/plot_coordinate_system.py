@@ -32,6 +32,7 @@ where
 * :math:`R_x`, :math:`R_y`, :math:`R_z`: active transformation matrices for rotation
   around the X, Y and Z axes
 * :math:`X_d` is a coordinate in the detector reference frame
+* :math:`X_\text{lab}` is a coordinate in the laboratory reference frame
 
 Note that as these are point detectors, we only have one coordinate
 :math:`X_d=[0,0,0,1]^T`.

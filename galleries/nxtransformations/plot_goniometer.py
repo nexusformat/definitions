@@ -20,6 +20,7 @@ where
 * :math:`R(\vec{v},a)` is a rotation around vector :math:`\vec{v}` with angle :math:`a`
 * :math:`T(\vec{u},t)` is a translation along vector :math:`\vec{u}` over a distance :math:`t`
 * :math:`X_s` a coordinate in the sample reference frame
+* :math:`X_\text{lab}` a coordinate in the laboratory (McSTAS) reference frame
 
 .. code::
 
