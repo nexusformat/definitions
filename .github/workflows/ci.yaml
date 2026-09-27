@@ -113,10 +113,25 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           folder: build/html
+          clean-exclude: pr-preview/
 
       - name: Upload the User Manual and the Impatient Guide
-        if: ${{ github.event.inputs.upload && env.python_version == env.python_deploy_version }}
+        if: ${{ (github.event_name == 'pull_request' || inputs.upload) && env.python_version == env.python_deploy_version }}
         uses: actions/upload-artifact@v4
         with:
           name: nexus-definitions-docs
           path: build/html
+
+      # Consumed by pr-preview.yaml which cannot get the PR number of a fork otherwise
+      - name: Save the pull request number
+        if: ${{ github.event_name == 'pull_request' && env.python_version == env.python_deploy_version }}
+        run: |
+          mkdir -p build/pr
+          echo "${{ github.event.pull_request.number }}" > build/pr/number
+
+      - name: Upload the pull request number
+        if: ${{ github.event_name == 'pull_request' && env.python_version == env.python_deploy_version }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-number
+          path: build/pr/number
