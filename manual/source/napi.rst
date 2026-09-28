@@ -70,7 +70,7 @@ implicitly performed on the currently *open* entity. This limits
 number of parameters that need to be passed to API calls, at the 
 cost of forcing a certain mode of operation.
 It is very similar 
-to navigating a directory hierarchy; NeXus 
+to navigating a directory hierarchy; content 
 groups are the directories, which can contain data sets 
 and/or other directories.
 
@@ -78,13 +78,13 @@ The core API comprises the following functional groups:
 
 * General initialization and shutdown: 
   opening and closing the file, 
-  creating or opening an existing group or dataset, 
+  creating or opening an existing content group or field, 
   and closing them.
-* Reading and writing data and attributes to previously 
-  opened datasets.
+* Reading and writing data and content attributes to previously 
+  opened content fields.
 * Routines to obtain meta-data and to iterate over component 
-  datasets and attributes.
-* Handling of linking and group hierarchy.
+  content fields and attributes.
+* Handling of content links and group hierarchy.
 * Routines to handle memory allocation. (Not required in all language bindings.)
 
 
@@ -114,9 +114,9 @@ Fortran 90 module but a C version is in preparation.
 The utility API comprises the following functional groups:
 
 * Routines to read or write data.
-* Routines to find whether or not groups, data, or attributes exist, and to 
-  find data with specific signal or axis attributes, i.e. to identify valid data or axes.
-* Routines to open other groups to which ``NXdata`` items are linked, and to return again.
+* Routines to find whether or not content groups, fields, or attributes exist, and to
+  find content fields with specific signal or axis content attributes, i.e. to identify valid data or axes.
+* Routines to open the other content groups that hold the originals of the content links in ``NXdata``, and to return again.
 
 .. rubric:: line required for use with F90 API
 
@@ -140,9 +140,10 @@ List of F90 Utility Routines
 +===========================+===================================================+
 | Reading and Writing                                                           |
 +---------------------------+---------------------------------------------------+
-| ``NXUwriteglobals``       | Writes all the valid global attributes of a file. |
+| ``NXUwriteglobals``       | Writes all the valid global content attributes of |
+|                           | a file.                                           |
 +---------------------------+---------------------------------------------------+
-| ``NXUwritegroup``         | Opens a group (creating it if necessary).         |
+| ``NXUwritegroup``         | Opens a content group (creating it if necessary). |
 +---------------------------+---------------------------------------------------+
 | ``NXUwritedata``          | Opens a data item (creating it if necessary)      |
 |                           | and writes data and its units.                    |
@@ -159,30 +160,34 @@ List of F90 Utility Routines
 | ``NXUsetcompress``        | Defines the compression algorithm and minimum     |
 |                           | dataset size for subsequent write operations.     |
 +---------------------------+---------------------------------------------------+
-| Finding Groups, Data, and Attributes                                          |
+| Finding Content Groups, Data, and Attributes                                  |
 +---------------------------+---------------------------------------------------+
-| ``NXUfindclass``          | Returns the name of a group of the specified      |
-|                           | class if it is contained within the currently     |
-|                           | open group.                                       |
+| ``NXUfindclass``          | Returns the name of a content group of the        |
+|                           | specified class if it is contained within the     |
+|                           | currently open group.                             |
 +---------------------------+---------------------------------------------------+
 | ``NXUfinddata``           | Checks whether a data item of the specified name  |
-|                           | is contained within the currently open group.     |
+|                           | is contained within the currently open content    |
+|                           | group.                                            |
 +---------------------------+---------------------------------------------------+
-| ``NXUfindattr``           | Checks whether the currently open data item has   |
-|                           | the specified attribute.                          |
+| ``NXUfindattr``           | Checks whether the currently open content field   |
+|                           | has the specified content attribute.              |
 +---------------------------+---------------------------------------------------+
-| ``NXUfindsignal``         | Searches the currently open group for a data item |
-|                           | with the specified ``SIGNAL`` attribute.          |
+| ``NXUfindsignal``         | Searches the currently open content group for a   |
+|                           | content field with the specified ``SIGNAL``       |
+|                           | content attribute.                                |
 +---------------------------+---------------------------------------------------+
-| ``NXUfindaxis``           | Searches the currently open group for a data item |
-|                           | with the specified ``AXIS`` attribute.            |
+| ``NXUfindaxis``           | Searches the currently open content group for a   |
+|                           | content field with the specified ``AXIS``         |
+|                           | content attribute.                                |
 +---------------------------+---------------------------------------------------+
-| Finding Linked Groups                                                         |
+| Finding Groups of Content Links                                               |
 +---------------------------+---------------------------------------------------+
-| ``NXUfindlink``           | Finds another link to the specified NeXus data    |
-|                           | item and opens the group it is in.                |
+| ``NXUfindlink``           | Finds another content link to the specified       |
+|                           | content field and opens the content group it      |
+|                           | is in.                                            |
 +---------------------------+---------------------------------------------------+
-| ``NXUresumelink``         | Reopens the original group from which             |
+| ``NXUresumelink``         | Reopens the original content group from which     |
 |                           | ``NXUfindlink`` was used.                         |
 +---------------------------+---------------------------------------------------+
 

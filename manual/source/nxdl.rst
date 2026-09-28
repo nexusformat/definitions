@@ -99,11 +99,11 @@ necessary XML structures).  Rather than have scientists
 prepare XML Schema files directly, NXDL was designed to
 reduce the jargon necessary to define the structure of
 data files.  The two principle objects in NXDL files are:
-``group`` and ``field``.
+NXDL groups and NXDL fields.
 Documentation (``doc``) is optional for any NXDL
 component.
 Either of these objects may have additional
-``attributes`` that contribute simple metadata.
+NXDL attributes that contribute simple metadata.
 
 The :ref:`Class Definitions <ClassDefinitions>` Chapter
 lists the various classes from which a NeXus file is

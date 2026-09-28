@@ -7,20 +7,20 @@ Building on the previous example, we wish to identify our measured data with
 the detector on the instrument where it was generated.
 In this hypothetical case, since the detector was positioned at some
 angle *two_theta*, we choose to store both datasets,
-``two_theta`` and ``counts``, in a NeXus group.
-One appropriate NeXus group is :ref:`NXdetector`.
+``two_theta`` and ``counts``, in a content group.
+One appropriate NeXus class is :ref:`NXdetector`.
 This group is placed in a :ref:`NXinstrument` group
 which is placed in a :ref:`NXentry` group.
 To support a default plot, we provide a :ref:`NXdata` group.
 Rather than duplicate the same data already placed in the detector group,
-we choose to link to those datasets from the ``NXdata`` group.
+we choose to make content links to those datasets in the ``NXdata`` group.
 (Compare the next figure with :ref:`fig.data-linking` in the
 :ref:`Design` chapter of the NeXus User Manual.)
 The :ref:`Design` chapter provides a figure
 (:ref:`fig.data-linking`) with a small variation from our
 previous example, placing the measured data
 within the ``/entry/instrument/detector`` group.
-Links are made from that data to the ``/entry/data`` group.
+Content links to that data are made in the ``/entry/data`` group.
 
 .. compound::
 
@@ -30,7 +30,7 @@ Links are made from that data to the ``/entry/data`` group.
         :alt: fig.simple_example_write2
         :width: 80%
 
-        h5py example showing linking in a NeXus file
+        h5py example showing content links in a NeXus file
 
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.
@@ -77,15 +77,15 @@ requests another reference to that same ``DATA`` storage element.
 The ``h5dump`` tool describes in full that ``DATA`` storage element
 the first time (alphabetically) it is called.  In our case, that is within the
 ``NXdata`` group.  The next time it is called, within the
-``NXdetector`` group, ``h5dump`` reports that a hard link
+``NXdetector`` group, ``h5dump`` reports that an HDF5 hard link
 has been made and shows the HDF5 path to the description.
 
-NeXus recognizes this behavior of the HDF5 library and adds an additional structure
-when building hard links, the ``target`` attribute,
-to preserve the original location of the data.  Not that it actually matters.
-the :ref:`punx tree <punx>` tool knows about the additional NeXus
-``target`` attribute and shows the data to appear in its original
-location, in the ``NXdetector`` group.
+HDF5 makes no distinction between the two paths of a hard-linked object.
+NeXus does: the ``target`` content attribute holds the path of the original, so
+``NXdata/two_theta`` is a :ref:`content link <Design-Links>` to the original in
+the ``NXdetector`` group.
+The :ref:`punx tree <punx>` tool knows about the ``target`` attribute and
+shows the data in its original location, in the ``NXdetector`` group.
 
 .. literalinclude:: simple_example_write2_structure.txt
     :tab-width: 4

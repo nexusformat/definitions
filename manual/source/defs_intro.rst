@@ -75,7 +75,7 @@ guidelines are strongly encouraged:
 
  		**detectorRank**: Rank of data array provided by the detector for a single measurement
 
-* the ``Symbols`` table appears early in the .nxdl file above the ``NXentry`` group
+* the ``Symbols`` table appears early in the .nxdl file above the ``NXentry`` NXDL group
 
  example from `NXtomo.nxdl.xml <https://github.com/nexusformat/definitions/blob/main/applications/NXtomo.nxdl.xml>`_
 
@@ -117,19 +117,19 @@ guidelines are strongly encouraged:
 Annotated Structure
 ===================
 
-A representation of the basic structure (groups, fields, 
-dimensions, attributes, and links) is prepared for each NXDL 
-specification. Indentation shows nested structure. 
-Attributes are prepended with the ``@`` symbol. 
-Links use the characters ``->`` to represent the 
-path to the intended source of the information.
+A representation of the basic structure of each NeXus class (its NeXus
+groups, fields, attributes and links, with their dimensions) is prepared
+from its NXDL file. Indentation shows nested structure. 
+NeXus attributes are prepended with the ``@`` symbol. 
+NeXus links are shown as ``link`` followed by the target: a class
+path naming the NeXus field or group it is linked to.
 
 Indentation is used to indicate nesting of subgroups
 (a feature common to application definitions).
 Within each indentation level, 
 NeXus :ref:`fields <Design-Fields>` are listed first
 in the order presented in the NXDL file, then
-:ref:`groups <Design-Groups>`.  :ref:`Attributes <Design-Attributes>`
+:ref:`groups <Design-Groups>`.  NeXus :ref:`attributes <Design-Attributes>`
 are listed after the documentation of each item and
 are prefixed with the letter ``@`` (do not use the 
 ``@`` symbol in the actual attribute name).
@@ -139,13 +139,14 @@ name (for groups) or the NeXus data type (for fields).
 If units are to be provided with the *field*, the type of the
 units is described, such as ``NX_DATE_TIME``.
 
-:ref:`NeXus Links <Design-Links>` (these specifications are typically
-present only in application definitions) are described by a local name,
-the text `->`, then a suggested path to the source item to be linked 
-to the local name.
+NXDL links, which define a :ref:`NeXus link <Design-Links>`
+(these specifications are typically
+present only in application definitions), are described by a local name,
+the text ``link``, then the target: a class path naming the NeXus field or
+group it is linked to (see :ref:`design.links.definitions`).
 
-Names (groups, fields, links, and attributes)
-=============================================
+Names of NeXus groups, fields, links and attributes
+===================================================
 
 Name of the item.
 Since ``name`` needs to be restricted to valid
@@ -165,7 +166,7 @@ Name must satisfy both
 	Or, as a regular expression:    [_a-zA-Z][_a-zA-Z0-9]*
 	equivalent regular expression:  [_a-zA-Z][\w_]*
 
-:index:`Attributes <! attribute>`,
+NeXus :index:`attributes <! attribute>`,
 identified with a leading "at" symbol (``@``)
 and belong with the preceding field or group,
 are additional metadata used to define this field or group.
@@ -175,7 +176,7 @@ In the example above, the
 ``thumbnail`` element has the
 ``mime_type`` (optional) attribute.
 
-For groups, the name may not be declared in the NXDL specification.
+For NXDL groups, the XML attribute ``name`` may be absent.
 In such instances, the *value shown in parentheses* in the
 *Name and Attributes* column is a suggestion, obtained from the 
 group by removing the "NX" prefix.
@@ -188,7 +189,7 @@ by this NXDL specification is not required but is set
 at the time the HDF file is written), the flexible
 part of the name will be written in all capital letters.
 For example, in the :ref:`NXdata` group, the ``DATA``,
-``VARIABLE``, and ``VARIABLE_errors`` fields are *flexible*.
+``VARIABLE``, and ``VARIABLE_errors`` NeXus fields are *flexible*.
 
 NeXus data type
 ===============
@@ -197,12 +198,12 @@ Type of data to be represented by this variable.
 The type is one of those specified in :ref:`NXDL`.
 In the case where the variable can take only one value from a known
 list, the list of known values is presented, such as in the
-``target_material`` field above:
+``target_material`` NeXus field above:
 ``Ta | W | depleted_U | enriched_U | Hg | Pb | C``.
 Selections with included whitespace are surrounded by quotes. See the
 example above for usage.
 
-For fields, the data type may not be specified in the NXDL file.
+For NXDL fields, the XML attribute ``type`` may be absent.
 The *default data type* is ``NX_CHAR``.
 See :ref:`NXdata` for examples.
 
@@ -231,15 +232,16 @@ attribute         [#minOccurs]_   1
 
 .. [#minOccurs] For NXDL *base classes*, ``minOccurs=0`` is the default, 
     for NXDL *application definitions* and  *contributed definitions*, ``minOccurs=1`` is the default.
-    In all cases, the ``minOccurs`` attribute in the NXDL file will override the default
-    for that element (group, field, attribute, or link).
+    In all cases, the ``minOccurs`` XML attribute in the NXDL file will override the default
+    for that NXDL group or field.  An NXDL attribute uses the XML attribute
+    ``optional`` instead, and an NXDL link has no occurrence XML attributes.
 
 .. index:: !choice
 
 Choice
 ======
 
-The ``choice`` element allows one to create a group with a defined name 
+The NXDL choice allows one to create a NeXus group with a defined name 
 that is one specific NXDL base class from a defined list of possibilities
 
 In some cases when creating an application definition, more than one 
@@ -271,11 +273,11 @@ the ``pixel_shape`` could be represented by *either*
 	</choice>
 
 
-The ``@name`` attribute of the ``choice`` element specifies the name that
-will appear in the HDF5 data file using one of the groups listed within the choice.
-Thus, it is not necessary to specify the name in each group.  (At some point, 
+The XML attribute ``name`` of the NXDL choice gives the name of the NeXus group
+that one of the NXDL groups listed within the choice defines.
+Thus, it is not necessary to specify the name in each NXDL group.  (At some point, 
 the NXDL Schema may be modified to enforce this rule.)
 
-A ``choice`` element may be used wherever a ``group`` element
-is used.  It **must** have at least two groups listed (otherwise, it would
+An NXDL choice may be used wherever an NXDL group
+is used.  It **must** have at least two NXDL groups listed (otherwise, it would
 not be useful).

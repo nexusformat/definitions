@@ -22,7 +22,7 @@
  *  I left the error checking out in order to keep the 
  *  code clearer
  * 
- *  This also installs a link from /scan/data/two_theta to /scan/hugo
+ *  This also installs an HDF5 hard link from /scan/data/two_theta to /scan/hugo
  * 
  *  Mark Koennecke, October 2011
  */
@@ -152,14 +152,14 @@ int main(int argc, char *argv[])
   write_string_attr(dataid, "units", "degrees");
 
   /*
-   * set the target attribute for linking
+   * set the target attribute of the content link
    */
   write_string_attr(dataid, "target", "/scan/data/two_theta");
 
   H5Dclose(dataid);
 
   /*
-   * make a link in /scan to /scan/data/two_theta, thereby 
+   * make an HDF5 hard link in /scan to /scan/data/two_theta, thereby 
    * renaming two_theta to hugo
    */
   H5Glink(fid,H5G_LINK_HARD,"/scan/data/two_theta","/scan/hugo");

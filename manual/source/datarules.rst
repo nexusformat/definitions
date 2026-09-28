@@ -17,10 +17,11 @@ Naming Conventions
    single: attribute; NXclass
    single: NXclass (attribute)
 
-Group and field names used within NeXus follow a naming convention
+Names of content groups and fields, and the XML attribute ``name`` of NXDL groups
+and fields, follow a naming convention
 described by the following :index:`rules <rules; naming>`:
 
-* The names of NeXus *group* and *field* items
+* The names of content *groups* and *fields*
   must only contain a restricted set of characters.
 
   This set is described by a regular expression
@@ -28,24 +29,24 @@ described by the following :index:`rules <rules; naming>`:
   :ref:`regular expression syntax <RegExpName>`,
   as described below.
 
-* For the class names [#]_ of NeXus *group* items,
+* For the class names [#]_ of content *groups*,
   the prefix *NX* is reserved as shown in the :ref:`table <reserved_prefixes>` below.
   Thus all NeXus class names start with NX.
   The chapter titled :ref:`ReferenceDocumentation` lists the
   available NeXus class names as either *base classes*,
   *application definitions*, or *contributed definitions*.
 
-.. [#] The *class name* is the value assigned to the
-   *NX_class* attribute of an HDF5 group in the NeXus data file.
-   This *class name* is different than the *name* of the HDF5 group.
+.. [#] The *class name* is the value of the content attribute *NX_class* of a
+   content group (in HDF5, an HDF5 attribute of the HDF5 group).
+   This *class name* is different than the *name* of the content group.
    This is important when not using the NAPI to either read or write
    the HDF5 data file.
 
-.. rubric:: NXDL group and field names
+.. rubric:: Names of content groups and fields
 
 .. compound::
 
-   The names of NeXus *group* and *field* items
+   The names of content *groups* and *fields*
    are validated according to these boundaries:
 
    * *Recommended* names [#lc]_
@@ -64,7 +65,7 @@ described by the following :index:`rules <rules; naming>`:
 
    .. _RegExpName:
 
-   .. rubric:: Regular expression pattern for NXDL group and field names
+   .. rubric:: Regular expression pattern for names of content groups and fields
 
    The NIAC recognises that the majority of the world uses characters
    outside of the basic latin (a.k.a. US-ASCII, 7-bit ASCII) [#7bit-ASCII]_
@@ -96,10 +97,10 @@ described by the following :index:`rules <rules; naming>`:
    63 characters (historically imposed by the HDF4 :index:`rules <rules; HDF>` for names).
 
    It is recognized that some facilities will construct data files with
-   group and field names with upper case letters or start names with a
+   content group and field names with upper case letters or start names with a
    number or include a period in a name. [#lc]_
 
-   .. [#lc] NeXus data files with group or field names
+   .. [#lc] NeXus data files with content group or field names
       that match the regular expression but contain upper case
       characters, start with a digit, or include a period in the group
       or field names might not be accepted by all software that reads
@@ -111,7 +112,7 @@ described by the following :index:`rules <rules; naming>`:
 .. rubric:: Use of underscore in descriptive names
 
 Sometimes it is necessary to combine words in order to build a
-descriptive name for a field or a group.
+descriptive name for a NeXus field or group.
 In such cases lowercase words are connected by underscores.
 
 .. code-block:: text
@@ -119,10 +120,10 @@ In such cases lowercase words are connected by underscores.
 
     number_of_lenses
 
-For all fields, only names from the NeXus base class dictionaries should be used.
-If a field name or even a complete component is missing,
+For all content fields, only names from the NeXus base class dictionaries should be used.
+If a NeXus field name or even a complete component is missing,
 please suggest the addition to the :ref:`NIAC`. The addition will usually be
-accepted provided it is not a duplication of an existing field and
+accepted provided it is not a duplication of an existing NeXus field and
 adequately documented.
 
     .. note::
@@ -134,7 +135,7 @@ adequately documented.
 
 .. _target_value:
 
-The data stored in NeXus fields must be *readback* values.
+The data stored in content fields must be *readback* values.
 This means values as read from the detector, other hardware, etc.
 There are occasions where it is sensible to store the target value
 the variable was supposed to have. In such cases, the
@@ -149,8 +150,8 @@ Consider this example:
     temperature
     temperature_set
 
-The ``temperature`` field will hold the readback from the
-cryostat/furnace/whatever. The field ``temperature_set`` will hold
+The content field ``temperature`` will hold the readback from the
+cryostat/furnace/whatever. The content field ``temperature_set`` will hold
 the target value for the temperature as set by the
 experiment control software.
 
@@ -159,7 +160,7 @@ experiment control software.
    We'll leave existing names as-is,
    but make this recommendation for the future.
 
-Some fields share a common part of their name and an additional part
+Some NeXus fields share a common part of their name and an additional part
 name that makes the whole name specific.  For example, a ``unit_cell``
 might have parts named ``abc``, ``alphabetagamma``, and ``volume``.  It
 is recommended to write them with the common part first, an underscore
@@ -180,7 +181,7 @@ alphabetically on the common name. So, in this example:
 
 .. rubric:: Reserved prefixes
 
-When naming an attribute, field, or group,
+When naming a content attribute, field, or group,
 NeXus has reserved certain prefixes to the names to
 ensure that names written in NeXus files will not conflict with future
 releases as the NeXus standard evolves. Prefixes should follow a naming
@@ -221,8 +222,8 @@ prefix         use                 meaning                                      
 
 .. rubric:: Reserved suffixes
 
-When naming a field, NeXus has reserved certain suffixes to the names
-so that a specific meaning may be attached.  Consider a field named ``DATASET``,
+When naming a NeXus field, NeXus has reserved certain suffixes to the names
+so that a specific meaning may be attached.  Consider a NeXus field named ``DATASET``,
 the following table lists the suffixes reserved by NeXus.
 
 .. index::
@@ -242,15 +243,15 @@ suffix               reference                                  meaning
 ``_end``             :ref:`NXtransformations`                   end points of the motions that start with ``DATASET``
 ``_errors``          :ref:`NXdata`                              uncertainties (a.k.a., errors)
 ``_increment_set``   :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
-``_indices``         :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
-``_mask``            ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
+``_indices``         :ref:`NXdata`                              Integer array that defines the indices of the NeXus signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_mask``            ..                                         NeXus field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
 ``_set``             :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``         ..                                         divide ``DATASET`` by these weights [#suffix_note]_
 ``_scaling_factor``  :ref:`NXdata`                              Multiply ``DATASET`` by this factor [#suffix_note]_
 ``_offset``          :ref:`NXdata`                              Add this factor to ``DATASET`` [#suffix_note]_
 ===================  =========================================  =================================
 
-.. [#suffix_note] If ``DATASET_weights`` exists and has the same shape as the field,
+.. [#suffix_note] If ``DATASET_weights`` exists and has the same shape as ``DATASET``,
    you are supposed to divide ``DATASET`` by the weights. Similarly, if `DATASET_scaling_factor` and/or
    `DATASET_offset` exist, apply this equation: (``DATASET`` + ``DATASET_offset``) * ``DATASET_scaling_factor``
 
@@ -265,11 +266,11 @@ suffix               reference                                  meaning
 Variants
 #########
 
-Sometimes it is necessary to store alternate values of a NeXus field
+Sometimes it is necessary to store alternate values of a content field
 in a NeXus file. A common example may be the beam center of which a
 rough value is available at data acquisition. But later on, a better beam
 center is calculated as part of the data reduction. In order to store
-this without losing the historical information, the original field can be given a variant attribute that points to
+this without losing the historical information, the content field with the best value can be given a content attribute ``variant`` that points to
 a new field containing the obsolete value. If even better values
 become available, further fields can be inserted into the chain of variant attributes
 pointing to the preceeding value for the field. A reader can thus
@@ -288,7 +289,7 @@ A little example is in order to illustrate the scheme:
     beam_center_x_initial_guess
 
 NeXus borrowed this scheme from CIF. In this way all the different
-variants of a field can be preserved. The expectation is that
+variants of a content field can be preserved. The expectation is that
 variants will be rarely used and NXprocess groups with the results of
 data reduction will be written instead.
 
@@ -301,7 +302,7 @@ Uncertainties or Errors
 It is desirable to store experimental errors (also known as
 *uncertainties*) together with the data. NeXus supports this through
 a convention: uncertainties or experimental errors on data are
-stored in a separate field which has a name consisting of the
+stored in a separate content field which has a name consisting of the
 original name of the data with ``_errors`` appended to it.
 These uncertainties fields have the same shape as the original data field.
 
@@ -351,9 +352,9 @@ Non C Storage Order
 ===================
 
 In order to indicate that the storage order is different from C storage order two
-additional data set attributes, offset and stride, have to be stored which together define the storage
-layout of the data. Offset and stride contain rank numbers according to the rank of the multidimensional
-data set. Offset describes the step to make when the dimension is multiplied by 1. Stride defines the step to
+additional content attributes of the content field, ``data_offset`` and ``stride``, have to be stored which together define the storage
+layout of the data (see :ref:`NXobject`). They contain rank numbers according to the rank of the multidimensional
+content field. ``data_offset`` gives the position of the first stored value in each dimension. ``stride`` gives the step to
 make when incrementing the dimension. This is best explained by some examples.
 
 .. compound::
@@ -459,9 +460,9 @@ match the data type specifier.
    The preferred string representation is UTF-8.
    Both fixed-length strings and variable-length strings are valid.
    String arrays cannot be used where only a string is expected
-   (title, start_time, end_time, ``NX_class`` attribute,...).
-   Fields or attributes requiring the use of string arrays will be
-   clearly marked as such (like the ``NXdata`` attribute auxiliary_signals).
+   (title, start_time, end_time, ``NX_class`` content attribute,...).
+   NeXus fields or attributes requiring the use of string arrays will be
+   clearly marked as such (like the NeXus attribute auxiliary_signals of ``NXdata``).
 
    .. https://github.com/nexusformat/NIAC/issues/31#issuecomment-433481024
 
@@ -564,14 +565,14 @@ NeXus Data Units
 
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
-store data in any unit you find fit. However, any field must have a
-units attribute which describes the units. Wherever possible, SI units are
-preferred. NeXus units are written as a string attribute (``NX_CHAR``)
+store data in any unit you find fit. However, any content field must have a
+``units`` content attribute which describes the units. Wherever possible, SI units are
+preferred. NeXus units are written as a string content attribute (``NX_CHAR``)
 and describe the engineering units. The string
 should be appropriate for the value.
 Values for the NeXus units must be specified in
 a format compatible with `Unidata UDunits`_ [#UDunits]_
-Application definitions may specify units to be used for fields
+Application definitions may specify units to be used for NeXus fields
 using :index:`an <enumeration>` ``enumeration``.
 
 .. _Unidata UDunits: http://www.unidata.ucar.edu/software/udunits
@@ -617,8 +618,8 @@ of the experimental probe rather than the probe's interaction with the
 sample, have a special place in NeXus files. Monitors are crucial to normalize data.
 To emphasize their role, monitors are not stored in the
 ``NXinstrument`` hierarchy but on ``NXentry`` level
-in their own groups as there might be multiple monitors. Of special
-importance is the monitor in a group called ``control``.
+in their own content groups as there might be multiple monitors. Of special
+importance is the monitor in a content group called ``control``.
 This is the main monitor against which the data has to be normalized.
 This group also contains the counting control information,
 i.e. counting mode, times, etc.
@@ -675,10 +676,10 @@ plottable data is as follows:
 
 #. Pick the :index:`!default` :ref:`NXentry` group.
 
-   If the *root* has an attribute ``default``, the attribute's value is the name of the
+   If the *root* has a content attribute ``default``, the attribute's value is the name of the
    ``NXentry`` group to be used.
    (The value of the ``default`` attribute :ref:`names <validItemName>` an
-   existing child of this group. The child group must itself be a NeXus group.)
+   existing child of this group. The child must itself be a content group, not a content field.)
    If no `default` attribute exists, pick any
    ``NXentry`` group.  This is trivial if there is only one ``NXentry`` group.
 
@@ -694,10 +695,10 @@ plottable data is as follows:
 
 #. Pick the default :ref:`NXdata` group.
 
-   Open the ``NXentry`` group selected above. If it has an attribute
+   Open the ``NXentry`` group selected above. If it has a content attribute
    ``default``, the attribute's value is the name of the ``NXdata`` group to be used.
    (The value of the ``default`` attribute :ref:`names <validItemName>` an
-   existing child of this group. The child group must itself be a NeXus group.)
+   existing child of this group. The child must itself be a content group, not a content field.)
    If no `default` attribute exists, pick any ``NXdata`` group. This is trivial
    if there is only one ``NXdata`` group.
 
@@ -713,12 +714,12 @@ plottable data is as follows:
 
 .. index:: signal data
 
-#. Pick the default plottable field (the *signal* data).
+#. Pick the default plottable content field (the *signal* data).
 
-   Open the ``NXdata`` group selected above. If it has a ``signal`` attribute,
+   Open the ``NXdata`` group selected above. If it has a content attribute ``signal``,
    the attribute's value is the name of the field to be plotted.
    (The value of the ``signal`` attribute :ref:`names <validItemName>` an
-   existing child of this group. The child group must itself be a NeXus field.)
+   existing child of this group. The child must itself be a content field.)
    If no ``signal`` attribute is present on the ``NXdata``
    group, then proceed to try an :ref:`older NeXus
    method<Find-Plottable-Data-v2>` to find the default plottable data.
@@ -733,9 +734,9 @@ plottable data is as follows:
 
            Find plottable data: select the *signal* data
 
-   #. Pick the fields with the dimension scales (the *axes*).
+   #. Pick the content fields with the dimension scales (the *axes*).
 
-      If the same ``NXdata`` group has an attribute ``axes``,
+      If the same ``NXdata`` group has a content attribute ``axes``,
       then its value is a string (*signal* data is 1-D) or
       string array (*signal* data is 2-D or higher rank)
       naming the field **in this group** to be used as
@@ -751,9 +752,9 @@ plottable data is as follows:
 
    #. Associate the dimension scales with each dimension of the plottable data.
 
-      For each field (its name is *AXISNAME*) in ``axes`` that
+      For each content field (its name is *AXISNAME*) in ``axes`` that
       provides a dimension scale, there will be
-      an ``NXdata`` group attribute ``AXISNAME_indices`` which
+      a content attribute ``AXISNAME_indices`` of the ``NXdata`` group, which
       value is an
       .. integer or
       integer array with value of the
@@ -774,7 +775,7 @@ plottable data is as follows:
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
 
-When all the ``default`` and ``signal`` attributes are present, this
+When all the ``default`` and ``signal`` content attributes are present, this
 Python code example will identify directly the default plottable data
 (assuming a ``plot()`` function has been defined by some code::
 
@@ -803,7 +804,7 @@ plottable data is as follows:
 
 #. Start at the top level of the NeXus data file.
 
-#. Loop through the groups with class ``NXentry``
+#. Loop through the content groups with class ``NXentry``
    until the next step succeeds.
 
    .. compound::
@@ -829,8 +830,8 @@ plottable data is as follows:
 
            Find plottable data: pick a ``NXdata`` group
 
-#. Open the NXdata group and loop through the fields for the one field
-   with attribute ``signal="1"``.
+#. Open the NXdata group and loop through the content fields for the one field
+   with the content attribute ``signal="1"``.
    Note: There should be *only one* field that matches.
 
    This is the default plottable data.
@@ -840,7 +841,7 @@ plottable data is as follows:
    :ref:`older NeXus method<Find-Plottable-Data-v1>`
    to find the default plottable data.
 
-   #. If this field has an attribute ``axes``:
+   #. If this field has a content attribute ``axes``:
 
       #. The ``axes`` attribute value contains a colon (or comma)
          delimited list (in the C-order of the data array) with
@@ -849,12 +850,12 @@ plottable data is as follows:
          associated with the plottable data.
          Such as:  ``axes="polar_angle:time_of_flight"``
 
-      #. Parse ``axes`` and open the fields to describe your
+      #. Parse ``axes`` and open the content fields to describe your
          :index:`dimension scales <dimension scale>`
 
    #. If this field has no attribute ``axes``:
 
-      #. Search for fields with attributes ``axis=1``, ``axis=2``, etc.
+      #. Search for content fields with ``@axis`` set to 1, 2, etc.
 
       #. These are the fields describing your axis. There may be
          several fields for any axis, i.e. there may be multiple
@@ -886,7 +887,7 @@ Version 1
 The first method to identify the default
 plottable data is as follows:
 
-#. Open the first top level NeXus group with class
+#. Open the first top level content group with class
    ``NXentry``.
 
    .. compound::
@@ -899,7 +900,7 @@ plottable data is as follows:
 
            Find plottable data: pick the first ``NXentry`` group
 
-#. Open the first NeXus group with class
+#. Open the first content group with class
    ``NXdata``.
 
    .. compound::
@@ -912,19 +913,19 @@ plottable data is as follows:
 
            Find plottable data: pick the first ``NXdata`` group
 
-#. Loop through NeXus fields in this group searching for the item
-   with attribute
+#. Loop through content fields in this group searching for the one
+   with the content attribute
    ``signal="1"``
    indicating this field has the plottable data.
 
 #. Search for the
-   one-dimensional NeXus fields with attribute ``primary=1``.
+   one-dimensional content fields with the content attribute ``primary=1``.
    These are the dimension scales to label
    the axes of each dimension of the data.
 
 #. Link each dimension scale
    to the respective data dimension by
-   the ``axis`` attribute (``axis=1``, ``axis=2``,
+   the content attribute ``axis`` (``axis=1``, ``axis=2``,
    ... up to the  :index:`rank <rank>` of the data).
 
    .. compound::
@@ -979,29 +980,29 @@ Only the first method is recommended now, the other two (older methods) are now 
 #. :ref:`Design-FindPlottable-ByName`
 #. :ref:`Design-FindPlottable-ByDimNumber`
 
-The recommended method uses the ``axes`` attribute applied to the :ref:`NXdata` group
+The recommended method uses the content attribute ``axes`` applied to the :ref:`NXdata` group
 to specify the names of each
 :index:`dimension scale <dimension; dimension scales>`.
-A prerequisite is that the fields describing the axes of the plottable data
-are stored together with the plottable data in the same NeXus group.
-If this leads to data duplication, use :ref:`links <Design-Links>`.
+A prerequisite is that the content fields describing the axes of the plottable data
+are stored together with the plottable data in the same content group.
+If this leads to data duplication, use :ref:`content links <Design-Links>`.
 
 -----------
 
 .. _Design-FindPlottable-NIAC2014:
 
-Associating plottable data using attributes applied to the :ref:`NXdata` group
-==============================================================================
+Associating plottable data using content attributes applied to the :ref:`NXdata` group
+======================================================================================
 
 .. tip:: Recommended:
    This is the "*NIAC2014*" method recommended for all new NeXus data files.
 
 The default data to be plotted (and any associated axes)
-is specified using attributes attached to the :ref:`NXdata` group.
+is specified using content attributes attached to the :ref:`NXdata` group.
 
 :``signal``:
-   Defines the name of the default field *in the NXdata group*.
-   A field of this name *must* exist (either as field or link to field).
+   Defines the name of the default content field *in the NXdata group*.
+   A content field of this name *must* exist (it may be a content link).
 
    It is recommended to use this attribute
    rather than adding a signal attribute to the field.  [#]_
@@ -1011,7 +1012,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    Specifically:
 
    *  The root of the NeXus file may have a ``default``
-      attribute that names the default :ref:`NXentry` group.
+      content attribute that names the default :ref:`NXentry` group.
       This attribute may be omitted if there is only one NXentry group.
       If a second NXentry group is later added, the ``default`` attribute
       must be added then.
@@ -1028,12 +1029,12 @@ is specified using attributes attached to the :ref:`NXdata` group.
 
 :``axes``:
 
-   String array [#aa]_ that defines the independent data fields used in
+   String array [#aa]_ that defines the independent content fields used in
    the default plot for all of the dimensions of the *signal* field.
    One entry is provided for every dimension in the *signal* field.
 
    The field(s) named as values (known as "axes") of this attribute
-   *must* exist. An axis slice is specified using a field named
+   *must* exist. An axis slice is specified using a content attribute named
    ``AXISNAME_indices`` as described below (where the text shown here
    as ``AXISNAME`` is to be replaced by the actual field name).
 
@@ -1048,8 +1049,8 @@ is specified using attributes attached to the :ref:`NXdata` group.
 .. AXISNAME_indices documentation will be repeated in NXdata/@AXISNAME_indices
 
 :``AXISNAME_indices``:
-   Each ``AXISNAME_indices`` attribute indicates the dependency
-   relationship of the ``AXISNAME`` field (where ``AXISNAME``
+   Each ``AXISNAME_indices`` content attribute indicates the dependency
+   relationship of the ``AXISNAME`` content field (where ``AXISNAME``
    is the name of a field that exists in this ``NXdata`` group)
    with one or more dimensions of the plottable data.
 
@@ -1084,7 +1085,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data:
        https://www.nexusformat.org/2014_How_to_find_default_data.html
-.. [#aa]  Note on array attributes:
+.. [#aa]  Note on array-valued content attributes:
           Attributes potentially containing multiple values
           (axes and _indices) are to be written as string or integer arrays,
           to avoid string parsing in reading applications.
@@ -1122,7 +1123,7 @@ More examples are available in the NeXus webpage ([#axes]_).
    .. rubric:: 2-D data example showing how to identify the default data and associated dimension scales
 
    A 2-D data set, *data* as a function of *time* and *pressure* is described.
-   By default as indicated by the ``axes`` attribute,
+   By default as indicated by the ``axes`` content attribute,
    *pressure* is to be used.
    The *temperature* array is described as a substitute for *pressure*
    (so it replaces dimension ``1`` of ``data`` as indicated by the
@@ -1151,13 +1152,13 @@ More examples are available in the NeXus webpage ([#axes]_).
 
 .. _Design-FindPlottable-ByName:
 
-Associating plottable data by name using the ``axes`` attribute
-===============================================================
+Associating plottable data by name using the ``axes`` content attribute
+=======================================================================
 
 .. warning:: Discouraged:
    See this method: :ref:`Design-FindPlottable-NIAC2014`.
 
-This method defines an attribute of the data field
+This method uses a content attribute of the content field with the data,
 :index:`called <axes (attribute)>` *axes*.
 The ``axes`` attribute contains the names of
 each :index:`dimension scale <dimension; dimension scales>`
@@ -1177,14 +1178,14 @@ For example:
 
 .. _Design-FindPlottable-ByDimNumber:
 
-Associating plottable data by dimension number using the ``axis`` attribute
-===========================================================================
+Associating plottable data by dimension number using the ``axis`` content attribute
+===================================================================================
 
 .. warning:: Discouraged:
    See this method: :ref:`Design-FindPlottable-ByName`
 
-The original method defines an attribute of each dimension
-scale field :index:`called <axis>` *axis*.
+The original method uses a content attribute of each dimension
+scale content field :index:`called <axis>` *axis*.
 It is an integer whose value is the number of
 the dimension, in order of
 :index:`fastest varying dimension <dimension; fastest varying>`.
@@ -1204,7 +1205,7 @@ would contain:
         :linenos:
         :language: text
 
-The ``axis`` attribute must
+The ``axis`` content attribute must
 be defined for each dimension scale.
 The ``primary`` attribute is unique to this method.
 
@@ -1214,7 +1215,7 @@ for the same data dimension can be included in the same ``NXdata`` group.
 The most common is when the dimension scales are
 the three components of an
 *(hkl)* scan. In order to
-handle this case, we have defined another attribute
+handle this case, we have defined another NeXus attribute
 of type integer called
 ``primary`` whose value determines the order
 in which the scale is expected to be chosen for :index:`plotting`, i.e.
@@ -1225,11 +1226,11 @@ in which the scale is expected to be chosen for :index:`plotting`, i.e.
 
 + etc.
 
-If there is more than one scale with the same value of the ``axis`` attribute, one
+If there is more than one scale with the same value of the ``axis`` content attribute, one
 of them must have set ``primary=1``. Defining the ``primary``
 attribute for the other scales is optional.
 
-	.. note:: The ``primary`` attribute can only be
+	.. note:: The ``primary`` content attribute can only be
 	          used with the first method of defining
              :index:`dimension scales <dimension; dimension scales>`
 	          discussed above. In addition to
@@ -1250,8 +1251,8 @@ attribute for the other scales is optional.
    In general the method using the ``axes`` attribute on the multi dimensional
    data set should be preferred. This leaves the actual axis describing data sets
    unannotated and allows them to be used as an axis for other multi dimensional
-   data.  This is especially a concern as an axis describing a data set may be linked
-   into another group where it may describe a
+   data.  This is especially a concern as an axis describing a content field may be the original of a content link
+   in another content group where it may describe a
    :index:`completely different dimension <dimension; data set>`
    of another data set.
 

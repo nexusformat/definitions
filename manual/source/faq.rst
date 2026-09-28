@@ -105,7 +105,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     ``NXdata`` identifies the :index:`default plottable data <plotting>`.
     This is one of the basic motivations (see :ref:`SimplePlotting`) for the NeXus standard.
     The choice of the name ``NXdata`` is historic and does not really reflect its function.
-    The ``NXdata`` group contains data or links to the data stored elsewhere.
+    The ``NXdata`` group contains data or content links to the data stored elsewhere.
 
 #. How do I identify the plottable data?
 
@@ -128,7 +128,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     sample and calibration runs, etc. In many cases, though by no means
     all, the instrument has the same configuration so that it would be
     possible to save space by storing the  ``NXinstrument``
-    group once and using multiple links in the remaining ``NXentry``
+    group once and using content links, stored as HDF5 hard links, in the remaining ``NXentry``
     groups. It is assumed that the sample and monitor information would
     be more likely to change from run to run, and so should be stored
     at the top level.
@@ -150,28 +150,29 @@ This is a list of commonly asked questions concerning the NeXus data format.
     strongly encouraged.
 
 
-#. I'm using links to place data in two places.
-   Which one should be the data and which one is the link?
+#. I'm using content links to place data in two places.
+   Which one should be the data and which one is the content link?
 
     .. index:: link
 
-    .. note:: NeXus uses HDF5 hard links
-
-	    In HDF, a hard link points to a data object.
-	    A soft link points to a directory entry.
-	    Since NeXus uses hard links, there is no need to distinguish
-	    between two (or more) directory entries that point to the same data.
-
-    Both places have pointers to the actual data.
-    That is the way hard links work in HDF5.
-    There is no need for a preference to either location.
-    NeXus defines a ``target`` attribute to label
-    one directory entry as the source of the data (in this, the
-    link *target*).  This has value in
+    Both places have the same shared content (see :ref:`Design-Links`),
+    so there is no need for a preference to either location.
+    The content link has the content attribute ``target``
+    (see :ref:`NXobject`), whose value is the path of the original.
+    Identifying the original has value in
     only a few situations such as when
     converting the data from one format to another.  By identifying
     the original in place, duplicate copies of the data are not
     converted.
+
+    .. note:: HDF5 links
+
+	    In HDF5, a hard link points to a data object.
+	    A soft link points to a directory entry.
+	    With hard links, there is no need to distinguish
+	    between two (or more) directory entries that point to the same data:
+	    both places have pointers to the actual data.
+	    That is the way hard links work in HDF5.
 
 #. If I write my data according to the current specification for :ref:`NXsas`
     (substitute any other application definition),
@@ -203,28 +204,28 @@ This is a list of commonly asked questions concerning the NeXus data format.
    (https://github.com/nexusformat/exampledata)
 
 #. Can instances of classes inside definitions require
-   new fields that were previously optional?
+   new NeXus fields that were previously optional?
 
    Yes. That is one of the motivations to have
    application definitions. By default, all content
    in an application definition is required.
 
-   For example, the ``radiation`` field in :ref:`NXcanSAS`
+   For example, the ``radiation`` NeXus field in :ref:`NXcanSAS`
    requires 1 (and only 1) instance.
 
 #. Can instances of classes inside definitions make
-   optional new fields that were previously not mentioned?
+   optional new NeXus fields that were previously not mentioned?
 
-   Yes. To make it optional, set attribute ``minOccurs="0"``.
+   Yes. To make it optional, set the XML attribute ``minOccurs="0"``.
 
-   For example, see the ``Idev`` field in :ref:`NXcanSAS`.
+   For example, see the ``Idev`` NeXus field in :ref:`NXcanSAS`.
 
 #. Can instances of classes inside definitions require
-   new fields that were previously not mentioned?
+   new NeXus fields that were previously not mentioned?
 
    Yes.
 
-   For example, see the ``qx`` field in :ref:`NXiqproc`.
+   For example, see the ``qx`` NeXus field in :ref:`NXiqproc`.
 
 #. Can we view the process of defining classes within
    an application definition as defining a subclass of
@@ -237,7 +238,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
    base class definition. This essentially sub-classes the
    original base class.
 
-   This is different than using the ``extends`` attribute, which
+   This is different than using the ``extends`` XML attribute, which
    can be used to make new base classes that inherit the properties
    of the parent classes, or new application definitions that use
    another as a starting point. For example the

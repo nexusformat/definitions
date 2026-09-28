@@ -139,6 +139,25 @@ def _assert_inherited_nodes(
 
 
 @pytest.mark.parametrize(
+    "nxdl_path,nx_name,expected",
+    [
+        ("/data/target", "NXdetector", ["NXobject:/fieldAttributes/target"]),
+        (
+            "/DETECTOR/data/long_name",
+            "NXinstrument",
+            ["NXdetector:/data/long_name", "NXobject:/fieldAttributes/long_name"],
+        ),
+    ],
+)
+def test_get_inherited_nodes_field_attributes(nxdl_path, nx_name, expected):
+    _, _, elist = nexus.get_inherited_nodes(nxdl_path=nxdl_path, nx_name=nx_name)
+    assert [
+        f"{Path(e.get('nxdlbase')).name.split('.')[0]}:{e.get('nxdlpath')}"
+        for e in elist
+    ] == expected
+
+
+@pytest.mark.parametrize(
     "hdf_name,concept_name, name_type, should_fit",
     [
         ("same_name", "same_name", "specified", True),
