@@ -6,6 +6,7 @@ import xmlschema
 
 from ..globals import errors
 from ..globals.directories import get_xsd_file
+from ..globals.nxdl import NXDL_NAMESPACE
 from ..utils.types import PathLike
 
 
@@ -34,6 +35,18 @@ def validate_definition(
         xml_schema = nxdl_schema()
     with _handle_xml_error(xml_path, lxml.etree.DocumentInvalid):
         xml_schema.assertValid(xml_tree)
+    _validate_value_from(xml_path, xml_tree)
+
+
+def _validate_value_from(xml_path: str, xml_tree: lxml.etree._ElementTree) -> None:
+    """Raise when an attribute has both ``valueFrom`` and an ``enumeration``."""
+    for node in xml_tree.xpath(
+        "//nx:attribute[@valueFrom][nx:enumeration]", namespaces={"nx": NXDL_NAMESPACE}
+    ):
+        raise errors.NXDLSyntaxError(
+            f"\n  {xml_path}\n  line {node.sourceline}: attribute"
+            f" '{node.get('name')}' has both 'valueFrom' and an 'enumeration'"
+        )
 
 
 @contextmanager

@@ -155,23 +155,24 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     .. index:: link
 
-    .. note:: NeXus uses HDF5 hard links
-
-	    In HDF, a hard link points to a data object.
-	    A soft link points to a directory entry.
-	    Since NeXus uses hard links, there is no need to distinguish
-	    between two (or more) directory entries that point to the same data.
-
-    Both places have pointers to the actual data.
-    That is the way hard links work in HDF5.
-    There is no need for a preference to either location.
+    Both places have the same content (see :ref:`Design-Links`),
+    so there is no need for a preference to either location.
     NeXus defines a ``target`` attribute to label
-    one directory entry as the source of the data (in this, the
+    one place as the original (in this, the
     link *target*).  This has value in
     only a few situations such as when
     converting the data from one format to another.  By identifying
     the original in place, duplicate copies of the data are not
     converted.
+
+    .. note:: Links in HDF5
+
+	    In HDF5, a hard link points to a data object.
+	    A soft link points to a directory entry.
+	    With hard links, there is no need to distinguish
+	    between two (or more) directory entries that point to the same data:
+	    both places have pointers to the actual data.
+	    That is the way hard links work in HDF5.
 
 #. If I write my data according to the current specification for :ref:`NXsas`
     (substitute any other application definition),

@@ -105,16 +105,19 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:simpleType name="validTargetName">
 		<xs:annotation>
 			<xs:documentation>
-				This is a valid link target - currently it must be an absolute path
-				made up of valid names with the ``/`` character delimiter.  But we may
-				want to consider allowing "``..``" (parent of directory) at some point.
-				If the ``name`` attribute is helpful, then use it in the path 
-				with the syntax of *name:type* as in these examples::
+				An absolute NXDL path to a field or group in the class definitions,
+				used as the ``target`` of a ``link``.  Each ``/``-separated segment is
+				the class of a group (``NXcrystal``), the name and class of a
+				group (``analyzer:NXcrystal``), or the name of a field (``ef``)::
 				
 					/NXentry/NXinstrument/analyzer:NXcrystal/ef
 					/NXentry/NXinstrument/monochromator:NXcrystal/ei
 					/NX_other
 				
+				Because it is written with class names, it refers to an item
+				in the class definitions, not to a path in a data file.
+				Currently it must be an absolute path; we may want to consider
+				allowing "``..``" (parent of directory) at some point.
 				Must also consider use of ``name`` attribute in resolving ``link`` targets.
 				(This data type is used internally in the NXDL schema 
 				to define a data type.)
@@ -133,7 +136,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					is written: ``/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+``.
 					Note that HDF5 also permits relative path names, such as:
 					``GroupA/GroupB/Dataset1``
-					but this is not permitted in the matching regular expression and not supported in NAPI.
+					but this is not permitted in the matching regular expression.
 				</xs:documentation>
 			</xs:annotation>
 			<xs:pattern value="(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+" />
@@ -215,13 +218,14 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* ``attribute``
 				* ``doc``
 				* ``field``
+				* ``fieldAttributes``
 				* ``group``
 				* ``link``
 
 				Note that a ``definition`` element also includes the definitions of the 
 				``basicComponent`` data type.
 				(The ``definitionType`` data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 				
 				Note that the first line of text in a ``doc`` element in a ``definition``
 				is used as a summary in the manual.  Follow the pattern as shown
@@ -247,6 +251,15 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					</xs:documentation>
 				</xs:annotation>
 			</xs:group>
+			<xs:element name="fieldAttributes" type="nx:fieldAttributesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Default attributes of every ``field`` directly in a group of this class.
+						Like other content of a ``definition``, this is inherited
+						by the classes that extend it.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
@@ -383,6 +396,55 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:enumeration value="definition" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="fieldAttributesType">
+		<xs:annotation>
+			<xs:documentation>
+				A ``fieldAttributes`` element specifies default attributes of
+				every ``field`` directly in its parent.
+				Fields in nested groups are not affected.
+
+				* As a child of a ``definition``, it applies to the fields
+				  directly in every group of that class, and is inherited by
+				  the classes that extend it (see :ref:`NXobject`).
+				* As a child of a ``group``, it applies to the fields directly
+				  in that group, in addition to those of the group's class.
+
+				An attribute that a ``field`` specifies itself always takes
+				precedence over one with the same name in ``fieldAttributes``.
+				When several ``fieldAttributes`` specify an attribute with the
+				same name, the one closest to the field takes precedence: the
+				enclosing ``group``, then the ``definition`` of the group's
+				class, then the classes it extends.
+				Could contain these elements:
+
+				* ``attribute``
+				* ``doc``
+
+				(This data type is used internally in the NXDL schema
+				to define elements and attributes to be used in NXDL specifications.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Describe these field attributes.
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						A default attribute of every field directly in the parent.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
@@ -431,22 +493,32 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* ``attribute``
 				* ``doc``
 				* ``field``
+				* ``fieldAttributes``
 				* ``group``
 				* ``link``
 				
 				Note that a ``group`` element also includes the definitions of the 
 				``basicComponent`` data type.
 				(The ``groupType`` data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
-		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
-			<xs:annotation>
-				<xs:documentation>
-					A ``group`` may be contained within another ``group``.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:group>
+		<xs:sequence>
+			<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						A ``group`` may be contained within another ``group``.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:element name="fieldAttributes" type="nx:fieldAttributesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Default attributes of every ``field`` directly in this ``group``.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 		<xs:attribute name="type" use="required" type="nx:validNXClassName">
 			<xs:annotation>
 				<xs:documentation>
@@ -544,7 +616,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="attribute" type="nx:groupAttributeType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
 						Use an ``attribute`` if additional information 
@@ -577,25 +649,15 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:element name="link" type="nx:linkType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						Use a ``link`` to refer locally to 
-						information placed elsewhere else in the data storage hierarchy.
+						Specifies that this ``group`` contains a :ref:`link &lt;Design-Links&gt;`
+						named ``name``: a field or group with the same content as the
+						item that ``target`` refers to.
 						The ``name`` attribute uniquely identifies
-						the element in this ``group``.
-						The ``target`` attribute
-						(added automatically in a data file by the NAPI)
-						identifies the original location of this data in the
-						data storage hierarchy.
-						In an NXDL specification, the ``target`` attribute
-						indicates a link to be made by the software that writes the data file.
-						The value, as written in the NXDL file, will be a suggestion of
-						the path to the source of the link.
-						For example::
+						the element in this ``group``.  For example::
 						
-							<link name="data" target="/NXentry/NXinstrument/NXdetector/data"/>
+							&lt;link name="data" target="/NXentry/NXinstrument/NXdetector/data"/&gt;
 						
-						The value of ``target`` is written using
-						the NeXus class names since this is a suggestion and does not actually use
-						the element names from a particular data file.
+						See :ref:`NXDL.data.type.linkType` for what this enforces.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -611,7 +673,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					format and attributes common to all ``field``
 					and ``group`` specifications.
 					(This data type is used internally in the NXDL schema
-					to define elements and attributes to be used by users in NXDL specifications.)
+					to define elements and attributes to be used in NXDL specifications.)
 				</xs:documentation>
 			</xs:annotation>
 		<xs:sequence>
@@ -658,10 +720,18 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* ``doc``
 				* ``enumeration``
 				
+				The XML attributes ``long_name``, ``signal``, ``axes``, ``axis``
+				and ``primary`` of a ``field`` give the value of the attribute
+				with that name of the field in a data file, for example
+				``signal="1"``.  The XML attribute ``units`` gives the units
+				category or an example of the units, not the value of ``@units``.
+				Other attributes of the field in a data file are declared with
+				``attribute`` elements.
+
 				Note that a ``field`` element also includes the definitions of the
 				``basicComponent`` data type.
 				(The ``fieldType`` data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -980,7 +1050,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					* ``enumeration``
 				
 				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -1045,6 +1115,62 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attributeGroup ref="nx:nameTypeAttributeGroup"/>
 	</xs:complexType>
 
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="groupAttributeType">
+		<xs:annotation>
+			<xs:documentation>
+				An ``attribute`` of a ``group`` or ``definition``: an
+				``attributeType`` that may also specify ``valueFrom``.
+
+				(This data type is used internally in the NXDL schema
+				to define elements and attributes to be used in NXDL specifications.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="nx:attributeType">
+				<xs:attribute name="valueFrom" use="optional" type="nx:valueFromType">
+					<xs:annotation>
+						<xs:documentation>
+							The value of this attribute in a data file is not a fixed
+							value but taken from the group it belongs to
+							(see :ref:`NXDL.data.type.valueFromType`).
+							Cannot be combined with an ``enumeration``.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:simpleType name="valueFromType">
+		<xs:annotation>
+			<xs:documentation>
+				Where the value of a group attribute in a data file comes from,
+				as used by the ``valueFrom`` attribute of an ``attribute``.
+
+				(This data type is used internally in the NXDL schema
+				to define a data type.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="class">
+				<xs:annotation>
+					<xs:documentation>
+						The name of the class of the group: the ``type`` of that
+						``group`` in NXDL, or the ``name`` of the ``definition``
+						for a group of that class.
+						For an attribute inherited from another class, such as
+						:ref:`NXobject`, it is the class of the group, not the class
+						that declares the attribute.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="nonNegativeUnbounded">
 		<xs:annotation>
 			<xs:documentation>
@@ -1071,10 +1197,28 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="linkType">
 		<xs:annotation>
 			<xs:documentation>
-				A link to another item.  Use a link to avoid
-				needless repetition of information.
+				A ``link`` specifies an item of a group that is a
+				:ref:`link &lt;Design-Links&gt;`: a field or group with the same
+				content as the item that ``target`` refers to.
+				Use a link to avoid needless repetition of information.
+
+				In a data file this requires that
+
+				* a field or group named ``name`` exists in the group;
+				* it is a link: its ``@target`` attribute (see :ref:`NXobject`)
+				  is the path of another field or group, and it has the same
+				  content as that field or group.
+
+				A ``link`` specifies no type, units, dimensions or attributes
+				of its own: its content must satisfy what is specified for
+				the item that ``target`` refers to.
+				A ``link`` has no occurrence attributes, so it is required
+				in an application definition.
+
+				A field or group may be a link in a data file without the
+				NXDL specifying it as a ``link``.
 				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -1082,45 +1226,42 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="target" use="required" type="nx:validTargetName">
 					<xs:annotation>
 						<xs:documentation>
-							Declares the absolute HDF5 address of an existing field or group.
+							NXDL path of the item whose content this link has
+							(see :ref:`NXDL.data.type.validTargetName`).  It is written with
+							class names, so it refers to an item in the class definitions,
+							not to a path in a data file.
 							
-							The target attribute is added for NeXus to distinguish the
-							HDF5 path to the original dataset.
+							NXDL does not require that the path of the original
+							(the value of the ``@target`` attribute) matches this path
+							(see issue `#600 &lt;https://github.com/nexusformat/definitions/issues/600&gt;`_).
 							
-							Could contain these elements:
+							This is not the ``@target`` attribute of objects in a data
+							file (see :ref:`NXobject`).
 							
-							* ``doc``
+							For example, an ``NXdata`` group that declares::
 							
-							Matching regular expression::
+								&lt;link name="polar_angle" target="/NXentry/NXinstrument/NXdetector/polar_angle"/&gt;
 							
-								(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+
-								
-							For example, given a
-							``/entry/instrument/detector/polar_angle`` field,
-							link it into the ``NXdata`` group
-							(at ``/entry/data/polar_angle``).
-							This would be the NeXus data file structure::
+							is satisfied by this data, where both fields have the same content::
 							
-								/: NeXus/HDF5 data file
-									/entry:NXentry
-										/data:NXdata
-											/polar_angle:NX_NUMBER
+								entry:NXentry
+									data:NXdata
+										polar_angle:NX_NUMBER
+											@target="/entry/instrument/detector/polar_angle"
+									instrument:NXinstrument
+										detector:NXdetector
+											polar_angle:NX_NUMBER
 												@target="/entry/instrument/detector/polar_angle"
-										/instrument:NXinstrument
-											/detector:NXdetector
-												/polar_angle:NX_NUMBER
-													@target="/entry/instrument/detector/polar_angle"
-											
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="napimount" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-							Group attribute that provides a URL to a group in another file.
-							More information is described in the *NeXus Programmers Reference*.
-							
-							https://github.com/nexusformat/code/blob/master/doc/api/NeXusIntern.pdf
+							Deprecated: not used by any NeXus definition.
+							URL of a group stored in another file
+							(see :ref:`design.external_file_link`).
+							NXDL enforces nothing about it.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -1151,7 +1292,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* *any*
 				
 				(This data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 
 				Note:
 				For documentation of ``definition`` elements,
@@ -1233,7 +1374,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* ``item``
 				
 				(This data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 		
 				::
 				
@@ -1313,7 +1454,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:documentation>
 				dimensions of a data element in a NeXus file
 				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				to define elements and attributes to be used in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>

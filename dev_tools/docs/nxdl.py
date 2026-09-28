@@ -3,6 +3,7 @@ import re
 from collections import OrderedDict
 from html import parser as HTMLParser
 from pathlib import Path
+from typing import Iterator
 from typing import List
 from typing import Optional
 
@@ -186,6 +187,17 @@ class NXClassDocGenerator:
 
         # print full tree
         self._print("**Structure**:\n")
+        if root.get("category") == "base":
+            for subnode in self._iter_inherited_value_from_attributes(ns, root):
+                self._print_attribute(
+                    ns,
+                    "file",
+                    subnode,
+                    self._get_required_or_optional_text(subnode),
+                    self._INDENTATION_UNIT,
+                    parent_path,
+                    class_name=nxclass_name,
+                )
         for subnode in root.xpath("nx:attribute", namespaces=ns):
             optional = self._get_required_or_optional_text(subnode)
             self._print_attribute(
@@ -193,6 +205,10 @@ class NXClassDocGenerator:
             )  # FIXME: +"/"+name )
         self._print_full_tree(
             ns, root, nxclass_name, self._INDENTATION_UNIT, parent_path
+        )
+
+        self._print_field_attributes(
+            ns, root, "**Attributes of every field**:", "", parent_path
         )
 
         self._print_anchor_list()
@@ -621,11 +637,12 @@ class NXClassDocGenerator:
             candidate = candidate.rsplit(" ", 1)[0] if " " in candidate else ""
         return candidate
 
-    def _print_doc_enum(self, indent, ns, node, required=False):
+    def _print_doc_enum(self, indent, ns, node, required=False, class_name=None):
         collapse_indent = indent
         node_list = node.xpath("nx:enumeration", namespaces=ns)
         doclen, line, blocks = self.long_doc(ns, node, len(indent))
-        if len(node_list) + doclen > 1:
+        value_from = node.get("valueFrom")
+        if len(node_list) + doclen + (value_from is not None) > 1:
             collapse_indent = f"{indent}    "
             self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
         self._print_doc(
@@ -635,8 +652,42 @@ class NXClassDocGenerator:
             self._print_enumeration(
                 collapse_indent + self._INDENTATION_UNIT, ns, node_list[0]
             )
+        if value_from == "class":
+            self._print(
+                f"{collapse_indent}{self._INDENTATION_UNIT}"
+                f"Obligatory value: ``{class_name or self._get_class_name(node.getparent())}``\n"
+            )
 
-    def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
+    @staticmethod
+    def _get_class_name(node: lxml.etree._Element) -> str:
+        """Name of the class of a ``group`` or ``definition`` element."""
+        if xml_utils.get_local_name(node) == "definition":
+            return node.get("name")
+        return node.get("type")
+
+    @staticmethod
+    def _iter_inherited_value_from_attributes(
+        ns: dict, root: lxml.etree._Element
+    ) -> Iterator[lxml.etree._Element]:
+        """Attributes with ``valueFrom`` that the class inherits and does not declare."""
+        declared = {
+            node.get("name") for node in root.xpath("nx:attribute", namespaces=ns)
+        }
+        extends = root.get("extends")
+        while extends:
+            nxdl_file = nxdl_utils.find_definition_file(extends)
+            if nxdl_file is None:
+                return
+            base = xml_utils.read_xml_file(nxdl_file)
+            for node in base.xpath("nx:attribute[@valueFrom]", namespaces=ns):
+                if node.get("name") not in declared:
+                    declared.add(node.get("name"))
+                    yield node
+            extends = base.get("extends")
+
+    def _print_attribute(
+        self, ns, kind, node, optional, indent, parent_path, class_name=None
+    ):
         name = node.get("name")
         formatted_name = nxdl_utils.get_rst_formatted_name(node)
         index_name = name
@@ -648,7 +699,25 @@ class NXClassDocGenerator:
             f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
         self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
+        self._print_doc_enum(indent, ns, node, class_name=class_name)
+
+    def _print_field_attributes(self, ns, parent, title, indent, parent_path):
+        node_list = parent.xpath("nx:fieldAttributes", namespaces=ns)
+        if len(node_list) == 0:
+            return
+        node = node_list[0]
+        self._print(f"{indent}{title}\n")
         self._print_doc_enum(indent, ns, node)
+        for subnode in node.xpath("nx:attribute", namespaces=ns):
+            optional = self._get_required_or_optional_text(subnode)
+            self._print_attribute(
+                ns,
+                "field",
+                subnode,
+                optional,
+                indent + self._INDENTATION_UNIT,
+                parent_path + "/fieldAttributes",
+            )
 
     def _print_not_allowed_class(self, node, indent) -> None:
         if self._is_not_allowed(node):
@@ -672,7 +741,7 @@ class NXClassDocGenerator:
         """
         # Process children in document order to preserve XML ordering.
         for node in parent.xpath("nx:field|nx:group|nx:choice|nx:link", namespaces=ns):
-            nxdl_element_type = nxdl_utils.get_nxdl_element_type(node)
+            nxdl_element_type = xml_utils.get_local_name(node)
 
             if nxdl_element_type == "field":
                 name = node.get("name")
@@ -744,6 +813,14 @@ class NXClassDocGenerator:
                         parent_path + "/" + name,
                     )
 
+                self._print_field_attributes(
+                    ns,
+                    node,
+                    "*Attributes of every field in this group*:",
+                    indent + self._INDENTATION_UNIT,
+                    parent_path + "/" + name,
+                )
+
                 nodename = "%s/%s" % (name, node.get("type"))
                 self._print_full_tree(
                     ns,
@@ -802,8 +879,8 @@ class NXClassDocGenerator:
                 )
                 self._print(
                     f"{indent}{formatted_name}: "
-                    ":ref:`link<Design-Links>` "
-                    f"(suggested target: ``{node.get('target')}``)"
+                    ":ref:`link<design.links.definitions>` "
+                    f"(target: ``{node.get('target')}``)"
                     "\n"
                 )
                 self._print_doc_enum(indent, ns, node)
