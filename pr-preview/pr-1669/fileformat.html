@@ -1,0 +1,366 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head><meta name="robots" content="noindex">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.2.3.3. Physical File format &#8212; nexus v2026.01 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <link rel="stylesheet" type="text/css" href="_static/details_summary_hide.css?v=30df4bca" />
+    <link rel="stylesheet" type="text/css" href="_static/nxdl_not_allowed.css?v=b40686d9" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/bolditalic.css?v=504f8cd9" />
+    <link rel="stylesheet" href="_static/blockquote.css" type="text/css" />
+    <link rel="stylesheet" href="_static/rubric.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=167d9c14"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="1.3. Constructing NeXus Files and Application Definitions" href="applying-nexus.html" />
+    <link rel="prev" title="1.2.3.2. Rules for Storing Data Items in NeXus Files" href="datarules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="applying-nexus.html" title="1.3. Constructing NeXus Files and Application Definitions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="datarules.html" title="1.2.3.2. Rules for Storing Data Items in NeXus Files"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user_manual.html" ><span class="section-number">1. </span>NeXus: User Manual</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="design.html" accesskey="U"><span class="section-number">1.2. </span>NeXus Design</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1.2.3.3. </span>Physical File format</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="physical-file-format">
+<span id="fileformat"></span><span id="index-0"></span><h1><span class="section-number">1.2.3.3. </span>Physical File format<a class="headerlink" href="#physical-file-format" title="Link to this heading">¶</a></h1>
+<p>This section describes how NeXus structures are mapped to features of the underlying
+physical file format.
+This is a guide for people who wish to create NeXus files without
+using the NeXus-API.</p>
+<section id="choice-of-hdf-as-underlying-file-format">
+<span id="index-1"></span><span id="fileformat-hdf-choice"></span><h2>Choice of HDF as Underlying File Format<a class="headerlink" href="#choice-of-hdf-as-underlying-file-format" title="Link to this heading">¶</a></h2>
+<p>At its beginnings, the founders of NeXus identified the
+Hierarchical Data Format (HDF) as a capable and efficient multi-platform
+data storage format. HDF was designed for large data sets and already
+had a substantial user community. HDF was developed and maintained
+initially by the National Center for Supercomputing Applications (NCSA)
+at the University of Illinois at Urbana-Champaign (UIUC) and later spun
+off into its own group called The HDF Group (THG: <a class="reference external" href="http://www.hdfgroup.org/">http://www.hdfgroup.org/</a>).
+Rather then developing its own unique physical file format, the NeXus group
+choose to build NeXus on top of HDF.</p>
+<p>HDF (now HDF5) is provided with
+software to read and write data (this is the application-programmer interface, or API)
+using a large number of computing systems in common use for neutron and
+X-ray science. HDF is a binary data file format that supports compression and structured
+data.</p>
+</section>
+<section id="mapping-nexus-into-hdf">
+<span id="fileformat-mapping-hdf"></span><h2>Mapping NeXus into HDF<a class="headerlink" href="#mapping-nexus-into-hdf" title="Link to this heading">¶</a></h2>
+<p id="index-2">NeXus data structures map directly to HDF structures.
+NeXus <em>groups</em> are HDF5 <em>groups</em> and
+NeXus <em>fields</em> (or data sets) are HDF5 <em>datasets</em>.
+Attributes map directly to HDF group or dataset attributes.
+The NeXus class is stored as an attribute to the HDF5 group
+with the name <code class="docutils literal notranslate"><span class="pre">NX_class</span></code> with value of the NeXus class name.
+(For legacy NeXus data files using HDF4, groups are HDF4 <em>vgroups</em>
+and fields are HDF4 <em>SDS (scientific data sets)</em>.  HDF4 does
+not support group attributes.  HDF4 supports a group class
+which is set with the <code class="docutils literal notranslate"><span class="pre">Vsetclass()</span></code> call
+and read with <code class="docutils literal notranslate"><span class="pre">VGetclass()</span></code>.)</p>
+<p>In HDF5, a NeXus <a class="reference internal" href="design.html#design-links"><span class="std std-ref">link</span></a> is usually stored as a hard link
+(see <a class="reference internal" href="design.html#design-links-hdf5"><span class="std std-ref">Example: links in HDF5</span></a>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Examples</strong> are provided in the <a class="reference internal" href="examples/index.html#examples"><span class="std std-ref">Examples of writing and reading NeXus data files</span></a> chapter.
+These examples include software to write and read NeXus data files using the NAPI, as
+well as other software examples that use native (non-NAPI) libraries.  In some cases the
+examples show the content of the NeXus data files that are produced.
+Here are links to some of the examples:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="introduction-napi.html#introduction-howtowrite"><span class="std std-ref">How do I write a NeXus file?</span></a></p></li>
+<li><p><a class="reference internal" href="introduction-napi.html#introduction-howtoread"><span class="std std-ref">How do I read a NeXus file?</span></a></p></li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="examples/napi/c.html#example-napi-c"><span class="std std-ref">HDF5 in C with NAPI</span></a></dt><dd><ul>
+<li><p><a class="reference internal" href="examples/napi/python.html#example-napi-python"><span class="std std-ref">HDF5 in Python with NAPI</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><a class="reference internal" href="examples/code_native.html#code-native-writing"><span class="std std-ref">Writing a simple NeXus file using native HDF5 commands in C</span></a></p></li>
+<li><p><a class="reference internal" href="examples/code_native.html#code-native-reading"><span class="std std-ref">Reading a simple NeXus file using native HDF5 commands in C</span></a></p></li>
+<li><p><a class="reference internal" href="examples/python/simple_example_basic/index.html#example-python-writing"><span class="std std-ref">Write a NeXus HDF5 File</span></a></p></li>
+<li><p><a class="reference internal" href="examples/python/simple_example_basic/index.html#example-python-reading"><span class="std std-ref">Read a NeXus HDF5 File</span></a></p></li>
+</ul>
+</div>
+<p>Perhaps the easiest way to view the implementation of NeXus in HDF5 is to look
+at the data structure.  For this, we use the <code class="docutils literal notranslate"><span class="pre">h5dump</span></code> command-line
+utility provided with the HDF5 support libraries.  Short examples are provided for the
+basic NeXus data components:</p>
+<ul>
+<li><p><a class="reference internal" href="#h5dump-group"><span class="std std-ref">group</span></a>:
+created in C NAPI by:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NXmakegroup</span><span class="w"> </span><span class="p">(</span><span class="n">fileID</span><span class="p">,</span><span class="w"> </span><span class="s">"entry"</span><span class="p">,</span><span class="w"> </span><span class="s">"NXentry"</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference internal" href="#h5dump-field"><span class="std std-ref">field</span></a>:
+created in C NAPI by:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NXmakedata</span><span class="w"> </span><span class="p">(</span><span class="n">fileID</span><span class="p">,</span><span class="w"> </span><span class="s">"two_theta"</span><span class="p">,</span><span class="w"> </span><span class="n">NX_FLOAT32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+<span class="w">  </span><span class="n">NXopendata</span><span class="w"> </span><span class="p">(</span><span class="n">fileID</span><span class="p">,</span><span class="w"> </span><span class="s">"two_theta"</span><span class="p">);</span>
+<span class="n">NXputdata</span><span class="w"> </span><span class="p">(</span><span class="n">fileID</span><span class="p">,</span><span class="w"> </span><span class="n">tth</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference internal" href="#h5dump-attribute"><span class="std std-ref">attribute</span></a>:
+created in C NAPI by:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NXputattr</span><span class="w"> </span><span class="p">(</span><span class="n">fileID</span><span class="p">,</span><span class="w"> </span><span class="s">"units"</span><span class="p">,</span><span class="w"> </span><span class="s">"degrees"</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="n">NX_CHAR</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+<li><p><a class="reference internal" href="#h5dump-link"><span class="std std-ref">link</span></a>
+created in C NAPI by:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NXmakelink</span><span class="w"> </span><span class="p">(</span><span class="n">fileid</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">itemid</span><span class="p">);</span>
+<span class="cp"># -or-</span>
+<span class="n">NXmakenamedlink</span><span class="w"> </span><span class="p">(</span><span class="n">fileid</span><span class="p">,</span><span class="w"> </span><span class="s">"linked_name"</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">itemid</span><span class="p">);</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<div class="compound">
+<p class="rubric"><code class="docutils literal notranslate"><span class="pre">h5dump</span></code> of a NeXus <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> group</p>
+<div class="highlight-text notranslate" id="h5dump-group"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>GROUP "entry" {
+<span class="linenos"> 2</span>  ATTRIBUTE "NX_class" {
+<span class="linenos"> 3</span>     DATATYPE  H5T_STRING {
+<span class="linenos"> 4</span>           STRSIZE 7;
+<span class="linenos"> 5</span>           STRPAD H5T_STR_NULLPAD;
+<span class="linenos"> 6</span>           CSET H5T_CSET_ASCII;
+<span class="linenos"> 7</span>           CTYPE H5T_C_S1;
+<span class="linenos"> 8</span>        }
+<span class="linenos"> 9</span>     DATASPACE  SCALAR
+<span class="linenos">10</span>     DATA {
+<span class="linenos">11</span>     (0): "NXentry"
+<span class="linenos">12</span>     }
+<span class="linenos">13</span>  }
+<span class="linenos">14</span>  # ... group contents
+<span class="linenos">15</span>}
+</pre></div>
+</div>
+</div>
+<div class="compound">
+<p class="rubric"><code class="docutils literal notranslate"><span class="pre">h5dump</span></code> of a NeXus field (HDF5 dataset)</p>
+<div class="highlight-text notranslate" id="h5dump-field"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> DATASET "two_theta" {
+<span class="linenos"> 2</span>    DATATYPE  H5T_IEEE_F64LE
+<span class="linenos"> 3</span>    DATASPACE  SIMPLE { ( 31 ) / ( 31 ) }
+<span class="linenos"> 4</span>    DATA {
+<span class="linenos"> 5</span>    (0): 17.9261, 17.9259, 17.9258, 17.9256, 17.9254, 17.9252,
+<span class="linenos"> 6</span>    (6): 17.9251, 17.9249, 17.9247, 17.9246, 17.9244, 17.9243,
+<span class="linenos"> 7</span>    (12): 17.9241, 17.9239, 17.9237, 17.9236, 17.9234, 17.9232,
+<span class="linenos"> 8</span>    (18): 17.9231, 17.9229, 17.9228, 17.9226, 17.9224, 17.9222,
+<span class="linenos"> 9</span>    (24): 17.9221, 17.9219, 17.9217, 17.9216, 17.9214, 17.9213,
+<span class="linenos">10</span>    (30): 17.9211
+<span class="linenos">11</span>    }
+<span class="linenos">12</span>    ATTRIBUTE "units" {
+<span class="linenos">13</span>       DATATYPE  H5T_STRING {
+<span class="linenos">14</span>             STRSIZE 7;
+<span class="linenos">15</span>             STRPAD H5T_STR_NULLPAD;
+<span class="linenos">16</span>             CSET H5T_CSET_ASCII;
+<span class="linenos">17</span>             CTYPE H5T_C_S1;
+<span class="linenos">18</span>          }
+<span class="linenos">19</span>       DATASPACE  SCALAR
+<span class="linenos">20</span>       DATA {
+<span class="linenos">21</span>       (0): "degrees"
+<span class="linenos">22</span>       }
+<span class="linenos">23</span>    }
+<span class="linenos">24</span>    # ... other attributes
+<span class="linenos">25</span> }
+</pre></div>
+</div>
+</div>
+<div class="compound">
+<p class="rubric"><code class="docutils literal notranslate"><span class="pre">h5dump</span></code> of a NeXus attribute</p>
+<div class="highlight-text notranslate" id="h5dump-attribute"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>ATTRIBUTE "axes" {
+<span class="linenos"> 2</span>   DATATYPE  H5T_STRING {
+<span class="linenos"> 3</span>         STRSIZE 9;
+<span class="linenos"> 4</span>         STRPAD H5T_STR_NULLPAD;
+<span class="linenos"> 5</span>         CSET H5T_CSET_ASCII;
+<span class="linenos"> 6</span>         CTYPE H5T_C_S1;
+<span class="linenos"> 7</span>      }
+<span class="linenos"> 8</span>   DATASPACE  SCALAR
+<span class="linenos"> 9</span>   DATA {
+<span class="linenos">10</span>   (0): "two_theta"
+<span class="linenos">11</span>   }
+<span class="linenos">12</span>}
+</pre></div>
+</div>
+</div>
+<div class="compound">
+<p class="rubric"><code class="docutils literal notranslate"><span class="pre">h5dump</span></code> of a NeXus link</p>
+<div class="highlight-text notranslate" id="h5dump-link"><div class="highlight"><pre><span></span><span class="linenos"> 1</span># NeXus links have two parts in HDF5 files.
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span># The dataset is created in some group.
+<span class="linenos"> 4</span># A "target" attribute is added to indicate the HDF5 path to this dataset.
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>ATTRIBUTE "target" {
+<span class="linenos"> 7</span>   DATATYPE  H5T_STRING {
+<span class="linenos"> 8</span>         STRSIZE 21;
+<span class="linenos"> 9</span>         STRPAD H5T_STR_NULLPAD;
+<span class="linenos">10</span>         CSET H5T_CSET_ASCII;
+<span class="linenos">11</span>         CTYPE H5T_C_S1;
+<span class="linenos">12</span>      }
+<span class="linenos">13</span>   DATASPACE  SCALAR
+<span class="linenos">14</span>   DATA {
+<span class="linenos">15</span>   (0): "/entry/data/two_theta"
+<span class="linenos">16</span>   }
+<span class="linenos">17</span>}
+<span class="linenos">18</span>
+<span class="linenos">19</span># then, the hard link is created that refers to the original dataset
+<span class="linenos">20</span># (Since the name is "two_theta" in this example, it is understood that
+<span class="linenos">21</span># this link is created in a different HDF5 group than "/entry/data".)
+<span class="linenos">22</span>
+<span class="linenos">23</span>DATASET "two_theta" {
+<span class="linenos">24</span>   HARDLINK "/entry/data/two_theta"
+<span class="linenos">25</span>}
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1.2.3.3. Physical File format</a><ul>
+<li><a class="reference internal" href="#choice-of-hdf-as-underlying-file-format">Choice of HDF as Underlying File Format</a></li>
+<li><a class="reference internal" href="#mapping-nexus-into-hdf">Mapping NeXus into HDF</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="datarules.html"
+                          title="previous chapter"><span class="section-number">1.2.3.2. </span>Rules for Storing Data Items in NeXus Files</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="applying-nexus.html"
+                          title="next chapter"><span class="section-number">1.3. </span>Constructing NeXus Files and Application Definitions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <p>Have a Question? <a href="https://github.com/nexusformat/definitions/issues/new">Get help</a></p>
+    <ul class="this-page-menu">
+    <style>
+		  .avatar-container {
+		    display: flex;
+		    align-items: center;
+		  }
+		
+		  .avatar {
+		    width: 32px;
+		    height: 32px;
+		    border-radius: 50%;
+		    margin-right: 5px;
+		  }
+		</style>
+		
+    
+    
+		<div class="avatar-container">
+      
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="google_search" style="display: none">
+	<hr />
+	<h3>Google search</h3>
+	<form method="get" action="https://www.google.com/search">
+		<table border="0" align="center" cellpadding="0">
+			<tr>
+				<td>
+					<input type="text"   name="q" value="" />
+				</td>
+			</tr>
+			<tr>
+				<td align="center" style="font-size:75%">
+					<input type="radio"  name="sitesearch" value="" />global
+					<input type="radio"  name="sitesearch"
+						value="manual.nexusformat.org" 
+						checked />NeXus manual
+					<input type="submit" value="Go" />
+					<br />
+				</td>
+			</tr>
+		</table>
+	</form>                                
+</div>
+<script type="text/javascript">$('#google_search').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="applying-nexus.html" title="1.3. Constructing NeXus Files and Application Definitions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="datarules.html" title="1.2.3.2. Rules for Storing Data Items in NeXus Files"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user_manual.html" ><span class="section-number">1. </span>NeXus: User Manual</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="design.html" ><span class="section-number">1.2. </span>NeXus Design</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1.2.3.3. </span>Physical File format</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; <a href="copyright.html">Copyright</a> 1996-2026, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
