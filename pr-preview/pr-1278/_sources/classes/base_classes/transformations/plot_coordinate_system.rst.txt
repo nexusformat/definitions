@@ -55,7 +55,7 @@ where
 Note that as these are point detectors, we only have one coordinate
 :math:`X_d=[0,0,0,1]^T`.
 
-The laboratory reference frame can be described in two ways:
+The laboratory reference frame can be described in three ways:
 
 .. tabs::
 
@@ -125,13 +125,20 @@ The laboratory reference frame can be described in two ways:
   .. tab:: NXcoordinate_system
 
     The reference frame is defined as a change of basis with respect to the default
-    :ref:`McSTAS coordinate frame<Design-CoordinateSystem>`, the basis vectors being
-    the columns of the change-of-basis matrix.
+    :ref:`NeXus coordinate system<Design-CoordinateSystem>`. The basis vectors ``x``,
+    ``y`` and ``z`` are the columns of the change-of-basis matrix :math:`A` which
+    converts laboratory coordinates to NeXus coordinates
+
+    .. math::
+
+      X_\text{NeXus} = A . X_\text{lab}
+      \quad\text{with}\quad
+      A = \begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 1 \\ 1 & 0 & 0 \end{bmatrix}
 
     The axes in the detector chains remain *active* transformations, they move the
     detectors. The change of basis is the one *passive* step: it moves nothing, it
     re-expresses the result of the chain in the default frame. Unlike the direction
-    axes of the other tab, it makes the laboratory frame computable rather than
+    axes of the first tab, it makes the laboratory frame computable rather than
     merely documented.
 
     .. code::
@@ -188,9 +195,31 @@ The laboratory reference frame can be described in two ways:
           y=[1 0 0]
           z=[0 1 0]                  # Z-axis points up
           z_direction="opposite to gravity"
-          depends_on=.               # basis vectors given in the default NeXus frame
+          depends_on=.               # basis vectors given in the NeXus coordinate system
 
-.. GENERATED FROM PYTHON SOURCE LINES 174-343
+  .. tab:: NXtransformations (rotation)
+
+    The change of basis of the previous tab can also be expressed as an active
+    rotation in the NeXus coordinate system, since :math:`A` is a rotation matrix: a
+    rotation of -120 degrees around ``[1 1 1]``. It rotates the X, Y and Z axes onto the laboratory
+    axes, so the chains end in the NeXus coordinate system as well. The detector
+    chains are those of the first tab, depending on ``/entry/lab/rotation`` instead
+    of ``/entry/lab/beam``.
+
+    .. code::
+
+      entry:NXentry
+        lab:NXtransformations
+          rotation=-120              # rotate the axes onto the laboratory axes
+            @depends_on=.            # end of the chain
+            @transformation_type=rotation
+            @units=degrees
+            @vector=[1 1 1]
+
+    The same rotation can be split into rotations around the X, Y and Z axes, for
+    example :math:`A = R_y(-90) . R_x(-90)`.
+
+.. GENERATED FROM PYTHON SOURCE LINES 203-381
 
 
 
@@ -271,6 +300,15 @@ The laboratory reference frame can be described in two ways:
     horizontal_distance = translation([1, 0, 0], 12)
     horizontal_polar = rotation([0, -1, 0], 40)
     horizontal_azimuth = rotation([-1, 0, 0], -90)
+
+    # The detector positions are computed in the laboratory frame, which all tabs share.
+    # Check that the change-of-basis matrix of the NXcoordinate_system tab equals the
+    # rotation of the NXtransformations (rotation) tab.
+    change_of_basis = np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]])
+    assert np.allclose(rotation([1, 1, 1], -120)[:3, :3], change_of_basis)
+    assert np.allclose(
+        (rotation([0, 1, 0], -90) @ rotation([1, 0, 0], -90))[:3, :3], change_of_basis
+    )
 
     detectors = {
         "transmission": transmission_distance,
@@ -378,7 +416,7 @@ The laboratory reference frame can be described in two ways:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.166 seconds)
+   **Total running time of the script:** (0 minutes 0.128 seconds)
 
 
 .. _sphx_glr_download_classes_base_classes_transformations_plot_coordinate_system.py:

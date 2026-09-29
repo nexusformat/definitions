@@ -4,7 +4,7 @@ Goniometer
 ==========
 
 Position a sample mounted on a goniometer in the
-:ref:`McSTAS coordinate frame<Design-CoordinateSystem>`.
+:ref:`NeXus coordinate system<Design-CoordinateSystem>`.
 
 The sample is oriented as follows
 

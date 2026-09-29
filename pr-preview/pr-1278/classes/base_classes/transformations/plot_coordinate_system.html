@@ -114,9 +114,9 @@ around the X, Y and Z axes</p></li>
 </ul>
 <p>Note that as these are point detectors, we only have one coordinate
 <span class="math notranslate nohighlight">\(X_d=[0,0,0,1]^T\)</span>.</p>
-<p>The laboratory reference frame can be described in two ways:</p>
+<p>The laboratory reference frame can be described in three ways:</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">NXtransformations</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">NXcoordinate_system</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>The reference frame is documented by axes without a <code class="docutils literal notranslate"><span class="pre">transformation_type</span></code>.
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">NXtransformations</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">NXcoordinate_system</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">NXtransformations (rotation)</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><p>The reference frame is documented by axes without a <code class="docutils literal notranslate"><span class="pre">transformation_type</span></code>.
 Such an axis does not transform anything, it only records a direction, so its
 value is never used. Here they record that the frame in which all these vectors
 are given has its X-axis along the beam and its Z-axis opposite to gravity.</p>
@@ -175,12 +175,17 @@ are given has its X-axis along the beam and its Z-axis opposite to gravity.</p>
 </span>      <span class="nd">&#64;vector</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>         <span class="c1"># Z-axis points up</span><span class="w">
 </span></pre></div></div>
 </div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><p>The reference frame is defined as a change of basis with respect to the default
-<a class="reference internal" href="../../../design.html#design-coordinatesystem"><span class="std std-ref">McSTAS coordinate frame</span></a>, the basis vectors being
-the columns of the change-of-basis matrix.</p>
+<a class="reference internal" href="../../../design.html#design-coordinatesystem"><span class="std std-ref">NeXus coordinate system</span></a>. The basis vectors <code class="docutils literal notranslate"><span class="pre">x</span></code>,
+<code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> are the columns of the change-of-basis matrix <span class="math notranslate nohighlight">\(A\)</span> which
+converts laboratory coordinates to NeXus coordinates</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}X_\text{NeXus} = A . X_\text{lab}
+\quad\text{with}\quad
+A = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 1 &amp; 0 &amp; 0 \end{bmatrix}\end{split}\]</div>
 <p>The axes in the detector chains remain <em>active</em> transformations, they move the
 detectors. The change of basis is the one <em>passive</em> step: it moves nothing, it
 re-expresses the result of the chain in the default frame. Unlike the direction
-axes of the other tab, it makes the laboratory frame computable rather than
+axes of the first tab, it makes the laboratory frame computable rather than
 merely documented.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">entry</span><span class="p">:</span><span class="n">NXentry</span><span class="w">
 </span>  <span class="n">instrument</span><span class="p">:</span><span class="n">NXinstrument</span><span class="w">
@@ -234,8 +239,24 @@ merely documented.</p>
 </span>    <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">]</span><span class="w">
 </span>    <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">]</span>                  <span class="c1"># Z-axis points up</span><span class="w">
 </span>    <span class="n">z_direction</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">opposite to gravity</span><span class="s2">&quot;</span><span class="w">
-</span>    <span class="n">depends_on</span><span class="o">=</span><span class="o">.</span>               <span class="c1"># basis vectors given in the default NeXus frame</span><span class="w">
+</span>    <span class="n">depends_on</span><span class="o">=</span><span class="o">.</span>               <span class="c1"># basis vectors given in the NeXus coordinate system</span><span class="w">
 </span></pre></div></div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><p>The change of basis of the previous tab can also be expressed as an active
+rotation in the NeXus coordinate system, since <span class="math notranslate nohighlight">\(A\)</span> is a rotation matrix: a
+rotation of -120 degrees around <code class="docutils literal notranslate"><span class="pre">[1</span> <span class="pre">1</span> <span class="pre">1]</span></code>. It rotates the X, Y and Z axes onto the laboratory
+axes, so the chains end in the NeXus coordinate system as well. The detector
+chains are those of the first tab, depending on <code class="docutils literal notranslate"><span class="pre">/entry/lab/rotation</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">/entry/lab/beam</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">entry</span><span class="p">:</span><span class="n">NXentry</span><span class="w">
+</span>  <span class="n">lab</span><span class="p">:</span><span class="n">NXtransformations</span><span class="w">
+</span>    <span class="n">rotation</span><span class="o">=</span><span class="o">-</span><span class="mi">120</span>              <span class="c1"># rotate the axes onto the laboratory axes</span><span class="w">
+</span>      <span class="nd">&#64;depends_on</span><span class="o">=</span><span class="o">.</span>            <span class="c1"># end of the chain</span><span class="w">
+</span>      <span class="nd">&#64;transformation_type</span><span class="o">=</span><span class="n">rotation</span><span class="w">
+</span>      <span class="nd">&#64;units</span><span class="o">=</span><span class="n">degrees</span><span class="w">
+</span>      <span class="nd">&#64;vector</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">]</span><span class="w">
+</span></pre></div></div>
+<p>The same rotation can be split into rotations around the X, Y and Z axes, for
+example <span class="math notranslate nohighlight">\(A = R_y(-90) . R_x(-90)\)</span>.</p>
 </div></div>
 <img src="../../../_images/sphx_glr_plot_coordinate_system_001.png" srcset="../../../_images/sphx_glr_plot_coordinate_system_001.png" alt="plot coordinate system" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># Transformations</span><span class="w">
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
@@ -302,6 +323,15 @@ merely documented.</p>
 </span><span class="n">horizontal_distance</span> <span class="o">=</span> <span class="n">translation</span><span class="p">(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span><span class="w">
 </span><span class="n">horizontal_polar</span> <span class="o">=</span> <span class="n">rotation</span><span class="p">(</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span><span class="w">
 </span><span class="n">horizontal_azimuth</span> <span class="o">=</span> <span class="n">rotation</span><span class="p">(</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># The detector positions are computed in the laboratory frame, which all tabs share.</span><span class="w">
+</span><span class="c1"># Check that the change-of-basis matrix of the NXcoordinate_system tab equals the</span><span class="w">
+</span><span class="c1"># rotation of the NXtransformations (rotation) tab.</span><span class="w">
+</span><span class="n">change_of_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">rotation</span><span class="p">(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="p">,</span> <span class="o">-</span><span class="mi">120</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="p">,</span> <span class="n">change_of_basis</span><span class="p">)</span><span class="w">
+</span><span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="w">
+</span>    <span class="p">(</span><span class="n">rotation</span><span class="p">(</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span> <span class="o">&#64;</span> <span class="n">rotation</span><span class="p">(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">)</span><span class="p">)</span><span class="p">[</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="p">,</span> <span class="n">change_of_basis</span><span class="w">
+</span><span class="p">)</span><span class="w">
 </span><span class="w">
 </span><span class="n">detectors</span> <span class="o">=</span> <span class="p">{</span><span class="w">
 </span>    <span class="s2">&quot;</span><span class="s2">transmission</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">transmission_distance</span><span class="p">,</span><span class="w">
@@ -406,7 +436,7 @@ merely documented.</p>
 </span><span class="w">
 </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="p">)</span><span class="w">
 </span></pre></div></div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.166 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.128 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-classes-base-classes-transformations-plot-coordinate-system-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../../_downloads/a1636c4352ba08731a2c5e2707ebefb9/plot_coordinate_system.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_coordinate_system.ipynb</span></code></a></p>
