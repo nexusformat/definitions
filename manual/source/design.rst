@@ -733,7 +733,13 @@ In the recommended way of dealing with geometry NeXus uses a series of
 :index:`transformations <coordinate systems; transformations>` to place objects in space.
 In this world view, the absolute position of a component or a detector pixel with respect to
 the laboratory coordinate system is calculated by applying a series of translations and
-rotations. Thus a rotation or translation operation transforms the whole coordinate system
+rotations
+
+.. math:: X_\text{lab} = T_n . \ldots . T_2 . T_1 . X_\text{local}
+
+where :math:`T_1` is the transformation applied first and :math:`X_\text{local}` are
+homogeneous coordinates in the local coordinate system of the component
+(see :ref:`NXtransformations`). Thus a rotation or translation operation transforms the whole coordinate system
 and gives rise to a new local coordinate system. These transformations between coordinate
 systems are mathematical operations and can be expressed as matrices and their combination
 as matrix multiplication. A very important aspect is that the order of application of the

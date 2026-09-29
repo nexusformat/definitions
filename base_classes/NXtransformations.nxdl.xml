@@ -55,7 +55,7 @@
 		* ``NX_UNITLESS`` for axes for which no transformation type is specified
 
 		This class will usually contain all axes of a sample stage or goniometer or
-		a detector. The NeXus default :ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;`
+		a detector. The default :ref:`NeXus coordinate system&lt;Design-CoordinateSystem&gt;`
 		is assumed, but additional useful coordinate axes may be defined by using axes for which
 		no transformation type has been specified.
 
@@ -77,7 +77,7 @@
 		.. math:: T_f = T_3 . T_2 . T_1
 
 		For example when positioning a flat detector, its pixel positions in the laboratory
-		reference frame (:ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;` by default)
+		reference frame (:ref:`NeXus coordinate system&lt;Design-CoordinateSystem&gt;` by default)
 		can be calculated by
 
 		.. math:: X_\text{lab} = T_f . X_\text{pixel} = T_3 . T_2 . T_1 . X_\text{pixel}
@@ -136,8 +136,13 @@
 		``NXtransformations`` follows the **active** transformation convention. This means that the transformation describes
 		how an object is moved or rotated within the coordinate system. In other words, the transformation
 		actively changes the position or orientation of the object itself. This is in contrast to a **passive** transformation,
-		which changes the frame of reference or coordinate system, while the object remains fixed. In case it is needed 
-		to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
+		which changes the frame of reference or coordinate system, while the object remains fixed. For a transformation
+		matrix :math:`T`, the active transformation gives the coordinates of the moved object in the fixed coordinate system
+		while the passive transformation gives the coordinates of the fixed object in the moved coordinate system
+
+		.. math:: X_\text{active} = T . X \qquad X_\text{passive} = T^{-1} . X
+
+		In case it is needed to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
 
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
@@ -236,7 +241,10 @@
 				the transformation belongs, such as 'detector_arm' or 'detector_module'.
 				NXtransformations with the same equipment_component label form a logical
 				grouping which can be combined together into a single change-of-basis
-				operation.
+				operation. For transformations :math:`T_1, \ldots, T_n` of the same component, where
+				:math:`T_1` depends on :math:`T_2` and so on, the combined transformation is
+
+				.. math:: T_\text{component} = T_n . \ldots . T_2 . T_1
 			</doc>
 		</attribute>
 	</field>
