@@ -38,7 +38,7 @@ used by NeXus. These are:
     or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
-    Elements which point to data stored in another place in the file hierarchy.
+    The same content in more than one place of the hierarchy.
 
 :ref:`Design-NeXusClasses`
     Dictionaries of names possible in the various types of NeXus groups.
@@ -85,7 +85,9 @@ group, and a class. There can be multiple groups with the same class
 but they must have different names (based on the :index:`HDF rules <rules; HDF>`).
 
 For the class names used with NeXus data groups the prefix NX is reserved. Thus all NeXus class
-names start with NX.
+names start with NX. The class of a group is stored in its ``NX_class`` attribute
+(see :ref:`NXobject </NXobject@NX_class-attribute>`; for the root group,
+:ref:`NXroot </NXroot@NX_class-attribute>`, where it is optional).
 
     .. index::
       ! single: field
@@ -162,6 +164,8 @@ strings. In addition, NeXus uses attributes to identify
 :index:`plottable data <plotting>`
 and their axes, etc. In a :ref:`tree structure<tree.structure>`,
 an attribute is usually shown with a ``@`` prefix, such as ``@units``.
+Attributes that every group or every field may have are declared in
+:ref:`NXobject`.
 A description of some of the many possible
 attributes can be found in the next table:
 
@@ -243,16 +247,14 @@ Links
    * **{hdf5_object}._id.link()**
    * **h5py.ExternalLink()**
 
-Links are pointers to existing data somewhere else.
-The concept is very much like
-symbolic links in a unix filesystem.
-The NeXus definition sometimes requires to
-have access to the same data in different groups
-in the same file. For example: detector data is stored in the
+A link states that a field or group in one place of the hierarchy has the
+same content as a field or group in another place.
+The NeXus definition sometimes requires the same data in different groups.
+For example: detector data belongs in the
 :ref:`NXinstrument`/:ref:`NXdetector` group
-but may be needed in :ref:`NXdata` for automatic plotting.
-Rather then replicating the data, NeXus uses
-links in such situations. See the :ref:`figure <fig.data-linking>` for
+but is also needed in :ref:`NXdata` for automatic plotting.
+A link expresses that both are the same data.
+See the :ref:`figure <fig.data-linking>` for
 a more descriptive representation of the concept of linking.
 
 .. compound::
@@ -265,6 +267,10 @@ a more descriptive representation of the concept of linking.
 
         Linking in a NeXus file
 
+What a link *is* is part of the NeXus data model and does not depend on the
+file format; how a link is *stored* is up to the file format and the
+software that writes the file (see :ref:`design.links.storage`).
+
 .. index::
    ! single: target, attribute
    single: link, target, attribute
@@ -273,48 +279,30 @@ a more descriptive representation of the concept of linking.
    ! link, NeXus link
    ! NeXus link
 
-NeXus links are HDF5 hard links with an additional ``target`` attribute.
-The ``target`` attribute is added [#]_ for NeXus to distinguish the HDF5 path to the
-*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5
-path [#absolute_address]_ to the *original* dataset.
+.. _design.links.model:
 
-   .. [#] When using the NAPI, the ``target`` attribute is added automatically.
-      When the NAPI is not used to write NeXus/HDF5 files, this attribute must
-      be added.  Here are the steps to follow:
+Links in the NeXus data model
+-----------------------------
 
-      #. Get the HDF5 reference ID of the source item (*field*, *group*, or *link*) to be linked.
-      #. If the ID does not have a ``target`` attribute defined:
-         #. Get the absolute HDF5 address [#absolute_address]_ of the ID.
-         #. Create a ``target`` attribute for the ID.
-         #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
-      #. Create an HDF5 hard link [#hdf5_hard_link]_
-         to the ID at the desired (new) HDF5 address.
+A *path* is the absolute location of a field or group in a NeXus file: the
+names of the groups from the root down to it, separated by ``/``, such as
+``/entry/instrument/detector/polar_angle``.
 
-   .. [#] The notion of an *original* dataset with regard to links is
-      a NeXus abstraction.  In truth, HDF5 makes no distinction which is
-      the *original* dataset.  But, when the file is viewed with a tool
-      such as *h5dump*, confusion often occurs over which dataset is
-      original and which is a link to the original.  Actually, both HDF5 paths
-      point to the exact, same dataset which exists at a specific offset in the HDF5 file.
+The *content* of a field is its value and its attributes.  The content of a
+group is its attributes and the content of its fields and groups, under
+their names.  The name of the field or group itself is not part of its
+content.
 
-      See the :ref:`FAQ` question: **I'm using links to place data in two places.
-      Which one should be the data and which one is the link?**
+A *link* is a field or group whose content is the content of another field
+or group, its *original*.  A link is marked by its ``target`` attribute
+(see :ref:`NXobject`):
 
-   .. [#absolute_address] When using the ``target`` attribute,
-      **always** specify the HDF5 address
-      as an *absolute** address (starts from the HDF5 root,
-      such as: ``/entry/instrument/detector/polar_angle``)
-      rather than a **relative** address (starting from the current group,
-      such as: ``detector/polar_angle``).
-
-      .. note:: The ``target`` attribute does not work for
-         :ref:`external file links<design.external_file_link>`.
-         The NIAC is working at resolving the technical limitations
-
-   .. [#hdf5_hard_link] HDF5 hard link:
-      https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
-
-.. index:: !class path
+* the value is the path of the original, always as an absolute path
+  (``/entry/instrument/detector/polar_angle``, not ``detector/polar_angle``);
+* the original has the same content, so it has the same ``target``
+  attribute, whose value is then its own path;
+* a field or group with a ``target`` attribute whose value is its own path
+  is not a link.
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
@@ -327,8 +315,7 @@ especially those not using a crystal to create monochromatic radiation::
 
     /NXentry/NXinstrument/NXmonochromator/wavelength
 
-These two fields might be hard linked together in a NeXus data file
-(using HDF5 paths such ``/entry/instrument``)::
+The two fields can be linked in a NeXus file::
 
     entry:NXentry
         ...
@@ -344,12 +331,11 @@ These two fields might be hard linked together in a NeXus data file
                 ...
                 wavelength --> "/entry/instrument/crystal/wavelength"
 
-It is possible that the linked field or group has a
-different name than the original.  One obvious use of this capability
-is to adapt to a specific requirement of an application definition.
-For example, suppose some application definition required the
+A link may have a different name than the original.  One obvious use of
+this capability is to adapt to a specific requirement of an application
+definition.  For example, suppose some application definition required the
 specification of wavelength as a field named *lambda* in the entry group.
-This requirement can be satisifed easily::
+This requirement can be satisfied easily::
 
     entry:NXentry
         ...
@@ -367,14 +353,108 @@ This requirement can be satisifed easily::
         ...
         lambda --> "/entry/instrument/crystal/wavelength"
 
+Here ``/entry/instrument/monochromator/wavelength`` and ``/entry/lambda``
+are links to the original ``/entry/instrument/crystal/wavelength``: all
+three have the value 154, a ``target`` and a ``units`` attribute.
+
+Which field or group is the original is a NeXus notion.  It has value in
+only a few situations, such as when converting the data from one format to
+another: by identifying the original, duplicate copies of the data are not
+converted.
+
+The ``target`` attribute is not defined for a field or group stored in
+another file (see :ref:`design.external_file_link` and issue
+`#842 <https://github.com/nexusformat/definitions/issues/842>`_).
+
+.. _design.links.definitions:
+
+Links in class definitions
+--------------------------
+
+Any field or group may be a link, whether or not its class definition
+says so.  An application definition may also *require* that an item is a
+link.  Its documentation then shows the item as, for example::
+
+    data: link (target: /NXentry/NXinstrument/NXdetector/data)
+
+A file satisfies this when the group contains a field or group named
+``data`` that is a link, as defined above.  Its content must satisfy what
+is documented for the item that the target refers to; the link itself
+documents nothing else.
+
+This target is written with class names, such as ``NXdetector``, and
+refers to an item documented in the class definitions, not to a path in a
+file.  The path of the original does not have to match it
+(see issue `#600 <https://github.com/nexusformat/definitions/issues/600>`_).
+It is not the ``target`` attribute.
+
+.. _design.links.storage:
+
+Storing links in a file format
+------------------------------
+
+NeXus only requires that a link has the content of its original.  A file
+format and the software that writes the file may realize this in any way
+the format offers: by storing the content once and making it available
+under several paths, or by storing a copy.
+
+Every format that can hold NeXus content can therefore hold links, at
+least as copies.  For example, the
+`Zarr v3 specification <https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html>`_
+defines no links: every array or group exists under exactly one path, so a
+link is stored as a copy with its ``target`` attribute.
+
+.. _design.links.hdf5:
+
+Example: links in HDF5
+^^^^^^^^^^^^^^^^^^^^^^
+
+HDF5 offers several ways to realize a NeXus link, for example:
+
+* a hard link [#hdf5_hard_link]_: the same HDF5 object under several paths,
+  the usual choice;
+* a soft link: a path that refers to another path;
+* an external link: a path that refers to an object in another file
+  (see :ref:`design.external_file_link`);
+* a virtual dataset, or a copy.
+
+In each case, except for an external link, the ``target`` attribute must be
+added [#]_.  With a hard link,
+HDF5 makes no distinction between the paths of the object: the ``target``
+attribute is what tells NeXus which one is the original [#]_.
+
+   .. [#] The software that writes the file must add the ``target`` attribute.
+      Here are the steps to follow for a hard link:
+
+      #. Get the HDF5 reference ID of the source item (*field*, *group*, or *link*) to be linked.
+      #. If the ID does not have a ``target`` attribute defined:
+         #. Get the absolute HDF5 address of the ID.
+         #. Create a ``target`` attribute for the ID.
+         #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
+      #. Create an HDF5 hard link [#hdf5_hard_link]_
+         to the ID at the desired (new) HDF5 address.
+
+   .. [#] The notion of an *original* dataset with regard to links is
+      a NeXus abstraction.  In truth, HDF5 makes no distinction which is
+      the *original* dataset.  But, when the file is viewed with a tool
+      such as *h5dump*, confusion often occurs over which dataset is
+      original and which is a link to the original.  Actually, both HDF5 paths
+      point to the exact, same dataset which exists at a specific offset in the HDF5 file.
+
+      See the :ref:`FAQ` question: **I'm using links to place data in two places.
+      Which one should be the data and which one is the link?**
+
+   .. [#hdf5_hard_link] HDF5 hard link:
+      https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
+
 .. _design.external_file_link:
 
 .. index:: link; external file
 
-External File Links
--------------------
+Example: external file links in HDF5
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-NeXus also allows for links to external files.
+A link may also have its content in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
@@ -396,28 +476,15 @@ showing an external file link in HDF5:
 				TARGETPATH "entry/instrument/detector/data"
 			 }
 
-.. note:: The NAPI code [#]_ makes no ``target`` attribute assignment for
-   links to external files.  It is best to avoid using the
-   ``target`` attribute with external file links.
-   The NIAC is working at resolving the technical limitations
-
-   .. Q: So what happens if the object in the external file
-      has a ``@target`` attribute?
-
-   .. [#] ``NX5nativeexternallink()``:
-      https://github.com/nexusformat/code/blob/fe8ddd287ee33961982931e2016cc25f76f95edd/src/napi5.c#L2248
-
-The NAPI maintains a group attribute ``@napimount`` that provides
-a URL to a group in another file.  More information about the
-``@napimount`` attribute is described in the
-*NeXus Programmers Reference*. [#]_
-
-.. [#] https://github.com/nexusformat/code/raw/master/doc/api/NeXusIntern.pdf
+.. note:: The ``target`` attribute is not defined for a field or group stored in
+   another file (see issue
+   `#842 <https://github.com/nexusformat/definitions/issues/842>`_).
+   It is best to avoid using the ``target`` attribute with external file links.
 
 .. index:: link; external file, NeXus link
 
-Combining NeXus links and External File Links
----------------------------------------------
+Example: combining NeXus links and external file links in HDF5
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Consider the case described in
 :ref:`Links to Data in External HDF5 Files <h5py-example-external-links>`,

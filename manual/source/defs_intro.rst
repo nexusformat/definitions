@@ -121,8 +121,8 @@ A representation of the basic structure (groups, fields,
 dimensions, attributes, and links) is prepared for each NXDL 
 specification. Indentation shows nested structure. 
 Attributes are prepended with the ``@`` symbol. 
-Links use the characters ``->`` to represent the 
-path to the intended source of the information.
+Links are shown as ``link`` followed by the target, the
+item in the class definitions whose content they have.
 
 Indentation is used to indicate nesting of subgroups
 (a feature common to application definitions).
@@ -141,8 +141,8 @@ units is described, such as ``NX_DATE_TIME``.
 
 :ref:`NeXus Links <Design-Links>` (these specifications are typically
 present only in application definitions) are described by a local name,
-the text `->`, then a suggested path to the source item to be linked 
-to the local name.
+the text ``link``, then the target: the item, written with class names,
+whose content the link has (see :ref:`design.links.definitions`).
 
 Names (groups, fields, links, and attributes)
 =============================================

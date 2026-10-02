@@ -64,7 +64,8 @@ not support group attributes.  HDF4 supports a group class
 which is set with the ``Vsetclass()`` call
 and read with ``VGetclass()``.)
 
-A NeXus ``link`` directly maps to the HDF hard link mechanisms.
+In HDF5, a NeXus :ref:`link <Design-Links>` is usually stored as a hard link
+(see :ref:`design.links.hdf5`).
 
 .. note:: **Examples** are provided in the :ref:`Examples` chapter.
           These examples include software to write and read NeXus data files using the NAPI, as
@@ -263,9 +264,8 @@ basic NeXus data components:
 	   ! single: link target (internal attribute)
 
 	**target**
-		This attribute is automatically created when items get linked.
-		The target attribute contains a text string with
-		the path to the source of the item linked.
+		The absolute path of the original of a
+		:ref:`link <Design-Links>` (see :ref:`NXobject`).
 
 	.. index::
 	   ! single: napimount (internal attribute)

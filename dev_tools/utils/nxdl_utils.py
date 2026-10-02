@@ -13,6 +13,7 @@ from typing import Optional
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
+from ..globals.nxdl import NXDL_NAMESPACE
 from . import xml_utils
 
 
@@ -850,6 +851,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
 
 def walk_elist(elist, html_name):
     """Handle elist from low priority inheritance classes to higher"""
+    parents = list(elist)
     for ind in range(len(elist) - 1, -1, -1):
         child = get_direct_child(elist[ind], html_name)
         if child is None:
@@ -880,7 +882,52 @@ def walk_elist(elist, html_name):
         # add new base class(es) if new element brings such (and not a primitive type)
         if len(elist) == ind + 1 and not get_nx_class(elist[ind]).startswith("NX_"):
             add_base_classes(elist)
+    if parents and all(xml_utils.get_local_name(p) == "field" for p in parents):
+        elist.extend(_get_field_attributes(parents, html_name))
     return elist, html_name
+
+
+_NS = {"nx": NXDL_NAMESPACE}
+
+
+def _get_field_attributes(
+    fields: List[ET._Element], html_name: str
+) -> List[ET._Element]:
+    """Returns the ``fieldAttributes`` attributes named html_name that apply to
+    fields, from high to low priority."""
+    result = []
+    seen = set()
+    for field in fields:
+        parent = field.getparent()
+        nxdlbase = field.get("nxdlbase", "")
+        nxdlpath = field.get("nxdlpath", "").rpartition("/")[0]
+        containers = [(parent, nxdlbase, nxdlpath)]
+        base_class = (
+            parent.get("type")
+            if xml_utils.get_local_name(parent) == "group"
+            else parent.get("extends")
+        )
+        if base_class:
+            definitions = []
+            add_base_classes(definitions, base_class)
+            containers.extend((d, d.get("nxdlbase"), "") for d in definitions)
+        for container, container_base, container_path in containers:
+            for attribute in container.iterfind(
+                "nx:fieldAttributes/nx:attribute", namespaces=_NS
+            ):
+                if attribute.get("name") != html_name or attribute in seen:
+                    continue
+                seen.add(attribute)
+                attribute.set("nxdlbase", container_base)
+                attribute.set(
+                    "nxdlbase_class",
+                    container.getroottree().getroot().get("category", ""),
+                )
+                attribute.set(
+                    "nxdlpath", f"{container_path}/fieldAttributes/{html_name}"
+                )
+                result.append(attribute)
+    return result
 
 
 @lru_cache(maxsize=None)
