@@ -33,8 +33,8 @@ Application Definitions
     definitions below extend.
 
 :ref:`NXxas_trans`
-    XAS measured in transmission, where the absorption coefficient follows the Beer-Lambert law
-    :math:`\mu(E)\,t = -\ln(I/I_0)`.
+    X-ray absorption measured in transmission, where the absorption coefficient follows the
+    Beer-Lambert law :math:`\mu(E)\,t = -\ln(I/I_0)`.
 
 .. _CC-Xas-Base-Classes:
 
@@ -45,17 +45,17 @@ Base Classes
     A chemical element of the periodic table.
 
 :ref:`NXabsorption_edge`
-    An X-ray absorption edge, which arises from the excitation of an atom to a core-vacancy state:
-    when the incident photon energy reaches the threshold for this excitation, the absorption
-    spectrum shows a sharp discontinuity.
+    An X-ray absorption edge, which arises from the excitation of an atom to a state with a core
+    vacancy: when the incident photon energy reaches the threshold for this excitation, the
+    absorption spectrum shows a sharp discontinuity.
 
 :ref:`NXemission_line`
-    An emission line, which arises from the radiative decay of an atom with a core vacancy: an electron
-    from a higher level fills the vacancy and a photon is emitted with an energy characteristic of the
-    element.
+    An emission line, which arises from the radiative decay of an atom with a core vacancy: an
+    electron from a higher level fills the vacancy and a photon is emitted with an energy
+    characteristic of the element.
 
 :ref:`NXauger_line`
-    An Auger line, which arises from the non-radiative decay of an atom with a core vacancy: an electron
-    from a higher level fills the vacancy and another electron, the Auger electron, is ejected with a
-    kinetic energy characteristic of the element.
+    An Auger line, which arises from the non-radiative decay of an atom with a core vacancy: an
+    electron from a higher level fills the vacancy and another electron, the Auger electron, is
+    ejected with a kinetic energy characteristic of the element.
 
