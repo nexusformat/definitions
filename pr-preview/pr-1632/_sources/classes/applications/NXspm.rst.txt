@@ -26,14 +26,52 @@ NXspm
       for specific SPM sub-techniques such as STM, STS, AFM etc. In addition, it can be utilized to
       describe the SPM experiments without further specialization for each sub-technique.
 
+      **Frames of reference**
+
+      SPM has no beam, so the default NeXus (McStas) coordinate system does not apply. NXspm
+      uses five right-handed Cartesian frames. The **scanner frame** is the central frame:
+      every other frame is defined relative to it, directly or through one intermediate frame.
+
+      * **Scanner frame** (central): origin at the undeflected piezo position (zero offset,
+        zero scan angle, Z piezo at its zero) or at the centre determined by the scanner
+        calibration. ``x`` and ``y`` are the lateral drive axes of
+        the scanner; ``z`` is normal to the sample plane and points from the sample towards
+        the probe. It describes the relative tip-sample displacement, independent of whether
+        the tip or the sample is moved.
+      * **Scan frame** (one per scan): origin at the centre of the scan area, ``x`` along the
+        fast scan axis, ``y`` along the slow scan axis. It is placed in the scanner frame by
+        the scan offset and the scan angle.
+      * **Probe frame**: origin at the tip apex, ``x`` along the projection of the cantilever
+        long axis (from the tip towards the chip), ``z`` along the tip axis. It is placed
+        in the scanner frame by the cantilever tilt and its in-plane angle.
+      * **Stage frame**: the sample stage or coarse positioner, including the sample holder.
+        It is placed in the scanner frame by the stage position. If no stage position is
+        recorded, it coincides with the scanner frame.
+      * **Sample frame**: origin at a fiducial on the sample, ``z`` normal to the sample
+        surface. It is placed in the stage frame by the mounting translation and rotation.
+
+      The relationships follow the ``depends_on`` direction of :ref:`NXtransformations`, which
+      points towards the scanner frame:
+
+      .. code-block:: text
+
+          scan frame   --[offset, scan angle]---------+
+          probe frame  --[tilt, in-plane angle]-------+--> scanner frame
+          stage frame  --[stage position]-------------+
+          sample frame --[mount translation, rotation]--> stage frame
+
+      Conventions: rotations about ``z`` are counter-clockwise positive when viewed from
+      ``+z`` (looking down from the probe). The measured data stay on the grid of the scan
+      frame and are not resampled; only the transformations are recorded.
+
 **Symbols**:
 
   No symbol table
 
 **Groups cited**:
-  :ref:`NXamplifier`, :ref:`NXcalibration`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXdata`, :ref:`NXentry`, :ref:`NXenvironment`, :ref:`NXfabrication`, :ref:`NXhistory`, :ref:`NXinstrument`, :ref:`NXlockin`, :ref:`NXparameters`, :ref:`NXpid_controller`, :ref:`NXprocess`, :ref:`NXrcs`, :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXspm_bias_spectroscopy`, :ref:`NXspm_piezo_sensor`, :ref:`NXspm_positioner`, :ref:`NXspm_scan_control`, :ref:`NXspm_scan_pattern`, :ref:`NXspm_scan_region`, :ref:`NXspm_temperature_sensor`
+  :ref:`NXamplifier`, :ref:`NXcalibration`, :ref:`NXcite`, :ref:`NXcollection`, :ref:`NXcoordinate_system`, :ref:`NXdata`, :ref:`NXentry`, :ref:`NXenvironment`, :ref:`NXfabrication`, :ref:`NXhistory`, :ref:`NXinstrument`, :ref:`NXlockin`, :ref:`NXmanipulator`, :ref:`NXparameters`, :ref:`NXpid_controller`, :ref:`NXpositioner`, :ref:`NXprocess`, :ref:`NXrcs`, :ref:`NXsample`, :ref:`NXsensor`, :ref:`NXspm_bias_spectroscopy`, :ref:`NXspm_piezo_sensor`, :ref:`NXspm_positioner`, :ref:`NXspm_scan_control`, :ref:`NXspm_scan_pattern`, :ref:`NXspm_scan_region`, :ref:`NXspm_temperature_sensor`, :ref:`NXtransformations`
 
-.. index:: NXentry (base class); used in application definition, NXprocess (base class); used in application definition, NXinstrument (base class); used in application definition, NXfabrication (base class); used in application definition, NXrcs (base class); used in application definition, NXlockin (base class); used in application definition, NXenvironment (base class); used in application definition, NXsensor (base class); used in application definition, NXspm_piezo_sensor (base class); used in application definition, NXspm_scan_control (base class); used in application definition, NXspm_scan_region (base class); used in application definition, NXspm_scan_pattern (base class); used in application definition, NXcalibration (base class); used in application definition, NXparameters (base class); used in application definition, NXamplifier (base class); used in application definition, NXspm_temperature_sensor (base class); used in application definition, NXspm_bias_spectroscopy (base class); used in application definition, NXspm_positioner (base class); used in application definition, NXpid_controller (base class); used in application definition, NXsample (base class); used in application definition, NXhistory (base class); used in application definition, NXdata (base class); used in application definition, NXcite (base class); used in application definition, NXcollection (base class); used in application definition
+.. index:: NXentry (base class); used in application definition, NXcoordinate_system (base class); used in application definition, NXprocess (base class); used in application definition, NXinstrument (base class); used in application definition, NXfabrication (base class); used in application definition, NXrcs (base class); used in application definition, NXlockin (base class); used in application definition, NXmanipulator (base class); used in application definition, NXtransformations (base class); used in application definition, NXpositioner (base class); used in application definition, NXenvironment (base class); used in application definition, NXsensor (base class); used in application definition, NXspm_piezo_sensor (base class); used in application definition, NXspm_scan_control (base class); used in application definition, NXspm_scan_region (base class); used in application definition, NXspm_scan_pattern (base class); used in application definition, NXcalibration (base class); used in application definition, NXparameters (base class); used in application definition, NXamplifier (base class); used in application definition, NXspm_temperature_sensor (base class); used in application definition, NXspm_bias_spectroscopy (base class); used in application definition, NXspm_positioner (base class); used in application definition, NXpid_controller (base class); used in application definition, NXsample (base class); used in application definition, NXhistory (base class); used in application definition, NXdata (base class); used in application definition, NXcite (base class); used in application definition, NXcollection (base class); used in application definition
 
 **Structure**:
 
@@ -113,6 +151,122 @@ NXspm
     **identifier_experiment**: (recommended) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXsensor_scan/ENTRY/identifier_experiment-field>`
 
       The identifier for the experiment which should be unique at least in lab.
+
+    .. _/NXspm/ENTRY/scanner_frame-group:
+
+    **scanner_frame**: (recommended) :ref:`NXcoordinate_system` 
+
+      .. collapse:: The scanner frame, the central frame of reference of SPM (see the frames of  ...
+
+          The scanner frame, the central frame of reference of SPM (see the frames of reference
+          in the description of NXspm). It replaces the default NeXus (McStas) coordinate system.
+
+          The scanner frame is fixed by the instrument and its scanner calibration. It changes
+          only on recalibration or when the scanner is exchanged. All lateral and vertical
+          quantities of the piezo scanner (e.g. scan offsets, scan angle, piezo ranges) are
+          expressed in this frame.
+
+          Every transformation chain in this entry ends here. As this is the only
+          :ref:`NXcoordinate_system` in the entry, a ``depends_on`` that is not given
+          refers to this frame.
+
+      .. _/NXspm/ENTRY/scanner_frame/origin-field:
+
+      .. index:: origin (field)
+
+      **origin**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/origin-field>`
+
+        .. collapse:: The point from which all scanner-frame positions (scan offsets, scan start ...
+
+            The point from which all scanner-frame positions (scan offsets, scan start and
+            end, piezo positions) are measured.
+
+            Any of these values:
+
+              * ``undeflected piezo position``: Zero voltage on all scanner piezos: zero scan offset, zero scan angle, and the Z piezo at its zero position. The axes are the nominal drive axes of the scanner.
+
+              * ``calibrated piezo position``: The centre of the scanner frame as determined by the scanner calibration, which also determines the directions of the axes. It can differ from the undeflected piezo position.
+
+
+      .. _/NXspm/ENTRY/scanner_frame/type-field:
+
+      .. index:: type (field)
+
+      **type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/type-field>`
+
+
+        Obligatory value: ``cartesian``
+
+      .. _/NXspm/ENTRY/scanner_frame/x_direction-field:
+
+      .. index:: x_direction (field)
+
+      **x_direction**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/x_direction-field>`
+
+        The first lateral drive axis of the scanner.
+
+      .. _/NXspm/ENTRY/scanner_frame/y_direction-field:
+
+      .. index:: y_direction (field)
+
+      **y_direction**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/y_direction-field>`
+
+        .. collapse:: The second lateral drive axis of the scanner, such that ``x``, ``y`` and ...
+
+            The second lateral drive axis of the scanner, such that ``x``, ``y`` and ``z``
+            form a right-handed system.
+
+      .. _/NXspm/ENTRY/scanner_frame/z_direction-field:
+
+      .. index:: z_direction (field)
+
+      **z_direction**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/z_direction-field>`
+
+        .. collapse:: Normal to the sample plane, pointing from the sample towards the probe. ...
+
+            Normal to the sample plane, pointing from the sample towards the probe.
+
+            Obligatory value: ``from sample towards probe``
+
+      .. _/NXspm/ENTRY/scanner_frame/x-field:
+
+      .. index:: x (field)
+
+      **x**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXcoordinate_system/x-field>`
+
+
+        Obligatory value: ``[1, 0, 0]``
+
+      .. _/NXspm/ENTRY/scanner_frame/y-field:
+
+      .. index:: y (field)
+
+      **y**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXcoordinate_system/y-field>`
+
+
+        Obligatory value: ``[0, 1, 0]``
+
+      .. _/NXspm/ENTRY/scanner_frame/z-field:
+
+      .. index:: z (field)
+
+      **z**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXcoordinate_system/z-field>`
+
+
+        Obligatory value: ``[0, 0, 1]``
+
+      .. _/NXspm/ENTRY/scanner_frame/depends_on-field:
+
+      .. index:: depends_on (field)
+
+      **depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcoordinate_system/depends_on-field>`
+
+        .. collapse:: The scanner frame is the root of all transformation chains in SPM and does ...
+
+            The scanner frame is the root of all transformation chains in SPM and does not
+            depend on another frame.
+
+            Obligatory value: ``.``
 
     .. _/NXspm/ENTRY/PROCESS-group:
 
@@ -231,6 +385,183 @@ NXspm
 
               The name of the active channel of the lock-in amplifier which is used for the
               measurement.
+
+      .. _/NXspm/ENTRY/INSTRUMENT/stage-group:
+
+      **stage**: (optional) :ref:`NXmanipulator` 
+
+        .. collapse:: The sample stage or coarse positioner (e.g. stick-slip piezo motors, stepp ...
+
+            The sample stage or coarse positioner (e.g. stick-slip piezo motors, stepper
+            motors), including the sample holder that moves with it. It defines the stage
+            frame: the coarse position of the sample relative to the tip, with axes nominally
+            parallel to the axes of the scanner frame. The stage frame is fixed between coarse
+            moves. A removable sample holder that is taken out and put back between scans is
+            not part of this frame.
+
+            The stage positions are given as the transformations of this group. If no stage
+            position is recorded (e.g. Nanonis files), the stage frame coincides with the
+            scanner frame.
+
+        .. _/NXspm/ENTRY/INSTRUMENT/stage/depends_on-field:
+
+        .. index:: depends_on (field)
+
+        **depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcomponent/depends_on-field>`
+
+          .. collapse:: Places the stage frame in the scanner frame. ...
+
+              Places the stage frame in the scanner frame.
+
+              Obligatory value: ``transformations/stage_z``
+
+        .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations-group:
+
+        **transformations**: (required) :ref:`NXtransformations` :ref:`⤆ </NXcomponent/TRANSFORMATIONS-group>`
+
+          .. collapse:: The stage position as a transformation chain that ends in the scanner fr ...
+
+              The stage position as a transformation chain that ends in the scanner frame:
+
+              .. code-block:: text
+
+                  stage_z -> stage_y -> stage_x -> scanner_frame
+
+              Each axis may move either the sample or the head (e.g. on a tip-scanning
+              instrument the XY stage may move the sample and the Z motor the head). The
+              ``vector`` of each axis therefore gives the direction in which the sample moves
+              relative to the tip for a positive value. A misalignment between the stage axes
+              and the scanner axes is assumed to be zero.
+
+          .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z-field:
+
+          .. index:: stage_z (field)
+
+          **stage_z**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+            Stage position along ``z``.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@transformation_type-attribute:
+
+            .. index:: transformation_type (field attribute)
+
+            **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+              Obligatory value: ``translation``
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@vector-attribute:
+
+            .. index:: vector (field attribute)
+
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+              .. collapse:: Unit vector, in the scanner frame, along which a positive value of ...
+
+                  Unit vector, in the scanner frame, along which a positive value of
+                  ``stage_z`` moves the sample relative to the tip. It depends on the
+                  instrument, e.g. on whether this axis moves the sample or the head.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@depends_on-attribute:
+
+            .. index:: depends_on (field attribute)
+
+            **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+              Obligatory value: ``stage_y``
+
+          .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y-field:
+
+          .. index:: stage_y (field)
+
+          **stage_y**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+            Stage position along ``y``.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@transformation_type-attribute:
+
+            .. index:: transformation_type (field attribute)
+
+            **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+              Obligatory value: ``translation``
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@vector-attribute:
+
+            .. index:: vector (field attribute)
+
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+              .. collapse:: Unit vector, in the scanner frame, along which a positive value of ...
+
+                  Unit vector, in the scanner frame, along which a positive value of
+                  ``stage_y`` moves the sample relative to the tip. It depends on the
+                  instrument, e.g. on whether this axis moves the sample or the head.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@depends_on-attribute:
+
+            .. index:: depends_on (field attribute)
+
+            **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+              Obligatory value: ``stage_x``
+
+          .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x-field:
+
+          .. index:: stage_x (field)
+
+          **stage_x**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+            Stage position along ``x``.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@transformation_type-attribute:
+
+            .. index:: transformation_type (field attribute)
+
+            **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+              Obligatory value: ``translation``
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@vector-attribute:
+
+            .. index:: vector (field attribute)
+
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+              .. collapse:: Unit vector, in the scanner frame, along which a positive value of ...
+
+                  Unit vector, in the scanner frame, along which a positive value of
+                  ``stage_x`` moves the sample relative to the tip. It depends on the
+                  instrument, e.g. on whether this axis moves the sample or the head.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@depends_on-attribute:
+
+            .. index:: depends_on (field attribute)
+
+            **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+              .. collapse:: Path to the :ref:`scanner_frame </NXspm/ENTRY/scanner_frame-group>` ...
+
+                  Path to the :ref:`scanner_frame </NXspm/ENTRY/scanner_frame-group>`
+                  group of this entry.
+
+        .. _/NXspm/ENTRY/INSTRUMENT/stage/stage_motorAXIS-group:
+
+        **stage_motor**\ :bolditalic:`AXIS`: (optional) :ref:`NXpositioner` :ref:`⤆ </NXmanipulator/POSITIONER-group>`
+
+          .. collapse:: The motor that drives the stage along one axis, for motor details such a ...
+
+              The motor that drives the stage along one axis, for motor details such as raw
+              steps, velocity or limits. AXIS denotes the ``x``, ``y`` or ``z`` axis
+              (e.g. ``stage_motor_x``).
+
+              Its ``value`` should be a link to the stage position of the same axis in
+              :ref:`transformations </NXspm/ENTRY/INSTRUMENT/stage/transformations-group>`
+              (e.g. :ref:`transformations/stage_x </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x-field>`).
 
       .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT-group:
 
@@ -368,7 +699,7 @@ NXspm
 
             .. index:: scan_range_x (field)
 
-            **scan_range_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_rangeN-field>`
+            **scan_range_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_rangeAXIS-field>`
 
               The range of the scan in x direction.
 
@@ -376,7 +707,7 @@ NXspm
 
             .. index:: scan_range_y (field)
 
-            **scan_range_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_rangeN-field>`
+            **scan_range_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_rangeAXIS-field>`
 
               The range of the scan in y direction.
 
@@ -384,7 +715,7 @@ NXspm
 
             .. index:: scan_offset_value_x (field)
 
-            **scan_offset_value_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_offset_valueN-field>`
+            **scan_offset_value_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_offset_valueAXIS-field>`
 
               The offset of the scan in x direction.
 
@@ -392,7 +723,7 @@ NXspm
 
             .. index:: scan_offset_value_y (field)
 
-            **scan_offset_value_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_offset_valueN-field>`
+            **scan_offset_value_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_offset_valueAXIS-field>`
 
               The offset of the scan in y direction.
 
@@ -400,23 +731,30 @@ NXspm
 
             .. index:: scan_angle_x (field)
 
-            **scan_angle_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXspm_scan_region/scan_angleN-field>`
+            **scan_angle_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXspm_scan_region/scan_angleAXIS-field>`
 
-              The angle of the scan region in x direction.
+              .. collapse:: The angle of the fast scan axis from the ``x`` axis of the scanner f ...
+
+                  The angle of the fast scan axis from the ``x`` axis of the scanner frame
+                  (rotation about ``z``).
 
             .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_y-field:
 
             .. index:: scan_angle_y (field)
 
-            **scan_angle_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXspm_scan_region/scan_angleN-field>`
+            **scan_angle_y**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXspm_scan_region/scan_angleAXIS-field>`
 
-              The angle of the scan region in y direction.
+              .. collapse:: The rotation angle of the scan region seen from the ``y`` axis. It m ...
+
+                  The rotation angle of the scan region seen from the ``y`` axis. It must be
+                  equal to :ref:`scan_angle_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field>`;
+                  :ref:`scan_angle_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field>` alone is sufficient.
 
             .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_start_x-field:
 
             .. index:: scan_start_x (field)
 
-            **scan_start_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_startN-field>`
+            **scan_start_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_startAXIS-field>`
 
               The start of the scan in x direction.
 
@@ -424,7 +762,7 @@ NXspm
 
             .. index:: scan_start_y (field)
 
-            **scan_start_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_startN-field>`
+            **scan_start_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_startAXIS-field>`
 
               The start of the scan in y direction.
 
@@ -432,7 +770,7 @@ NXspm
 
             .. index:: scan_end_x (field)
 
-            **scan_end_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_endN-field>`
+            **scan_end_x**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_endAXIS-field>`
 
               The end of the scan in x direction.
 
@@ -440,9 +778,159 @@ NXspm
 
             .. index:: scan_end_y (field)
 
-            **scan_end_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_endN-field>`
+            **scan_end_y**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXspm_scan_region/scan_endAXIS-field>`
 
               The end of the scan in y direction.
+
+            .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/depends_on-field:
+
+            .. index:: depends_on (field)
+
+            **depends_on**: (recommended) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXspm_scan_region/depends_on-field>`
+
+              .. collapse:: Places the scan frame in the scanner frame. A position ``u`` in the  ...
+
+                  Places the scan frame in the scanner frame. A position ``u`` in the scan
+                  frame maps to ``p = o + R(scan_angle) u`` in the scanner frame, where ``o``
+                  is the scan offset.
+
+                  Obligatory value: ``transformations/scan_angle``
+
+            .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations-group:
+
+            **transformations**: (recommended) :ref:`NXtransformations` :ref:`⤆ </NXspm_scan_region/transformations-group>`
+
+              .. collapse:: The scan offset and the scan angle as a transformation chain that en ...
+
+                  The scan offset and the scan angle as a transformation chain that ends
+                  in the scanner frame:
+
+                  .. code-block:: text
+
+                      scan_angle -> offset_y -> offset_x -> scanner_frame
+
+                  The values are the same as
+                  :ref:`scan_angle_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field>`,
+                  :ref:`scan_offset_value_y </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_y-field>` and
+                  :ref:`scan_offset_value_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_x-field>`
+                  of this scan region.
+
+              .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle-field:
+
+              .. index:: scan_angle (field)
+
+              **scan_angle**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+                .. collapse:: Rotation of the scan frame about ``z`` through the centre of the s ...
+
+                    Rotation of the scan frame about ``z`` through the centre of the scan
+                    region. Same value as
+                    :ref:`scan_angle_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field>`.
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@transformation_type-attribute:
+
+                .. index:: transformation_type (field attribute)
+
+                **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+                  Obligatory value: ``rotation``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@vector-attribute:
+
+                .. index:: vector (field attribute)
+
+                **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+                  Obligatory value: ``[0, 0, 1]``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@depends_on-attribute:
+
+                .. index:: depends_on (field attribute)
+
+                **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+                  Obligatory value: ``offset_y``
+
+              .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y-field:
+
+              .. index:: offset_y (field)
+
+              **offset_y**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+                .. collapse:: Scan offset along ``y`` of the scanner frame. Same value as ...
+
+                    Scan offset along ``y`` of the scanner frame. Same value as
+                    :ref:`scan_offset_value_y </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_y-field>`.
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@transformation_type-attribute:
+
+                .. index:: transformation_type (field attribute)
+
+                **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+                  Obligatory value: ``translation``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@vector-attribute:
+
+                .. index:: vector (field attribute)
+
+                **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+                  Obligatory value: ``[0, 1, 0]``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@depends_on-attribute:
+
+                .. index:: depends_on (field attribute)
+
+                **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+                  Obligatory value: ``offset_x``
+
+              .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x-field:
+
+              .. index:: offset_x (field)
+
+              **offset_x**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+                .. collapse:: Scan offset along ``x`` of the scanner frame. Same value as ...
+
+                    Scan offset along ``x`` of the scanner frame. Same value as
+                    :ref:`scan_offset_value_x </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_x-field>`.
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@transformation_type-attribute:
+
+                .. index:: transformation_type (field attribute)
+
+                **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+                  Obligatory value: ``translation``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@vector-attribute:
+
+                .. index:: vector (field attribute)
+
+                **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+                  Obligatory value: ``[1, 0, 0]``
+
+                .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@depends_on-attribute:
+
+                .. index:: depends_on (field attribute)
+
+                **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+                  .. collapse:: Path to the ...
+
+                      Path to the :ref:`scanner_frame </NXspm/ENTRY/scanner_frame-group>`
+                      group of this entry.
 
           .. _/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN-group:
 
@@ -871,6 +1359,177 @@ NXspm
 
       The sample information.
 
+      .. _/NXspm/ENTRY/SAMPLE/depends_on-field:
+
+      .. index:: depends_on (field)
+
+      **depends_on**: (optional) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcomponent/depends_on-field>`
+
+        .. collapse:: Places the sample frame (origin at a fiducial on the sample, ``x`` along a ...
+
+            Places the sample frame (origin at a fiducial on the sample, ``x`` along a straight
+            reference on the sample such as an edge or a crystal direction, ``z`` normal to the
+            sample surface) in the stage frame.
+
+            Obligatory value: ``transformations/mount_rotation``
+
+      .. _/NXspm/ENTRY/SAMPLE/transformations-group:
+
+      **transformations**: (optional) :ref:`NXtransformations` :ref:`⤆ </NXcomponent/TRANSFORMATIONS-group>`
+
+        .. collapse:: The mounting of the sample as a transformation chain that ends in the stag ...
+
+            The mounting of the sample as a transformation chain that ends in the stage frame:
+
+            .. code-block:: text
+
+                mount_rotation -> mount_translation_x -> mount_translation_y -> mount_translation_z
+                    -> stage chain (or scanner_frame)
+
+
+        .. _/NXspm/ENTRY/SAMPLE/transformations/mount_rotation-field:
+
+        .. index:: mount_rotation (field)
+
+        **mount_rotation**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+          Angle between the ``x`` axis of the sample frame and the ``x`` axis of the stage frame.
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@transformation_type-attribute:
+
+          .. index:: transformation_type (field attribute)
+
+          **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+            Obligatory value: ``rotation``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@vector-attribute:
+
+          .. index:: vector (field attribute)
+
+          **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+            Obligatory value: ``[0, 0, 1]``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@depends_on-attribute:
+
+          .. index:: depends_on (field attribute)
+
+          **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+            Obligatory value: ``mount_translation_x``
+
+        .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x-field:
+
+        .. index:: mount_translation_x (field)
+
+        **mount_translation_x**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+          Position of the sample origin along ``x`` of the stage frame.
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@transformation_type-attribute:
+
+          .. index:: transformation_type (field attribute)
+
+          **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+            Obligatory value: ``translation``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@vector-attribute:
+
+          .. index:: vector (field attribute)
+
+          **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+            Obligatory value: ``[1, 0, 0]``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@depends_on-attribute:
+
+          .. index:: depends_on (field attribute)
+
+          **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+            Obligatory value: ``mount_translation_y``
+
+        .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y-field:
+
+        .. index:: mount_translation_y (field)
+
+        **mount_translation_y**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+          Position of the sample origin along ``y`` of the stage frame.
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@transformation_type-attribute:
+
+          .. index:: transformation_type (field attribute)
+
+          **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+            Obligatory value: ``translation``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@vector-attribute:
+
+          .. index:: vector (field attribute)
+
+          **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+            Obligatory value: ``[0, 1, 0]``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@depends_on-attribute:
+
+          .. index:: depends_on (field attribute)
+
+          **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+
+            Obligatory value: ``mount_translation_z``
+
+        .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z-field:
+
+        .. index:: mount_translation_z (field)
+
+        **mount_translation_z**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`} :ref:`⤆ </NXtransformations/AXISNAME-field>`
+
+          Position of the sample origin along ``z`` of the stage frame.
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@transformation_type-attribute:
+
+          .. index:: transformation_type (field attribute)
+
+          **@transformation_type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@transformation_type-attribute>`
+
+
+            Obligatory value: ``translation``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@vector-attribute:
+
+          .. index:: vector (field attribute)
+
+          **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>` :ref:`⤆ </NXtransformations/AXISNAME@vector-attribute>`
+
+
+            Obligatory value: ``[0, 0, 1]``
+
+          .. _/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@depends_on-attribute:
+
+          .. index:: depends_on (field attribute)
+
+          **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXtransformations/AXISNAME@depends_on-attribute>`
+
+            .. collapse:: Path to ...
+
+                Path to :ref:`stage_z </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z-field>`
+                of the stage, or to the :ref:`scanner_frame </NXspm/ENTRY/scanner_frame-group>`
+                group if no stage position is given.
+
       .. _/NXspm/ENTRY/SAMPLE/history-group:
 
       **history**: (recommended) :ref:`NXhistory` :ref:`⤆ </NXsensor_scan/ENTRY/SAMPLE/history-group>`
@@ -1081,6 +1740,7 @@ attributes, and links defined in this class.
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN/step_size_x-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN/step_size_x-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN/step_size_y-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN/step_size_y-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region-group </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region-group>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/depends_on-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/depends_on-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_y-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_y-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_end_x-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_end_x-field>`
@@ -1091,6 +1751,19 @@ attributes, and links defined in this class.
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_range_y-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_range_y-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_start_x-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_start_x-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_start_y-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_start_y-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations-group </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations-group>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@vector-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_x@vector-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@vector-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/offset_y@vector-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@vector-attribute </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/transformations/scan_angle@vector-attribute>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scanTAG-field </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scanTAG-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/voltage_sensorTAG-group </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/voltage_sensorTAG-group>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/XYZpiezo_sensor-group </NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/XYZpiezo_sensor-group>`
@@ -1098,6 +1771,22 @@ attributes, and links defined in this class.
 * :ref:`/NXspm/ENTRY/INSTRUMENT/software/model-field </NXspm/ENTRY/INSTRUMENT/software/model-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/software/name-field </NXspm/ENTRY/INSTRUMENT/software/name-field>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/software/vendor-field </NXspm/ENTRY/INSTRUMENT/software/vendor-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage-group </NXspm/ENTRY/INSTRUMENT/stage-group>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/depends_on-field </NXspm/ENTRY/INSTRUMENT/stage/depends_on-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/stage_motorAXIS-group </NXspm/ENTRY/INSTRUMENT/stage/stage_motorAXIS-group>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations-group </NXspm/ENTRY/INSTRUMENT/stage/transformations-group>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x-field </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@vector-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_x@vector-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y-field </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@vector-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_y@vector-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z-field </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z-field>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@depends_on-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@transformation_type-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@vector-attribute </NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z@vector-attribute>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG-group </NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG-group>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG/AMPLIFIER-group </NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG/AMPLIFIER-group>`
 * :ref:`/NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG/AMPLIFIER/voltage_gain-field </NXspm/ENTRY/INSTRUMENT/voltage_sensorTAG/AMPLIFIER/voltage_gain-field>`
@@ -1116,13 +1805,41 @@ attributes, and links defined in this class.
 * :ref:`/NXspm/ENTRY/resolution_indicators/LINK_TO_FIELD-field </NXspm/ENTRY/resolution_indicators/LINK_TO_FIELD-field>`
 * :ref:`/NXspm/ENTRY/resolution_indicators/LINK_TO_GROUP-group </NXspm/ENTRY/resolution_indicators/LINK_TO_GROUP-group>`
 * :ref:`/NXspm/ENTRY/SAMPLE-group </NXspm/ENTRY/SAMPLE-group>`
+* :ref:`/NXspm/ENTRY/SAMPLE/depends_on-field </NXspm/ENTRY/SAMPLE/depends_on-field>`
 * :ref:`/NXspm/ENTRY/SAMPLE/history-group </NXspm/ENTRY/SAMPLE/history-group>`
 * :ref:`/NXspm/ENTRY/SAMPLE/sample_environment-group </NXspm/ENTRY/SAMPLE/sample_environment-group>`
 * :ref:`/NXspm/ENTRY/SAMPLE/sample_environment/sample_bias_voltage-group </NXspm/ENTRY/SAMPLE/sample_environment/sample_bias_voltage-group>`
 * :ref:`/NXspm/ENTRY/SAMPLE/sample_environment/sample_temperature_sensor-group </NXspm/ENTRY/SAMPLE/sample_environment/sample_temperature_sensor-group>`
 * :ref:`/NXspm/ENTRY/SAMPLE/sample_environment/temperature-field </NXspm/ENTRY/SAMPLE/sample_environment/temperature-field>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations-group </NXspm/ENTRY/SAMPLE/transformations-group>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_rotation-field </NXspm/ENTRY/SAMPLE/transformations/mount_rotation-field>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@depends_on-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_rotation@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@transformation_type-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_rotation@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_rotation@vector-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_rotation@vector-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x-field </NXspm/ENTRY/SAMPLE/transformations/mount_translation_x-field>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@depends_on-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@transformation_type-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@vector-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_x@vector-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y-field </NXspm/ENTRY/SAMPLE/transformations/mount_translation_y-field>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@depends_on-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@transformation_type-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@vector-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_y@vector-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z-field </NXspm/ENTRY/SAMPLE/transformations/mount_translation_z-field>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@depends_on-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@depends_on-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@transformation_type-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@transformation_type-attribute>`
+* :ref:`/NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@vector-attribute </NXspm/ENTRY/SAMPLE/transformations/mount_translation_z@vector-attribute>`
 * :ref:`/NXspm/ENTRY/scan_mode-field </NXspm/ENTRY/scan_mode-field>`
 * :ref:`/NXspm/ENTRY/scan_type-field </NXspm/ENTRY/scan_type-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame-group </NXspm/ENTRY/scanner_frame-group>`
+* :ref:`/NXspm/ENTRY/scanner_frame/depends_on-field </NXspm/ENTRY/scanner_frame/depends_on-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/origin-field </NXspm/ENTRY/scanner_frame/origin-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/type-field </NXspm/ENTRY/scanner_frame/type-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/x-field </NXspm/ENTRY/scanner_frame/x-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/x_direction-field </NXspm/ENTRY/scanner_frame/x_direction-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/y-field </NXspm/ENTRY/scanner_frame/y-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/y_direction-field </NXspm/ENTRY/scanner_frame/y_direction-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/z-field </NXspm/ENTRY/scanner_frame/z-field>`
+* :ref:`/NXspm/ENTRY/scanner_frame/z_direction-field </NXspm/ENTRY/scanner_frame/z_direction-field>`
 
 **NXDL Source**:
   https://github.com/nexusformat/definitions/blob/main/applications/NXspm.nxdl.xml
