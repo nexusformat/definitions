@@ -359,6 +359,10 @@ class NXClassDocGenerator:
         minOccurs = node.get("minOccurs", minOccurs_default)
         return minOccurs
 
+    def _is_not_allowed(self, node) -> bool:
+        """Whether the node is explicitly excluded with ``maxOccurs=0``."""
+        return node.get("maxOccurs") in ("0", 0)
+
     def _get_required_or_optional_text(self, node):
         """
         make clear if a reported item is required or optional
@@ -372,7 +376,9 @@ class NXClassDocGenerator:
             optional = node.get("optional", optional_default) in (True, "true", "1", 1)
             recommended = node.get("recommended", None) in (True, "true", "1", 1)
             minOccurs = self._get_minOccurs(node)
-            if recommended:
+            if self._is_not_allowed(node):
+                optional_text = ":nxdl-not-allowed:`(not allowed)` "
+            elif recommended:
                 optional_text = "(recommended) "
             elif minOccurs in ("0", 0) or optional:
                 optional_text = "(optional) "
@@ -644,6 +650,10 @@ class NXClassDocGenerator:
         self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
         self._print_doc_enum(indent, ns, node)
 
+    def _print_not_allowed_class(self, node, indent) -> None:
+        if self._is_not_allowed(node):
+            self._print(f"{indent}.. rst-class:: nxdl-not-allowed\n")
+
     def _print_if_deprecated(self, ns, node, indent):
         deprecated = node.get("deprecated", None)
         if deprecated is not None:
@@ -675,6 +685,7 @@ class NXClassDocGenerator:
                     f"{indent}{self._hyperlink_target(parent_path, name, 'field')}"
                 )
                 self._print(f"{indent}.. index:: {index_name} (field)\n")
+                self._print_not_allowed_class(node, indent)
                 self._print(
                     f"{indent}{formatted_name}: "
                     f"{optional_text}"
@@ -713,6 +724,7 @@ class NXClassDocGenerator:
                 # target = hTarget.replace(".. _", "").replace(":\n", "")
                 # TODO: https://github.com/nexusformat/definitions/issues/1057
                 self._print(f"{indent}{hTarget}")
+                self._print_not_allowed_class(node, indent)
                 self._print(
                     f"{indent}{formatted_name}: {optional_text}{typ} "
                     f"{self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"

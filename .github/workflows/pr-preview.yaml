@@ -1,0 +1,219 @@
+name: Documentation preview
+
+# Publishes the documentation built for a pull request on
+# <GitHub pages URL>/pr-preview/pr-<number>/
+# and removes it when the pull request is closed.
+#
+# Runs in the context of the base repository so it can also deploy
+# pull requests from forks. It never checks out or runs pull request code.
+#
+# Does nothing when GitHub pages is not served from the gh-pages branch.
+
+on:
+  workflow_run:
+    workflows: ["Documentation build"]
+    types: [completed]
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  actions: read
+  contents: write
+  pages: read
+  pull-requests: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  pages:
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      (github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.pages.outputs.url }}
+    steps:
+      - name: Get the GitHub pages URL
+        id: pages
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let pages;
+            try {
+              ({ data: pages } = await github.rest.repos.getPages({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              }));
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.notice('GitHub pages is not enabled: no preview');
+              return;
+            }
+            if (pages.build_type === 'workflow' || pages.source?.branch !== 'gh-pages') {
+              core.notice('GitHub pages is not served from gh-pages: no preview');
+              return;
+            }
+            core.setOutput('url', pages.html_url.replace(/\/?$/, '/'));
+
+  deploy:
+    needs: pages
+    if: github.event_name == 'workflow_run' && needs.pages.outputs.url != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the GitHub pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Download the documentation
+        uses: actions/download-artifact@v4
+        with:
+          name: nexus-definitions-docs
+          path: html
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download the pull request number
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-number
+          path: pr
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # The artifact is written by pull request code so it cannot be trusted
+      - name: Verify the pull request number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const number = fs.readFileSync('pr/number', 'utf8').trim();
+            if (!/^[0-9]+$/.test(number)) {
+              core.setFailed(`Invalid pull request number: ${number}`);
+              return;
+            }
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: Number(number),
+            });
+            // A newer push or closing the pull request makes this build obsolete
+            if (pr.head.sha !== context.payload.workflow_run.head_sha) {
+              core.notice(`Pull request #${number} has a newer commit: no preview`);
+              return;
+            }
+            if (pr.state !== 'open') {
+              core.notice(`Pull request #${number} is not open: no preview`);
+              return;
+            }
+            core.setOutput('number', number);
+
+      - name: Keep the preview out of search engines
+        if: steps.pr.outputs.number != ''
+        run: |
+          find html -name '*.html' -exec \
+            sed -i 's|<head>|<head><meta name="robots" content="noindex">|' {} +
+          rm -f html/CNAME
+
+      - name: Deploy the preview
+        if: steps.pr.outputs.number != ''
+        working-directory: gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          preview="pr-preview/pr-$NUMBER"
+          rm -rf "$preview"
+          mkdir -p "$preview"
+          cp -r ../html/. "$preview"
+          # Otherwise GitHub pages drops directories starting with "_" (e.g. _static)
+          touch .nojekyll
+          git add -A .
+          if git diff --cached --quiet; then
+            echo "Preview is up to date"
+            exit 0
+          fi
+          # The bot account behind GITHUB_TOKEN: https://api.github.com/users/github-actions%5Bbot%5D
+          bot="github-actions[bot]"
+          git config user.name "$bot"
+          id=$(gh api "users/$bot" --jq .id)
+          git config user.email "$id+$bot@users.noreply.github.com"
+          git commit -q -m "Deploy preview for PR #$NUMBER @ ${SHA:0:7}"
+          git push
+
+      - name: Comment the preview URL
+        if: steps.pr.outputs.number != ''
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          SITE_URL: ${{ needs.pages.outputs.url }}
+        with:
+          script: |
+            const number = Number(process.env.PR_NUMBER);
+            const marker = '<!-- pr-preview -->';
+            const url = `${process.env.SITE_URL}pr-preview/pr-${number}/`;
+            const sha = context.payload.workflow_run.head_sha.substring(0, 7);
+            const body = [
+              marker,
+              `Documentation preview: ${url} (built from ${sha})`,
+              '',
+              'This comment is updated on every push to the branch.',
+            ].join('\n');
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+            });
+            const existing = comments.find(
+              (c) => c.user.type === 'Bot' && c.body.startsWith(marker)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: number,
+                body,
+              });
+            }
+
+  cleanup:
+    needs: pages
+    if: github.event_name == 'pull_request_target' && needs.pages.outputs.url != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the GitHub pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Remove the preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW: pr-preview/pr-${{ github.event.pull_request.number }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ ! -d "$PREVIEW" ]; then
+            echo "No preview to remove"
+            exit 0
+          fi
+          # The bot account behind GITHUB_TOKEN: https://api.github.com/users/github-actions%5Bbot%5D
+          bot="github-actions[bot]"
+          git config user.name "$bot"
+          id=$(gh api "users/$bot" --jq .id)
+          git config user.email "$id+$bot@users.noreply.github.com"
+          git rm -rq "$PREVIEW"
+          git commit -m "Remove preview for PR #$NUMBER"
+          git push
