@@ -27,6 +27,7 @@ class XSDDocGenerator:
         "validNXClassName": """/xs:schema//xs:simpleType[@name='validNXClassName']""",
         "validTargetName": """/xs:schema//xs:simpleType[@name='validTargetName']""",
         "nonNegativeUnbounded": """/xs:schema//xs:simpleType[@name='nonNegativeUnbounded']""",
+        "valueFromType": """/xs:schema//xs:simpleType[@name='valueFromType']""",
     }
 
     def __init__(self) -> None:
@@ -62,6 +63,7 @@ class XSDDocGenerator:
 
         path_list = (
             "/xs:schema/xs:complexType[@name='attributeType']",
+            "/xs:schema/xs:complexType[@name='groupAttributeType']",
             "/xs:schema/xs:element[@name='definition']",
             "/xs:schema/xs:complexType[@name='definitionType']",
             "/xs:schema/xs:simpleType[@name='definitionTypeAttr']",
@@ -69,6 +71,7 @@ class XSDDocGenerator:
             "/xs:schema/xs:complexType[@name='docType']",
             "/xs:schema/xs:complexType[@name='enumerationType']",
             "/xs:schema/xs:complexType[@name='fieldType']",
+            "/xs:schema/xs:complexType[@name='fieldAttributesType']",
             "/xs:schema/xs:complexType[@name='choiceType']",
             "/xs:schema/xs:complexType[@name='groupType']",
             "/xs:schema/xs:complexType[@name='linkType']",
@@ -78,6 +81,7 @@ class XSDDocGenerator:
             "/xs:schema/xs:simpleType[@name='validNXClassName']",
             "/xs:schema/xs:simpleType[@name='validTargetName']",
             "/xs:schema/xs:simpleType[@name='nonNegativeUnbounded']",
+            "/xs:schema/xs:simpleType[@name='valueFromType']",
         )
         for path in path_list:
             nodes = self.pick_nodes_from_xpath(tree, path)
@@ -139,7 +143,7 @@ class XSDDocGenerator:
         node_list = parent.xpath("xs:restriction", namespaces=self.ns)
         if len(node_list) > 0:
             # print_title("Restrictions of "+name, indentLevel+1)
-            self.restriction_handler(node_list[0], indentLevel + 1)
+            self.restriction_handler(node_list[0], indentLevel)
         node_list = parent.xpath(
             "xs:simpleType/xs:restriction/xs:enumeration", namespaces=self.ns
         )
@@ -148,7 +152,7 @@ class XSDDocGenerator:
             self.apply_templates(
                 parent,
                 "xs:simpleType/xs:restriction",
-                indentLevel + 1,
+                indentLevel,
                 handler=self.restriction_handler,
             )
 
@@ -184,7 +188,7 @@ class XSDDocGenerator:
         if not self._tag_match(parent, ("restriction",)):
             return
         self.print_docs(parent, indentLevel)
-        self._print("\n")
+        self._print_blank_line()
         self._print(self._indent(indentLevel) + "The value may be any")
         base = parent.get("base")
         pattern_nodes = parent.xpath("xs:pattern", namespaces=self.ns)
@@ -211,18 +215,23 @@ class XSDDocGenerator:
             self._print(self._indent(indentLevel) + "one from this list only:\n")
             for node in enumeration_nodes:
                 self.enumeration_handler(node, indentLevel)
-                self.print_docs(parent, indentLevel)
             self._print(self._indent(indentLevel))
         else:
             self._print("@" + base)
-        self._print("\n")
+        self._print_blank_line()
 
     def enumeration_handler(self, parent=None, indentLevel=0):
         """Handle XSD enumeration nodes like the former XSLT template"""
         if not self._tag_match(parent, ["enumeration"]):
             return
-        self._print(self._indent(indentLevel) + "* ``%s``" % parent.get("value"))
-        self.print_docs(parent, indentLevel)
+        indent = self._indent(indentLevel)
+        self._print(indent + "* ``%s``" % parent.get("value"))
+        docs = self.get_doc_from_node(parent)
+        if docs is not None:
+            self._print("")
+            for line in docs.splitlines():
+                self._print(indent + "  " + line if line else "")
+            self._print("")
 
     def apply_templates(self, parent, path, indentLevel, handler=None):
         """iterate the nodes found on the supplied XPath expression"""
@@ -306,11 +315,17 @@ class XSDDocGenerator:
         # TODO: change instances of \t to proper indentation
         self._rst_lines.append(" ".join(args) + end)
 
+    def _print_blank_line(self) -> None:
+        """Print an empty line unless the output already ends with one."""
+        if self._rst_lines and not self._rst_lines[-1].strip():
+            return
+        self._print("")
+
 
 ELEMENT_DICT = {
     "attribute": """
 An ``attribute`` element can *only* be a child of a
-``field`` or ``group`` element.
+``definition``, ``field``, ``fieldAttributes`` or ``group`` element.
 It is used to define *attribute* elements to be used and their data types
 and possibly an enumeration of allowed values.
 
@@ -369,6 +384,15 @@ It is used *only* as a child of a ``group`` element.
 For more details, see:
 :ref:`NXDL.data.type.fieldType`
                 """,
+    "fieldAttributes": """
+A ``fieldAttributes`` element can *only* be a child of a
+``definition`` or ``group`` element.
+It specifies default attributes of every ``field`` directly in that
+element.
+
+For more details, see:
+:ref:`NXDL.data.type.fieldAttributesType`
+                """,
     "choice": """
 A ``choice`` element is used when a named group might take one
 of several possible NeXus base classes.  Logically, it must
@@ -391,11 +415,10 @@ For more details, see:
     single: link target
 
 A ``link`` element can *only* be a child of a
-``definition``,
-``field``, or ``group`` element.
-It describes the path to the original source of the parent
-``definition``,
-``field``, or ``group``.
+``definition`` or ``group`` element.
+It specifies an item of that group that must be a
+:ref:`link <Design-Links>`: a field or group with the same content as an
+item elsewhere in the class definitions.
 
 For more details, see:
 :ref:`NXDL.data.type.linkType`
