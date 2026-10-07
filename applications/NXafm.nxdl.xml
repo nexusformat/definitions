@@ -121,6 +121,86 @@
                         The amplitude positioner of the cantilever.
                     </doc>
                 </group>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Places the probe or cantilever frame (see :ref:`NXspm_cantilever`) in the scanner frame.
+                        Points to the transformation in
+                        :ref:`transformations &lt;/NXafm/ENTRY/INSTRUMENT/SPM_CANTILEVER/transformations-group&gt;`
+                        that is applied first to a position in the probe frame.
+
+                        The angle of the cantilever long axis from the fast scan axis, both measured
+                        about ``z`` of the scanner frame, is ``in_plane_angle`` minus
+                        :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;`.
+                        For lateral force measurements, the fast scan axis is usually perpendicular
+                        to the cantilever (this angle is ±90°), so friction twists the cantilever
+                        about its long axis.
+                    </doc>
+                    <enumeration>
+                        <item value="transformations/tilt"/>
+                    </enumeration>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <doc>
+                        The cantilever tilt and in-plane angle as a transformation chain that ends in
+                        the scanner frame:
+
+                        .. code-block:: text
+
+                            tilt -> in_plane_angle -> scanner_frame
+
+                        These angles are rarely stored by the instrument. They usually come from the
+                        probe holder design or from the user.
+                    </doc>
+                    <field name="tilt" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Angle between the cantilever long axis and the ``xy`` plane of the scanner
+                            frame (the sample plane).
+
+                            A positive value means that the tip end of the cantilever is lower than
+                            the chip end, i.e. the tip end points down towards the sample, as in the
+                            usual mounting. As ``x`` of the probe frame points from the chip towards
+                            the tip, this is a rotation about ``y`` (see ``vector``).
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 1, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="in_plane_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="in_plane_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Angle between the projection of the cantilever long axis (from the chip
+                            towards the tip) and the ``x`` axis of the scanner frame, as a rotation
+                            about ``z``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 0, 1]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Path to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                                group of this entry.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
             </group>
             <group name="phase_lock_loop" type="NXphase_lock_loop" recommended="true">
                 <doc>
