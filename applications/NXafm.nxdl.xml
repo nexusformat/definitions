@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2024-2026 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXafm" extends="NXspm" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+        An application definition to describe atomic force microscopy (AFM).
+        
+        In AFM a sharp tip mounted on a flexible cantilever senses the tip-sample interaction force.
+        This application definition covers two complementary classes of AFM experiments:
+        
+        1. Imaging (raster scan): the tip is scanned over the sample surface in a raster (mesh) pattern
+           while a feedback loop keeps a chosen setpoint of the positioner constant. This yields maps of the surface topography
+           together with the accompanying channels such as amplitude, phase, frequency shift or deflection error.
+           Such experiments are described by the
+           :ref:`meshSCAN &lt;/NXafm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/meshSCAN-group&gt;` scan pattern group.
+        
+        2. Force spectroscopy (single point): the lateral position of the tip is kept fixed and the
+           tip-sample distance is ramped along ``z`` while the cantilever deflection is recorded, giving a
+           force-distance (force-versus-``z``) curve for the approach and the retract (retrace) segment.
+           Such experiments are described by the
+           :ref:`point_forceSCAN &lt;/NXafm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/point_forceSCAN-group&gt;` scan pattern group.
+        
+        Both classes can be combined within a single experiment, as in force-volume mapping or peak
+        force tapping, where a force-distance curve is recorded at every point of a raster grid.
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <doc>
+                Name of the definition that is used for the application.
+            </doc>
+            <enumeration>
+                <item value="NXafm"/>
+            </enumeration>
+        </field>
+        <field name="experiment_technique">
+            <doc>
+                The AFM technique.
+            </doc>
+            <enumeration>
+                <item value="AFM"/>
+            </enumeration>
+        </field>
+        <field name="scan_mode">
+            <doc>
+                The mode of the scan.
+                
+                contact mode: Cantilever attempts to move on the sample surface in very close contact with the sample.
+                 The cantilever deflection is usually employed to control the cantilever position using a PID feedback loop.
+                non-contact mode: Cantilever attempts to oscillate above the sample surface. Cantilever attempts to stay in the
+                 interaction (atomic force) zone therefore cantilever oscillator amplitude and frequency are deformed.
+                 The cantilever frequency or oscillation amplitude is usually employed to control the cantilever position using a PID feedback loop.
+                tapping mode: Resembles to the non-contact mode, but at every point of scan the cantilever tip comes closer
+                 to the sample surface ("taps it").
+                 The cantilever oscillation amplitude is usually employed to control the cantilever position using a PID feedback loop.
+                peak force tapping mode: Like the tapping mode, but at each point of the scan force-distance curve is recorded.
+                 The maximum force is usually employed to control the cantilever position using a PID feedback loop.
+            </doc>
+            <enumeration open="true">
+                <item value="contact mode"/>
+                <item value="tapping mode"/>
+                <item value="non-contact mode"/>
+                <item value="peak force tapping mode"/>
+            </enumeration>
+        </field>
+        <group type="NXinstrument">
+            <group name="photo_detector" type="NXdetector" optional="true">
+                <doc>
+                    Information about the quadrant photodiode deflection detector or interferometer.
+                </doc>
+                <group type="NXsensor" optional="true">
+                    <doc>
+                        The sensor information for the photodiode or interferometer.
+                    </doc>
+                </group>
+            </group>
+            <group type="NXspm_cantilever" recommended="true">
+                <doc>
+                    The cantilever information.
+                </doc>
+                <group name="cantilever_oscillator" type="NXspm_cantilever_oscillator" recommended="true">
+                    <doc>
+                        When a cantilever is oscillated close to its resonance, this describes the oscillator properties.
+                        
+                        A cantilever can be used in direct contact mode to detect interaction forces or oscillated close to its
+                        resonance frequency near to surface in non-contact mode or in tapping mode. Changes in the oscillation
+                        amplitude, phase (between oscillated tail and moving tip) or resonance frequency are very sensitive to
+                        changes in the interaction potential field, giving rise of various measurement modes, such as non-contact
+                        or intermittent-contact (tapping) modes.
+                    </doc>
+                    <field name="reference_amplitude" type="NX_NUMBER" units="NX_ANY" recommended="true"/>
+                    <field name="reference_frequency" type="NX_NUMBER" units="NX_FREQUENCY" recommended="true"/>
+                    <field name="reference_phase" type="NX_NUMBER" units="NX_ANGLE" recommended="true"/>
+                </group>
+                <group name="phase_positioner" type="NXpositioner" recommended="true">
+                    <doc>
+                        The phase positioner of the cantilever.
+                    </doc>
+                </group>
+                <group name="amplitude_positioner" type="NXpositioner" recommended="true">
+                    <doc>
+                        The amplitude positioner of the cantilever.
+                    </doc>
+                </group>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Places the probe or cantilever frame (see :ref:`NXspm_cantilever`) in the scanner frame.
+                        Points to the transformation in
+                        :ref:`transformations &lt;/NXafm/ENTRY/INSTRUMENT/SPM_CANTILEVER/transformations-group&gt;`
+                        that is applied first to a position in the probe frame.
+
+                        The angle of the cantilever long axis from the fast scan axis, both measured
+                        about ``z`` of the scanner frame, is ``in_plane_angle`` minus
+                        :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;`.
+                        For lateral force measurements, the fast scan axis is usually perpendicular
+                        to the cantilever (this angle is ±90°), so friction twists the cantilever
+                        about its long axis.
+                    </doc>
+                    <enumeration>
+                        <item value="transformations/tilt"/>
+                    </enumeration>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <doc>
+                        The cantilever tilt and in-plane angle as a transformation chain that ends in
+                        the scanner frame:
+
+                        .. code-block:: text
+
+                            tilt -> in_plane_angle -> scanner_frame
+
+                        These angles are rarely stored by the instrument. They usually come from the
+                        probe holder design or from the user.
+                    </doc>
+                    <field name="tilt" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Angle between the cantilever long axis and the ``xy`` plane of the scanner
+                            frame (the sample plane).
+
+                            A positive value means that the tip end of the cantilever is lower than
+                            the chip end, i.e. the tip end points down towards the sample, as in the
+                            usual mounting. As ``x`` of the probe frame points from the chip towards
+                            the tip, this is a rotation about ``y`` (see ``vector``).
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 1, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="in_plane_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="in_plane_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Angle between the projection of the cantilever long axis (from the chip
+                            towards the tip) and the ``x`` axis of the scanner frame, as a rotation
+                            about ``z``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 0, 1]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Path to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                                group of this entry.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <group name="phase_lock_loop" type="NXphase_lock_loop" recommended="true">
+                <doc>
+                    Phase locked loop for cantilever lock-in device.
+                </doc>
+            </group>
+            <group name="SCAN_ENVIRONMENT" type="NXenvironment" nameType="any">
+                <doc>
+                    The environment information.
+                </doc>
+                <group type="NXspm_scan_control">
+                    <doc>
+                        The scan control information related to the scan pattern and scan area.
+                    </doc>
+                    <group name="scan_region" type="NXspm_scan_region">
+                        <doc>
+                            The scan region (phase space or sub-phase space) is the region where the scan is
+                            performed.
+                        </doc>
+                        <field name="scan_start_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The start of the scan in the ``x`` direction (for afm raster scan)
+                            </doc>
+                        </field>
+                        <field name="scan_start_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The start of the scan in the ``y`` direction (for afm raster scan).
+                            </doc>
+                        </field>
+                        <field name="scan_start_z" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The start of the scan in the ``z`` direction (for point force spectroscopy).
+                            </doc>
+                        </field>
+                        <field name="scan_end_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The end of the scan in the ``x`` direction (for afm raster scan).
+                            </doc>
+                        </field>
+                        <field name="scan_end_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The end of the scan in the ``y`` direction (for afm raster scan).
+                            </doc>
+                        </field>
+                        <field name="scan_end_z" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                The end of the scan in the ``z`` direction (for point force spectroscopy).
+                            </doc>
+                        </field>
+                    </group>
+                    <group name="meshSCAN" type="NXspm_scan_pattern" nameType="partial" optional="true">
+                        <doc>
+                            The mesh scan is a common technique used in AFM for imaging of the surface of given sample
+                            in a grid pattern.
+                            
+                            This group is required to be present if the AFM experiment is associated with a raster scan,
+                            which includes contact mode, non-contact mode, tapping mode and peak force tapping mode.
+                        </doc>
+                    </group>
+                    <group name="point_forceSCAN" type="NXspm_scan_pattern" nameType="partial" optional="true">
+                        <doc>
+                            The scan data from point force spectroscopy, force between the tip and the sample at a specific point:
+                              1. approach
+                              2. retrace.
+                              
+                            This group is required to be present if the AFM experiment is associated with point force
+                            spectroscopy.
+                        </doc>
+                        <field name="scan_points_z" type="NX_NUMBER" recommended="true">
+                            <doc>
+                                The number of points scanned in the ``z`` direction, approach and retrace are same.
+                            </doc>
+                        </field>
+                        <field name="scan_points_approach" type="NX_NUMBER" recommended="true">
+                            <doc>
+                                The number of points scanned in approach.
+                            </doc>
+                        </field>
+                        <field name="scan_points_retrace" type="NX_NUMBER" recommended="true">
+                            <doc>
+                                The number of points scanned in retrace.
+                            </doc>
+                        </field>
+                        <field name="forward_speed_approach" type="NX_NUMBER" recommended="true" units="NX_ANY">
+                            <doc>
+                                The speed of the cantilever tip during approach in point force spectroscopy.
+                            </doc>
+                        </field>
+                        <field name="backward_speed_retrace" type="NX_NUMBER" recommended="true" units="NX_ANY">
+                            <doc>
+                                The speed of the cantilever tip during retract in point force spectroscopy.
+                            </doc>
+                        </field>
+                    </group>
+                </group>
+                <group name="XYpiezo_sensor" type="NXspm_piezo_sensor" nameType="partial" optional="true">
+                    <doc>
+                        This should be a link to the concept
+                        entry/instrument/xy_piezo_sensor.
+                    </doc>
+                </group>
+                <group name="head_temperature_sensor" type="NXsensor" optional="true">
+                    <doc>
+                        This should be a link to the concept
+                        entry/instrument/head_temperature_sensor.
+                    </doc>
+                </group>
+            </group>
+            <group name="head_temperature_sensor" type="NXsensor" optional="true">
+                <doc>
+                    The temperature of the scan environment or head of the cantilever.
+                </doc>
+            </group>
+        </group>
+        <group name="reproducibility_indicators" type="NXcollection" optional="true">
+            <doc>
+                The group of indicators (links to the existing fields in different groups) that measure
+                the reproducibility of the experiment.
+            </doc>
+            <field name="head_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/head_temperature
+                </doc>
+            </field>
+            <field name="cryo_bottom_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_bottom_temperature
+                </doc>
+            </field>
+            <field name="cryo_shield_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_shield_temperature
+                </doc>
+            </field>
+            <group name="cantilever_oscillator" type="NXspm_cantilever_oscillator" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/cantilever_spm/cantilever_oscillator
+                </doc>
+            </group>
+        </group>
+        <group name="resolution_indicators" type="NXcollection" optional="true">
+            <doc>
+                The group of indicators (links to the existing fields in different groups) that
+            </doc>
+            <field name="head_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/head_temperature
+                </doc>
+            </field>
+            <field name="cryo_bottom_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_bottom_temperature
+                </doc>
+            </field>
+            <field name="cryo_shield_temperature" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/scan_environment/cryo_shield_temperature
+                </doc>
+            </field>
+            <field name="cantilever_config" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/cantilever_spm/cantilever_config
+                </doc>
+            </field>
+            <field name="amplitude_excitation" type="NX_NUMBER" optional="true">
+                <doc>
+                    This should be a link to
+                    /entry/instrument/phase_lock_loop/amplitude_excitation
+                </doc>
+            </field>
+        </group>
+    </group>
+</definition>
