@@ -44,22 +44,42 @@
         <doc>
             Manufacturer and model of the PLL hardware or controller.
         </doc>
-        <field name="type" type="NX_CHAR">
+        <field name="type" type="NX_POSINT" units="NX_UNITLESS">
             <doc>
-                Types (design parameter for circuit) of the PLL from type-1, type-2, and type-3
-                available in device specifications (for mathematical details: https://www.nxp.com/docs/en/application-note/AN535.pdf).
-                Type is defined by the number of poles that exist in the transfer function of the PLL.
+                Type of the PLL, a design parameter of the circuit usually given in the device
+                specifications. The type is the number of poles of the open-loop transfer function
+                :math:`G(s)H(s)` located at the origin :math:`s = 0`, i.e. the number of integrators
+                in the loop. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` has one pole at the
+                origin and is therefore a type 1 system.
+
+                The type determines the steady-state phase error :math:`\theta_e` for a given input:
+
+                * step in phase: zero for type 1 and higher.
+                * step in frequency: constant for type 1, zero for type 2 and higher.
+                * frequency ramp: continually increasing (unlocked) for type 1, constant for type 2,
+                  zero for type 3 and higher.
+
+                PLLs used in practice are typically of type 1, 2, or 3.
+
+                Reference: G. Nash, Phase-Locked Loop Design Fundamentals, Application Note AN535,
+                Rev. 1.0, Freescale Semiconductor (2006), Sections 3 and 4
+                (https://www.nxp.com/docs/en/application-note/AN535.pdf).
             </doc>
-            <enumeration>
-                <item value="type-1"/>
-                <item value="type-2"/>
-                <item value="type-3"/>
+            <enumeration open="true">
+                <item value="1"/>
+                <item value="2"/>
+                <item value="3"/>
             </enumeration>
         </field>
-        <field name="order" type="NX_NUMBER" units="NX_UNITLESS">
+        <field name="order" type="NX_POSINT" units="NX_UNITLESS">
             <doc>
-                Order of the PLL. This is characteristic of circuit design and is defined as the number of roots of
-                characteristics polynomial of the PLL circuit.
+                Order of the PLL, a characteristic of the circuit design. The order is the highest
+                degree in :math:`s` of the characteristic equation :math:`1 + G(s)H(s) = 0` (after
+                clearing denominators), i.e. the number of its roots, which are the closed-loop poles of
+                the PLL. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` gives the characteristic
+                equation :math:`s^2 + 10s + 10 = 0`, a second-order system.
+
+                Reference: AN535, Section 3 (see ``type``).
             </doc>
         </field>
     </group>
@@ -118,8 +138,8 @@
         </field>
         <field name="phase_error" type="NX_NUMBER" units="NX_ANGLE">
             <doc>
-                Measured phase error (also called phase difference) between the reference signal
-                and the VCO output.
+                Measured phase error :math:`\theta_e` (also called phase difference) between the incoming reference signal
+                :math:`\theta_i` and the VCO output or feedback signal :math:`\theta_o/N`.
             </doc>
         </field>
         <field name="Kp_coefficient" type="NX_NUMBER" nameType="specified" units="V/rad">
@@ -152,6 +172,9 @@
                 of frequencies it can generate. The range is either the same as the frequency bandwidth of the PLL or shorter
                 and inside that.
             </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2"/>
+            </dimensions>
         </field>
         <field name="Kn_coefficient" type="NX_NUMBER" nameType="specified" units="NX_UNITLESS">
             <doc>
