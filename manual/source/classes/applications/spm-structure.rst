@@ -46,9 +46,9 @@ Application Definition
 ######################
 
     :ref:`NXspm`:
-        An application definition for scanning Probe Microscopy domain experiments.
-        The :ref:`NXspm` in herited from the :ref:`NXsensor_scan` is considered as
-        a generic structure for all SPM experiments. The App. Def. :ref:`NXsts` is also capable
+        An application definition for scanning probe microscopy (SPM) experiments.
+        The :ref:`NXspm` inherited from the :ref:`NXsensor_scan` is considered as
+        a generic structure for all SPM experiments. The application definition :ref:`NXsts` is also capable
         to handle :ref:`NXsts` application definition considering STS as a fundamental
         experiment of SPM family.
     :ref:`NXsts`:
