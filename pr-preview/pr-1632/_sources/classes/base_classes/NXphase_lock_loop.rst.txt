@@ -57,26 +57,46 @@ NXphase_lock_loop
 
     .. index:: type (field)
 
-    **type**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
+    **type**: (optional) :ref:`NX_POSINT <NX_POSINT>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} 
 
-      .. collapse:: Types (design parameter for circuit) of the PLL from type-1, type-2, and typ ...
+      .. collapse:: Type of the PLL, a design parameter of the circuit usually given in the devi ...
 
-          Types (design parameter for circuit) of the PLL from type-1, type-2, and type-3
-          available in device specifications (for mathematical details: https://www.nxp.com/docs/en/application-note/AN535.pdf).
-          Type is defined by the number of poles that exist in the transfer function of the PLL.
+          Type of the PLL, a design parameter of the circuit usually given in the device
+          specifications. The type is the number of poles of the open-loop transfer function
+          :math:`G(s)H(s)` located at the origin :math:`s = 0`, i.e. the number of integrators
+          in the loop. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` has one pole at the
+          origin and is therefore a type 1 system.
 
-          Any of these values: ``type-1`` | ``type-2`` | ``type-3``
+          The type determines the steady-state phase error :math:`\theta_e` for a given input:
+
+          * step in phase: zero for type 1 and higher.
+          * step in frequency: constant for type 1, zero for type 2 and higher.
+          * frequency ramp: continually increasing (unlocked) for type 1, constant for type 2,
+            zero for type 3 and higher.
+
+          PLLs used in practice are typically of type 1, 2, or 3.
+
+          Reference: G. Nash, Phase-Locked Loop Design Fundamentals, Application Note AN535,
+          Rev. 1.0, Freescale Semiconductor (2006), Sections 3 and 4
+          (https://www.nxp.com/docs/en/application-note/AN535.pdf).
+
+          Any of these values or a custom value (if you use a custom value, also set @custom=True): ``1`` | ``2`` | ``3``
 
     .. _/NXphase_lock_loop/hardware/order-field:
 
     .. index:: order (field)
 
-    **order**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} 
+    **order**: (optional) :ref:`NX_POSINT <NX_POSINT>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} 
 
-      .. collapse:: Order of the PLL. This is characteristic of circuit design and is defined as ...
+      .. collapse:: Order of the PLL, a characteristic of the circuit design. The order is the h ...
 
-          Order of the PLL. This is characteristic of circuit design and is defined as the number of roots of
-          characteristics polynomial of the PLL circuit.
+          Order of the PLL, a characteristic of the circuit design. The order is the highest
+          degree in :math:`s` of the characteristic equation :math:`1 + G(s)H(s) = 0` (after
+          clearing denominators), i.e. the number of its roots, which are the closed-loop poles of
+          the PLL. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` gives the characteristic
+          equation :math:`s^2 + 10s + 10 = 0`, a second-order system.
+
+          Reference: AN535, Section 3 (see ``type``).
 
   .. _/NXphase_lock_loop/calibration-group:
 
@@ -175,10 +195,10 @@ NXphase_lock_loop
 
     **phase_error**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_ANGLE <NX_ANGLE>`} 
 
-      .. collapse:: Measured phase error (also called phase difference) between the reference si ...
+      .. collapse:: Measured phase error :math:`\theta_e` (also called phase difference) between ...
 
-          Measured phase error (also called phase difference) between the reference signal
-          and the VCO output.
+          Measured phase error :math:`\theta_e` (also called phase difference) between the incoming reference signal
+          :math:`\theta_i` and the VCO output or feedback signal :math:`\theta_o/N`.
 
     .. _/NXphase_lock_loop/phase_detector/Kp_coefficient-field:
 
@@ -224,7 +244,7 @@ NXphase_lock_loop
 
     .. index:: output_frequency_range (field)
 
-    **output_frequency_range**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`} 
+    **output_frequency_range**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` (Rank: 1, Dimensions: [2]) {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`} 
 
       .. collapse:: The output frequency range (written in an array of frequencies as [min, max] ...
 
