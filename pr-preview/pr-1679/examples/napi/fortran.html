@@ -1,0 +1,284 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head><meta name="robots" content="noindex">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.1.5. HDF5 in Fortran with NAPI &#8212; nexus v2026.01 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css?v=34905f61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/details_summary_hide.css?v=30df4bca" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nxdl_not_allowed.css?v=b40686d9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bolditalic.css?v=504f8cd9" />
+    <link rel="stylesheet" href="../../_static/blockquote.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/rubric.css" type="text/css" />
+    <script src="../../_static/documentation_options.js?v=167d9c14"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="2.1.6. HDF5 in Python with NAPI" href="python.html" />
+    <link rel="prev" title="2.1.4. HDF5 in C with NAPI" href="c.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="python.html" title="2.1.6. HDF5 in Python with NAPI"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="c.html" title="2.1.4. HDF5 in C with NAPI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U"><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2.1.5. </span>HDF5 in Fortran with NAPI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="hdf5-in-fortran-with-napi">
+<span id="example-napi-fortran"></span><h1><span class="section-number">2.1.5. </span>HDF5 in Fortran with NAPI<a class="headerlink" href="#hdf5-in-fortran-with-napi" title="Link to this heading">¶</a></h1>
+<p>Code examples are provided in this section that write 2-D data
+to a NeXus HDF5 file in F77, and F90 languages using the <a class="reference internal" href="../../napi.html#napi"><span class="std std-ref">NAPI: NeXus Application Programmer Interface (frozen)</span></a>.</p>
+<p>The following code reads a two-dimensional set <code class="docutils literal notranslate"><span class="pre">counts</span></code>
+with dimension scales of <code class="docutils literal notranslate"><span class="pre">t</span></code> and <code class="docutils literal notranslate"><span class="pre">phi</span></code> using
+local routines, and then writes a NeXus file containing a single
+<code class="docutils literal notranslate"><span class="pre">NXentry</span></code> group and a single <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group.
+This is the simplest data file that conforms to the NeXus standard.</p>
+<section id="napi-f77-example-write-simple-nexus-file">
+<h2><span class="section-number">2.1.5.1. </span>NAPI F77 Example: write simple NeXus file<a class="headerlink" href="#napi-f77-example-write-simple-nexus-file" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The F77 interface is no longer being developed.</p>
+</div>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">      </span><span class="k">program </span><span class="n">WRITEDATA</span>
+<span class="linenos"> 2</span><span class="w">      </span>
+<span class="linenos"> 3</span><span class="w">      </span><span class="k">include</span><span class="w"> </span><span class="s1">'NAPIF.INC'</span>
+<span class="linenos"> 4</span><span class="w">      </span><span class="kt">integer</span><span class="o">*</span><span class="mi">4</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">file_id</span><span class="p">(</span><span class="n">NXHANDLESIZE</span><span class="p">),</span><span class="w"> </span><span class="n">counts</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span><span class="w"> </span><span class="n">n_p</span><span class="p">,</span><span class="w"> </span><span class="n">n_t</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 5</span><span class="w">      </span><span class="kt">real</span><span class="o">*</span><span class="mi">4</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span><span class="w"> </span><span class="n">phi</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="c">!Read in data using local routines</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="k">call </span><span class="n">getdata</span><span class="w"> </span><span class="p">(</span><span class="n">n_t</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">n_p</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">counts</span><span class="p">)</span>
+<span class="linenos"> 9</span><span class="c">!Open output file</span>
+<span class="linenos">10</span><span class="w">      </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopen</span><span class="w"> </span><span class="p">(</span><span class="s1">'NXFILE.NXS'</span><span class="p">,</span><span class="w"> </span><span class="n">NXACC_CREATE</span><span class="p">,</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">11</span><span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputcharattr</span><span class="w"> </span>
+<span class="linenos">12</span><span class="w">     </span><span class="o">+</span><span class="w">         </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'user'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Joe Bloggs'</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">NX_CHAR</span><span class="p">)</span>
+<span class="linenos">13</span><span class="c">!Open top-level NXentry group</span>
+<span class="linenos">14</span><span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXmakegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'Entry1'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NXentry'</span><span class="p">)</span>
+<span class="linenos">15</span><span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopengroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'Entry1'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NXentry'</span><span class="p">)</span>
+<span class="linenos">16</span><span class="c">!Open NXdata group within NXentry group</span>
+<span class="linenos">17</span><span class="w">          </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXmakegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'Data1'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NXdata'</span><span class="p">)</span>
+<span class="linenos">18</span><span class="w">          </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopengroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'Data1'</span><span class="p">,</span><span class="w"> </span><span class="s1">'NXdata'</span><span class="p">)</span>
+<span class="linenos">19</span><span class="c">!Output time channels</span>
+<span class="linenos">20</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXmakedata</span><span class="w"> </span>
+<span class="linenos">21</span><span class="w">     </span><span class="o">+</span><span class="w">         </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'time_of_flight'</span><span class="p">,</span><span class="w"> </span><span class="n">NX_FLOAT32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n_t</span><span class="p">)</span>
+<span class="linenos">22</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopendata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'time_of_flight'</span><span class="p">)</span>
+<span class="linenos">23</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputdata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+<span class="linenos">24</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputcharattr</span><span class="w"> </span>
+<span class="linenos">25</span><span class="w">     </span><span class="o">+</span><span class="w">         </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'units'</span><span class="p">,</span><span class="w"> </span><span class="s1">'microseconds'</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="n">NX_CHAR</span><span class="p">)</span>
+<span class="linenos">26</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclosedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">27</span><span class="c">!Output detector angles</span>
+<span class="linenos">28</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXmakedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'polar_angle'</span><span class="p">,</span><span class="w"> </span><span class="n">NX_FLOAT32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">n_p</span><span class="p">)</span>
+<span class="linenos">29</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopendata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'polar_angle'</span><span class="p">)</span>
+<span class="linenos">30</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputdata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">)</span>
+<span class="linenos">31</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputcharattr</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'units'</span><span class="p">,</span><span class="w"> </span><span class="s1">'degrees'</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="n">NX_CHAR</span><span class="p">)</span>
+<span class="linenos">32</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclosedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">33</span><span class="c">!Output data</span>
+<span class="linenos">34</span><span class="w">            </span><span class="n">dims</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_t</span>
+<span class="linenos">35</span><span class="w">            </span><span class="n">dims</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n_p</span>
+<span class="linenos">36</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXmakedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'counts'</span><span class="p">,</span><span class="w"> </span><span class="n">NX_INT32</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">dims</span><span class="p">)</span>
+<span class="linenos">37</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXopendata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'counts'</span><span class="p">)</span>
+<span class="linenos">38</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputdata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="n">counts</span><span class="p">)</span>
+<span class="linenos">39</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputattr</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'signal'</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">NX_INT32</span><span class="p">)</span>
+<span class="linenos">40</span><span class="w">              </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXputattr</span>
+<span class="linenos">41</span><span class="w">     </span><span class="o">+</span><span class="w">          </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s1">'axes'</span><span class="p">,</span><span class="w"> </span><span class="s1">'polar_angle:time_of_flight'</span><span class="p">,</span><span class="w"> </span><span class="mi">26</span><span class="p">,</span><span class="w"> </span><span class="n">NX_CHAR</span><span class="p">)</span>
+<span class="linenos">42</span><span class="w">            </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclosedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">43</span><span class="c">!Close NXdata and NXentry groups and close file</span>
+<span class="linenos">44</span><span class="w">          </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclosegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">45</span><span class="w">        </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclosegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">46</span><span class="w">      </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NXclose</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="w">      </span><span class="k">stop</span>
+<span class="linenos">49</span><span class="k">      end</span>
+</pre></div>
+</div>
+</section>
+<section id="napi-f90-example-write-simple-nexus-file">
+<h2><span class="section-number">2.1.5.2. </span>NAPI F90 Example: write simple NeXus file<a class="headerlink" href="#napi-f90-example-write-simple-nexus-file" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example uses the signal/axes attributes applied to the
+data field, as described in <a class="reference internal" href="../../datarules.html#design-findplottable-byname"><span class="std std-ref">Associating plottable data by name using the axes attribute</span></a>.
+New code should use the method described in <a class="reference internal" href="../../datarules.html#design-findplottable-niac2014"><span class="std std-ref">Associating plottable data using attributes applied to the NXdata group</span></a>.</p>
+</div>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">program </span><span class="n">WRITEDATA</span>
+<span class="linenos"> 2</span><span class="w">      </span>
+<span class="linenos"> 3</span><span class="w">   </span><span class="k">use </span><span class="n">NXUmodule</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">NXhandle</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">file_id</span>
+<span class="linenos"> 6</span><span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">pointer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">counts</span><span class="p">(:,:)</span>
+<span class="linenos"> 7</span><span class="w">   </span><span class="kt">real</span><span class="p">,</span><span class="w"> </span><span class="k">pointer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="p">(:),</span><span class="w"> </span><span class="n">phi</span><span class="p">(:)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c">!Use local routines to allocate pointers and fill in data</span>
+<span class="linenos">10</span><span class="w">   </span><span class="k">call </span><span class="n">getlocaldata</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="n">counts</span><span class="p">)</span>
+<span class="linenos">11</span><span class="c">!Open output file</span>
+<span class="linenos">12</span><span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXopen</span><span class="w"> </span><span class="p">(</span><span class="s2">"NXfile.nxs"</span><span class="p">,</span><span class="w"> </span><span class="n">NXACC_CREATE</span><span class="p">,</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">13</span><span class="k">   if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwriteglobals</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="o">=</span><span class="s2">"Joe Bloggs"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">14</span><span class="c">!Set compression parameters</span>
+<span class="linenos">15</span><span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUsetcompress</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="n">NX_COMP_LZW</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">16</span><span class="c">!Open top-level NXentry group</span>
+<span class="linenos">17</span><span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwritegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"Entry1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"NXentry"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">18</span><span class="w">   </span><span class="c">!Open NXdata group within NXentry group</span>
+<span class="linenos">19</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwritegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"Data1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"NXdata"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">20</span><span class="w">   </span><span class="c">!Output time channels</span>
+<span class="linenos">21</span><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwritedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"time_of_flight"</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="s2">"microseconds"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">22</span><span class="w">   </span><span class="c">!Output detector angles</span>
+<span class="linenos">23</span><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwritedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"polar_angle"</span><span class="p">,</span><span class="w"> </span><span class="n">phi</span><span class="p">,</span><span class="w"> </span><span class="s2">"degrees"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">24</span><span class="w">   </span><span class="c">!Output data</span>
+<span class="linenos">25</span><span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXUwritedata</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"counts"</span><span class="p">,</span><span class="w"> </span><span class="n">counts</span><span class="p">,</span><span class="w"> </span><span class="s2">"counts"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">26</span><span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="n">NXputattr</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"signal"</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">27</span><span class="k">            if</span><span class="w"> </span><span class="p">(</span><span class="n">NXputattr</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span><span class="w"> </span><span class="s2">"axes"</span><span class="p">,</span><span class="w"> </span><span class="s2">"polar_angle:time_of_flight"</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">28</span><span class="w">   </span><span class="c">!Close NXdata group</span>
+<span class="linenos">29</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXclosegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">30</span><span class="c">!Close NXentry group</span>
+<span class="linenos">31</span><span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXclosegroup</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">32</span><span class="c">!Close NeXus file</span>
+<span class="linenos">33</span><span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NXclose</span><span class="w"> </span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NX_OK</span><span class="p">)</span><span class="w"> </span><span class="k">stop</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="k">end program </span><span class="n">WRITEDATA</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">2.1.5. HDF5 in Fortran with NAPI</a><ul>
+<li><a class="reference internal" href="#napi-f77-example-write-simple-nexus-file">2.1.5.1. NAPI F77 Example: write simple NeXus file</a></li>
+<li><a class="reference internal" href="#napi-f90-example-write-simple-nexus-file">2.1.5.2. NAPI F90 Example: write simple NeXus file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="c.html"
+                          title="previous chapter"><span class="section-number">2.1.4. </span>HDF5 in C with NAPI</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="python.html"
+                          title="next chapter"><span class="section-number">2.1.6. </span>HDF5 in Python with NAPI</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <p>Have a Question? <a href="https://github.com/nexusformat/definitions/issues/new">Get help</a></p>
+    <ul class="this-page-menu">
+    <style>
+		  .avatar-container {
+		    display: flex;
+		    align-items: center;
+		  }
+		
+		  .avatar {
+		    width: 32px;
+		    height: 32px;
+		    border-radius: 50%;
+		    margin-right: 5px;
+		  }
+		</style>
+		
+    
+    
+		<div class="avatar-container">
+      
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="google_search" style="display: none">
+	<hr />
+	<h3>Google search</h3>
+	<form method="get" action="https://www.google.com/search">
+		<table border="0" align="center" cellpadding="0">
+			<tr>
+				<td>
+					<input type="text"   name="q" value="" />
+				</td>
+			</tr>
+			<tr>
+				<td align="center" style="font-size:75%">
+					<input type="radio"  name="sitesearch" value="" />global
+					<input type="radio"  name="sitesearch"
+						value="manual.nexusformat.org" 
+						checked />NeXus manual
+					<input type="submit" value="Go" />
+					<br />
+				</td>
+			</tr>
+		</table>
+	</form>                                
+</div>
+<script type="text/javascript">$('#google_search').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="python.html" title="2.1.6. HDF5 in Python with NAPI"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="c.html" title="2.1.4. HDF5 in C with NAPI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" ><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2.1.5. </span>HDF5 in Fortran with NAPI</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; <a href="../../copyright.html">Copyright</a> 1996-2026, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
