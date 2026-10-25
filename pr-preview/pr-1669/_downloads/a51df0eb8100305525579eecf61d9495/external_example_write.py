@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Writes a NeXus HDF5 file using h5py with links to data in other HDF5 files.
+Writes a NeXus HDF5 file using h5py with HDF5 external links to data in other HDF5 files.
 
 This example is based on ``writer_2_1``.
 """
