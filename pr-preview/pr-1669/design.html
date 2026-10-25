@@ -445,11 +445,11 @@ from another file is represented.  These places are not NeXus links: none
 of them has a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
 <p>Unlike a virtual dataset, an HDF5 external link has no attributes of its
 own: the attributes it shows are those of the object in the other file.  In
-the two examples below, <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> has the original
+the three examples below, <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> has the original
 <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> and the NeXus link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code>,
 and the detector writes its images to <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> in
 <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.</p>
-<p><strong>A NeXus link stored as an HDF5 external link.</strong>  Both paths in
+<p><strong>Example 1: a NeXus link stored as an HDF5 external link.</strong>  Both paths in
 <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> are HDF5 external links to the same object, as with an HDF5
 hard link within one file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">master</span><span class="o">.</span><span class="n">h5</span>
@@ -469,10 +469,23 @@ attribute that refers to a path in another file, and only one linking
 file can set it.  <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> must also be writable, which it often
 is not.</p>
 </div>
-<p><strong>The original stored as an HDF5 external link.</strong>  The original needs no
-<code class="docutils literal notranslate"><span class="pre">target</span></code> attribute, so <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> is not changed.  The NeXus link is
-an object in <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> that can carry the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute, such as a
-virtual dataset that maps the data in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>:</p>
+<p><strong>Example 2: the original stored as an HDF5 external link, the NeXus link
+as an HDF5 soft link.</strong>  An HDF5 soft link has no attributes of its own
+either: it shows the object in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>, so the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute
+is stored there, with the same caveats as in example 1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">master</span><span class="o">.</span><span class="n">h5</span>
+    <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">instrument</span><span class="o">/</span><span class="n">detector</span><span class="o">/</span><span class="n">data</span>  <span class="o">--&gt;</span> <span class="n">detector</span><span class="o">.</span><span class="n">h5</span><span class="p">:</span><span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>
+    <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>                 <span class="o">--&gt;</span> <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">instrument</span><span class="o">/</span><span class="n">detector</span><span class="o">/</span><span class="n">data</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">h5</span>
+    <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>
+        <span class="nd">@target</span><span class="o">=</span><span class="s2">"/entry/instrument/detector/data"</span>
+</pre></div>
+</div>
+<p><strong>Example 3: the original stored as an HDF5 external link, the NeXus link
+as a virtual dataset.</strong>  The original needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute, so
+<code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> is not changed.  The NeXus link is an object in
+<code class="docutils literal notranslate"><span class="pre">master.h5</span></code> that carries the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute: a virtual dataset that
+maps the data in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.  HDF5 has no hard links between files:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">master</span><span class="o">.</span><span class="n">h5</span>
     <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">instrument</span><span class="o">/</span><span class="n">detector</span><span class="o">/</span><span class="n">data</span>  <span class="o">--&gt;</span> <span class="n">detector</span><span class="o">.</span><span class="n">h5</span><span class="p">:</span><span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>
     <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>                 <span class="p">(</span><span class="n">virtual</span> <span class="n">dataset</span> <span class="n">of</span> <span class="n">detector</span><span class="o">.</span><span class="n">h5</span><span class="p">:</span><span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span><span class="p">)</span>
@@ -482,8 +495,8 @@ virtual dataset that maps the data in <code class="docutils literal notranslate"
 </pre></div>
 </div>
 <p>This always works for a field.  A group cannot be a virtual dataset; a NeXus
-link to a group whose content is in another file is stored as a copy or as
-in the first example.</p>
+link to a group whose content is in another file is stored as a copy, or as
+in example 1 or 2.</p>
 </section>
 </section>
 </section>
