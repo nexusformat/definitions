@@ -496,19 +496,46 @@ a *master* file therefore makes an HDF5 external link at each place where data
 from another file is represented.  These places are not NeXus links: none
 of them has a ``target`` attribute.
 
-.. warning:: Unlike a virtual dataset, an HDF5 external link has no
-   attributes of its own.  To use it as a NeXus link, its ``target`` attribute must be
-   stored on the object in the other file, with a path in the linking file
-   as value, not the path of the object in the other file.  Read on its
-   own, the other file then has a ``target`` attribute that refers to a path
-   in another file, and only one linking file can set it.  The other file
-   must also be writable, which it often is not.
+Unlike a virtual dataset, an HDF5 external link has no attributes of its
+own: the attributes it shows are those of the object in the other file.  In
+the two examples below, ``master.h5`` has the original
+``/entry/instrument/detector/data`` and the NeXus link ``/entry/data/data``,
+and the detector writes its images to ``/entry/data/data`` in
+``detector.h5``.
 
-   An HDF5 external link can always store the original instead: the
-   original is not a NeXus link and needs no ``target`` attribute.  For
-   example, ``/entry/instrument/detector/data`` is an HDF5 external link to
-   the detector file, and the NeXus link ``/entry/data/data`` is a virtual dataset in the
-   linking file with ``target="/entry/instrument/detector/data"``.
+**A NeXus link stored as an HDF5 external link.**  Both paths in
+``master.h5`` are HDF5 external links to the same object, as with an HDF5
+hard link within one file::
+
+    master.h5
+        /entry/instrument/detector/data  --> detector.h5:/entry/data/data
+        /entry/data/data                 --> detector.h5:/entry/data/data
+    detector.h5
+        /entry/data/data
+            @target="/entry/instrument/detector/data"
+
+.. warning:: The ``target`` attribute is stored in ``detector.h5``, with a
+   path in ``master.h5`` as value, not the path of the object in
+   ``detector.h5``.  Read on its own, ``detector.h5`` then has a ``target``
+   attribute that refers to a path in another file, and only one linking
+   file can set it.  ``detector.h5`` must also be writable, which it often
+   is not.
+
+**The original stored as an HDF5 external link.**  The original needs no
+``target`` attribute, so ``detector.h5`` is not changed.  The NeXus link is
+an object in ``master.h5`` that can carry the ``target`` attribute, such as a
+virtual dataset that maps the data in ``detector.h5``::
+
+    master.h5
+        /entry/instrument/detector/data  --> detector.h5:/entry/data/data
+        /entry/data/data                 (virtual dataset of detector.h5:/entry/data/data)
+            @target="/entry/instrument/detector/data"
+    detector.h5
+        /entry/data/data
+
+This always works for a field.  A group cannot be a virtual dataset; a NeXus
+link to a group whose content is in another file is stored as a copy or as
+in the first example.
 
 .. _Design-NeXusClasses:
 
