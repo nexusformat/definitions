@@ -44,12 +44,10 @@ with h5py.File("simple_example_write2.hdf5", "w") as f:  # create the HDF5 NeXus
 
     source_addr = "/entry/instrument/detector/two_theta"  # existing data
     target_addr = "two_theta"  # new location
-    ds_tth.attrs["target"] = source_addr  # a NeXus API convention for links
+    ds_tth.attrs["target"] = source_addr  # path of the original
     nxdata[target_addr] = f[source_addr]  # hard link
-    # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
     source_addr = "/entry/instrument/detector/counts"  # existing data
     target_addr = "counts"  # new location
-    ds_counts.attrs["target"] = source_addr  # a NeXus API convention for links
+    ds_counts.attrs["target"] = source_addr  # path of the original
     nxdata[target_addr] = f[source_addr]  # hard link
-    # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
