@@ -242,11 +242,11 @@ A link expresses that both are the same data.
 See the <a class="reference internal" href="#fig-data-linking"><span class="std std-ref">figure</span></a> for
 a more descriptive representation of the concept of linking.</p>
 <div class="compound">
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id7">
 <span id="fig-data-linking"></span><a class="reference internal image-reference" href="_images/data-linking.png"><img alt="fig.data-linking" src="_images/data-linking.png" style="width: 60%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Linking in a NeXus file</span><a class="headerlink" href="#id13" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Linking in a NeXus file</span><a class="headerlink" href="#id7" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
@@ -331,9 +331,9 @@ have <code class="docutils literal notranslate"><span class="pre">&#64;target=&q
 only a few situations, such as when converting the data from one format to
 another: by identifying the original, duplicate copies of the data are not
 converted.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is not defined for a field or group stored in
-another file (see <a class="reference internal" href="#design-external-file-link"><span class="std std-ref">Example: external file links in HDF5</span></a> and issue
-<a class="reference external" href="https://github.com/nexusformat/definitions/issues/842">#842</a>).</p>
+<p>Where the content is stored, in one file, in several files or in an object
+store, is not part of NeXus: the value of <code class="docutils literal notranslate"><span class="pre">target</span></code> is always a path in the
+NeXus tree (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing links in a file format</span></a>).</p>
 </section>
 <section id="links-in-class-definitions">
 <span id="design-links-definitions"></span><h4>Links in class definitions<a class="headerlink" href="#links-in-class-definitions" title="Link to this heading">¶</a></h4>
@@ -366,58 +366,43 @@ defines no links: every array or group exists under exactly one path, so a
 link is stored as a copy with its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
 <section id="example-links-in-hdf5">
 <span id="design-links-hdf5"></span><h5>Example: links in HDF5<a class="headerlink" href="#example-links-in-hdf5" title="Link to this heading">¶</a></h5>
-<p>HDF5 offers several ways to realize a NeXus link, for example:</p>
-<ul class="simple">
-<li><p>a hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>: the same HDF5 object under several paths,
-the usual choice;</p></li>
-<li><p>a soft link: a path that refers to another path;</p></li>
-<li><p>an external link: a path that refers to an object in another file
-(see <a class="reference internal" href="#design-external-file-link"><span class="std std-ref">Example: external file links in HDF5</span></a>);</p></li>
-<li><p>a virtual dataset, or a copy.</p></li>
-</ul>
-<p>In each case, except for an external link, the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute must be
-added <a class="footnote-reference brackets" href="#id6" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.  With a hard link,
-HDF5 makes no distinction between the paths of the object: the <code class="docutils literal notranslate"><span class="pre">target</span></code>
-attribute is what tells NeXus which one is the original <a class="footnote-reference brackets" href="#id8" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
-<blockquote>
-<div><aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id6" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">1</a><span class="fn-bracket">]</span></span>
-<p>The software that writes the file must add the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.
-Here are the steps to follow for a hard link:</p>
+<p>HDF5 offers several ways to store a NeXus link.  In each case, the software
+that writes the file must add the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
+<section id="hard-and-soft-links">
+<h6>Hard and soft links<a class="headerlink" href="#hard-and-soft-links" title="Link to this heading">¶</a></h6>
+<p>A hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> makes the same HDF5 object available under
+several paths; it is the usual choice.  A soft link is a path that refers
+to another path, so it also shows the same object.  In both cases the
+link and the original are one object with one set of attributes: the
+<code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is set once, on that object, with the path of the
+original as value.</p>
+<p>HDF5 makes no distinction between the paths of a hard-linked object: the
+<code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is what tells NeXus which one is the original (see the
+<a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using links to place data in two places.
+Which one should be the data and which one is the link?</strong>).</p>
+<p>To make a hard link:</p>
 <ol class="arabic simple">
-<li><p>Get the HDF5 reference ID of the source item (<em>field</em>, <em>group</em>, or <em>link</em>) to be linked.</p></li>
-<li><p>If the ID does not have a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute defined:
-#. Get the absolute HDF5 address of the ID.
-#. Create a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute for the ID.
-#. Set the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute’s value to the absolute HDF5 address of the ID.</p></li>
-<li><p>Create an HDF5 hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>
-to the ID at the desired (new) HDF5 address.</p></li>
+<li><p>Get the HDF5 object (<em>field</em> or <em>group</em>) to be linked.</p></li>
+<li><p>If it has no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute, add one with its absolute path as value.</p></li>
+<li><p>Create an HDF5 hard link to the object at the new path.</p></li>
 </ol>
-</aside>
-<aside class="footnote brackets" id="id8" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">2</a><span class="fn-bracket">]</span></span>
-<p>The notion of an <em>original</em> dataset with regard to links is
-a NeXus abstraction.  In truth, HDF5 makes no distinction which is
-the <em>original</em> dataset.  But, when the file is viewed with a tool
-such as <em>h5dump</em>, confusion often occurs over which dataset is
-original and which is a link to the original.  Actually, both HDF5 paths
-point to the exact, same dataset which exists at a specific offset in the HDF5 file.</p>
-<p>See the <a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using links to place data in two places.
-Which one should be the data and which one is the link?</strong></p>
-</aside>
+<aside class="footnote-list brackets">
 <aside class="footnote brackets" id="hdf5-hard-link" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
 <p>HDF5 hard link:
 <a class="reference external" href="https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD">https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD</a></p>
 </aside>
 </aside>
-</div></blockquote>
 </section>
-<section id="example-external-file-links-in-hdf5">
-<span id="index-15"></span><span id="design-external-file-link"></span><h5>Example: external file links in HDF5<a class="headerlink" href="#example-external-file-links-in-hdf5" title="Link to this heading">¶</a></h5>
-<p>A link may also have its content in another file.
+<section id="virtual-datasets-and-copies">
+<h6>Virtual datasets and copies<a class="headerlink" href="#virtual-datasets-and-copies" title="Link to this heading">¶</a></h6>
+<p>A virtual dataset or a copy is an object of its own, with its own
+attributes.  Add the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute to it, with the path of the
+original as value.  The original needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
+</section>
+<section id="external-links">
+<span id="index-15"></span><span id="design-external-file-link"></span><h6>External links<a class="headerlink" href="#external-links" title="Link to this heading">¶</a></h6>
+<p>A field or group may also have its content stored in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
@@ -437,31 +422,35 @@ showing an external file link in HDF5:</p>
 </div>
 </div>
 </div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is not defined for a field or group stored in
-another file (see issue
-<a class="reference external" href="https://github.com/nexusformat/definitions/issues/842">#842</a>).
-It has no correct value: <code class="docutils literal notranslate"><span class="pre">target</span></code> holds a path, not a file, and an
-HDF5 external link has no attributes of its own.</p>
+<p>HDF5 does not allow hard links to objects in another file: h5py raises
+<em>Interfile hard links are not allowed</em>.  In
+<a class="reference internal" href="examples/python/external_example_write/index.html#h5py-example-external-links"><span class="std std-ref">Links to Data in External HDF5 Files</span></a>,
+a <em>master</em> file therefore makes an external link at each place where data
+from another file is represented.  These places are not NeXus links: none
+of them has a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Unlike a virtual dataset, an external link has no attributes of
+its own.  To use it as a NeXus link, its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute must be
+stored on the object in the other file, with a path in the linking file
+as value, not the path of the object in the other file.  Read on its
+own, the other file then has a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute that refers to a path
+in another file, and only one linking file can set it.  The other file
+must also be writable, which it often is not (see issue
+<a class="reference external" href="https://github.com/nexusformat/definitions/issues/842">#842</a>).</p>
+<p>An external link can always store the original instead: the original is
+not a link and needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.  For example,
+<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> is an external link to the detector
+file, and the NeXus link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> is a virtual dataset in the
+linking file with <code class="docutils literal notranslate"><span class="pre">target=&quot;/entry/instrument/detector/data&quot;</span></code>.</p>
 </div>
 </section>
-<section id="example-combining-nexus-links-and-external-file-links-in-hdf5">
-<span id="index-16"></span><h5>Example: combining NeXus links and external file links in HDF5<a class="headerlink" href="#example-combining-nexus-links-and-external-file-links-in-hdf5" title="Link to this heading">¶</a></h5>
-<p>Consider the case described in
-<a class="reference internal" href="examples/python/external_example_write/index.html#h5py-example-external-links"><span class="std std-ref">Links to Data in External HDF5 Files</span></a>,
-where numerical data are provided in two different HDF5 files and a <em>master</em> NeXus HDF5 file links to
-the data through external file links.  HDF5 will not allow hard links to be constructed with these data
-objects in the master file.  An error such as <em>Interfile hard links are not allowed</em> (as generated
-from h5py) will arise.  This makes sense since there is no such data object in the file.</p>
-<p>Instead, it is necessary to make an external file link at each place in the master where external
-data is to be represented.</p>
 </section>
 </section>
 </section>
 <section id="nexus-base-classes">
 <span id="design-nexusclasses"></span><h3><span class="section-number">1.2.1.6. </span>NeXus Base Classes<a class="headerlink" href="#nexus-base-classes" title="Link to this heading">¶</a></h3>
-<p id="index-18"><span id="index-17"></span>Data groups often describe objects in the experiment (monitors, detectors,
+<p id="index-17"><span id="index-16"></span>Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both fields and/or other
 groups) comprise the properties of that object. NeXus has defined a set of standard
 objects, or <a class="reference internal" href="classes/base_classes/index.html#base-class-definitions"><span class="std std-ref">base classes</span></a>,
@@ -470,8 +459,8 @@ is identified by a name and a class. The group class defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
 defined in XML using the NeXus Definition Language
-<span class="target" id="index-19"></span>(NXDL) format. All NeXus class types adopted by the NIAC <em>must</em>
-begin <span class="target" id="index-20"></span>with <code class="docutils literal notranslate"><span class="pre">NX</span></code>.
+<span class="target" id="index-18"></span>(NXDL) format. All NeXus class types adopted by the NIAC <em>must</em>
+begin <span class="target" id="index-19"></span>with <code class="docutils literal notranslate"><span class="pre">NX</span></code>.
 Classes not adopted by the NIAC <em>must not</em>
 start with <code class="docutils literal notranslate"><span class="pre">NX</span></code>.</p>
 <div class="admonition note">
@@ -481,7 +470,7 @@ NeXus data structure.</p>
 </div>
 <p>Not all classes define physical objects. Some refer to logical groupings of
 experimental information, such as
-<span class="target" id="index-21"></span>plottable data,
+<span class="target" id="index-20"></span>plottable data,
 sample environment logs, beam profiles, etc.
 There can be multiple instances of each class. On
 the other hand, a typical NeXus file will only contain a small subset of the
@@ -505,7 +494,7 @@ file (<code class="docutils literal notranslate"><span class="pre">NXentry</span
 But there are some base classes which have special uses which need to be mentioned here:</p>
 <dl>
 <dt><a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">NXdata</span></code> is used to identify the default
-<span class="target" id="index-22"></span>plottable data.
+<span class="target" id="index-21"></span>plottable data.
 The notion of a default plot of data is a basic motivation of NeXus
 (see <a class="reference internal" href="motivations.html#simpleplotting"><span class="std std-ref">Simple plotting</span></a>).</p>
 </dd>
@@ -530,14 +519,14 @@ Supercedes <code class="docutils literal notranslate"><span class="pre">NXgeomet
 </dd>
 </dl>
 </dd>
-<dt><a class="reference internal" href="classes/base_classes/NXgeometry.html#nxgeometry"><span class="std std-ref">NXgeometry</span></a> (superceded by <a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a>, <a class="footnote-reference brackets" href="#id11" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>)</dt><dd><blockquote>
+<dt><a class="reference internal" href="classes/base_classes/NXgeometry.html#nxgeometry"><span class="std std-ref">NXgeometry</span></a> (superceded by <a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a>, <a class="footnote-reference brackets" href="#id5" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</dt><dd><blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">NXgeometry</span></code> and its subgroups <code class="docutils literal notranslate"><span class="pre">NXtranslation</span></code>,
 <code class="docutils literal notranslate"><span class="pre">NXorientation</span></code>, <code class="docutils literal notranslate"><span class="pre">NXshape</span></code> are  used to store absolute positions in the
 laboratory coordinate system or to define shapes.</p>
 </div></blockquote>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id11" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">4</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">2</a><span class="fn-bracket">]</span></span>
 <p>see: <a class="reference external" href="https://github.com/nexusformat/definitions/issues/397">https://github.com/nexusformat/definitions/issues/397</a></p>
 </aside>
 </aside>
@@ -557,7 +546,7 @@ should extend from <code class="docutils literal notranslate"><span class="pre">
 </section>
 <section id="nxdata-facilitates-automatic-plotting">
 <span id="nxdata-facilitates-thedefaultplot"></span><h4><code class="docutils literal notranslate"><span class="pre">NXdata</span></code> Facilitates Automatic Plotting<a class="headerlink" href="#nxdata-facilitates-automatic-plotting" title="Link to this heading">¶</a></h4>
-<p id="index-23">The most notable special base class (or <em>group</em> in NeXus) is <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>.
+<p id="index-22">The most notable special base class (or <em>group</em> in NeXus) is <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>.
 <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> is the answer to a basic motivation of NeXus to facilitate
 automatic plotting of data.
 <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> is designed to contain the main dataset and its associated
@@ -570,8 +559,8 @@ is <a class="reference internal" href="datarules.html#find-plottable-data"><span
 chapter titled <a class="reference internal" href="datarules.html#datarules"><span class="std std-ref">Rules for Storing Data Items in NeXus Files</span></a>.</p>
 </section>
 <section id="where-to-store-metadata">
-<span id="id12"></span><h4>Where to Store Metadata<a class="headerlink" href="#where-to-store-metadata" title="Link to this heading">¶</a></h4>
-<p id="index-24">There are many ways to store metadata about your experiments.
+<span id="id6"></span><h4>Where to Store Metadata<a class="headerlink" href="#where-to-store-metadata" title="Link to this heading">¶</a></h4>
+<p id="index-23">There are many ways to store metadata about your experiments.
 Already there are many fields in the various base classes
 to store the more common or general metadata, such as wavelength.
 (For wavelength, see the <a class="reference internal" href="strategies.html#strategies-wavelength"><span class="std std-ref">Strategies: The wavelength</span></a> section.)</p>
@@ -638,7 +627,7 @@ that it is always possible to add more data to a file without breaking its compl
 </section>
 </section>
 <section id="nexus-geometry">
-<span id="design-geometry"></span><span id="index-25"></span><h2><span class="section-number">1.2.2. </span>NeXus Geometry<a class="headerlink" href="#nexus-geometry" title="Link to this heading">¶</a></h2>
+<span id="design-geometry"></span><span id="index-24"></span><h2><span class="section-number">1.2.2. </span>NeXus Geometry<a class="headerlink" href="#nexus-geometry" title="Link to this heading">¶</a></h2>
 <p>NeXus supports description of the shape, position and orientation of objects in
 <a class="reference internal" href="#design-coordinatesystem"><span class="std std-ref">The NeXus Coordinate System</span></a>. Position and
 orientation can be defined as <a class="reference internal" href="#coordinatetransformations"><span class="std std-ref">Coordinate Transformations</span></a> using the
@@ -647,18 +636,18 @@ or <a class="reference internal" href="classes/base_classes/NXcylindrical_geomet
 <p>You may come across old files which use <a class="reference internal" href="#legacygeometrydescriptions"><span class="std std-ref">Legacy Geometry Descriptions</span></a>.</p>
 <section id="the-nexus-coordinate-system">
 <span id="design-coordinatesystem"></span><h3><span class="section-number">1.2.2.1. </span>The NeXus Coordinate System<a class="headerlink" href="#the-nexus-coordinate-system" title="Link to this heading">¶</a></h3>
-<p id="index-26">The NeXus coordinate system is shown <a class="reference internal" href="#fig-nexus-coord"><span class="std std-ref">below</span></a>. Note that
+<p id="index-25">The NeXus coordinate system is shown <a class="reference internal" href="#fig-nexus-coord"><span class="std std-ref">below</span></a>. Note that
 it is the same as that used by <em>McStas</em> (<a class="reference external" href="http://mcstas.org">http://mcstas.org</a>). This choice is
 arbitrary and any other choice should be possible as long as it is
 used consistently and application code that reads NeXus files does not assume
 any prior knowledge of the chosen coordinate system.</p>
 <div class="compound">
 <blockquote id="fig-nexus-coord">
-<div><figure class="align-default" id="id14">
+<div><figure class="align-default" id="id8">
 <a class="reference internal image-reference" href="_images/translation-orientation-geometry-2.png"><img alt="fig.coord.detector.view" src="_images/translation-orientation-geometry-2.png" style="width: 33%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">NeXus coordinate system, as viewed from detector</span><a class="headerlink" href="#id14" title="Link to this image">¶</a></p>
+<p><span class="caption-text">NeXus coordinate system, as viewed from detector</span><a class="headerlink" href="#id8" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -666,14 +655,14 @@ any prior knowledge of the chosen coordinate system.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The NeXus definition of <em>+z</em> is opposite to that
-in the <span class="target" id="index-27"></span>IUCr
+in the <span class="target" id="index-26"></span>IUCr
 International Tables for Crystallography, volume G.</p>
 </div>
 </section>
 <section id="coordinate-transformations">
 <span id="coordinatetransformations"></span><h3><span class="section-number">1.2.2.2. </span>Coordinate Transformations<a class="headerlink" href="#coordinate-transformations" title="Link to this heading">¶</a></h3>
-<p id="index-28">In the recommended way of dealing with geometry NeXus uses a series of
-<span class="target" id="index-29"></span>transformations to place objects in space.
+<p id="index-27">In the recommended way of dealing with geometry NeXus uses a series of
+<span class="target" id="index-28"></span>transformations to place objects in space.
 In this world view, the absolute position of a component or a detector pixel with respect to
 the laboratory coordinate system is calculated by applying a series of translations and
 rotations. Thus a rotation or translation operation transforms the whole coordinate system
@@ -703,31 +692,31 @@ operation: this can be studied under the condition that all other operations are
 <p>NeXus chooses to encode information about each transformation as a field in an <code class="docutils literal notranslate"><span class="pre">NXtransformations</span></code>
 group in the following way:</p>
 <blockquote>
-<div><dl id="index-30">
+<div><dl id="index-29">
 <dt><code class="docutils literal notranslate"><span class="pre">value</span></code></dt><dd><p>This is represented in the actual data of the field or the <strong>value</strong> of the
 transformation. Its actual name should relate to the physical device used to
 effect the transformation.</p>
 <p>The coordinate transformation attributes are:</p>
 <blockquote>
-<div><dl class="simple" id="index-31">
+<div><dl class="simple" id="index-30">
 <dt><code class="docutils literal notranslate"><span class="pre">transformation_type</span></code></dt><dd><p>This specifies the <strong>type</strong> of transformation and is either <em>rotation</em>
 or <em>translation</em> and describes the kind of operation performed</p>
 </dd>
 </dl>
-<dl class="simple" id="index-32">
+<dl class="simple" id="index-31">
 <dt><code class="docutils literal notranslate"><span class="pre">vector</span></code> (<em>NX_NUMBER</em>)</dt><dd><p>This is a set of 3 values forming a unit vector for <strong>direction</strong> that
 describes the components of either the direction of the rotation axis or
 the direction along which the translation happens.</p>
 </dd>
 </dl>
-<dl class="simple" id="index-33">
+<dl class="simple" id="index-32">
 <dt><code class="docutils literal notranslate"><span class="pre">offset</span></code> (<em>NX_NUMBER</em>)</dt><dd><p>This is a set of 3 values forming the offset vector for a translation to apply
 before applying the operation of the actual transformation. Without this offset
 attribute, additional virtual translations would need to be introduced in order
 to encode mechanical offsets in the axis.</p>
 </dd>
 </dl>
-<dl id="index-34">
+<dl id="index-33">
 <dt><code class="docutils literal notranslate"><span class="pre">depends_on</span></code></dt><dd><p>The <strong>order</strong> is encoded through this attribute. The value is the name of the
 transformation upon which the current transformation depends on.</p>
 <p>As each transformation represents possible motion by a physical device, this
@@ -748,7 +737,7 @@ to (or mounted on) the next device referred to by the attribute.</p>
 </div></blockquote>
 <p>In addition, for each beamline component, there is a <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> attribute
 that points to the field at the head of the axis dependency chain. For example,
-consider an <span class="target" id="index-35"></span>eulerian cradle as used on a <span class="target" id="index-36"></span>four-circle diffractometer.
+consider an <span class="target" id="index-34"></span>eulerian cradle as used on a <span class="target" id="index-35"></span>four-circle diffractometer.
 Such a cradle has a dependency chain of <code class="docutils literal notranslate"><span class="pre">phi:chi:rotation_angle</span></code>. Then
 the <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> field in <a class="reference internal" href="classes/base_classes/NXsample.html#nxsample"><span class="std std-ref">NXsample</span></a> would have the value <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p>
 <div class="compound">
@@ -784,7 +773,7 @@ the <code class="docutils literal notranslate"><span class="pre">depends_on</spa
 </div></blockquote>
 <p>The type and direction of the NeXus standard operations is documented below
 in the table: <a class="reference internal" href="#tb-table-transform"><span class="std std-ref">Actions of standard NeXus fields</span></a>.
-The rule is to always give the attributes to make perfectly clear how the axes work. The <span class="target" id="index-37"></span>CIF scheme
+The rule is to always give the attributes to make perfectly clear how the axes work. The <span class="target" id="index-36"></span>CIF scheme
 also allows to store and use arbitrarily named axes in a NeXus file.</p>
 <p>The CIF scheme (see <a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a>) is the preferred method
 for expressing geometry in NeXus.</p>
@@ -934,11 +923,11 @@ a more concise method of defining shape for such cases.</p>
 dataset. The indices of three vertices (<strong>A</strong>, <strong>B</strong>, <strong>C</strong> in <a class="reference internal" href="#fig-cylinder-3-points"><span class="std std-ref">Cylinder definition with three vertices</span></a>) in the <code class="docutils literal notranslate"><span class="pre">vertices</span></code> dataset are used to
 define each cylinder in the <code class="docutils literal notranslate"><span class="pre">cylinders</span></code> dataset.</p>
 <div class="compound">
-<figure class="align-center" id="id15">
+<figure class="align-center" id="id9">
 <span id="fig-cylinder-3-points"></span><a class="reference internal image-reference" href="_images/cylinder_3_points.png"><img alt="fig.cylinder_3_points" src="_images/cylinder_3_points.png" style="width: 15%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Cylinder definition with three vertices</span><a class="headerlink" href="#id15" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Cylinder definition with three vertices</span><a class="headerlink" href="#id9" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
@@ -958,12 +947,12 @@ how the pixel shape is tiled to form the geometry of the complete detector.</p>
 <p>The above system of chained transformations is the recommended way of
 encoding geometry going forward. This section describes the traditional way
 this was handled in NeXus, which you may find occasionally in old files.</p>
-<p><span class="target" id="index-38"></span>Coordinate systems
+<p><span class="target" id="index-37"></span>Coordinate systems
 in NeXus have undergone significant development. Initially, only motor
 positions of the relevant motors were stored without further standardization.
 This soon proved to be
 too little and the <em>NeXus polar coordinate</em> system
-<span class="target" id="index-39"></span>was
+<span class="target" id="index-38"></span>was
 developed. This system still
 is very close to angles that are meaningful to an instrument scientist
 but allows to define general positions of
@@ -971,12 +960,12 @@ components easily. Then users from the simulation community
 approached the NeXus team and asked for a means
 to store absolute coordinates. This was implemented through
 the use of the <em>NXgeometry</em> class on top of the
-<em>McStas</em> <span class="target" id="index-40"></span>system.
+<em>McStas</em> <span class="target" id="index-39"></span>system.
 We soon learned that all the things we do can be expressed through the
 McStas coordinate system. So it became the reference coordinate system
 for NeXus. <code class="docutils literal notranslate"><span class="pre">NXgeometry</span></code> was expanded to allow the description of shapes
 when the demand came up. Later, members of the
-<span class="target" id="index-41"></span>CIF team
+<span class="target" id="index-40"></span>CIF team
 convinced the NeXus team of the beauty of transformation matrices and
 NeXus was enhanced to store the necessary information to fully map CIF
 concepts. Not much had to be changed though as we
@@ -987,7 +976,7 @@ allows to convert from local, for example detector
 coordinate systems, to absolute coordinates in the laboratory system.</p>
 <section id="mcstas-and-nxgeometry-system">
 <span id="design-coordinate-nxgeometry"></span><h4>McStas and <code class="docutils literal notranslate"><span class="pre">NXgeometry</span></code> System<a class="headerlink" href="#mcstas-and-nxgeometry-system" title="Link to this heading">¶</a></h4>
-<p id="index-42">As stated above, NeXus uses the
+<p id="index-41">As stated above, NeXus uses the
 <em>McStas coordinate system</em> (<a class="reference external" href="http://mcstas.org">http://mcstas.org</a>)
 as its laboratory coordinate system.
 The instrument is given a global, absolute coordinate system where the
@@ -999,16 +988,16 @@ coordinate system is the sample position or, if this is ambiguous, the center of
 with all angles and translations set to zero.  The McStas coordinate system is
 illustrated in the next figure:</p>
 <div class="compound">
-<figure class="align-center" id="id16">
+<figure class="align-center" id="id10">
 <span id="fig-mcstas-coord"></span><a class="reference internal image-reference" href="_images/mcstascoord.png"><img alt="fig.mcstas-coord" src="_images/mcstascoord.png" style="width: 60%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The McStas Coordinate System</span><a class="headerlink" href="#id16" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The McStas Coordinate System</span><a class="headerlink" href="#id10" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
 <p>The NeXus NXgeometry class directly uses the
-<span class="target" id="index-43"></span>McStas coordinate system.
+<span class="target" id="index-42"></span>McStas coordinate system.
 <code class="docutils literal notranslate"><span class="pre">NXgeometry</span></code> classes can appear in any
 component in order to specify its position.
 The suggested name to use is geometry.
@@ -1018,7 +1007,7 @@ the orientation of the component as a vector of in the McStas coordinate system.
 </section>
 <section id="simple-spherical-polar-coordinate-system">
 <span id="design-coordinate-spherical"></span><h4>Simple (Spherical Polar) Coordinate System<a class="headerlink" href="#simple-spherical-polar-coordinate-system" title="Link to this heading">¶</a></h4>
-<p id="index-44">In this system,
+<p id="index-43">In this system,
 the instrument is considered as a set of components through
 which the incident beam passes. The variable <em>distance</em> is assigned to each component and represents the
 effective beam flight path length between this component and the sample. A sign
@@ -1041,11 +1030,11 @@ out of the horizontal scattering plane, is not identical to the value read
 from the motor responsible for rotating the component. This situation is shown in
 <a class="reference internal" href="#fig-polar-geometry-figure"><span class="std std-ref">Polar Coordinate System</span></a>.</p>
 <div class="compound">
-<figure class="align-center" id="id17">
+<figure class="align-center" id="id11">
 <span id="fig-polar-geometry-figure"></span><a class="reference internal image-reference" href="_images/polplane.png"><img alt="fig.polar-geometry-figure" src="_images/polplane.png" style="width: 60%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">NeXus Simple (Spherical Polar) Coordinate System</span><a class="headerlink" href="#id17" title="Link to this image">¶</a></p>
+<p><span class="caption-text">NeXus Simple (Spherical Polar) Coordinate System</span><a class="headerlink" href="#id11" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
@@ -1084,9 +1073,12 @@ from the motor responsible for rotating the component. This situation is shown i
 <li><a class="reference internal" href="#links-in-the-nexus-data-model">Links in the NeXus data model</a></li>
 <li><a class="reference internal" href="#links-in-class-definitions">Links in class definitions</a></li>
 <li><a class="reference internal" href="#storing-links-in-a-file-format">Storing links in a file format</a><ul>
-<li><a class="reference internal" href="#example-links-in-hdf5">Example: links in HDF5</a></li>
-<li><a class="reference internal" href="#example-external-file-links-in-hdf5">Example: external file links in HDF5</a></li>
-<li><a class="reference internal" href="#example-combining-nexus-links-and-external-file-links-in-hdf5">Example: combining NeXus links and external file links in HDF5</a></li>
+<li><a class="reference internal" href="#example-links-in-hdf5">Example: links in HDF5</a><ul>
+<li><a class="reference internal" href="#hard-and-soft-links">Hard and soft links</a></li>
+<li><a class="reference internal" href="#virtual-datasets-and-copies">Virtual datasets and copies</a></li>
+<li><a class="reference internal" href="#external-links">External links</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

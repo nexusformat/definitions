@@ -364,9 +364,9 @@ only a few situations, such as when converting the data from one format to
 another: by identifying the original, duplicate copies of the data are not
 converted.
 
-The ``target`` attribute is not defined for a field or group stored in
-another file (see :ref:`design.external_file_link` and issue
-`#842 <https://github.com/nexusformat/definitions/issues/842>`_).
+Where the content is stored, in one file, in several files or in an object
+store, is not part of NeXus: the value of ``target`` is always a path in the
+NeXus tree (see :ref:`design.links.storage`).
 
 .. _design.links.definitions:
 
@@ -411,52 +411,48 @@ link is stored as a copy with its ``target`` attribute.
 Example: links in HDF5
 ^^^^^^^^^^^^^^^^^^^^^^
 
-HDF5 offers several ways to realize a NeXus link, for example:
+HDF5 offers several ways to store a NeXus link.  In each case, the software
+that writes the file must add the ``target`` attribute.
 
-* a hard link [#hdf5_hard_link]_: the same HDF5 object under several paths,
-  the usual choice;
-* a soft link: a path that refers to another path;
-* an external link: a path that refers to an object in another file
-  (see :ref:`design.external_file_link`);
-* a virtual dataset, or a copy.
+Hard and soft links
+"""""""""""""""""""
 
-In each case, except for an external link, the ``target`` attribute must be
-added [#]_.  With a hard link,
-HDF5 makes no distinction between the paths of the object: the ``target``
-attribute is what tells NeXus which one is the original [#]_.
+A hard link [#hdf5_hard_link]_ makes the same HDF5 object available under
+several paths; it is the usual choice.  A soft link is a path that refers
+to another path, so it also shows the same object.  In both cases the
+link and the original are one object with one set of attributes: the
+``target`` attribute is set once, on that object, with the path of the
+original as value.
 
-   .. [#] The software that writes the file must add the ``target`` attribute.
-      Here are the steps to follow for a hard link:
+HDF5 makes no distinction between the paths of a hard-linked object: the
+``target`` attribute is what tells NeXus which one is the original (see the
+:ref:`FAQ` question: **I'm using links to place data in two places.
+Which one should be the data and which one is the link?**).
 
-      #. Get the HDF5 reference ID of the source item (*field*, *group*, or *link*) to be linked.
-      #. If the ID does not have a ``target`` attribute defined:
-         #. Get the absolute HDF5 address of the ID.
-         #. Create a ``target`` attribute for the ID.
-         #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
-      #. Create an HDF5 hard link [#hdf5_hard_link]_
-         to the ID at the desired (new) HDF5 address.
+To make a hard link:
 
-   .. [#] The notion of an *original* dataset with regard to links is
-      a NeXus abstraction.  In truth, HDF5 makes no distinction which is
-      the *original* dataset.  But, when the file is viewed with a tool
-      such as *h5dump*, confusion often occurs over which dataset is
-      original and which is a link to the original.  Actually, both HDF5 paths
-      point to the exact, same dataset which exists at a specific offset in the HDF5 file.
+#. Get the HDF5 object (*field* or *group*) to be linked.
+#. If it has no ``target`` attribute, add one with its absolute path as value.
+#. Create an HDF5 hard link to the object at the new path.
 
-      See the :ref:`FAQ` question: **I'm using links to place data in two places.
-      Which one should be the data and which one is the link?**
+.. [#hdf5_hard_link] HDF5 hard link:
+   https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
 
-   .. [#hdf5_hard_link] HDF5 hard link:
-      https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
+Virtual datasets and copies
+"""""""""""""""""""""""""""
+
+A virtual dataset or a copy is an object of its own, with its own
+attributes.  Add the ``target`` attribute to it, with the path of the
+original as value.  The original needs no ``target`` attribute.
 
 .. _design.external_file_link:
 
-.. index:: link; external file
+.. index:: link; external file, NeXus link
 
-Example: external file links in HDF5
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+External links
+""""""""""""""
 
-A link may also have its content in another file.
+A field or group may also have its content stored in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
@@ -478,26 +474,27 @@ showing an external file link in HDF5:
 				TARGETPATH "entry/instrument/detector/data"
 			 }
 
-.. note:: The ``target`` attribute is not defined for a field or group stored in
-   another file (see issue
-   `#842 <https://github.com/nexusformat/definitions/issues/842>`_).
-   It has no correct value: ``target`` holds a path, not a file, and an
-   HDF5 external link has no attributes of its own.
-
-.. index:: link; external file, NeXus link
-
-Example: combining NeXus links and external file links in HDF5
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Consider the case described in
+HDF5 does not allow hard links to objects in another file: h5py raises
+*Interfile hard links are not allowed*.  In
 :ref:`Links to Data in External HDF5 Files <h5py-example-external-links>`,
-where numerical data are provided in two different HDF5 files and a *master* NeXus HDF5 file links to
-the data through external file links.  HDF5 will not allow hard links to be constructed with these data
-objects in the master file.  An error such as *Interfile hard links are not allowed* (as generated
-from h5py) will arise.  This makes sense since there is no such data object in the file.
+a *master* file therefore makes an external link at each place where data
+from another file is represented.  These places are not NeXus links: none
+of them has a ``target`` attribute.
 
-Instead, it is necessary to make an external file link at each place in the master where external
-data is to be represented.
+.. warning:: Unlike a virtual dataset, an external link has no attributes of
+   its own.  To use it as a NeXus link, its ``target`` attribute must be
+   stored on the object in the other file, with a path in the linking file
+   as value, not the path of the object in the other file.  Read on its
+   own, the other file then has a ``target`` attribute that refers to a path
+   in another file, and only one linking file can set it.  The other file
+   must also be writable, which it often is not (see issue
+   `#842 <https://github.com/nexusformat/definitions/issues/842>`_).
+
+   An external link can always store the original instead: the original is
+   not a link and needs no ``target`` attribute.  For example,
+   ``/entry/instrument/detector/data`` is an external link to the detector
+   file, and the NeXus link ``/entry/data/data`` is a virtual dataset in the
+   linking file with ``target="/entry/instrument/detector/data"``.
 
 .. _Design-NeXusClasses:
 
