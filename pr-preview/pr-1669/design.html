@@ -222,13 +222,13 @@ They are specified in the base class <a class="reference internal" href="classes
 </section>
 <section id="links">
 <span id="design-links"></span><h3><span class="section-number">1.2.1.5. </span>Links<a class="headerlink" href="#links" title="Link to this heading">¶</a></h3>
-<p id="index-13">A link states that a field or group in one place of the hierarchy has the
-same content as a field or group in another place.
+<p id="index-13">A NeXus link states that a field or group in one place of the hierarchy has
+the same content as a field or group in another place.
 The NeXus definition sometimes requires the same data in different groups.
 For example: detector data belongs in the
 <a class="reference internal" href="classes/base_classes/NXinstrument.html#nxinstrument"><span class="std std-ref">NXinstrument</span></a>/<a class="reference internal" href="classes/base_classes/NXdetector.html#nxdetector"><span class="std std-ref">NXdetector</span></a> group
 but is also needed in <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> for automatic plotting.
-A link expresses that both are the same data.
+A NeXus link expresses that both are the same data.
 See the <a class="reference internal" href="#fig-data-linking"><span class="std std-ref">figure</span></a> for
 a more descriptive representation of the concept of linking.</p>
 <div class="compound">
@@ -240,9 +240,19 @@ a more descriptive representation of the concept of linking.</p>
 </figcaption>
 </figure>
 </div>
-<p>What a link <em>is</em> is part of the NeXus data model and does not depend on the
-file format; how a link is <em>stored</em> is up to the file format and the
-software that writes the file (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing links in a file format</span></a>).</p>
+<p>What a NeXus link <em>is</em> is part of the NeXus data model and does not depend
+on the file format; how it is <em>stored</em> is up to the file format and the
+software that writes the file (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>).</p>
+<p>The word <em>link</em> has three meanings, so this manual always says which one:</p>
+<ul class="simple">
+<li><p>a <strong>NeXus link</strong>: a field or group with the same content as another one
+(see <a class="reference internal" href="#design-links-model"><span class="std std-ref">Links in the NeXus data model</span></a>);</p></li>
+<li><p>a <strong>storage link</strong>: a way of a file format to make an object available
+under another path, such as an HDF5 hard, soft or external link
+(see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>);</p></li>
+<li><p>an <strong>NXDL</strong> <code class="docutils literal notranslate"><span class="pre">link</span></code>: the element of a class definition that requires a
+NeXus link (see <a class="reference internal" href="#design-links-definitions"><span class="std std-ref">Links in class definitions</span></a>).</p></li>
+</ul>
 <section id="links-in-the-nexus-data-model">
 <span id="design-links-model"></span><span id="index-14"></span><h4>Links in the NeXus data model<a class="headerlink" href="#links-in-the-nexus-data-model" title="Link to this heading">¶</a></h4>
 <p>A <em>path</em> is the absolute location of a field or group in a NeXus file: the
@@ -252,17 +262,17 @@ names of the groups from the root down to it, separated by <code class="docutils
 The content of a group is its attributes, except <code class="docutils literal notranslate"><span class="pre">target</span></code>, and the content
 of its fields and groups, under their names.  The name of the field or group
 itself is not part of its content.</p>
-<p>A <em>link</em> is a field or group whose content is the content of another field
-or group, its <em>original</em>.  A link is marked by its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute
+<p>A <em>NeXus link</em> is a field or group whose content is the content of another
+field or group, its <em>original</em>.  It is marked by its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute
 (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>):</p>
 <ul class="simple">
 <li><p>the value is the path of the original, always as an absolute path
 (<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/polar_angle</span></code>, not <code class="docutils literal notranslate"><span class="pre">detector/polar_angle</span></code>);</p></li>
 <li><p>the original does not need a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute; when it has one, for
-example because it is stored as the same object as the link, the value
-is its own path;</p></li>
+example because it is stored as the same object as the NeXus link, the
+value is its own path;</p></li>
 <li><p>a field or group with a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute whose value is its own path
-is not a link.</p></li>
+is not a NeXus link.</p></li>
 </ul>
 <p>NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
@@ -275,7 +285,7 @@ especially those not using a crystal to create monochromatic radiation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXmonochromator</span><span class="o">/</span><span class="n">wavelength</span>
 </pre></div>
 </div>
-<p>The two fields can be linked in a NeXus file:</p>
+<p>The second field can be a NeXus link to the first:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">entry</span><span class="p">:</span><span class="n">NXentry</span>
     <span class="o">...</span>
     <span class="n">instrument</span><span class="p">:</span><span class="n">NXinstrument</span>
@@ -291,7 +301,7 @@ especially those not using a crystal to create monochromatic radiation:</p>
             <span class="n">wavelength</span> <span class="o">--&gt;</span> <span class="s2">"/entry/instrument/crystal/wavelength"</span>
 </pre></div>
 </div>
-<p>A link may have a different name than the original.  One obvious use of
+<p>A NeXus link may have a different name than the original.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
 specification of wavelength as a field named <em>lambda</em> in the entry group.
@@ -314,50 +324,51 @@ This requirement can be satisfied easily:</p>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">/entry/instrument/monochromator/wavelength</span></code> and <code class="docutils literal notranslate"><span class="pre">/entry/lambda</span></code>
-are links to the original <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>: all
-three have the value 154 and the same <code class="docutils literal notranslate"><span class="pre">units</span></code> attribute, and both links
-have <code class="docutils literal notranslate"><span class="pre">&#64;target=&quot;/entry/instrument/crystal/wavelength&quot;</span></code>.</p>
+are NeXus links to the original <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>:
+all three have the value 154 and the same <code class="docutils literal notranslate"><span class="pre">units</span></code> attribute, and both
+NeXus links have <code class="docutils literal notranslate"><span class="pre">&#64;target=&quot;/entry/instrument/crystal/wavelength&quot;</span></code>.</p>
 <p>Which field or group is the original is a NeXus notion.  It has value in
 only a few situations, such as when converting the data from one format to
 another: by identifying the original, duplicate copies of the data are not
 converted.</p>
 <p>Where the content is stored, in one file, in several files or in an object
 store, is not part of NeXus: the value of <code class="docutils literal notranslate"><span class="pre">target</span></code> is always a path in the
-NeXus tree (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing links in a file format</span></a>).</p>
+NeXus tree (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>).</p>
 </section>
 <section id="links-in-class-definitions">
 <span id="design-links-definitions"></span><h4>Links in class definitions<a class="headerlink" href="#links-in-class-definitions" title="Link to this heading">¶</a></h4>
-<p>Any field or group may be a link, whether or not its class definition
-says so.  An application definition may also <em>require</em> that an item is a
-link.  Its documentation then shows the item as, for example:</p>
+<p>Any field or group may be a NeXus link, whether or not its class
+definition says so.  An application definition may also <em>require</em> that an
+item is a NeXus link, with an NXDL <code class="docutils literal notranslate"><span class="pre">link</span></code> element.  Its documentation then
+shows the item as, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span> <span class="n">link</span> <span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXdetector</span><span class="o">/</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A file satisfies this when the group contains a field or group named
-<code class="docutils literal notranslate"><span class="pre">data</span></code> that is a link, as defined above.  Its content must satisfy what
-is documented for the item that the target refers to; the link itself
-documents nothing else.</p>
-<p>This target is written with class names, such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">data</span></code> that is a NeXus link, as defined above.  Its content must satisfy
+what is documented for the item that the target refers to; the NXDL
+<code class="docutils literal notranslate"><span class="pre">link</span></code> element itself documents nothing else.</p>
+<p>The target of an NXDL <code class="docutils literal notranslate"><span class="pre">link</span></code> is written with class names, such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>, and
 refers to an item documented in the class definitions, not to a path in a
 file.  The path of the original does not have to match it.
 It is not the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
 </section>
-<section id="storing-links-in-a-file-format">
-<span id="design-links-storage"></span><h4>Storing links in a file format<a class="headerlink" href="#storing-links-in-a-file-format" title="Link to this heading">¶</a></h4>
-<p>NeXus only requires that a link has the content of its original.  A file
-format and the software that writes the file may realize this in any way
-the format offers: by storing the content once and making it available
-under several paths, or by storing a copy.</p>
-<p>Every format that can hold NeXus content can therefore hold links, at
-least as copies.  For example, the
+<section id="storing-nexus-links-in-a-file-format">
+<span id="design-links-storage"></span><h4>Storing NeXus links in a file format<a class="headerlink" href="#storing-nexus-links-in-a-file-format" title="Link to this heading">¶</a></h4>
+<p>NeXus only requires that a NeXus link has the content of its original.  A
+file format and the software that writes the file may realize this in any
+way the format offers: with a storage link, which makes the stored content
+available under another path, or by storing a copy.</p>
+<p>Every format that can hold NeXus content can therefore hold NeXus links,
+at least as copies.  For example, the
 <a class="reference external" href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html">Zarr v3 specification</a>
-defines no links: every array or group exists under exactly one path, so a
-link is stored as a copy with its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
-<section id="example-links-in-hdf5">
-<span id="design-links-hdf5"></span><h5>Example: links in HDF5<a class="headerlink" href="#example-links-in-hdf5" title="Link to this heading">¶</a></h5>
+defines no storage links: every array or group exists under exactly one
+path, so a NeXus link is stored as a copy with its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
+<section id="example-nexus-links-in-hdf5">
+<span id="design-links-hdf5"></span><h5>Example: NeXus links in HDF5<a class="headerlink" href="#example-nexus-links-in-hdf5" title="Link to this heading">¶</a></h5>
 <aside class="sidebar">
 <p class="sidebar-title">Python h5py code to make NeXus links</p>
-<p>The <a class="reference internal" href="examples/python/index.html#example-python"><span class="std std-ref">HDF5 in Python</span></a> create links in HDF5 with h5py:</p>
+<p>The <a class="reference internal" href="examples/python/index.html#example-python"><span class="std std-ref">HDF5 in Python</span></a> create HDF5 links with h5py:</p>
 <ul class="simple">
 <li><p>hard link: <code class="docutils literal notranslate"><span class="pre">group[name]</span> <span class="pre">=</span> <span class="pre">obj</span></code>
 (see <a class="reference internal" href="examples/python/simple_example_write2/index.html#example-simple-example-write2"><span class="std std-ref">Write a NeXus HDF5 file with plottable data</span></a>);</p></li>
@@ -367,21 +378,23 @@ link is stored as a copy with its <code class="docutils literal notranslate"><sp
 <li><p><code class="docutils literal notranslate"><span class="pre">target</span></code> attribute: <code class="docutils literal notranslate"><span class="pre">obj.attrs[&quot;target&quot;]</span> <span class="pre">=</span> <span class="pre">path</span></code>.</p></li>
 </ul>
 </aside>
-<p>HDF5 offers several ways to store a NeXus link.  In each case, the software
+<p>HDF5 offers several ways to store a NeXus link: HDF5 links, virtual
+datasets and copies.  In each case, the software
 that writes the file must add the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
-<section id="hard-and-soft-links">
-<h6>Hard and soft links<a class="headerlink" href="#hard-and-soft-links" title="Link to this heading">¶</a></h6>
-<p>A hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> makes the same HDF5 object available under
-several paths; it is the usual choice.  A soft link is a path that refers
-to another path, so it also shows the same object.  In both cases the
-link and the original are one object with one set of attributes: the
+<section id="hdf5-hard-and-soft-links">
+<h6>HDF5 hard and soft links<a class="headerlink" href="#hdf5-hard-and-soft-links" title="Link to this heading">¶</a></h6>
+<p>An HDF5 hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> makes the same HDF5 object available
+under several paths; it is the usual choice.  An HDF5 soft link is a path
+that refers to another path, so it also shows the same object.  In both
+cases the NeXus link and the original are one object with one set of
+attributes: the
 <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is set once, on that object, with the path of the
 original as value.</p>
 <p>HDF5 makes no distinction between the paths of a hard-linked object: the
 <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute is what tells NeXus which one is the original (see the
 <a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using links to place data in two places.
 Which one should be the data and which one is the link?</strong>).</p>
-<p>To make a hard link:</p>
+<p>To store a NeXus link as an HDF5 hard link:</p>
 <ol class="arabic simple">
 <li><p>Get the HDF5 object (<em>field</em> or <em>group</em>) to be linked.</p></li>
 <li><p>If it has no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute, add one with its absolute path as value.</p></li>
@@ -401,20 +414,20 @@ Which one should be the data and which one is the link?</strong>).</p>
 attributes.  Add the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute to it, with the path of the
 original as value.  The original needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
 </section>
-<section id="external-links">
-<span id="index-15"></span><span id="design-external-file-link"></span><h6>External links<a class="headerlink" href="#external-links" title="Link to this heading">¶</a></h6>
+<section id="hdf5-external-links">
+<span id="index-15"></span><span id="design-external-file-link"></span><h6>HDF5 external links<a class="headerlink" href="#hdf5-external-links" title="Link to this heading">¶</a></h6>
 <p>A field or group may also have its content stored in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
 The instrument’s data acquisition system writes instrument metadata
 into another NeXus HDF5 file.  In this case, the instrument metadata file
-might link to the data in the detector image file.
+might refer to the data in the detector image file.
 Here is an example (from Diamond Light Source)
-showing an external file link in HDF5:</p>
+showing an HDF5 external link:</p>
 <blockquote>
 <div><div class="compound">
-<p class="rubric">Example of linking to data in an external HDF5 file</p>
+<p class="rubric">Example of an HDF5 external link to data in another file</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span> EXTERNAL_LINK "data" {
 <span class="linenos">2</span>        TARGETFILE "/dls/i22/data/2012/sm7594-1/i22-69201-Pilatus2M.h5"
 <span class="linenos">3</span>        TARGETPATH "entry/instrument/detector/data"
@@ -426,22 +439,22 @@ showing an external file link in HDF5:</p>
 <p>HDF5 does not allow hard links to objects in another file: h5py raises
 <em>Interfile hard links are not allowed</em>.  In
 <a class="reference internal" href="examples/python/external_example_write/index.html#h5py-example-external-links"><span class="std std-ref">Links to Data in External HDF5 Files</span></a>,
-a <em>master</em> file therefore makes an external link at each place where data
+a <em>master</em> file therefore makes an HDF5 external link at each place where data
 from another file is represented.  These places are not NeXus links: none
 of them has a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Unlike a virtual dataset, an external link has no attributes of
-its own.  To use it as a NeXus link, its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute must be
+<p>Unlike a virtual dataset, an HDF5 external link has no
+attributes of its own.  To use it as a NeXus link, its <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute must be
 stored on the object in the other file, with a path in the linking file
 as value, not the path of the object in the other file.  Read on its
 own, the other file then has a <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute that refers to a path
 in another file, and only one linking file can set it.  The other file
 must also be writable, which it often is not.</p>
-<p>An external link can always store the original instead: the original is
-not a link and needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.  For example,
-<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> is an external link to the detector
-file, and the NeXus link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> is a virtual dataset in the
+<p>An HDF5 external link can always store the original instead: the
+original is not a NeXus link and needs no <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute.  For
+example, <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> is an HDF5 external link to
+the detector file, and the NeXus link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> is a virtual dataset in the
 linking file with <code class="docutils literal notranslate"><span class="pre">target=&quot;/entry/instrument/detector/data&quot;</span></code>.</p>
 </div>
 </section>
@@ -1072,11 +1085,11 @@ from the motor responsible for rotating the component. This situation is shown i
 <li><a class="reference internal" href="#links">1.2.1.5. Links</a><ul>
 <li><a class="reference internal" href="#links-in-the-nexus-data-model">Links in the NeXus data model</a></li>
 <li><a class="reference internal" href="#links-in-class-definitions">Links in class definitions</a></li>
-<li><a class="reference internal" href="#storing-links-in-a-file-format">Storing links in a file format</a><ul>
-<li><a class="reference internal" href="#example-links-in-hdf5">Example: links in HDF5</a><ul>
-<li><a class="reference internal" href="#hard-and-soft-links">Hard and soft links</a></li>
+<li><a class="reference internal" href="#storing-nexus-links-in-a-file-format">Storing NeXus links in a file format</a><ul>
+<li><a class="reference internal" href="#example-nexus-links-in-hdf5">Example: NeXus links in HDF5</a><ul>
+<li><a class="reference internal" href="#hdf5-hard-and-soft-links">HDF5 hard and soft links</a></li>
 <li><a class="reference internal" href="#virtual-datasets-and-copies">Virtual datasets and copies</a></li>
-<li><a class="reference internal" href="#external-links">External links</a></li>
+<li><a class="reference internal" href="#hdf5-external-links">HDF5 external links</a></li>
 </ul>
 </li>
 </ul>
