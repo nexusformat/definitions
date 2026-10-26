@@ -55,23 +55,45 @@
 		* ``NX_UNITLESS`` for axes for which no transformation type is specified
 
 		This class will usually contain all axes of a sample stage or goniometer or
-		a detector.  The NeXus default McSTAS coordinate frame is assumed, but additional
-		useful coordinate axes may be defined by using axes for which no transformation
-		type has been specified.
+		a detector. The default :ref:`NeXus coordinate system&lt;Design-CoordinateSystem&gt;`
+		is assumed, but additional useful coordinate axes may be defined by using axes for which
+		no transformation type has been specified.
+
+		.. include:: transformations/index.rst
+		   :start-line: 1
+
+		**Transformation chain**
 
 		The entry point (``depends_on``) will be outside of this class and point to a
-		field in here (or to an instance of ``NX_coordinate_system``). Following the
+		field in here (or to an instance of ``NXcoordinate_system``). Following the
 		chain may also require following ``depends_on``	links to transformations outside,
 		for example to a common base table.  If a relative path is given, it is relative
 		to the group enclosing the ``depends_on`` specification.
 
 		For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
-		and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
+		which in turn depends on :math:`T_3`, the final *active* transformation
+		matrix :math:`T_f` is
 
-		.. math:: T_f = T_3 T_2 T_1
+		.. math:: T_f = T_3 . T_2 . T_1
 
-		In explicit terms, the transformations are a subset of affine transformations
-		expressed as 4x4 matrices that act on homogeneous coordinates, :math:`w=(x,y,z,1)^T`.
+		For example when positioning a flat detector, its pixel positions in the laboratory
+		reference frame (:ref:`NeXus coordinate system&lt;Design-CoordinateSystem&gt;` by default)
+		can be calculated by
+
+		.. math:: X_\text{lab} = T_f . X_\text{pixel} = T_3 . T_2 . T_1 . X_\text{pixel}
+
+		Note that :math:`T_1` comes first in the *depends-on* chain and is also applied first
+		to the pixel coordinates.
+
+		When we say transformation :math:`A` *depends on* transformation :math:`B` we mean that
+		the physical motor that realizes :math:`A` is *stacked on top of* the motor that realizes :math:`B`.
+		So the active coordinate transformation :math:`A` needs to be applied to a coordinate
+		before applying :math:`B`. In other words :math:`X' = B . A . X`.
+
+		**Transformation matrix**
+
+		In explicit terms, the transformations are a subset of affine transformations expressed as
+		4x4 active transformation matrices that act on homogeneous coordinates, :math:`X=[x,y,z,1]^T`.
 
 		For rotation and translation,
 
@@ -85,8 +107,8 @@
 		attribute multiplied by the field value, and :math:`R` is defined as a rotation
 		about an axis in the direction of ``vector``, of angle of the field value.
 
-		NOTE
-		
+		**Usage**
+
 		One possible use of ``NXtransformations`` is to define the motors and
 		transformations for a diffractometer (goniometer).  Such use is mentioned
 		in the ``NXinstrument`` base class.  Use one ``NXtransformations`` group 
@@ -114,8 +136,14 @@
 		``NXtransformations`` follows the **active** transformation convention. This means that the transformation describes
 		how an object is moved or rotated within the coordinate system. In other words, the transformation
 		actively changes the position or orientation of the object itself. This is in contrast to a **passive** transformation,
-		which changes the frame of reference or coordinate system, while the object remains fixed. In case it is needed 
-		to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
+		which changes the frame of reference or coordinate system, while the object remains fixed. For a transformation
+		matrix :math:`T`, the active transformation gives the coordinates of the moved object in the fixed coordinate system
+		while the passive transformation gives the coordinates of the fixed object in the moved coordinate system
+
+		.. math:: X_\text{active} = T . X \qquad X_\text{passive} = T^{-1} . X
+
+		In case it is needed to describe multiple coordinate systems, it is strongly suggested to use the :ref:`NXcoordinate_system` base class.
+
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
 		<doc>
@@ -160,7 +188,7 @@
 				the direction should be chosen for a right-handed rotation with increasing angle. Note,
 				McStas is a right handed coordinate system.
 
-				If the ``NXtransformation`` depends on a coordinate system (i.e., its ``depends_on`` 
+				If the transformation depends on a coordinate system (i.e., its ``depends_on``
 				attribute (or a ``depends_on`` further up the transformation chain) points to an instance
 				of :ref:`NXcoordinate_system`), the rotation convention is the same as the handedness
 				of the coordinate system (as defined by the determinant of its base vectors):
@@ -201,7 +229,7 @@
 			<doc>
 				Points to the path of a field defining the axis on which this instance of
 				NXtransformations depends or the string ".". It can also point to an instance of
-				``NX_coordinate_system`` if this transformation depends on it.
+				``NXcoordinate_system`` if this transformation depends on it.
 
 				If it is the string ".", it is explicitly pointing towards the default 
 				`NeXus coordinate system &lt;https://manual.nexusformat.org/design.html#the-nexus-coordinate-system&gt;`_.
@@ -213,7 +241,10 @@
 				the transformation belongs, such as 'detector_arm' or 'detector_module'.
 				NXtransformations with the same equipment_component label form a logical
 				grouping which can be combined together into a single change-of-basis
-				operation.
+				operation. For transformations :math:`T_1, \ldots, T_n` of the same component, where
+				:math:`T_1` depends on :math:`T_2` and so on, the combined transformation is
+
+				.. math:: T_\text{component} = T_n . \ldots . T_2 . T_1
 			</doc>
 		</attribute>
 	</field>
