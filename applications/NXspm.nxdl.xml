@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -29,6 +29,46 @@
         The application class NXspm is designed as a skeleton and contains common technical concepts
         for specific SPM sub-techniques such as STM, STS, AFM etc. In addition, it can be utilized to
         describe the SPM experiments without further specialization for each sub-technique.
+
+        **Frames of reference**
+
+        SPM has no beam, so the default NeXus (McStas) coordinate system does not apply. NXspm
+        uses five right-handed Cartesian frames. The **scanner frame** is the central frame:
+        every other frame is defined relative to it, directly or through one intermediate frame.
+
+        * **Scanner frame** (central): origin at the undeflected piezo position (zero offset,
+          zero scan angle, ``z`` piezo at its zero) or at the centre determined by the scanner
+          calibration. ``x`` and ``y`` are the lateral drive axes of
+          the scanner; ``z`` is normal to the sample plane and points from the sample towards
+          the probe. It describes the relative tip-sample displacement, independent of whether
+          the tip or the sample is moved.
+        * **Scan frame** (one per scan): origin at the centre of the scan area, ``x`` along the
+          fast scan axis, ``y`` along the slow scan axis. It is placed in the scanner frame by
+          the scan offset and the scan angle.
+        * **Probe frame** (AFM): origin at the clamped end of the cantilever on the chip, ``x``
+          along the cantilever long axis from the chip towards the tip, ``z`` normal to the
+          cantilever. It is oriented in the scanner frame by the cantilever tilt and its
+          in-plane angle.
+        * **Stage frame**: the sample stage or coarse positioner, including the sample holder.
+          It is placed in the scanner frame by the stage position. If no stage position is
+          recorded, it coincides with the scanner frame.
+        * **Sample frame**: origin at a fiducial on the sample, ``z`` normal to the sample
+          surface. It is placed in the stage frame by the mounting translation and rotation.
+
+        The relationships follow the ``depends_on`` direction of :ref:`NXtransformations`, which
+        points towards the scanner frame:
+
+        .. code-block:: text
+
+            scan frame   --[offset, scan angle]---------+
+            probe frame  --[tilt, in-plane angle]-------+--> scanner frame
+            stage frame  --[stage position]-------------+
+            sample frame --[mount translation, rotation]--> stage frame
+
+        Conventions: positive rotations about ``z`` follow the right-hand rule, i.e. they are
+        counter-clockwise when viewed from the probe side looking down onto the sample surface
+        (from ``+z`` towards ``-z``). The measured data stay on the grid of the scan
+        frame and are not resampled; only the transformations are recorded.
     </doc>
     <group type="NXentry">
         <field name="definition">
@@ -77,6 +117,91 @@
                 The identifier for the experiment which should be unique at least in lab.
             </doc>
         </field>
+        <group name="scanner_frame" type="NXcoordinate_system" recommended="true">
+            <doc>
+                The scanner frame, the central frame of reference of SPM (see the frames of reference
+                in the description of NXspm). 
+
+                The scanner frame is fixed by the instrument and its scanner calibration. It changes
+                only on recalibration or when the scanner is exchanged. All lateral and vertical
+                quantities of the piezo scanner (e.g. scan offsets, scan angle, piezo ranges) are
+                expressed in this frame.
+
+                Every transformation chain in this entry ends here. As this is the only
+                :ref:`NXcoordinate_system` in the entry, a ``depends_on`` that is not given
+                refers to this frame.
+            </doc>
+            <field name="origin">
+                <doc>
+                    The point from which all scanner-frame positions (scan offsets, scan start and
+                    end, piezo positions) are measured.
+                </doc>
+                <enumeration>
+                    <item value="undeflected piezo position">
+                        <doc>
+                            Zero voltage on all scanner piezos: zero scan offset, zero scan angle, and
+                            the ``z`` piezo at its zero position. The axes are the nominal drive axes of
+                            the scanner.
+                        </doc>
+                    </item>
+                    <item value="calibrated piezo position">
+                        <doc>
+                            The centre of the scanner frame as determined by the scanner calibration,
+                            which also determines the directions of the axes. It may or may not differ from the
+                            undeflected piezo position.
+                        </doc>
+                    </item>
+                </enumeration>
+            </field>
+            <field name="type">
+                <enumeration>
+                    <item value="cartesian"/>
+                </enumeration>
+            </field>
+            <field name="x_direction" recommended="true">
+                <doc>
+                    The first lateral drive axis of the scanner.
+                </doc>
+            </field>
+            <field name="y_direction" recommended="true">
+                <doc>
+                    The second lateral drive axis of the scanner, such that ``x``, ``y`` and ``z``
+                    form a right-handed system.
+                </doc>
+            </field>
+            <field name="z_direction">
+                <doc>
+                    Normal to the sample plane, pointing from the sample towards the probe.
+                </doc>
+                <enumeration>
+                    <item value="from sample towards probe"/>
+                </enumeration>
+            </field>
+            <field name="x" type="NX_NUMBER">
+                <enumeration>
+                    <item value="[1, 0, 0]"/>
+                </enumeration>
+            </field>
+            <field name="y" type="NX_NUMBER">
+                <enumeration>
+                    <item value="[0, 1, 0]"/>
+                </enumeration>
+            </field>
+            <field name="z" type="NX_NUMBER">
+                <enumeration>
+                    <item value="[0, 0, 1]"/>
+                </enumeration>
+            </field>
+            <field name="depends_on" type="NX_CHAR">
+                <doc>
+                    The scanner frame is the root of all transformation chains in SPM and does not
+                    depend on another frame.
+                </doc>
+                <enumeration>
+                    <item value="."/>
+                </enumeration>
+            </field>
+        </group>
         <group type="NXprocess" optional="true">
             <doc>
                 Define data processing (e.g., data analysis, image processing) program and
@@ -148,6 +273,110 @@
                         measurement.
                     </doc>
                 </field>
+            </group>
+            <group name="stage" type="NXmanipulator" optional="true">
+                <doc>
+                    The sample stage or coarse positioner (e.g. stick-slip piezo motors, stepper
+                    motors), including the sample holder that moves with it. It defines the stage
+                    frame: the coarse position of the sample relative to the tip, with axes nominally
+                    parallel to the axes of the scanner frame. The stage frame is fixed between coarse
+                    moves. A removable sample holder that is taken out and put back between scans is
+                    not part of this frame.
+                    
+                    The stage positions are given as the transformations of this group. If no stage
+                    position is recorded (e.g. Nanonis files), the stage frame coincides with the
+                    scanner frame.
+                </doc>
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                        Places the stage frame in the scanner frame.
+                    </doc>
+                    <enumeration>
+                        <item value="transformations/stage_z"/>
+                    </enumeration>
+                </field>
+                <group name="transformations" type="NXtransformations">
+                    <doc>
+                        The stage position as a transformation chain that ends in the scanner frame:
+                        
+                        .. code-block:: text
+                        
+                            stage_z -> stage_y -> stage_x -> scanner_frame
+                        
+                        Each axis may move either the sample or the head (e.g. on a tip-scanning
+                        instrument the ``xy`` stage may move the sample and the ``z`` motor the head). The
+                        ``vector`` of each axis therefore gives the direction in which the sample moves
+                        relative to the tip for a positive value. A misalignment between the stage axes
+                        and the scanner axes is assumed to be zero.
+                    </doc>
+                    <field name="stage_z" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Stage position along ``z``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <doc>
+                                Unit vector, in the scanner frame, along which a positive value of
+                                ``stage_z`` moves the sample relative to the tip. It depends on the
+                                instrument, e.g. on whether this axis moves the sample or the head.
+                            </doc>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="stage_y"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="stage_y" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Stage position along ``y``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <doc>
+                                Unit vector, in the scanner frame, along which a positive value of
+                                ``stage_y`` moves the sample relative to the tip. It depends on the
+                                instrument, e.g. on whether this axis moves the sample or the head.
+                            </doc>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="stage_x"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="stage_x" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Stage position along ``x``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <doc>
+                                Unit vector, in the scanner frame, along which a positive value of
+                                ``stage_x`` moves the sample relative to the tip. It depends on the
+                                instrument, e.g. on whether this axis moves the sample or the head.
+                            </doc>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Path to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                                group of this entry.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
             </group>
             <group name="SCAN_ENVIRONMENT" type="NXenvironment" nameType="any">
                 <doc>
@@ -231,54 +460,148 @@
                         </doc>
                         <field name="scan_range_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The range of the scan in x direction.
+                                The range of the scan in the ``x`` direction.
                             </doc>
                         </field>
                         <field name="scan_range_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The range of the scan in y direction.
+                                The range of the scan in the ``y`` direction.
                             </doc>
                         </field>
                         <field name="scan_offset_value_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The offset of the scan in x direction.
+                                The offset of the scan in the ``x`` direction.
                             </doc>
                         </field>
                         <field name="scan_offset_value_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The offset of the scan in y direction.
+                                The offset of the scan in the ``y`` direction.
                             </doc>
                         </field>
                         <field name="scan_angle_x" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
                             <doc>
-                                The angle of the scan region in x direction.
+                                The angle of the fast scan axis from the ``x`` axis of the scanner frame
+                                (rotation about ``z``).
                             </doc>
                         </field>
-                        <field name="scan_angle_y" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
+                        <field name="scan_angle_y" type="NX_NUMBER" optional="true" units="NX_ANGLE">
                             <doc>
-                                The angle of the scan region in y direction.
+                                The rotation angle of the scan region seen from the ``y`` axis. It is supposed to be
+                                equal to :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;`;
+                                :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;` alone is sufficient.
                             </doc>
                         </field>
-                        <field name="scan_start_x" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="scan_start_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The start of the scan in x direction.
+                                The start of the scan in the ``x`` direction.
                             </doc>
                         </field>
-                        <field name="scan_start_y" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="scan_start_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The start of the scan in y direction.
+                                The start of the scan in the ``y`` direction.
                             </doc>
                         </field>
-                        <field name="scan_end_x" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="scan_end_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The end of the scan in x direction.
+                                The end of the scan in the ``x`` direction.
                             </doc>
                         </field>
-                        <field name="scan_end_y" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="scan_end_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The end of the scan in y direction.
+                                The end of the scan in the ``y`` direction.
                             </doc>
                         </field>
+                        <field name="depends_on" type="NX_CHAR" recommended="true">
+                            <doc>
+                                Places the scan frame in the scanner frame. A position ``u`` in the scan
+                                frame maps to ``p = o + R(scan_angle) u`` in the scanner frame, where ``o``
+                                is the scan offset.
+                            </doc>
+                            <enumeration>
+                                <item value="transformations/scan_angle"/>
+                            </enumeration>
+                        </field>
+                        <group name="transformations" type="NXtransformations" recommended="true">
+                            <doc>
+                                The scan offset and the scan angle as a transformation chain that ends
+                                in the scanner frame:
+
+                                .. code-block:: text
+
+                                    scan_angle -> offset_y -> offset_x -> scanner_frame
+
+                                The values are the same as
+                                :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;`,
+                                :ref:`scan_offset_value_y &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_y-field&gt;` and
+                                :ref:`scan_offset_value_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_x-field&gt;`
+                                of this scan region.
+                            </doc>
+                            <field name="scan_angle" type="NX_NUMBER" units="NX_ANGLE">
+                                <doc>
+                                    Rotation of the scan frame about ``z`` through the centre of the scan
+                                    region. Same value as
+                                    :ref:`scan_angle_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_angle_x-field&gt;`.
+                                </doc>
+                                <attribute name="transformation_type">
+                                    <enumeration>
+                                        <item value="rotation"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="vector" type="NX_NUMBER">
+                                    <enumeration>
+                                        <item value="[0, 0, 1]"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="depends_on">
+                                    <enumeration>
+                                        <item value="offset_y"/>
+                                    </enumeration>
+                                </attribute>
+                            </field>
+                            <field name="offset_y" type="NX_NUMBER" units="NX_LENGTH">
+                                <doc>
+                                    Scan offset along ``y`` of the scanner frame. Same value as
+                                    :ref:`scan_offset_value_y &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_y-field&gt;`.
+                                </doc>
+                                <attribute name="transformation_type">
+                                    <enumeration>
+                                        <item value="translation"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="vector" type="NX_NUMBER">
+                                    <enumeration>
+                                        <item value="[0, 1, 0]"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="depends_on">
+                                    <enumeration>
+                                        <item value="offset_x"/>
+                                    </enumeration>
+                                </attribute>
+                            </field>
+                            <field name="offset_x" type="NX_NUMBER" units="NX_LENGTH">
+                                <doc>
+                                    Scan offset along ``x`` of the scanner frame. Same value as
+                                    :ref:`scan_offset_value_x &lt;/NXspm/ENTRY/INSTRUMENT/SCAN_ENVIRONMENT/SPM_SCAN_CONTROL/scan_region/scan_offset_value_x-field&gt;`.
+                                </doc>
+                                <attribute name="transformation_type">
+                                    <enumeration>
+                                        <item value="translation"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="vector" type="NX_NUMBER">
+                                    <enumeration>
+                                        <item value="[1, 0, 0]"/>
+                                    </enumeration>
+                                </attribute>
+                                <attribute name="depends_on">
+                                    <doc>
+                                        Path to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                                        group of this entry.
+                                    </doc>
+                                </attribute>
+                            </field>
+                        </group>
                     </group>
                     <group name="meshSCAN" type="NXspm_scan_pattern" nameType="partial">
                         <doc>
@@ -287,22 +610,22 @@
                         </doc>
                         <field name="scan_points_x" type="NX_NUMBER">
                             <doc>
-                                The number of points scanned in x direction.
+                                The number of points scanned in the ``x`` direction.
                             </doc>
                         </field>
                         <field name="scan_points_y" type="NX_NUMBER">
                             <doc>
-                                The number of points scanned in y direction.
+                                The number of points scanned in the ``y`` direction.
                             </doc>
                         </field>
                         <field name="step_size_x" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The step size in x direction.
+                                The step size in the ``x`` direction.
                             </doc>
                         </field>
                         <field name="step_size_y" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
                             <doc>
-                                The step size in y direction.
+                                The step size in the ``y`` direction.
                             </doc>
                         </field>
                     </group>
@@ -367,8 +690,8 @@
                     <doc>
                         The name of the voltage according to the purpose of the measurement.
                         E.g., the field can be named as x_source_drain_bias_voltage defining
-                        the applied bias along the x-axis as source-drain channel, while current
-                        (tip current) will be measured along the z-axis.
+                        the applied bias along the ``x`` axis as source-drain channel, while current
+                        (tip current) will be measured along the ``z`` axis.
                     </doc>
                 </field>
                 <field name="voltage" type="NX_NUMBER" units="NX_VOLTAGE" optional="true">
@@ -407,32 +730,41 @@
             </group>
             <group name="piezo_sensor" type="NXspm_piezo_sensor" optional="true" nameType="specified">
                 <doc>
-                    This piezo sensor group refers to the XYZ (in all directions) piezo sensor.
+                    This piezo sensor group refers to the piezo sensor for all three axes (``x``, ``y`` and ``z``).
                 </doc>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Path to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                        group of this entry, in which ``x``, ``y`` and ``z`` are given. If it is not
+                        given, the scanner frame applies, as it is the only
+                        :ref:`NXcoordinate_system` in the entry.
+                    </doc>
+                </field>
                 <field name="x" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
                     <doc>
-                        The x position of the piezo.
+                        The position of the tip relative to the sample along ``x`` of the scanner frame.
                     </doc>
                 </field>
                 <field name="y" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
                     <doc>
-                        The y position of the piezo.
+                        The position of the tip relative to the sample along ``y`` of the scanner frame.
                     </doc>
                 </field>
                 <field name="z" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
                     <doc>
-                        The z position of the piezo.
+                        The position of the tip relative to the sample along ``z`` of the scanner frame
+                        (positive away from the sample).
                     </doc>
                 </field>
             </group>
             <group name="height_piezo_sensor" type="NXspm_piezo_sensor" nameType="specified" recommended="true">
                 <doc>
-                    The sensor information for the height (Z-axis) piezo device.
+                    The sensor information for the height (``z`` axis) piezo device.
                 </doc>
             </group>
             <group name="XYZpiezo_sensor" type="NXspm_piezo_sensor" nameType="partial" optional="true">
                 <doc>
-                    For separate piezo sensors along X-, Y-, and Z-axis register this group, e.g., x_piezo_sensor
+                    For separate piezo sensors along the ``x``, ``y``, and ``z`` axes register this group, e.g., x_piezo_sensor
                     or height_piezo_sensor.
                 </doc>
             </group>
@@ -492,7 +824,7 @@
                             </doc>
                             <field name="scan_start_bias" type="NX_NUMBER" units="NX_VOLTAGE"/>
                             <field name="scan_end_bias" type="NX_NUMBER" units="NX_VOLTAGE"/>
-                            <field name="scan_offset_bias" type="NX_NUMBER" units="NX_VOLTAGE">
+                            <field name="scan_offset_value_bias" type="NX_NUMBER" units="NX_VOLTAGE">
                                 <doc>
                                     The offset of the bias scan voltage.
                                 </doc>
@@ -544,6 +876,109 @@
             <doc>
                 The sample information.
             </doc>
+            <field name="depends_on" type="NX_CHAR" optional="true">
+                <doc>
+                    Places the sample frame (origin at a fiducial on the sample, ``x`` along a straight
+                    reference on the sample such as an edge or a crystal direction, ``z`` normal to the
+                    sample surface) in the stage frame.
+                </doc>
+                <enumeration>
+                    <item value="transformations/mount_rotation"/>
+                </enumeration>
+            </field>
+            <group name="transformations" type="NXtransformations" optional="true">
+                <doc>
+                    The mounting of the sample as a transformation chain that ends in the stage frame:
+                    
+                    .. code-block:: text
+                    
+                        mount_rotation -> mount_translation_x -> mount_translation_y -> mount_translation_z
+                            -> stage chain (or scanner_frame)
+                    
+                </doc>
+                <field name="mount_rotation" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                        Angle between the ``x`` axis of the sample frame and the ``x`` axis of the stage frame.
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 0, 1]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="mount_translation_x"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="mount_translation_x" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                        Position of the sample origin along ``x`` of the stage frame.
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="translation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[1, 0, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="mount_translation_y"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="mount_translation_y" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                        Position of the sample origin along ``y`` of the stage frame.
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="translation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 1, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="mount_translation_z"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="mount_translation_z" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                        Position of the sample origin along ``z`` of the stage frame.
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="translation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 0, 1]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <doc>
+                            Path to :ref:`stage_z &lt;/NXspm/ENTRY/INSTRUMENT/stage/transformations/stage_z-field&gt;`
+                            of the stage, or to the :ref:`scanner_frame &lt;/NXspm/ENTRY/scanner_frame-group&gt;`
+                            group if no stage position is given.
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
             <group name="history" type="NXhistory" recommended="true">
                 <doc>
                     A set of physical processes that occurred to the sample prior/during experiment.
@@ -591,6 +1026,11 @@
                     The name of the axis that corresponds to the data field.
                 </doc>
             </field>
+        </group>
+        <group name="citeID" type="NXcite" recommended="true" nameType="partial">
+            <doc>
+                The citation information for the experiment, e.g., author names.
+            </doc>
         </group>
         <group name="reproducibility_indicators" type="NXcollection" optional="true">
             <doc>

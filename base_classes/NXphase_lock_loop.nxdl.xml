@@ -31,7 +31,7 @@
           3. Voltage-controlled oscillator (VCO)
           
         Depending on the phase error from the phase detector due to the phase difference between the
-        Reference and output from the VCO signals, the PLL adjusts the output frequency to minimize the phase error.
+        reference and output from the VCO signals, the PLL adjusts the output frequency to minimize the phase error.
         
         Measuring the phase error, the PLL can be in one of three states:
           - Zero phase error: The output signal is in coherence with the reference signal (lock condition).
@@ -44,22 +44,42 @@
         <doc>
             Manufacturer and model of the PLL hardware or controller.
         </doc>
-        <field name="type" type="NX_CHAR">
+        <field name="type" type="NX_POSINT" units="NX_UNITLESS">
             <doc>
-                Types (design parameter for circuit) of the PLL from type-1, type-2, and type-3
-                available in device specifications (for mathematical details: https://www.nxp.com/docs/en/application-note/AN535.pdf).
-                Type is defined by the number of poles that exist in the transfer function of the PLL.
+                Type of the PLL, a design parameter of the circuit usually given in the device
+                specifications. The type is the number of poles of the open-loop transfer function
+                :math:`G(s)H(s)` located at the origin :math:`s = 0`, i.e. the number of integrators
+                in the loop. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` has one pole at the
+                origin and is therefore a type 1 system.
+
+                The type determines the steady-state phase error :math:`\theta_e` for a given input:
+
+                * step in phase: zero for type 1 and higher.
+                * step in frequency: constant for type 1, zero for type 2 and higher.
+                * frequency ramp: continually increasing (unlocked) for type 1, constant for type 2,
+                  zero for type 3 and higher.
+
+                PLLs used in practice are typically of type 1, 2, or 3.
+
+                Reference: G. Nash, Phase-Locked Loop Design Fundamentals, Application Note AN535,
+                Rev. 1.0, Freescale Semiconductor (2006), Sections 3 and 4
+                (https://www.nxp.com/docs/en/application-note/AN535.pdf).
             </doc>
-            <enumeration>
-                <item value="type-1"/>
-                <item value="type-2"/>
-                <item value="type-3"/>
+            <enumeration open="true">
+                <item value="1"/>
+                <item value="2"/>
+                <item value="3"/>
             </enumeration>
         </field>
-        <field name="order" type="NX_NUMBER" units="NX_UNITLESS">
+        <field name="order" type="NX_POSINT" units="NX_UNITLESS">
             <doc>
-                Order of the PLL. This is characteristic of circuit design and is defined as the number of roots of
-                characteristics polynomial of the PLL circuit.
+                Order of the PLL, a characteristic of the circuit design. The order is the highest
+                degree in :math:`s` of the characteristic equation :math:`1 + G(s)H(s) = 0` (after
+                clearing denominators), i.e. the number of its roots, which are the closed-loop poles of
+                the PLL. For example, :math:`G(s)H(s) = 10 / (s(s + 10))` gives the characteristic
+                equation :math:`s^2 + 10s + 10 = 0`, a second-order system.
+
+                Reference: AN535, Section 3 (see ``type``).
             </doc>
         </field>
     </group>
@@ -102,12 +122,12 @@
         </doc>
         <field name="reference_frequency" type="NX_NUMBER" units="NX_FREQUENCY">
             <doc>
-                The input reference frequency to the PLL through the component Phase-detector.
+                The input reference frequency to the PLL through the phase detector component.
             </doc>
         </field>
         <field name="frequency_shift" type="NX_NUMBER" units="NX_FREQUENCY">
             <doc>
-                Measured or target shift in oscillation from the VCO. relative to the reference
+                Measured or target shift in oscillation from the VCO relative to the reference
                 signal.
             </doc>
         </field>
@@ -118,8 +138,8 @@
         </field>
         <field name="phase_error" type="NX_NUMBER" units="NX_ANGLE">
             <doc>
-                Measured phase error (also called phase difference) between the reference signal
-                and the VCO output.
+                Measured phase error :math:`\theta_e` (also called phase difference) between the incoming reference signal
+                :math:`\theta_i` and the VCO output or feedback signal :math:`\theta_o/N`.
             </doc>
         </field>
         <field name="Kp_coefficient" type="NX_NUMBER" nameType="specified" units="V/rad">
@@ -152,6 +172,9 @@
                 of frequencies it can generate. The range is either the same as the frequency bandwidth of the PLL or shorter
                 and inside that.
             </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2"/>
+            </dimensions>
         </field>
         <field name="Kn_coefficient" type="NX_NUMBER" nameType="specified" units="NX_UNITLESS">
             <doc>
@@ -159,10 +182,12 @@
                 frequency of the VCO. This coefficient is used to adjust the output frequency based on the input frequency.
             </doc>
         </field>
-        <field name="Ko_coefficient" type="NX_NUMBER" nameType="specified" units="NX_ANY">
+        <field name="Ko_coefficient" type="NX_NUMBER" nameType="specified" units="Hz/V">
             <doc>
-                The output voltage coefficient of the VCO, which determines how much the output
-                frequency changes in response to a change in input voltage (Hz/V).
+                The gain (sensitivity) of the VCO, which determines how much the output frequency
+                changes in response to a change in the control voltage (Hz/V), as usually given in
+                the VCO datasheet. A gain given in rad/(s V) must be divided by 2π before it is
+                stored here.
             </doc>
         </field>
     </group>

@@ -23,7 +23,7 @@
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXspm_scan_control" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-        A scan is performed inside an N-dimensional phase space, where each dimension can correspond not only to real space coordinates (x,y) but also to any other parameter. This class contains detailed information about controlling the scan in such a phase space (or its subspace).
+        A scan is performed inside an N-dimensional phase space, where each dimension can correspond not only to real space coordinates (``x``, ``y``) but also to any other parameter. This class contains detailed information about controlling the scan in such a phase space (or its subspace).
         
         scan_types:
         Trajectory: A list of N-dimensional sequential vectors describes the trajectory line for a full scan.
@@ -31,12 +31,16 @@
         Snake: Similar to a mesh scan but with the scanning direction reversed after each line.
         Spiral: A scan taken along a spiral trajectory.
         Linear: A scan where the scanning will be performed along a single independent axis.
-        Tilt: At each step, a proportional movement is done in all dimensions (an special case of Trajectory scan).
+        Tilt: At each step, a proportional movement is done in all dimensions (a special case of trajectory scan).
         
         Scan_control_types:
         Stepping: At each step, a movement to the next point is performed; correction (for example backlash) or active regulation (feedback loop) may or may not be applied. After the movement is done, the measurement is performed without the movement.
         Continuous: The scanning of each line in an N-dimensional phase space is done without stopping; measurements are done simultaneously with the movement.
         Oscillating: Scanning over a scan point continuously and then moving to start scanning at the next position.
+
+        Set ``scan_type`` according to the scan performed, and include only the
+        ``NXspm_scan_pattern`` group corresponding to it, e.g. for ``scan_type`` = ``mesh``
+        only ``meshSCAN`` should be present (``trajectory`` and ``tilt`` → ``trajSCAN``).
     </doc>
     <field name="scan_time_start" type="NX_DATE_TIME" units="NX_TIME">
         <doc>
@@ -51,21 +55,23 @@
     <field name="independent_scan_axes">
         <doc>
             An array of scan axes which are controlled independently of each other.
-            (e.g. X, Y, Z, or other physical dimensions)
+            (e.g. ``x``, ``y``, ``z``, or other physical dimensions)
             
             The array elements are in the order of axes of the scan from the fastest to the slowest.
         </doc>
     </field>
-    <field name="scan_resolutionN" type="NX_NUMBER" nameType="partial" units="NX_ANY">
+    <field name="scan_resolutionAXIS" type="NX_NUMBER" nameType="partial" units="NX_ANY">
         <doc>
             Define the scan resolution along each dimension as the number of steps per unit of the dimension parameters.
             
-            Rename the field according to the name of the independent dimension (e.g. scan_resolution_x, scan_resolution_voltage).
+            AXIS is the name of an independent scan axis (e.g. ``scan_resolution_x``, ``scan_resolution_voltage``).
         </doc>
     </field>
-    <field name="accuracyN" type="NX_NUMBER" nameType="partial" units="NX_LENGTH">
+    <field name="accuracyAXIS" type="NX_NUMBER" nameType="partial" units="NX_LENGTH">
         <doc>
-            Define the accuracy of the scan probe.
+            Define the accuracy of the scan probe along the scan axis.
+            
+            AXIS is the name of an independent scan axis (e.g. ``accuracy_x``, ``accuracy_voltage``).
         </doc>
     </field>
     <field name="scan_type">
@@ -122,6 +128,28 @@
                 
                 Rename the field, according to the circle order, the nearest circle to the center
                 is 0 (e.g. scan_points_2).
+            </doc>
+        </field>
+        <field name="azimuthal_start" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                The azimuthal angle at which the spiral or circular scan starts, measured in the
+                ``xy`` plane of the scan frame from the ``x`` axis, as a rotation about ``z``
+                through the centre of the scan region. Positive angles follow the right-hand rule,
+                i.e. they are counter-clockwise when viewed from the probe side looking down onto
+                the sample surface.
+
+                If this field is absent, the scan starts on the ``x`` axis of the scan frame
+                (azimuthal angle zero).
+            </doc>
+        </field>
+        <field name="azimuthal_end" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                The azimuthal angle at which the spiral or circular scan ends, measured with the
+                same convention as
+                :ref:`azimuthal_start &lt;/NXspm_scan_control/spiralSCAN/azimuthal_start-field&gt;`.
+
+                If this field is absent, the scan ends on the ``x`` axis of the scan frame
+                (azimuthal angle zero).
             </doc>
         </field>
     </group>
