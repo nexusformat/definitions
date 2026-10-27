@@ -48,7 +48,8 @@ General discussions should be held in the public mailing list.
 Retired mailing lists
 =====================
 
-These lists were used for technical discussion in the past but are now retired.  Most traffic should go to the main list nexus@nexusformat.org.
+These lists were used for technical discussion in the past but are now retired.
+Most traffic should go to the main list nexus@nexusformat.org.
 
 .. closed for new contributions per NIAC 2026
       + List Address: nexus-tech@nexusformat.org
