@@ -1,0 +1,827 @@
+
+
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head><meta name="robots" content="noindex">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.3. Constructing NeXus Files and Application Definitions &#8212; nexus v2026.01 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=34905f61" />
+    <link rel="stylesheet" type="text/css" href="_static/details_summary_hide.css?v=30df4bca" />
+    <link rel="stylesheet" type="text/css" href="_static/nxdl_not_allowed.css?v=b40686d9" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/bolditalic.css?v=504f8cd9" />
+    <link rel="stylesheet" href="_static/blockquote.css" type="text/css" />
+    <link rel="stylesheet" href="_static/rubric.css" type="text/css" />
+    <script src="_static/documentation_options.js?v=167d9c14"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="copyright" title="Copyright" href="copyright.html" />
+    <link rel="next" title="1.4. Strategies for storing information in NeXus data files" href="strategies.html" />
+    <link rel="prev" title="1.2.3.3. Physical File format" href="fileformat.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="strategies.html" title="1.4. Strategies for storing information in NeXus data files"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fileformat.html" title="1.2.3.3. Physical File format"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user_manual.html" accesskey="U"><span class="section-number">1. </span>NeXus: User Manual</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1.3. </span>Constructing NeXus Files and Application Definitions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="constructing-nexus-files-and-application-definitions">
+<span id="nxdl-tutorial"></span><h1><span class="section-number">1.3. </span>Constructing NeXus Files and Application Definitions<a class="headerlink" href="#constructing-nexus-files-and-application-definitions" title="Link to this heading">¶</a></h1>
+<p>In <a class="reference internal" href="design.html#design"><span class="std std-ref">NeXus Design</span></a>, we discussed the design of the NeXus format in general terms.
+In this section a more tutorial style introduction in how to construct a NeXus file is
+given. As an example a hypothetical instrument named WONI will be used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are looking for a tutorial on reading or writing NeXus data files
+using the NeXus API, consult the <a class="reference internal" href="napi.html#napi"><span class="std std-ref">NAPI: NeXus Application Programmer Interface (frozen)</span></a> chapter.
+For code examples (with or without NAPI), refer to the <a class="reference internal" href="examples/index.html#examples-code"><span class="std std-ref">Code Examples in Various Languages</span></a> chapter.</p>
+</div>
+<section id="the-wonderful-new-instrument-woni">
+<span id="nxdl-tutorial-woni"></span><h2><span class="section-number">1.3.1. </span>The WOnderful New Instrument (WONI)<a class="headerlink" href="#the-wonderful-new-instrument-woni" title="Link to this heading">¶</a></h2>
+<p>Consider yourself to be responsible for some hypothetical
+<span class="target" id="index-0"></span>WOnderful New Instrument
+<span class="target" id="index-1"></span>(WONI).
+You are tasked to ensure that WONI will record data according to the NeXus standard.
+For the sake of simplicity, WONI bears a strong resemblance to a simple
+powder diffractometer, but let’s pretend that  WONI cannot
+use any of the existing NXDL application definitions.</p>
+<div class="compound">
+<figure class="align-default" id="id1">
+<span id="figwonischematic"></span><img alt="FigWoniSchematic :width: 90% :align: center" src="_images/woni-schematic.png" />
+<figcaption>
+<p><span class="caption-text">The (fictional) WONI example powder diffractometer</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</div>
+<p>WONI uses collimators and a monochromator to illuminate the
+sample with neutrons of a selected wavelength as described in
+<a class="reference internal" href="#figwonischematic"><span class="std std-ref">The (fictional) WONI example powder diffractometer</span></a>.  The diffracted beam is collected
+in a large, banana-shaped, position sensitive detector. Typical data looks like
+<a class="reference internal" href="#figwonipowderdata"><span class="std std-ref">Example Powder Diffraction Plot from (fictional) WONI at HYNES</span></a>.
+There is a generous background to the data plus quite a number of diffraction peaks.</p>
+<div class="compound">
+<figure class="align-default" id="id2">
+<span id="figwonipowderdata"></span><img alt="FigWoniPowderData :width: 90% :align: center" src="_images/woni-powderimage.png" />
+<figcaption>
+<p><span class="caption-text">Example Powder Diffraction Plot from (fictional) WONI at HYNES</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="constructing-a-nexus-file-for-woni">
+<h2><span class="section-number">1.3.2. </span>Constructing a NeXus file for WONI<a class="headerlink" href="#constructing-a-nexus-file-for-woni" title="Link to this heading">¶</a></h2>
+<p>The starting point for a NeXus file for WONI will be an
+empty basic NeXus file hierarchy as documented in
+the next figure. In order to arrive at a full NeXus file,
+the following steps are required:</p>
+<ol class="arabic simple">
+<li><p>For each instrument component, decide which parameters need to be stored</p></li>
+<li><p>Map the component parameters to NeXus groups and parameters and add the components to the
+<code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code> hierarchy</p></li>
+<li><p>Decide what needs to go into <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>.  While this group is optional,
+you are urged strongly to provide an <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group to support
+default plotting.</p></li>
+<li><p>Fill the <code class="docutils literal notranslate"><span class="pre">NXsample</span></code> and <code class="docutils literal notranslate"><span class="pre">NXmonitor</span></code> groups</p></li>
+</ol>
+<div class="compound">
+<p class="rubric">Basic structure of a NeXus file</p>
+<div class="highlight-text notranslate" id="figshell"><div class="highlight"><pre><span></span><span class="linenos">1</span>  entry:NXentry
+<span class="linenos">2</span>    NXdata
+<span class="linenos">3</span>    NXinstrument
+<span class="linenos">4</span>    NXmonitor
+<span class="linenos">5</span>    NXsample
+</pre></div>
+</div>
+</div>
+<section id="decide-which-parameters-need-to-be-stored">
+<h3><span class="section-number">1.3.2.1. </span>Decide which parameters need to be stored<a class="headerlink" href="#decide-which-parameters-need-to-be-stored" title="Link to this heading">¶</a></h3>
+<p>Now the various groups of this empty NeXus file shell need to be filled. The next step is to look at a
+design drawing of WONI. Identify all the instrument components like collimators, detectors, monochromators etc.
+For each component decide which values need to be stored. As NeXus aims to describe the experiment as good as
+possible, strive to capture as much information as practical.</p>
+</section>
+<section id="mapping-parameters-to-nexus">
+<h3><span class="section-number">1.3.2.2. </span>Mapping parameters to NeXus<a class="headerlink" href="#mapping-parameters-to-nexus" title="Link to this heading">¶</a></h3>
+<p>With the list of parameters to store for each component, consult the reference manual section on the NeXus
+base classes. You will find that for each of your instruments components there will be a suitable NeXus base class.
+Add this base class together with a name as a group under NXinstrument in your NeXus file hierarchy. Then consult the
+possible parameter names in the NeXus base class and match them with the parameters you wish to store for your
+instruments components.</p>
+<p>As an example, consider the monochromator. You may wish to store: the wavelength, the d-value of the reflection used,
+the type of the monochromator and its angle towards the incoming beam. The reference manual tells you that NXcrystal
+is the right base class to use. Suitable fields for your parameters can be found in there to. After adding them to
+the basic NeXus file, the file looks like in the next figure:</p>
+<div class="compound">
+<p class="rubric">Basic structure of a NeXus file with a monochromator added</p>
+<div class="highlight-text notranslate" id="figshellmono"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  entry:NXentry
+<span class="linenos"> 2</span>    NXdata
+<span class="linenos"> 3</span>    NXinstrument
+<span class="linenos"> 4</span>       monochromator:Nxcrystal
+<span class="linenos"> 5</span>          wavelength
+<span class="linenos"> 6</span>          d_spacing
+<span class="linenos"> 7</span>          rotation_angle
+<span class="linenos"> 8</span>          reflection
+<span class="linenos"> 9</span>          type
+<span class="linenos">10</span>    NXmonitor
+<span class="linenos">11</span>    NXsample
+</pre></div>
+</div>
+</div>
+<p>If a parameter or even a whole group is missing in order to describe your experiment, do not despair! Contact the
+NIAC and suggest to add the group or parameter. Give a little documentation what it is for. The NIAC will check that your
+suggestion is no duplicate and sufficiently documented and will then proceed to enhance the base classes with your suggestion.</p>
+<p>A more elaborate example of the mapping process is given in the section <a class="reference internal" href="#nxdl-tutorial-creatingnxdlspec"><span class="std std-ref">Creating a NXDL Specification</span></a>.</p>
+</section>
+<section id="decide-on-nxdata">
+<h3><span class="section-number">1.3.2.3. </span>Decide on <code class="docutils literal notranslate"><span class="pre">NXdata</span></code><a class="headerlink" href="#decide-on-nxdata" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">NXdata/</span></code> group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus
+two theta (polar_angle in NeXus) as can be seen in <a class="reference internal" href="#figwonipowderdata"><span class="std std-ref">Example Powder Diffraction Plot from (fictional) WONI at HYNES</span></a>. Now, in <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>, create links to the appropriate
+data items in the <code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code> hierarchy. In the case of WONI, both parameters live in the <code class="docutils literal notranslate"><span class="pre">detector:NXdetector</span></code> group.</p>
+</section>
+<section id="fill-in-auxiliary-information">
+<h3><span class="section-number">1.3.2.4. </span>Fill in auxiliary Information<a class="headerlink" href="#fill-in-auxiliary-information" title="Link to this heading">¶</a></h3>
+<p>Look at the section on <code class="docutils literal notranslate"><span class="pre">NXsample</span></code> in the NeXus reference  manual. Choose appropriate parameters to store for
+your samples. Probably at least the name will be needed.</p>
+<p>In order to normalize various experimental runs against each other it is necessary to know about the
+counting conditions and especially the monitor counts of the monitor used for normalization. The NeXus convention
+is to store such information in a <code class="docutils literal notranslate"><span class="pre">control:NXmonitor</span></code> group at <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> level. Consult the reference for <code class="docutils literal notranslate"><span class="pre">NXmonitor</span></code> for
+field names. If additional monitors exist within your experiment, they will be stored as additional <code class="docutils literal notranslate"><span class="pre">NXmonitor</span></code> groups at
+entry level.</p>
+<p>Consult the documentation for <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> in order to find out under which names to store information such as
+titles, user names, experiment times etc.</p>
+<p>A more elaborate example of this process can be found in the following section on creating an application definition.</p>
+</section>
+</section>
+<section id="creating-a-nxdl-specification">
+<span id="nxdl-tutorial-creatingnxdlspec"></span><h2><span class="section-number">1.3.3. </span>Creating a NXDL Specification<a class="headerlink" href="#creating-a-nxdl-specification" title="Link to this heading">¶</a></h2>
+<p>An NXDL specification for a NeXus file is required if you desire to standardize  NeXus files from
+various sources. Another name for a NXDL description is application definition.
+A NXDL specification can be used to verify NeXus files to conform to the standard encapsulated
+in the application definition. The process for constructing a NXDL specification is similar to the one described
+above for the construction of NeXus files.</p>
+<p>One easy way to describe how to store data in the NeXus class
+structure and to create a NXDL specification is to work through
+an example.  Along the way, we will describe some key decisions
+that influence our particular choices of <span class="target" id="index-2"></span>metadata
+selection and data organization.  So, on with the example …</p>
+<section id="application-definition-steps">
+<span id="nxdl-tutorial-steps"></span><h3><span class="section-number">1.3.3.1. </span>Application Definition Steps<a class="headerlink" href="#application-definition-steps" title="Link to this heading">¶</a></h3>
+<p>With all this introductory stuff out of the way,
+let us look at the process required
+to define an application definition:</p>
+<ol class="arabic simple">
+<li><p><em>Think!</em> hard about what has to go into the data file.</p></li>
+<li><p><em>Map</em> the required fields into the NeXus
+<span class="target" id="index-3"></span>hierarchy</p></li>
+<li><p><em>Describe</em> this map in a NXDL file</p></li>
+<li><p><em>Standardize</em> your definition through
+communication with the NIAC</p></li>
+</ol>
+</section>
+<section id="step-1-think-hard-about-data">
+<span id="nxdl-tutorial-step1"></span><h3><span class="section-number">1.3.3.2. </span>Step 1: <em>Think!</em> hard about data<a class="headerlink" href="#step-1-think-hard-about-data" title="Link to this heading">¶</a></h3>
+<p>This is actually the hard bit. There are two things to consider:</p>
+<ol class="arabic simple">
+<li><p>What has to go into the data file?</p></li>
+<li><p>What is the normal plot for this type of data?</p></li>
+</ol>
+<p>For the first part, one of the NeXus guiding principles gives us - Guidance!
+“A NeXus file must contain all the data necessary for standard data         analysis.”</p>
+<p>Not more and not less for an application definition.
+Of course the definition of <em>standard</em> data for analysis
+or a <em>standard</em> plot
+depends on the science and the type of data being described. Consult
+senior scientists in the field about this is if you are unsure.
+Perhaps you must
+call an international meeting with domain experts to haggle that out. When
+considering this, people tend to put in everything which might come up. This
+is not the way to go.</p>
+<p>A key test question is: Is this data item necessary for common data analysis?
+Only these necessary data items belong in an application definition.</p>
+<p>The purpose of an application definition is that an author of upstream software
+who consumes the file can expect certain data items to be there at well defined
+places. On the other hand if there is a development in your field which analyzes
+data in a novel way and requires more data to do it, then it is better to err
+towards the side of more data.</p>
+<p>Now for the case of WONI, the standard data analysis is either Rietveld refinement
+or profile analysis. For both purposes, the kind of radiation used to probe the
+sample (for WONI, neutrons), the wavelength of the radiation,
+the monitor (which tells us how long we counted) used to normalize the data,
+the counts and the two
+theta angle of each detector element are all required. Usually, it is desirable to
+know what is being analyzed, so some <span class="target" id="index-4"></span>metadata
+would be nice: a title, the sample
+name and the sample temperature. The data typically being plotted is two
+theta against counts, as shown in <a class="reference internal" href="#figwonipowderdata"><span class="std std-ref">Example Powder Diffraction Plot from (fictional) WONI at HYNES</span></a> above.
+Summarizing, the basic information required from WONI is given next.</p>
+<div class="compound">
+<ul class="simple" id="tablewonibasicinfo">
+<li><p><em>title</em> of measurement</p></li>
+<li><p>sample <em>name</em></p></li>
+<li><p>sample <em>temperature</em></p></li>
+<li><p>counts from the incident beam <em>monitor</em></p></li>
+<li><p>type of radiation <em>probe</em></p></li>
+<li><p><em>wavelength</em> (<span class="math notranslate nohighlight">\(\lambda\)</span>) of radiation incident on sample</p></li>
+<li><p>angle (<span class="math notranslate nohighlight">\(2\theta\)</span> or <em>two theta</em>) of detector elements</p></li>
+<li><p><em>counts</em> for each detector element</p></li>
+</ul>
+</div>
+<p>If you start to worry that this is too little information, hold on, the section
+on Using an Application Definition (<a class="reference internal" href="#nxdl-tutorial-usingnxdl"><span class="std std-ref">Using an Application Definition</span></a>)
+will reveal the secret how to go from an
+application definition to a practical file.</p>
+</section>
+<section id="step-2-map-data-into-the-nexus-hierarchy">
+<span id="nxdl-tutorial-step2"></span><h3><span class="section-number">1.3.3.3. </span>Step 2: <em>Map</em> Data into the NeXus Hierarchy<a class="headerlink" href="#step-2-map-data-into-the-nexus-hierarchy" title="Link to this heading">¶</a></h3>
+<p>This step is actually easier then the first one. We need to map the data items
+which were collected in Step 1 into the NeXus <span class="target" id="index-5"></span>hierarchy.
+A NeXus file hierarchy
+starts with an <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> group. At this stage it is advisable to pull up the base
+class definition for <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> and study it. The first thing you might notice
+is that <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> contains a field named <code class="docutils literal notranslate"><span class="pre">title</span></code>. Reading
+the documentation, you
+quickly realize that this is a good place to store our title. So the first mapping
+has been found.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">title</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example, the mapping descriptions just contain the path strings
+into the NeXus file hierarchy
+with the class names of the groups to use.  As it turns out, this is
+the syntax used in NXDL link specifications.  How convenient!</p>
+</div>
+<p>Another thing to notice in the <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> base class is the existence of a group
+of class <code class="docutils literal notranslate"><span class="pre">NXsample</span></code>. This looks like a great place to store information about the
+sample. Studying the <code class="docutils literal notranslate"><span class="pre">NXsample</span></code> base class confirms this view and there are two
+new mappings:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">sample</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXsample</span><span class="o">/</span><span class="n">name</span>
+<span class="linenos">2</span><span class="n">sample</span><span class="w"> </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXsample</span><span class="o">/</span><span class="n">temperature</span>
+</pre></div>
+</div>
+<p>Scanning the <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> base class further reveals there can be a
+<code class="docutils literal notranslate"><span class="pre">NXmonitor</span></code> group at this level. Looking up the base class for
+<code class="docutils literal notranslate"><span class="pre">NXmonitor</span></code> reveals
+that this is the place to store our monitor information.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">monitor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXmonitor</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>For the other data items, there seem to be no solutions in <code class="docutils literal notranslate"><span class="pre">NXentry</span></code>. But
+each of these data items describe the instrument in more detail. NeXus stores
+instrument descriptions in the <code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument</span></code> branch of the hierarchy.
+Thus, we continue by looking at the definition of the <code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code> base class.
+In there we find further groups for all possible instrument components. Looking
+at the schematic of WONI (<a class="reference internal" href="#figwonischematic"><span class="std std-ref">The (fictional) WONI example powder diffractometer</span></a>),
+we realize that there is a source, a monochromator
+and a detector. Suitable groups can be found for these components
+in <code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code> and
+further inspection of the appropriate base classes reveals the following further
+mappings:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">probe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXsource</span><span class="o">/</span><span class="n">probe</span>
+<span class="linenos">2</span><span class="n">wavelength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXcrystal</span><span class="o">/</span><span class="n">wavelength</span>
+<span class="linenos">3</span><span class="n">two</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">detector</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXdetector</span><span class="o">/</span><span class="n">polar</span><span class="w"> </span><span class="n">angle</span>
+<span class="linenos">4</span><span class="n">counts</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">detector</span><span class="w"> </span><span class="n">element</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXdetector</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Thus we mapped all our data items into the NeXus hierarchy! What still
+needs to be done is to decide upon the content of the <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>
+group in <code class="docutils literal notranslate"><span class="pre">NXentry</span></code>.
+This group describes the data necessary to make a quick plot of the
+data. For WONI this is <code class="docutils literal notranslate"><span class="pre">counts</span></code> versus <code class="docutils literal notranslate"><span class="pre">two</span> <span class="pre">theta</span></code>.
+Thus we add this mapping:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">two</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">detector</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXdata</span><span class="o">/</span><span class="n">polar</span><span class="w"> </span><span class="n">angle</span>
+<span class="linenos">2</span><span class="n">counts</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">detector</span><span class="w"> </span><span class="n">element</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXdata</span><span class="o">/</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>The full mapping of WONI data into NeXus is documented in the next table:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>WONI data</p></th>
+<th class="head"><p>NeXus path</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>title</em> of measurement</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/title</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>sample <em>name</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXsample/name</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>sample <em>temperature</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXsample/temperature</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>monitor</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXmonitor/data</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>type of radiation <em>probe</em></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/MXinstrument/NXsource/probe</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>wavelength</em> of radiation incident on sample</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/MXinstrument/NXcrystal/wavelength</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><em>two theta</em> of detector elements</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector/polar_angle</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>counts</em> for each detector element</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector/data</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><em>two theta</em> of detector elements</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXdata/polar_angle</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><em>counts</em> for each detector element</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/NXentry/NXdata/data</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Looking at this table, one might get concerned that the two theta and counts data
+is stored in two places and thus duplicated. Stop worrying, this problem is
+solved at the NeXus API level.
+Typically <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> will only hold links to the
+corresponding data items in <code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector</span></code>.</p>
+<p>In this step problems might occur. The first is that the base class definitions
+contain a bewildering number of parameters. This is on purpose: the base
+classes serve as dictionaries which define names for most things which possibly
+can occur. You do not have to give all that information.
+Keep it simple and  only require data that is needed for typical data analysis
+for this type of application.</p>
+<p>Another problem which can occur is that you require to store information for which
+there is no name in one of the existing base classes or you have a new instrument
+component for which there is no base class altogether. New fields and base classes
+can be introduced if necessary.</p>
+<p>In any case please feel free to contact the NIAC via the mailing list with
+questions or suggestions.</p>
+</section>
+<section id="step-3-describe-this-map-in-a-nxdl-file">
+<span id="nxdl-tutorial-step3"></span><h3><span class="section-number">1.3.3.4. </span>Step 3: <em>Describe</em> this map in a NXDL file<a class="headerlink" href="#step-3-describe-this-map-in-a-nxdl-file" title="Link to this heading">¶</a></h3>
+<p>This is even easier. Some XML editing is necessary. Fire up your XML editor
+of choice and open a file. If your XML editor supports XML schema while editing XML, it is worth
+to load <code class="docutils literal notranslate"><span class="pre">nxdl.xsd</span></code>. Now your XML editor can help you to create a proper NXDL
+file. As always, the start is an empty template file. This looks like the XML code below.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is just the basic XML for a NXDL definition.
+It is advisable to change
+some of the documentation strings.</p>
+</div>
+<div class="compound">
+<p class="rubric">NXDL template file</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="linenos"> 2</span><span class="cm">&lt;!--</span>
+<span class="linenos"> 3</span><span class="cm"># NeXus - Neutron and X-ray Common Data Format</span>
+<span class="linenos"> 4</span><span class="cm"># </span>
+<span class="linenos"> 5</span><span class="cm"># Copyright (C) 2008-2026 NeXus International Advisory Committee (NIAC)</span>
+<span class="linenos"> 6</span><span class="cm"># </span>
+<span class="linenos"> 7</span><span class="cm"># This library is free software; you can redistribute it and/or</span>
+<span class="linenos"> 8</span><span class="cm"># modify it under the terms of the GNU Lesser General Public</span>
+<span class="linenos"> 9</span><span class="cm"># License as published by the Free Software Foundation; either</span>
+<span class="linenos">10</span><span class="cm"># version 3 of the License, or (at your option) any later version.</span>
+<span class="linenos">11</span><span class="cm">#</span>
+<span class="linenos">12</span><span class="cm"># This library is distributed in the hope that it will be useful,</span>
+<span class="linenos">13</span><span class="cm"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="linenos">14</span><span class="cm"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="linenos">15</span><span class="cm"># Lesser General Public License for more details.</span>
+<span class="linenos">16</span><span class="cm">#</span>
+<span class="linenos">17</span><span class="cm"># You should have received a copy of the GNU Lesser General Public</span>
+<span class="linenos">18</span><span class="cm"># License along with this library; if not, write to the Free Software</span>
+<span class="linenos">19</span><span class="cm"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</span>
+<span class="linenos">20</span><span class="cm">#</span>
+<span class="linenos">21</span><span class="cm"># For further information, see https://www.nexusformat.org/</span>
+<span class="linenos">22</span><span class="cm">--&gt;</span>
+<span class="linenos">23</span><span class="nt">&lt;definition</span><span class="w"> </span><span class="na">name=</span><span class="s">"NX__template__"</span><span class="w"> </span><span class="na">extends=</span><span class="s">"NXobject"</span><span class="w"> </span><span class="na">type=</span><span class="s">"group"</span>
+<span class="linenos">24</span><span class="w">    </span><span class="na">category=</span><span class="s">"application"</span>
+<span class="linenos">25</span><span class="w">    </span><span class="na">xmlns=</span><span class="s">"http://definition.nexusformat.org/nxdl/3.1"</span>
+<span class="linenos">26</span><span class="w">    </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+<span class="linenos">27</span><span class="w">    </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nt">&gt;</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nt">&lt;doc&gt;</span>template<span class="w"> </span>for<span class="w"> </span>a<span class="w"> </span>NXDL<span class="w"> </span>application<span class="w"> </span>definition<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">30</span><span class="nt">&lt;/definition&gt;</span>
+</pre></div>
+</div>
+</div>
+<p id="index-6">For example, copy and rename the file to <code class="docutils literal notranslate"><span class="pre">NXwoni.nxdl.xml</span></code>.
+Then, locate the XML root element <code class="docutils literal notranslate"><span class="pre">definition</span></code> and change the
+<code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">attribute</span></code> (the XML shorthand for this attribute is
+<code class="docutils literal notranslate"><span class="pre">/definition/&#64;name</span></code>) to <code class="docutils literal notranslate"><span class="pre">NXwoni</span></code>.
+Change the <code class="docutils literal notranslate"><span class="pre">doc</span></code> as well.</p>
+<p>The next thing which needs to be done is adding groups into the definition.
+A group is defined by some XML, as in this example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXdata"</span><span class="nt">&gt;</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+<p id="index-7">The type is the actual NeXus base class this group belongs to. Optionally a
+<code class="docutils literal notranslate"><span class="pre">name</span></code> attribute may be given (default is <code class="docutils literal notranslate"><span class="pre">data</span></code>).</p>
+<p>Next, one needs to include data items, too. The XML for such a data item
+looks similar to this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>&lt;field name="polar_angle" type="NX_FLOAT units="NX_ANGLE"&gt;
+<span class="linenos">2</span>  &lt;doc&gt;Link to polar angle in /NXentry/NXinstrument/NXdetector&lt;/doc&gt;
+<span class="linenos">3</span>  &lt;dimensions rank="1"&gt;
+<span class="linenos">4</span>    &lt;dim index="1" value="ndet"/&gt;
+<span class="linenos">5</span>  &lt;/dimensions&gt;
+<span class="linenos">6</span>&lt;/field&gt;
+</pre></div>
+</div>
+<p id="index-8">The meaning of the <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute is intuitive, the <code class="docutils literal notranslate"><span class="pre">type</span></code> can be looked
+up in the relevant base class definition. A <code class="docutils literal notranslate"><span class="pre">field</span></code> definition can optionally
+contain a <code class="docutils literal notranslate"><span class="pre">doc</span></code> element which contains a description of the data item. The
+<code class="docutils literal notranslate"><span class="pre">dimensions</span></code> entry specifies the dimensions of the data set.
+The <code class="docutils literal notranslate"><span class="pre">size</span></code> attribute in the dimensions
+tag sets the <span class="target" id="index-9"></span>rank
+of the data, in this example: <code class="docutils literal notranslate"><span class="pre">rank=&quot;1&quot;</span></code>. In the <code class="docutils literal notranslate"><span class="pre">dimensions</span></code> group there
+must be <em>rank</em> <code class="docutils literal notranslate"><span class="pre">dim</span></code> fields. Each <code class="docutils literal notranslate"><span class="pre">dim</span></code> tag holds two attributes:
+<code class="docutils literal notranslate"><span class="pre">index</span></code> determines
+to which dimension this tag belongs, the <code class="docutils literal notranslate"><span class="pre">1</span></code> means the first dimension.
+The <code class="docutils literal notranslate"><span class="pre">value</span></code> attribute then describes the size of the dimension. These can be plain integers,
+variables, such as in the example <code class="docutils literal notranslate"><span class="pre">ndet</span></code> or even expressions like <code class="docutils literal notranslate"><span class="pre">tof+1</span></code>.</p>
+<p>Thus a NXDL file can be constructed. The full NXDL file for the WONI
+example is given in <a class="reference internal" href="#nxdl-tutorial-woninxdl"><span class="std std-ref">Full listing of the WONI Application Definition</span></a>.
+Clever readers may have noticed the strong similarity between
+our working example <code class="docutils literal notranslate"><span class="pre">NXwoni</span></code>
+and <code class="docutils literal notranslate"><span class="pre">NXmonopd</span></code> since they are essentially identical.  Give yourselves
+a cookie if you spotted this.</p>
+</section>
+<section id="step-4-standardize-with-the-niac">
+<span id="nxdl-tutorial-step4"></span><h3><span class="section-number">1.3.3.5. </span>Step 4: <em>Standardize</em> with the NIAC<a class="headerlink" href="#step-4-standardize-with-the-niac" title="Link to this heading">¶</a></h3>
+<p>Basically you are done. Your first application definition for NeXus is constructed.
+In order to make your work a standard for that particular application
+type, some more steps are required:</p>
+<ul class="simple">
+<li><p>Send your application definition to the NIAC for review</p></li>
+<li><p>Correct your definition per the comments of the NIAC</p></li>
+<li><p>Cure and use the definition to verify it is ready</p></li>
+<li><p>After a final review, it becomes the standard</p></li>
+</ul>
+<p>The NIAC must review an application definition before it is accepted as a
+standard. The curation period is in place in order to gain practical
+experience with the definition and to sort out bugs from Step 1. In this period,
+data shall be written and analyzed using the new application definition. No
+specific time limit is required, but generally the standard should be well
+vetted by your community and the NIAC.</p>
+</section>
+<section id="full-listing-of-the-woni-application-definition">
+<span id="nxdl-tutorial-woninxdl"></span><h3><span class="section-number">1.3.3.6. </span>Full listing of the WONI Application Definition<a class="headerlink" href="#full-listing-of-the-woni-application-definition" title="Link to this heading">¶</a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="linenos">  2</span><span class="cp">&lt;?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?&gt;</span>
+<span class="linenos">  3</span><span class="cm">&lt;!--</span>
+<span class="linenos">  4</span><span class="cm"># NeXus - Neutron and X-ray Common Data Format</span>
+<span class="linenos">  5</span><span class="cm"># </span>
+<span class="linenos">  6</span><span class="cm"># Copyright (C) 2008-2026 NeXus International Advisory Committee (NIAC)</span>
+<span class="linenos">  7</span><span class="cm"># </span>
+<span class="linenos">  8</span><span class="cm"># This library is free software; you can redistribute it and/or</span>
+<span class="linenos">  9</span><span class="cm"># modify it under the terms of the GNU Lesser General Public</span>
+<span class="linenos"> 10</span><span class="cm"># License as published by the Free Software Foundation; either</span>
+<span class="linenos"> 11</span><span class="cm"># version 3 of the License, or (at your option) any later version.</span>
+<span class="linenos"> 12</span><span class="cm">#</span>
+<span class="linenos"> 13</span><span class="cm"># This library is distributed in the hope that it will be useful,</span>
+<span class="linenos"> 14</span><span class="cm"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="linenos"> 15</span><span class="cm"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="linenos"> 16</span><span class="cm"># Lesser General Public License for more details.</span>
+<span class="linenos"> 17</span><span class="cm">#</span>
+<span class="linenos"> 18</span><span class="cm"># You should have received a copy of the GNU Lesser General Public</span>
+<span class="linenos"> 19</span><span class="cm"># License along with this library; if not, write to the Free Software</span>
+<span class="linenos"> 20</span><span class="cm"># Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</span>
+<span class="linenos"> 21</span><span class="cm">#</span>
+<span class="linenos"> 22</span><span class="cm"># For further information, see http://www.nexusformat.org</span>
+<span class="linenos"> 23</span><span class="cm">--&gt;</span>
+<span class="linenos"> 24</span><span class="nt">&lt;definition</span><span class="w"> </span><span class="na">name=</span><span class="s">"NXmonopd"</span><span class="w"> </span><span class="na">extends=</span><span class="s">"NXobject"</span><span class="w"> </span><span class="na">type=</span><span class="s">"group"</span>
+<span class="linenos"> 25</span><span class="w">    </span><span class="na">category=</span><span class="s">"application"</span>
+<span class="linenos"> 26</span><span class="w">    </span><span class="na">xmlns=</span><span class="s">"http://definition.nexusformat.org/nxdl/3.1"</span>
+<span class="linenos"> 27</span><span class="w">    </span><span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+<span class="linenos"> 28</span><span class="w">    </span><span class="na">xsi:schemaLocation=</span><span class="s">"http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"</span>
+<span class="linenos"> 29</span><span class="w">    </span><span class="nt">&gt;</span>
+<span class="linenos"> 30</span><span class="w">    </span><span class="nt">&lt;symbols&gt;</span>
+<span class="linenos"> 31</span><span class="w">        </span><span class="nt">&lt;doc&gt;</span>
+<span class="linenos"> 32</span><span class="w">            </span>The<span class="w"> </span>symbol(s)<span class="w"> </span>listed<span class="w"> </span>here<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>below<span class="w"> </span>to<span class="w"> </span>coordinate<span class="w"> </span>datasets<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>shape.
+<span class="linenos"> 33</span><span class="w">        </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 34</span><span class="w">        </span><span class="nt">&lt;symbol</span><span class="w"> </span><span class="na">name=</span><span class="s">"i"</span><span class="nt">&gt;</span>
+<span class="linenos"> 35</span><span class="w">            </span><span class="nt">&lt;doc&gt;</span>i<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>wavelengths<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 36</span><span class="w">        </span><span class="nt">&lt;/symbol&gt;</span>
+<span class="linenos"> 37</span><span class="w">        </span><span class="nt">&lt;symbol</span><span class="w"> </span><span class="na">name=</span><span class="s">"nDet"</span><span class="nt">&gt;</span>
+<span class="linenos"> 38</span><span class="w">            </span><span class="nt">&lt;doc&gt;</span>Number<span class="w"> </span>of<span class="w"> </span>detectors<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 39</span><span class="w">        </span><span class="nt">&lt;/symbol&gt;</span>
+<span class="linenos"> 40</span><span class="w">    </span><span class="nt">&lt;/symbols&gt;</span>
+<span class="linenos"> 41</span><span class="w">    </span><span class="nt">&lt;doc&gt;</span>
+<span class="linenos"> 42</span><span class="w">        </span>Monochromatic<span class="w"> </span>Neutron<span class="w"> </span>and<span class="w"> </span>X-Ray<span class="w"> </span>Powder<span class="w"> </span>diffractometer<span class="w"> </span>
+<span class="linenos"> 43</span><span class="w">        </span>
+<span class="linenos"> 44</span><span class="w">        </span>Instrument<span class="w"> </span>
+<span class="linenos"> 45</span><span class="w">        </span>definition<span class="w"> </span>for<span class="w"> </span>a<span class="w"> </span>powder<span class="w"> </span>diffractometer<span class="w"> </span>at<span class="w"> </span>a<span class="w"> </span>monochromatic<span class="w"> </span>neutron<span class="w"> </span>
+<span class="linenos"> 46</span><span class="w">        </span>or<span class="w"> </span>X-ray<span class="w"> </span>beam.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>both<span class="w"> </span>suited<span class="w"> </span>for<span class="w"> </span>a<span class="w"> </span>powder<span class="w"> </span>diffractometer<span class="w"> </span>
+<span class="linenos"> 47</span><span class="w">        </span>with<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>detector<span class="w"> </span>or<span class="w"> </span>a<span class="w"> </span>powder<span class="w"> </span>diffractometer<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>position<span class="w"> </span>
+<span class="linenos"> 48</span><span class="w">        </span>sensitive<span class="w"> </span>detector.
+<span class="linenos"> 49</span><span class="w">    </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 50</span><span class="w">    </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXentry"</span><span class="nt">&gt;</span>
+<span class="linenos"> 51</span><span class="w">        </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"title"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 52</span><span class="w">        </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"start_time"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_DATE_TIME"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 53</span><span class="w">        </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"definition"</span><span class="nt">&gt;</span>
+<span class="linenos"> 54</span><span class="w">            </span><span class="nt">&lt;doc&gt;</span><span class="w"> </span>Official<span class="w"> </span>NeXus<span class="w"> </span>NXDL<span class="w"> </span>schema<span class="w"> </span>to<span class="w"> </span>which<span class="w"> </span>this<span class="w"> </span>file<span class="w"> </span>conforms<span class="w"> </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 55</span><span class="w">            </span><span class="nt">&lt;enumeration&gt;</span>
+<span class="linenos"> 56</span><span class="w">                </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"NXmonopd"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 57</span><span class="w">            </span><span class="nt">&lt;/enumeration&gt;</span>
+<span class="linenos"> 58</span><span class="w">        </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos"> 59</span><span class="w">        </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXinstrument"</span><span class="nt">&gt;</span>
+<span class="linenos"> 60</span><span class="w">            </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXsource"</span><span class="nt">&gt;</span>
+<span class="linenos"> 61</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"type"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 62</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"name"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 63</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"probe"</span><span class="nt">&gt;</span>
+<span class="linenos"> 64</span><span class="w">                    </span><span class="nt">&lt;enumeration&gt;</span>
+<span class="linenos"> 65</span><span class="w">                        </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"neutron"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 66</span><span class="w">                        </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"x-ray"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 67</span><span class="w">                        </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"electron"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 68</span><span class="w">                    </span><span class="nt">&lt;/enumeration&gt;</span>
+<span class="linenos"> 69</span><span class="w">                </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos"> 70</span><span class="w">            </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos"> 71</span><span class="w">            </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXcrystal"</span><span class="nt">&gt;</span>
+<span class="linenos"> 72</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"wavelength"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_FLOAT"</span><span class="w"> </span><span class="na">units=</span><span class="s">"NX_WAVELENGTH"</span><span class="nt">&gt;</span>
+<span class="linenos"> 73</span><span class="w">                    </span><span class="nt">&lt;doc&gt;</span>Optimum<span class="w"> </span>diffracted<span class="w"> </span>wavelength<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 74</span><span class="w">                    </span><span class="nt">&lt;dimensions</span><span class="w"> </span><span class="na">rank=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+<span class="linenos"> 75</span><span class="w">                        </span><span class="nt">&lt;dim</span><span class="w"> </span><span class="na">index=</span><span class="s">"1"</span><span class="w"> </span><span class="na">value=</span><span class="s">"i"</span><span class="nt">/&gt;</span>
+<span class="linenos"> 76</span><span class="w">                    </span><span class="nt">&lt;/dimensions&gt;</span>
+<span class="linenos"> 77</span><span class="w">                </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos"> 78</span><span class="w">            </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos"> 79</span><span class="w">            </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXdetector"</span><span class="nt">&gt;</span>
+<span class="linenos"> 80</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"polar_angle"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_FLOAT"</span><span class="w"> </span><span class="na">axis=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+<span class="linenos"> 81</span><span class="w">                  </span><span class="nt">&lt;dimensions</span><span class="w"> </span><span class="na">rank=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+<span class="linenos"> 82</span><span class="w">                    </span><span class="nt">&lt;dim</span><span class="w"> </span><span class="na">index=</span><span class="s">"1"</span><span class="w"> </span><span class="na">value=</span><span class="s">"nDet"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos"> 83</span><span class="w">                  </span><span class="nt">&lt;/dimensions&gt;</span>
+<span class="linenos"> 84</span><span class="w">                </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos"> 85</span><span class="w">                </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"data"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_INT"</span><span class="w"> </span><span class="na">signal=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+<span class="linenos"> 86</span><span class="w">                  </span><span class="nt">&lt;doc&gt;</span>
+<span class="linenos"> 87</span><span class="w">                    </span>detector<span class="w"> </span>signal<span class="w"> </span>(usually<span class="w"> </span>counts)<span class="w"> </span>are<span class="w"> </span>already
+<span class="linenos"> 88</span><span class="w">                    </span>corrected<span class="w"> </span>for<span class="w"> </span>detector<span class="w"> </span>efficiency
+<span class="linenos"> 89</span><span class="w">                  </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 90</span><span class="w">                  </span><span class="nt">&lt;dimensions</span><span class="w"> </span><span class="na">rank=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+<span class="linenos"> 91</span><span class="w">                    </span><span class="nt">&lt;dim</span><span class="w"> </span><span class="na">index=</span><span class="s">"1"</span><span class="w"> </span><span class="na">value=</span><span class="s">"nDet"</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="linenos"> 92</span><span class="w">                  </span><span class="nt">&lt;/dimensions&gt;</span>
+<span class="linenos"> 93</span><span class="w">                </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos"> 94</span><span class="w">            </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos"> 95</span><span class="w">        </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos"> 96</span><span class="w">        </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXsample"</span><span class="nt">&gt;</span>
+<span class="linenos"> 97</span><span class="w">            </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"name"</span><span class="nt">&gt;</span>
+<span class="linenos"> 98</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>Descriptive<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>sample<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos"> 99</span><span class="w">            </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos">100</span><span class="w">            </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"rotation_angle"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_FLOAT"</span><span class="w"> </span><span class="na">units=</span><span class="s">"NX_ANGLE"</span><span class="nt">&gt;</span>
+<span class="linenos">101</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>
+<span class="linenos">102</span><span class="w">                    </span>Optional<span class="w"> </span>rotation<span class="w"> </span>angle<span class="w"> </span>for<span class="w"> </span>the<span class="w"> </span>case<span class="w"> </span>when<span class="w"> </span>the<span class="w"> </span>powder<span class="w"> </span>diagram<span class="w"> </span>
+<span class="linenos">103</span><span class="w">                    </span>has<span class="w"> </span>been<span class="w"> </span>obtained<span class="w"> </span>through<span class="w"> </span>an<span class="w"> </span>omega-2theta<span class="w"> </span>scan<span class="w"> </span>like<span class="w"> </span>from<span class="w"> </span>a<span class="w"> </span>
+<span class="linenos">104</span><span class="w">                    </span>traditional<span class="w"> </span>single<span class="w"> </span>detector<span class="w"> </span>powder<span class="w"> </span>diffractometer
+<span class="linenos">105</span><span class="w">                </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">106</span><span class="w">            </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos">107</span><span class="w">        </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos">108</span><span class="w">        </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXmonitor"</span><span class="nt">&gt;</span>
+<span class="linenos">109</span><span class="w">            </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"mode"</span><span class="nt">&gt;</span>
+<span class="linenos">110</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>
+<span class="linenos">111</span><span class="w">                    </span>Count<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>preset<span class="w"> </span>value<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>either<span class="w"> </span>clock<span class="w"> </span>time<span class="w"> </span>(timer)<span class="w"> </span>
+<span class="linenos">112</span><span class="w">                    </span>or<span class="w"> </span>received<span class="w"> </span>monitor<span class="w"> </span>counts<span class="w"> </span>(monitor).
+<span class="linenos">113</span><span class="w">                </span><span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">114</span><span class="w">                </span><span class="nt">&lt;enumeration&gt;</span>
+<span class="linenos">115</span><span class="w">                    </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"monitor"</span><span class="nt">/&gt;</span>
+<span class="linenos">116</span><span class="w">                    </span><span class="nt">&lt;item</span><span class="w"> </span><span class="na">value=</span><span class="s">"timer"</span><span class="nt">/&gt;</span>
+<span class="linenos">117</span><span class="w">                </span><span class="nt">&lt;/enumeration&gt;</span>
+<span class="linenos">118</span><span class="w">            </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos">119</span><span class="w">            </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"preset"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_FLOAT"</span><span class="nt">&gt;</span>
+<span class="linenos">120</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>preset<span class="w"> </span>value<span class="w"> </span>for<span class="w"> </span>time<span class="w"> </span>or<span class="w"> </span>monitor<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">121</span><span class="w">            </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos">122</span><span class="w">            </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">name=</span><span class="s">"integral"</span><span class="w"> </span><span class="na">type=</span><span class="s">"NX_FLOAT"</span><span class="w"> </span><span class="na">units=</span><span class="s">"NX_ANY"</span><span class="nt">&gt;</span>
+<span class="linenos">123</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>Total<span class="w"> </span>integral<span class="w"> </span>monitor<span class="w"> </span>counts<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">124</span><span class="w">            </span><span class="nt">&lt;/field&gt;</span>
+<span class="linenos">125</span><span class="w">        </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos">126</span><span class="w">        </span><span class="nt">&lt;group</span><span class="w"> </span><span class="na">type=</span><span class="s">"NXdata"</span><span class="nt">&gt;</span>
+<span class="linenos">127</span><span class="w">            </span><span class="nt">&lt;link</span><span class="w"> </span><span class="na">name=</span><span class="s">"polar_angle"</span><span class="w"> </span><span class="na">target=</span><span class="s">"/NXentry/NXinstrument/NXdetector/polar_angle"</span><span class="nt">&gt;</span>
+<span class="linenos">128</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>Link<span class="w"> </span>to<span class="w"> </span>polar<span class="w"> </span>angle<span class="w"> </span>in<span class="w"> </span>/NXentry/NXinstrument/NXdetector<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">129</span><span class="w">            </span><span class="nt">&lt;/link&gt;</span>
+<span class="linenos">130</span><span class="w">            </span><span class="nt">&lt;link</span><span class="w"> </span><span class="na">name=</span><span class="s">"data"</span><span class="w"> </span><span class="na">target=</span><span class="s">"/NXentry/NXinstrument/NXdetector/data"</span><span class="nt">&gt;</span>
+<span class="linenos">131</span><span class="w">                </span><span class="nt">&lt;doc&gt;</span>Link<span class="w"> </span>to<span class="w"> </span>data<span class="w"> </span>in<span class="w"> </span>/NXentry/NXinstrument/NXdetector<span class="nt">&lt;/doc&gt;</span>
+<span class="linenos">132</span><span class="w">            </span><span class="nt">&lt;/link&gt;</span>
+<span class="linenos">133</span><span class="w">        </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos">134</span><span class="w">    </span><span class="nt">&lt;/group&gt;</span>
+<span class="linenos">135</span><span class="nt">&lt;/definition&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="using-an-application-definition">
+<span id="nxdl-tutorial-usingnxdl"></span><h3><span class="section-number">1.3.3.7. </span>Using an Application Definition<a class="headerlink" href="#using-an-application-definition" title="Link to this heading">¶</a></h3>
+<p>The application definition is like an interface for your data file. In practice files
+will contain far more information. For this, the extendable capability of NeXus
+comes in handy. More data can be added, and upstream software relying on
+the interface defined by the application definition can still retrieve the necessary
+information without any changes to their code.</p>
+<p>NeXus application definitions only standardize classes. You are free to decide
+upon names of groups, subject to them matching regular expression for NeXus
+name attributes (see the <a class="reference internal" href="datarules.html#regexpname"><span class="std std-ref">regular expression
+pattern for NXDL group and field names</span></a>
+in the <a class="reference internal" href="datarules.html#design-naming"><span class="std std-ref">Naming Conventions</span></a> section).
+Note the length limit of 63 characters imposed by HDF5.
+Please use sensible, descriptive names and separate
+multi worded names with underscores.</p>
+<p>Something most people wish to add is more <span class="target" id="index-10"></span>metadata,
+for example in order
+to index files into a database of some sort. Go ahead, do so, if applicable, scan
+the NeXus base classes for standardized names. For metadata, consider to use
+the <code class="docutils literal notranslate"><span class="pre">NXarchive</span></code> definition. In this context, it is worth to mention that a practical
+NeXus file might adhere to more then one application definition. For example,
+WONI data files may adhere to both the <code class="docutils literal notranslate"><span class="pre">NXmonopd</span></code> and <code class="docutils literal notranslate"><span class="pre">NXarchive</span></code> definitions. The
+first for data analysis, the second for indexing into the database.</p>
+<p>Often, instrument scientists want to store the complete state of their instrument
+in data files in order to be able to find out what went wrong if the data is
+unsatisfactory. Go ahead, do so, please use names from the NeXus base classes.</p>
+<p>Site policy might require you to store the names of all your bosses up to the
+current head of state in data files. Go ahead, add as many <code class="docutils literal notranslate"><span class="pre">NXuser</span></code> classes as
+required to store that information.  Knock yourselves silly over this.</p>
+<p>Your Scientific Accounting Department (SAD) may ask of you the preposterous;
+to store billing information
+into data files. Go ahead, do so if your judgment allows.  Just do not expect the NIAC to
+provide base classes for this and do not use the prefix NX for your classes.</p>
+<p>In most cases, NeXus files will just have one <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> class group. But it
+may be required to store multiple related data sets of the results of data analysis
+into the same data file. In this case create more entries. Each entry should be
+interpretable standalone, i.e. contain all the information of a complete <code class="docutils literal notranslate"><span class="pre">NXentry</span></code>
+class. Please keep in mind that groups or data items which stay constant across
+entries can always be linked to save space. Application definitions describe only
+what is included within an <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> and so have no power to enforce any particular
+usage of <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> groups. However, documentation within and accompanying an
+application definition can provide guidance and recommendations on situations where
+the use of multiple <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> groups would be appropriate.</p>
+</section>
+</section>
+<section id="processed-data">
+<span id="processeddata"></span><h2><span class="section-number">1.3.4. </span>Processed Data<a class="headerlink" href="#processed-data" title="Link to this heading">¶</a></h2>
+<p id="index-11">Data reduction and analysis programs are encouraged to store their
+results in NeXus data files, which may be the same file that contains
+the raw data. It is recommended to document the actions taken to
+generate the processed data in a <a class="reference internal" href="classes/base_classes/NXprocess.html#nxprocess"><span class="std std-ref">NXprocess</span></a> group, which has
+fields to store the name of the program used, its version number, and
+the date when it was run. If there are multiple processes recorded in
+the file, the group should also contain a sequence index to specify the
+order in which they were run. NXprocess groups can also contain one or
+more <a class="reference internal" href="classes/base_classes/NXparameters.html#nxparameters"><span class="std std-ref">NXparameters</span></a> groups to store the parameters used by the
+program as well as one or more <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> groups that contain the
+results of the process. This has the advantage of encapsulating all the
+information required to preserve the provenance of the processed data in
+a single group. However, it is also acceptable to store the resulting
+data in a NXdata group at the same level as the NXprocess group in the
+NeXus <span class="target" id="index-12"></span>hierarchy.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">1.3. Constructing NeXus Files and Application Definitions</a><ul>
+<li><a class="reference internal" href="#the-wonderful-new-instrument-woni">1.3.1. The WOnderful New Instrument (WONI)</a></li>
+<li><a class="reference internal" href="#constructing-a-nexus-file-for-woni">1.3.2. Constructing a NeXus file for WONI</a><ul>
+<li><a class="reference internal" href="#decide-which-parameters-need-to-be-stored">1.3.2.1. Decide which parameters need to be stored</a></li>
+<li><a class="reference internal" href="#mapping-parameters-to-nexus">1.3.2.2. Mapping parameters to NeXus</a></li>
+<li><a class="reference internal" href="#decide-on-nxdata">1.3.2.3. Decide on <code class="docutils literal notranslate"><span class="pre">NXdata</span></code></a></li>
+<li><a class="reference internal" href="#fill-in-auxiliary-information">1.3.2.4. Fill in auxiliary Information</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-a-nxdl-specification">1.3.3. Creating a NXDL Specification</a><ul>
+<li><a class="reference internal" href="#application-definition-steps">1.3.3.1. Application Definition Steps</a></li>
+<li><a class="reference internal" href="#step-1-think-hard-about-data">1.3.3.2. Step 1: <em>Think!</em> hard about data</a></li>
+<li><a class="reference internal" href="#step-2-map-data-into-the-nexus-hierarchy">1.3.3.3. Step 2: <em>Map</em> Data into the NeXus Hierarchy</a></li>
+<li><a class="reference internal" href="#step-3-describe-this-map-in-a-nxdl-file">1.3.3.4. Step 3: <em>Describe</em> this map in a NXDL file</a></li>
+<li><a class="reference internal" href="#step-4-standardize-with-the-niac">1.3.3.5. Step 4: <em>Standardize</em> with the NIAC</a></li>
+<li><a class="reference internal" href="#full-listing-of-the-woni-application-definition">1.3.3.6. Full listing of the WONI Application Definition</a></li>
+<li><a class="reference internal" href="#using-an-application-definition">1.3.3.7. Using an Application Definition</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#processed-data">1.3.4. Processed Data</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="fileformat.html"
+                          title="previous chapter"><span class="section-number">1.2.3.3. </span>Physical File format</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="strategies.html"
+                          title="next chapter"><span class="section-number">1.4. </span>Strategies for storing information in NeXus data files</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <p>Have a Question? <a href="https://github.com/nexusformat/definitions/issues/new">Get help</a></p>
+    <ul class="this-page-menu">
+    <style>
+		  .avatar-container {
+		    display: flex;
+		    align-items: center;
+		  }
+		
+		  .avatar {
+		    width: 32px;
+		    height: 32px;
+		    border-radius: 50%;
+		    margin-right: 5px;
+		  }
+		</style>
+		
+    
+    
+		<div class="avatar-container">
+      
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="google_search" style="display: none">
+	<hr />
+	<h3>Google search</h3>
+	<form method="get" action="https://www.google.com/search">
+		<table border="0" align="center" cellpadding="0">
+			<tr>
+				<td>
+					<input type="text"   name="q" value="" />
+				</td>
+			</tr>
+			<tr>
+				<td align="center" style="font-size:75%">
+					<input type="radio"  name="sitesearch" value="" />global
+					<input type="radio"  name="sitesearch"
+						value="manual.nexusformat.org" 
+						checked />NeXus manual
+					<input type="submit" value="Go" />
+					<br />
+				</td>
+			</tr>
+		</table>
+	</form>                                
+</div>
+<script type="text/javascript">$('#google_search').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="strategies.html" title="1.4. Strategies for storing information in NeXus data files"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fileformat.html" title="1.2.3.3. Physical File format"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">nexus v2026.01 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="user_manual.html" ><span class="section-number">1. </span>NeXus: User Manual</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">1.3. </span>Constructing NeXus Files and Application Definitions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; <a href="copyright.html">Copyright</a> 1996-2026, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
