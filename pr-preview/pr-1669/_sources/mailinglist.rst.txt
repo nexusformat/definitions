@@ -15,6 +15,10 @@ design and operation of the NeXus format.
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus
 + Archive: http://lists.nexusformat.org/pipermail/nexus
 
+There are video conferences on NeXus roughly twice a month.
+Agenda and joining details are posted on the webpage: https://www.nexusformat.org/Teleconferences.html
+In addition calendar invites are sent to this list.
+
 .. note::  Subscription to nexus@nexusformat.org does not subscribe
    you automatically to any other NeXus mailing list.
 
@@ -41,31 +45,18 @@ General discussions should be held in the public mailing list.
 
 .. _NeXus.teleconference.niac:
 
-NeXus Video Conference Announcements
-====================================
+Retired mailing lists
+=====================
 
-There are video conferences on NeXus roughly twice a month.
-Agenda and joining details are posted on the webpage: https://www.nexusformat.org/Teleconferences.html
-In addition calendar invites are sent to this list.
-NeXus-Tech used to be used for discussions in the past. Now the list is moderated to only allow
-communication related to holding meetings. All other traffic should go to the main list nexus@nexusformat.org
+These lists were used for technical discussion in the past but are now retired.  Most traffic should go to the main list nexus@nexusformat.org.
 
-+ List Address: nexus-tech@nexusformat.org
-+ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-tech
-
-.. _NeXus.mailinglist.Developers:
-
-NeXus Developers Mailing List (retired)
-=======================================
-
-This mailing list was for discussions concerning the technical
-development of NeXus (the Definitions, NXDL, and
-the NeXus Application Program Interface). There was, however, much
-overlap with the general NeXus mailing list and so this separate list was
-closed in October 2012, but the archive of previous posting is still available.
+.. closed for new contributions per NIAC 2026
+        + List Address: nexus-tech@nexusformat.org
+        + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-tech
 
 .. closed for new contributions per NIAC 2012
 	+ List Address: nexus-developers@nexusformat.org
 	+ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
 
-+ Archive: http://lists.nexusformat.org/pipermail/nexus-developers
++ Archive nexus-tech: https://lists.nexusformat.org/pipermail/nexus-tech
++ Archive nexus-developers: http://lists.nexusformat.org/pipermail/nexus-developers
