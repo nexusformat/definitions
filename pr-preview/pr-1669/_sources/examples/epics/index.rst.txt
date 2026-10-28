@@ -92,7 +92,7 @@ even if you add PVs (a.k.a. *ndattribute*) to the attributes.xml file.
    :language: xml
 
 If you do not specify where in the file to write an *ndattribute* from the 
-attributes file, it will be written within the group that has
+attributes file, it will be written within the HDF5 group that has
 ``ndattr_default="true"``.  This identifies the group to the 
 HDF5 file writing plugin as the *default location* to store
 content from the attributes file.  In the example layout file, 
