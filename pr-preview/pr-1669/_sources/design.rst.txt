@@ -56,9 +56,11 @@ Terms at four levels
 The words *group*, *field*, *attribute* and *link* each have several
 meanings.  This manual always says which one, at one of four levels:
 
-* **XML Schema**: the grammar :ref:`nxdl.xsd <NXDL>`.  Its ``xs:element``
-  declarations declare the elements of an NXDL file, its ``xs:attribute``
-  declarations the XML attributes of those elements.
+* **XML Schema**: the grammar :ref:`nxdl.xsd <NXDL>`.  Its element
+  declarations (``xs:element``) and attribute declarations
+  (``xs:attribute``) define the elements of an NXDL file and their XML
+  attributes.  A *model group* (``xs:group``, such as ``groupGroup``) is a
+  named set of element declarations, not an element of an NXDL file.
 * **NXDL**: a class definition, written in an ``*.nxdl.xml`` file.  Its
   ``group``, ``field``, ``attribute`` and ``link`` elements describe NeXus
   objects; their *XML attributes*, such as ``name`` or ``type``, say how.
@@ -77,7 +79,7 @@ and ``type`` are XML attributes of that element.
      - NXDL (``*.nxdl.xml``)
      - NeXus (data model)
      - Storage (HDF5; Zarr)
-   * - | declares the ``group`` element
+   * - | declaration of the ``group`` element
        | :samp:`<xs:element name="{group}"/>`
      - | ``group`` element
        | :samp:`<{group} type="NXdetector"/>`
@@ -85,7 +87,7 @@ and ``type`` are XML attributes of that element.
        | :samp:`/entry/instrument/{detector}`
      - | HDF5 group; Zarr group
        | :samp:`/entry/instrument/{detector}`
-   * - | declares the ``field`` element
+   * - | declaration of the ``field`` element
        | :samp:`<xs:element name="{field}"/>`
      - | ``field`` element
        | :samp:`<{field} name="data"/>`
@@ -93,7 +95,7 @@ and ``type`` are XML attributes of that element.
        | :samp:`/entry/data/{data}`
      - | HDF5 dataset; Zarr array
        | :samp:`/entry/data/{data}`
-   * - | declares the ``attribute`` element
+   * - | declaration of the ``attribute`` element
        | :samp:`<xs:element name="{attribute}"/>`
      - | ``attribute`` element
        | :samp:`<{attribute} name="units"/>`
@@ -101,15 +103,15 @@ and ``type`` are XML attributes of that element.
        | :samp:`@{units}`
      - | HDF5 attribute; Zarr attribute
        | :samp:`{units} = "eV"`
-   * - | declares the ``link`` element
+   * - | declaration of the ``link`` element
        | :samp:`<xs:element name="{link}"/>`
      - | ``link`` element
        | :samp:`<{link} name="data" target="…"/>`
      - | NeXus link
-       | :samp:`/entry/data/data`, with :samp:`@{target}`
+       | :samp:`/entry/data/{data}`, which has ``@target``
      - | HDF5 hard, soft or external link, virtual dataset or copy; Zarr copy
        | :samp:`/entry/data/{data}`
-   * - | declares the XML attribute ``type``
+   * - | declaration of the XML attribute ``type``
        | :samp:`<xs:attribute name="{type}"/>`
      - | XML attribute ``type`` of a ``field`` element
        | :samp:`<field {type}="NX_INT"/>`
@@ -118,11 +120,16 @@ and ``type`` are XML attributes of that element.
      - | HDF5 datatype; Zarr data type
        | :samp:`{int32}`
 
-*Element* is an XML term.  XML syntax is ``<element attribute="value"/>``:
-in ``<field name="data" type="NX_INT"/>``, ``field`` is the name of the
-element, and ``name`` and ``type`` are its XML attributes.  An NXDL field
-is written as the XML element ``field``, so this manual calls it the
-``field`` element.
+*Element* and *XML attribute* are XML terms, as in
+``<element attribute="value"/>``.  In ``<field name="data" type="NX_INT"/>``,
+``field`` is the name of the element, and ``name`` and ``type`` are its XML
+attributes.  This manual calls this element the ``field`` element.
+
+``nxdl.xsd`` is an XML file too, so it also has elements and XML attributes.
+In ``<xs:attribute name="type"/>``, ``name`` is an XML attribute of the
+``xs:attribute`` element.  Together they declare the XML attribute ``type``,
+which an element of an NXDL file may have.  To be clear, this manual names the
+element an XML attribute belongs to.
 
 One qualifier may cover a list, as in "NeXus groups, fields and attributes".
 In the documentation of a class definition, *group*, *field* and *attribute*
@@ -447,7 +454,7 @@ another: by identifying the original, duplicate copies of the data are not
 converted.
 
 Where the content is stored, in one file, in several files or in an object
-store, is not part of NeXus: the value of ``target`` is always a path in the
+store, is not part of NeXus: the value of ``@target`` is always a path in the
 NeXus tree (see :ref:`design.links.storage`).
 
 .. _design.links.definitions:
@@ -457,18 +464,18 @@ NeXus links in class definitions
 
 Any NeXus field or group may be a NeXus link, whether or not its class
 definition says so.  An application definition may also *require* a NeXus
-link, with an NXDL ``link`` element.  Its documentation then shows the item
+link, with a ``link`` element.  Its documentation then shows the item
 as, for example::
 
     data: link (target: /NXentry/NXinstrument/NXdetector/data)
 
 A file satisfies this when the NeXus group contains a NeXus field or group named
-``data`` with the same content as an item that matches the target, and
+``data`` with the same content as an item that matches the XML attribute ``target``, and
 one of the two is a NeXus link to the other.  Either may be the original.
-The NXDL ``link`` element documents nothing else: type, units and
-dimensions are those documented for the item the target matches.
+The ``link`` element documents nothing else: type, units and
+dimensions are those documented for the item that the XML attribute ``target`` matches.
 
-The target of an NXDL ``link`` is written with class names, such as ``NXdetector``, and
+The XML attribute ``target`` of a ``link`` element is written with class names, such as ``NXdetector``, and
 refers to an item documented in the class definitions, not to a path in a
 file.  The path of the original does not have to match it.
 This XML attribute of the ``link`` element is not the NeXus attribute
@@ -544,6 +551,11 @@ Virtual datasets and copies
 A virtual dataset or a copy is an object of its own, with its own
 HDF5 attributes.  Add the HDF5 attribute ``target`` to it, with the path of the
 original as value.  The original needs no HDF5 attribute ``target``.
+
+The same holds for an HDF5 dataset with external binary data
+(``Dataset.external`` in h5py), whose values are stored in a binary file
+outside the HDF5 file.  When it reads the same bytes of the same binary file
+as the original, it has the same values.
 
 .. _design.external_file_link:
 
