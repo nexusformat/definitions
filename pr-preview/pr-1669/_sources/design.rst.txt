@@ -57,14 +57,15 @@ The words *group*, *field*, *attribute* and *link* each have several
 meanings.  This manual always says which one, at one of five levels:
 
 * **XML Schema**: the grammar :ref:`nxdl.xsd <NXDL>`.  Its element
-  declarations (``xs:element``) and attribute declarations
-  (``xs:attribute``) define the elements of an NXDL file and their XML
-  attributes.  A *model group* (``xs:group``, such as ``groupGroup``) is a
-  named set of element declarations, not an element of an NXDL file.
+  declarations (``xs:element``) define the terms of NXDL, such as ``group``
+  and ``field``; its attribute declarations (``xs:attribute``) define the XML
+  attributes these terms may have.  A *model group* (``xs:group``, such as
+  ``groupGroup``) is a named set of element declarations, not a term of NXDL.
 * **NXDL**: the ``*.nxdl.xml`` files, written in the NeXus Definition
-  Language.  Their ``group``, ``field``, ``attribute`` and ``link`` elements
-  define NeXus classes; their *XML attributes*, such as ``name`` or ``type``,
-  say how.
+  Language.  Their *NXDL groups*, *NXDL fields*, *NXDL attributes* and
+  *NXDL links*, written as ``group``, ``field``, ``attribute`` and ``link``
+  elements, define NeXus classes; their *XML attributes*, such as ``name`` or
+  ``type``, say how.
 * **NeXus**: the NeXus classes, base classes and application definitions, as
   their NXDL files define them, with what they inherit through ``extends``.
   A NeXus class has *NeXus groups*, *NeXus fields*, *NeXus attributes* and
@@ -80,9 +81,9 @@ meanings.  This manual always says which one, at one of five levels:
 * **Storage**: how a file format stores that content.
 
 For example, in ``<attribute name="units" type="NX_CHAR"/>`` the
-``attribute`` element defines the NeXus attribute ``@units`` of a NeXus field,
-which describes the content attribute ``@units`` of content fields.  ``name``
-and ``type`` are XML attributes of that element.  ``@`` marks an attribute at
+NXDL attribute defines the NeXus attribute ``@units`` of a NeXus field, which
+describes the content attribute ``@units`` of content fields.  ``name`` and
+``type`` are XML attributes of that NXDL attribute.  ``@`` marks an attribute at
 both levels: a NeXus attribute in a class path, such as
 ``/NXdata/DATA@long_name``, and a content attribute, such as
 ``@units="eV"``.
@@ -95,9 +96,9 @@ both levels: a NeXus attribute in a class path, such as
      - NeXus (classes)
      - Content (any file format)
      - Storage (HDF5; Zarr)
-   * - | declaration of the ``group`` element
+   * - | declaration of the NXDL group
        | :samp:`<xs:element name="{group}"/>`
-     - | ``group`` element
+     - | NXDL group
        | :samp:`<{group} type="NXdetector"/>`
      - | NeXus group
        | :samp:`/NXentry/NXinstrument/{NXdetector}`
@@ -105,9 +106,9 @@ both levels: a NeXus attribute in a class path, such as
        | :samp:`/entry/instrument/{detector}`
      - | HDF5 group; Zarr group
        | :samp:`/entry/instrument/{detector}`
-   * - | declaration of the ``field`` element
+   * - | declaration of the NXDL field
        | :samp:`<xs:element name="{field}"/>`
-     - | ``field`` element
+     - | NXDL field
        | :samp:`<{field} name="data"/>`
      - | NeXus field
        | :samp:`/NXentry/NXdata/{data}`
@@ -115,9 +116,9 @@ both levels: a NeXus attribute in a class path, such as
        | :samp:`/entry/data/{data}`
      - | HDF5 dataset; Zarr array
        | :samp:`/entry/data/{data}`
-   * - | declaration of the ``attribute`` element
+   * - | declaration of the NXDL attribute
        | :samp:`<xs:element name="{attribute}"/>`
-     - | ``attribute`` element
+     - | NXDL attribute
        | :samp:`<{attribute} name="units"/>`
      - | NeXus attribute
        | :samp:`/NXentry/NXdata/data@{units}`
@@ -125,9 +126,9 @@ both levels: a NeXus attribute in a class path, such as
        | :samp:`/entry/data/data@{units}="eV"`
      - | HDF5 attribute; Zarr attribute
        | :samp:`/entry/data/data: {units} = "eV"`
-   * - | declaration of the ``link`` element
+   * - | declaration of the NXDL link
        | :samp:`<xs:element name="{link}"/>`
-     - | ``link`` element
+     - | NXDL link
        | :samp:`<{link} name="data" target="…"/>`
      - | NeXus link
        | :samp:`/NXentry/NXdata/{data}`, linked to ``…/NXdetector/data``
@@ -137,7 +138,7 @@ both levels: a NeXus attribute in a class path, such as
        | :samp:`/entry/data/{data}`
    * - | declaration of the XML attribute ``type``
        | :samp:`<xs:attribute name="{type}"/>`
-     - | XML attribute ``type`` of a ``field`` element
+     - | XML attribute ``type`` of an NXDL field
        | :samp:`<field {type}="NX_INT"/>`
      - | data type of a NeXus field
        | :samp:`{NX_INT}`
@@ -149,13 +150,13 @@ both levels: a NeXus attribute in a class path, such as
 *Element* and *XML attribute* are XML terms, as in
 ``<element attribute="value"/>``.  In ``<field name="data" type="NX_INT"/>``,
 ``field`` is the name of the element, and ``name`` and ``type`` are its XML
-attributes.  This manual calls this element the ``field`` element.
+attributes.  This manual calls this element an NXDL field.
 
 ``nxdl.xsd`` is an XML file too, so it also has elements and XML attributes.
 In ``<xs:attribute name="type"/>``, ``name`` is an XML attribute of the
 ``xs:attribute`` element.  Together they declare the XML attribute ``type``,
-which an element of an NXDL file may have.  To be clear, this manual names the
-element an XML attribute belongs to.
+which NXDL fields and attributes may have.  To be clear, this manual names
+what an XML attribute belongs to.
 
 .. _tree.structure:
 
@@ -374,8 +375,8 @@ software that writes the file (see :ref:`design.links.storage`).
 The word *link* has four meanings (see :ref:`Design-Terms`), so this manual
 always says which one:
 
-* a ``link`` **element**: an element of an NXDL file that defines a NeXus
-  link;
+* an **NXDL link**: a ``link`` element in an NXDL file, which defines a
+  NeXus link;
 * a **NeXus link**: an item of a NeXus class that, in a file, must be
   connected by a content link to a content field or group that matches the
   XML attribute ``target`` (see :ref:`design.links.definitions`);
@@ -488,8 +489,8 @@ Links of a class
 ----------------
 
 Any content field or group may be a content link, whether or not its class
-says so.  An application definition may also *require* one: a ``link``
-element defines a NeXus link, which the documentation of the class
+says so.  An application definition may also *require* one: an NXDL link
+defines a NeXus link, which the documentation of the class
 shows as, for example::
 
     data: link (target: /NXentry/NXinstrument/NXdetector/data)
@@ -500,10 +501,10 @@ attribute ``target``, and one of the two is a content link to the other.  Either
 be the original.  A NeXus link states nothing else: type, units and dimensions are
 those of the NeXus field or group that the XML attribute ``target`` names.
 
-The XML attribute ``target`` of a ``link`` element is a class path, written
+The XML attribute ``target`` of an NXDL link is a class path, written
 with class names such as ``NXdetector``: it names a NeXus field or group,
 not a path in a file.  The path of the original does not have to match it.
-This XML attribute of the ``link`` element is not the content attribute
+This XML attribute of the NXDL link is not the content attribute
 ``@target`` of a content field or group in a data file.  It matches content fields
 and groups in the file, such as the content field ``data`` of an ``NXdetector`` group in the
 ``NXinstrument`` group of the entry; it does not say at which path the
@@ -710,7 +711,7 @@ the other hand, a typical NeXus file will only contain a small subset of the
 possible classes.
 
 .. note::
-	The ``group``, ``field``, ``link`` and ``attribute`` elements of a base class
+	The NXDL groups, fields, links and attributes of a base class
 	definition are all **optional**, with a few particular exceptions in
 	``NXentry`` and ``NXdata``, and the NeXus attribute ``NX_class``, which every
 	content group must have (see :ref:`NXobject`).  They are named in the specification
@@ -774,11 +775,11 @@ Inheritance in NeXus
 
 Single inheritance is supported in NeXus for both base classes and application definitions (which are
 described below).  Extending a base class or application definition inherits the properties and objects of the
-parent class or definition, such as its ``group``, ``field`` and ``attribute`` elements and symbol tables. These properties and objects
+parent class or definition, such as its NXDL groups, NXDL fields, NXDL attributes and symbol tables. These properties and objects
 of the parent can then be overridden by the subclass.  Only single inheritance is allowed (you can only inherit
 from a single parent).
 
-Use the XML attribute ``extends`` of a ``definition`` element to indicate which definition is being subclassed. Base classes
+Use the XML attribute ``extends`` of an NXDL definition to indicate which definition is being subclassed. Base classes
 should extend from ``NXobject`` unless they are being subclassed.
 
 .. _NXdata-facilitates-TheDefaultPlot:
