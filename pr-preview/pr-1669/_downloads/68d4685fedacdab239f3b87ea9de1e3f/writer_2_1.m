@@ -1,4 +1,4 @@
-% Writes a simple NeXus HDF5 file with HDF5 hard links
+% Writes a simple NeXus HDF5 file with NeXus links, stored as HDF5 hard links
 % according to the example from Figure 2.1 in the Design chapter
 
 filename = 'writer_2_1.hdf5';
@@ -20,6 +20,10 @@ h5writeatt(filename,'/entry/instrument/detector/two_theta','units','degrees');
 h5create(filename,'/entry/instrument/detector/counts',[length(counts)],'DataType','int32');
 h5write(filename,'/entry/instrument/detector/counts',counts);
 h5writeatt(filename,'/entry/instrument/detector/counts','units','counts');
+
+% mark the originals: the target attribute makes the HDF5 hard links below NeXus links
+h5writeatt(filename,'/entry/instrument/detector/two_theta','target','/entry/instrument/detector/two_theta');
+h5writeatt(filename,'/entry/instrument/detector/counts','target','/entry/instrument/detector/counts');
 
 % create group NXdata with HDF5 hard links to detector
 % note: requires the additional file h5link.m
