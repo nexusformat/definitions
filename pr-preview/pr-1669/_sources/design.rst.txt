@@ -13,7 +13,7 @@ simple data sets, such as a single data array and its axes, and also of highly c
 data, such as the simulation results or an entire multi-component instrument. This flexibility
 is a necessity as NeXus strives to capture data from a wild variety of applications in X-ray, muSR and
 neutron scattering. The flexibility is achieved through a :index:`hierarchical <hierarchy>`
-structure, with related NeXus *fields* collected together into NeXus *groups*,
+structure, with related content *fields* collected together into content *groups*,
 making NeXus files easy to navigate, even without any
 documentation. NeXus files are self-describing, and should be easy to understand, at
 least by those familiar with the experimental technique.
@@ -28,20 +28,20 @@ Before discussing the design of NeXus in greater detail it is necessary to defin
 used by NeXus. These are:
 
 :ref:`Design-Groups`
-    Levels in the NeXus hierarchy. May contain NeXus fields and other NeXus groups.
+    Levels in the NeXus hierarchy. May contain content fields and other content groups.
 
 :ref:`Design-Fields`
     Multidimensional arrays and scalars representing the actual data to be stored.
 
 :ref:`Design-Attributes`
-    NeXus attributes containing additional metadata can be assigned to NeXus
+    Content attributes containing additional metadata can be assigned to content
     groups, fields, or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
     The same content in more than one place of the hierarchy.
 
 :ref:`Design-NeXusClasses`
-    Dictionaries of names possible in the various types of NeXus groups.
+    Dictionaries of names possible in the various types of content groups.
 
 :ref:`Design-NeXusApplications`
     Describe the minimum content of a NeXus file for a particular usage case.
@@ -50,33 +50,49 @@ In the following sections these elements of NeXus files will be defined in more 
 
 .. _Design-Terms:
 
-Terms at four levels
+Terms at five levels
 ====================
 
 The words *group*, *field*, *attribute* and *link* each have several
-meanings.  This manual always says which one, at one of four levels:
+meanings.  This manual always says which one, at one of five levels:
 
 * **XML Schema**: the grammar :ref:`nxdl.xsd <NXDL>`.  Its element
   declarations (``xs:element``) and attribute declarations
   (``xs:attribute``) define the elements of an NXDL file and their XML
   attributes.  A *model group* (``xs:group``, such as ``groupGroup``) is a
   named set of element declarations, not an element of an NXDL file.
-* **NXDL**: a class definition, written in an ``*.nxdl.xml`` file.  Its
-  ``group``, ``field``, ``attribute`` and ``link`` elements describe NeXus
-  objects; their *XML attributes*, such as ``name`` or ``type``, say how.
+* **NXDL**: the ``*.nxdl.xml`` files, written in the NeXus Definition
+  Language.  Their ``group``, ``field``, ``attribute`` and ``link`` elements
+  define NeXus classes; their *XML attributes*, such as ``name`` or ``type``,
+  say how.
+* **NeXus**: the NeXus classes, base classes and application definitions, as
+  their NXDL files define them, with what they inherit through ``extends``.
+  A NeXus class has *NeXus groups*, *NeXus fields*, *NeXus attributes* and
+  *NeXus links*, named by
+  :ref:`class paths <preface.Class.path.specification>`, such as
+  ``/NXentry/NXinstrument/NXdetector/data``.
 * **Content**: the full content of a NeXus file, values included, without
-  anything specific to a file format.
+  anything specific to a file format: *content groups*, *content fields*,
+  *content attributes* and *content links*, named by paths such as
+  ``/entry/instrument/detector/data``.  A NeXus class describes content: the
+  NeXus field ``data`` of ``NXdetector`` describes the content field ``data``
+  of every content group of class ``NXdetector``.
 * **Storage**: how a file format stores that content.
 
 For example, in ``<attribute name="units" type="NX_CHAR"/>`` the
-``attribute`` element declares the NeXus attribute ``@units``, and ``name``
-and ``type`` are XML attributes of that element.
+``attribute`` element defines the NeXus attribute ``@units`` of a NeXus field,
+which describes the content attribute ``@units`` of content fields.  ``name``
+and ``type`` are XML attributes of that element.  ``@`` marks an attribute at
+both levels: a NeXus attribute in a class path, such as
+``/NXdata/DATA@long_name``, and a content attribute, such as
+``@units="eV"``.
 
 .. list-table::
    :header-rows: 1
 
    * - XML Schema (``nxdl.xsd``)
      - NXDL (``*.nxdl.xml``)
+     - NeXus (classes)
      - Content (any file format)
      - Storage (HDF5; Zarr)
    * - | declaration of the ``group`` element
@@ -84,6 +100,8 @@ and ``type`` are XML attributes of that element.
      - | ``group`` element
        | :samp:`<{group} type="NXdetector"/>`
      - | NeXus group
+       | :samp:`/NXentry/NXinstrument/{NXdetector}`
+     - | content group
        | :samp:`/entry/instrument/{detector}`
      - | HDF5 group; Zarr group
        | :samp:`/entry/instrument/{detector}`
@@ -92,6 +110,8 @@ and ``type`` are XML attributes of that element.
      - | ``field`` element
        | :samp:`<{field} name="data"/>`
      - | NeXus field
+       | :samp:`/NXentry/NXdata/{data}`
+     - | content field
        | :samp:`/entry/data/{data}`
      - | HDF5 dataset; Zarr array
        | :samp:`/entry/data/{data}`
@@ -100,14 +120,18 @@ and ``type`` are XML attributes of that element.
      - | ``attribute`` element
        | :samp:`<{attribute} name="units"/>`
      - | NeXus attribute
-       | :samp:`@{units}="eV"`
+       | :samp:`/NXentry/NXdata/data@{units}`
+     - | content attribute
+       | :samp:`/entry/data/data@{units}="eV"`
      - | HDF5 attribute; Zarr attribute
-       | :samp:`{units} = "eV"`
+       | :samp:`/entry/data/data: {units} = "eV"`
    * - | declaration of the ``link`` element
        | :samp:`<xs:element name="{link}"/>`
      - | ``link`` element
        | :samp:`<{link} name="data" target="…"/>`
      - | NeXus link
+       | :samp:`/NXentry/NXdata/{data}`, linked to ``…/NXdetector/data``
+     - | content link
        | :samp:`/entry/data/{data}`, which has ``@target``
      - | HDF5 hard, soft or external link, virtual dataset or copy; Zarr copy
        | :samp:`/entry/data/{data}`
@@ -115,7 +139,9 @@ and ``type`` are XML attributes of that element.
        | :samp:`<xs:attribute name="{type}"/>`
      - | XML attribute ``type`` of a ``field`` element
        | :samp:`<field {type}="NX_INT"/>`
-     - | data type of the NeXus field
+     - | data type of a NeXus field
+       | :samp:`{NX_INT}`
+     - | data type of the content field
        | :samp:`{integer} values`
      - | HDF5 datatype; Zarr data type
        | :samp:`{int32}`
@@ -131,11 +157,6 @@ In ``<xs:attribute name="type"/>``, ``name`` is an XML attribute of the
 which an element of an NXDL file may have.  To be clear, this manual names the
 element an XML attribute belongs to.
 
-The word that gives the level may cover a list: "NeXus groups, fields and
-attributes" means NeXus groups, NeXus fields and NeXus attributes.
-In the documentation of a class definition, *group*, *field* and *attribute*
-mean the NeXus group, field and attribute that the definition describes.
-
 .. _tree.structure:
 
 .. note:: Notation used to describe a NeXus data file
@@ -146,11 +167,11 @@ mean the NeXus group, field and attribute that the definition describes.
 
    The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.
 
-   * NeXus groups have a ``/`` appended to their name (with NeXus class name shown).
+   * Content groups have a ``/`` appended to their name (with NeXus class name shown).
    * Indentation shows membership in the lesser indented parent above.
-   * NeXus fields have a data type and value appended (for arrays, this may be an abbreviated view).
-   * NeXus attributes (of NeXus groups or fields) are prefixed with ``@``.
-   * NeXus links are described with some sort of arrow notation such as ``-->``.
+   * Content fields have a data type and value appended (for arrays, this may be an abbreviated view).
+   * Content attributes (of content groups or fields) are prefixed with ``@``.
+   * Content links are described with some sort of arrow notation such as ``-->``.
 
 
 .. index::
@@ -160,21 +181,21 @@ mean the NeXus group, field and attribute that the definition describes.
 
 .. _Design-Groups:
 
-NeXus Groups
-============
+Content Groups
+==============
 
-NeXus files consist of data groups,
-which contain NeXus fields and/or other
-data groups to form a :index:`hierarchical structure <hierarchy>`.
+NeXus files consist of content groups,
+which contain content fields and/or other
+content groups to form a :index:`hierarchical structure <hierarchy>`.
 This hierarchy is designed to make it
-easy to navigate a NeXus file by storing related NeXus fields together. Data
+easy to navigate a NeXus file by storing related content fields together. Content
 groups are identified both by a name, which must be unique within a particular
-data group, and a class. There can be multiple data groups with the same class
+content group, and a class. There can be multiple content groups with the same class
 but they must have different names (based on the :index:`HDF rules <rules; HDF>`).
 
-For the class names used with NeXus data groups the prefix NX is reserved. Thus all NeXus class
-names start with NX. The class of a NeXus group is stored in its NeXus attribute ``NX_class``
-(see :ref:`NXobject </NXobject@NX_class-attribute>`; for the NeXus root group,
+For the class names the prefix NX is reserved. Thus all NeXus class
+names start with NX. The class of a content group is stored in its content attribute ``NX_class``
+(see :ref:`NXobject </NXobject@NX_class-attribute>`; for the root group,
 :ref:`NXroot </NXroot@NX_class-attribute>`).
 
     .. index::
@@ -189,17 +210,17 @@ names start with NX. The class of a NeXus group is stored in its NeXus attribute
 
 .. _Design-Fields:
 
-NeXus Fields
-============
+Content Fields
+==============
 
-NeXus fields (also called data fields, data items or data sets)
+Content fields (also called data fields, data items or data sets)
 contain the essential information stored in a NeXus file. They can
 be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 2-byte, 4-byte, 8-byte) and types (integers, floats, characters). They may
 store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
-etc.). NeXus fields are identified by their names, which must be unique within the
-NeXus group in which they are stored.  Some NeXus fields have engineering units to be specified.
+etc.). Content fields are identified by their names, which must be unique within the
+content group in which they are stored.  Some content fields have engineering units to be specified.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a NeXus field is
 expected to be an array of several dimensions.
 
@@ -230,7 +251,7 @@ expected to be an array of several dimensions.
 See the sections :ref:`nxdl-types` and :ref:`nxdl-units` for complete lists of
 the data types and engineering units types, respectively.
 
-In the case of streaming data acquisition, when time-stamped values of data are collected, NeXus fields can be replaced with :ref:`NXlog` structures of 
+In the case of streaming data acquisition, when time-stamped values of data are collected, content fields can be replaced with :ref:`NXlog` structures of 
 the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a :ref:`NXlog` structure.  
 
 
@@ -242,18 +263,18 @@ the same name. For example, if time stamped data for wavelength is being streame
 
 .. _Design-Attributes:
 
-NeXus Attributes
-================
+Content Attributes
+==================
 
-NeXus attributes are extra (meta-)information that are associated with particular
-NeXus groups or fields. They are used to annotate data, e.g. with physical
+Content attributes are extra (meta-)information that are associated with particular
+content groups or fields. They are used to annotate data, e.g. with physical
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses them to identify
 :index:`plottable data <plotting>`
 and their axes, etc. In a :ref:`tree structure<tree.structure>`,
-a NeXus attribute is usually shown with a ``@`` prefix, such as ``@units``.
-NeXus attributes that every NeXus group or field may have are declared in
-:ref:`NXobject`, and for the NeXus root group in :ref:`NXroot`.
+a content attribute is usually shown with a ``@`` prefix, such as ``@units``.
+Content attributes that every content group or field may have are described in
+:ref:`NXobject`, and for the root group in :ref:`NXroot`.
 A description of some of the many possible
 NeXus attributes can be found in the next table:
 
@@ -270,8 +291,8 @@ NeXus attributes can be found in the next table:
 			Defines which data set contains the signal
 			to be :index:`plotted <plotting>`.
 			Use ``signal="{dataset_name}"`` where ``{dataset_name}``
-			is the name of a NeXus field (which may be a NeXus link) in the :ref:`NXdata` group.
-			The NeXus field referred to by the NeXus attribute *signal*
+			is the name of a content field (which may be a content link) in the :ref:`NXdata` group.
+			The content field referred to by the content attribute *signal*
 			might be referred to as the ":index:`signal data`".
 
 		``long_name`` (*NX_CHAR*)
@@ -311,30 +332,30 @@ NeXus attributes can be found in the next table:
 
 .. _Design-FileAttributes:
 
-NeXus attributes of the file
-============================
+Content attributes of the file
+==============================
 
-Finally, some NeXus attributes are defined at file level.
+Finally, some content attributes are defined at file level.
 They are specified in the base class :ref:`NXroot`.
 
 
 .. _Design-Links:
 
-NeXus Links
-===========
+Links
+=====
 
 .. index::
    ! single: link target (internal attribute)
 
-A NeXus link states that a NeXus field or group in one place of the hierarchy has
-the same content as a NeXus field or group in another place.
-The NeXus definition sometimes requires the same data in different NeXus groups.
+A content link states that a content field or group in one place of the hierarchy has
+the same content as a content field or group in another place.
+The NeXus definition sometimes requires the same data in different content groups.
 For example: detector data belongs in the
 :ref:`NXinstrument`/:ref:`NXdetector` group
 but is also needed in :ref:`NXdata` for automatic plotting.
-A NeXus link expresses that both are the same data.
+A content link expresses that both are the same data.
 See the :ref:`figure <fig.data-linking>` for
-a more descriptive representation of the concept of NeXus links.
+a more descriptive representation of the concept of content links.
 
 .. compound::
 
@@ -344,19 +365,22 @@ a more descriptive representation of the concept of NeXus links.
         :alt: fig.data-linking
         :width: 60%
 
-        NeXus links in a NeXus file
+        Content links in a NeXus file
 
-What a NeXus link *is* is part of NeXus and does not depend
+What a content link *is* is part of the content and does not depend
 on the file format; how it is *stored* is up to the file format and the
 software that writes the file (see :ref:`design.links.storage`).
 
-The word *link* has three meanings (see :ref:`Design-Terms`), so this manual
+The word *link* has four meanings (see :ref:`Design-Terms`), so this manual
 always says which one:
 
-* an **NXDL** ``link``: the element of a class definition that requires a
-  NeXus link (see :ref:`design.links.definitions`);
-* a **NeXus link**: a NeXus field or group with the same content as another one
-  (see :ref:`design.links.model`);
+* a ``link`` **element**: an element of an NXDL file that defines a NeXus
+  link;
+* a **NeXus link**: an item of a NeXus class that, in a file, must be
+  connected by a content link to a content field or group that matches the
+  XML attribute ``target`` (see :ref:`design.links.definitions`);
+* a **content link**: a content field or group with the same content as
+  another one (see :ref:`design.links.model`);
 * a **storage link**: a way of a file format to make an object available
   under another path, such as an HDF5 hard, soft or external link
   (see :ref:`design.links.storage`).
@@ -366,36 +390,36 @@ always says which one:
    single: link, target, attribute
    single: address, absolute
    single: address, relative
-   ! link, NeXus link
-   ! NeXus link
+   ! link, content link
+   ! content link
 
 .. _design.links.model:
 
-What a NeXus link is
---------------------
+What a content link is
+----------------------
 
-A *path* is the absolute location of a NeXus field or group in a NeXus file: the
-names of the NeXus groups from the root down to it, separated by ``/``, such as
+A *path* is the absolute location of a content field or group in a NeXus file: the
+names of the content groups from the root down to it, separated by ``/``, such as
 ``/entry/instrument/detector/polar_angle``.
 
-The *content* of a NeXus field is its value and its NeXus attributes, except ``target``.
-The content of a NeXus group is its NeXus attributes, except ``target``, and the content
-of its NeXus fields and groups, under their names.  The name itself
+The *content* of a content field is its value and its content attributes, except ``target``.
+The content of a content group is its content attributes, except ``target``, and the content
+of its content fields and groups, under their names.  The name itself
 is not part of the content.
 
-A *NeXus link* is a NeXus field or group whose content is the content of another
-one, its *original*.  It is marked by its NeXus attribute ``target``
+A *content link* is a content field or group whose content is the content of another
+one, its *original*.  It is marked by its content attribute ``target``
 (see :ref:`NXobject`):
 
 * the value is the path of the original, always as an absolute path
   (``/entry/instrument/detector/polar_angle``, not ``detector/polar_angle``);
-* the original does not need a NeXus attribute ``target``; when it has one, for
-  example because it is stored as the same object as the NeXus link, the
+* the original does not need a content attribute ``target``; when it has one, for
+  example because it is stored as the same object as the content link, the
   value is its own path;
-* a NeXus field or group with a NeXus attribute ``target`` whose value is its own path
-  is not a NeXus link.
+* a content field or group with a content attribute ``target`` whose value is its own path
+  is not a content link.
 
-NeXus links are best understood with an example.
+Content links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
 (see :ref:`Strategies-wavelength`) has been::
 
@@ -406,7 +430,7 @@ especially those not using a crystal to create monochromatic radiation::
 
     /NXentry/NXinstrument/NXmonochromator/wavelength
 
-The second NeXus field can be a NeXus link to the first::
+In a file, the second can be a content link to the first::
 
     entry:NXentry
         ...
@@ -422,7 +446,7 @@ The second NeXus field can be a NeXus link to the first::
                 ...
                 wavelength --> "/entry/instrument/crystal/wavelength"
 
-A NeXus link may have a different name than the original.  One obvious use of
+A content link may have a different name than the original.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
 specification of wavelength as a NeXus field named *lambda* in the entry group.
@@ -445,68 +469,68 @@ This requirement can be satisfied easily::
         lambda --> "/entry/instrument/crystal/wavelength"
 
 Here ``/entry/instrument/monochromator/wavelength`` and ``/entry/lambda``
-are NeXus links to the original ``/entry/instrument/crystal/wavelength``:
-all three have the value 154 and the same NeXus attribute ``units``, and both
-NeXus links have ``@target="/entry/instrument/crystal/wavelength"``.
+are content links to the original ``/entry/instrument/crystal/wavelength``:
+all three have the value 154 and the same content attribute ``units``, and both
+content links have ``@target="/entry/instrument/crystal/wavelength"``.
 
-Which NeXus field or group is the original is a NeXus notion.  It has value in
+Which content field or group is the original is part of the content.  It has value in
 only a few situations, such as when converting the data from one format to
 another: by identifying the original, duplicate copies of the data are not
 converted.
 
 Where the content is stored, in one file, in several files or in an object
-store, is not part of NeXus: the value of ``@target`` is always a path in the
-NeXus tree (see :ref:`design.links.storage`).
+store, is not part of the content: the value of ``@target`` is always a path in the
+content tree (see :ref:`design.links.storage`).
 
 .. _design.links.definitions:
 
-NeXus links in class definitions
---------------------------------
+Links of a class
+----------------
 
-Any NeXus field or group may be a NeXus link, whether or not its class
-definition says so.  An application definition may also *require* a NeXus
-link, with a ``link`` element.  Its documentation then shows the item
-as, for example::
+Any content field or group may be a content link, whether or not its class
+says so.  An application definition may also *require* one: a ``link``
+element defines a NeXus link, which the documentation of the class
+shows as, for example::
 
     data: link (target: /NXentry/NXinstrument/NXdetector/data)
 
-A file satisfies this when the NeXus group contains a NeXus field or group named
-``data`` with the same content as an item that matches the XML attribute ``target``, and
-one of the two is a NeXus link to the other.  Either may be the original.
-The ``link`` element documents nothing else: type, units and
-dimensions are those documented for the item that the XML attribute ``target`` matches.
+A file satisfies this when the content group contains a content field or group named
+``data`` with the same content as a content field or group that matches the XML
+attribute ``target``, and one of the two is a content link to the other.  Either may
+be the original.  A NeXus link states nothing else: type, units and dimensions are
+those of the NeXus field or group that the XML attribute ``target`` names.
 
-The XML attribute ``target`` of a ``link`` element is written with class names, such as ``NXdetector``, and
-refers to an item documented in the class definitions, not to a path in a
-file.  The path of the original does not have to match it.
-This XML attribute of the ``link`` element is not the NeXus attribute
-``@target`` of a NeXus field or group in a data file.  It matches items in the
-file, such as the NeXus field ``data`` of an ``NXdetector`` group in the
+The XML attribute ``target`` of a ``link`` element is a class path, written
+with class names such as ``NXdetector``: it names a NeXus field or group,
+not a path in a file.  The path of the original does not have to match it.
+This XML attribute of the ``link`` element is not the content attribute
+``@target`` of a content field or group in a data file.  It matches content fields
+and groups in the file, such as the content field ``data`` of an ``NXdetector`` group in the
 ``NXinstrument`` group of the entry; it does not say at which path the
 original is.
 
 .. _design.links.storage:
 
-Storing NeXus links in a file format
-------------------------------------
+Storing content links in a file format
+--------------------------------------
 
-NeXus only requires that a NeXus link has the content of its original.  A
+NeXus only requires that a content link has the content of its original.  A
 file format and the software that writes the file may realize this in any
 way the format offers: with a storage link, which makes the stored content
 available under another path, or by storing a copy.
 
-Every format that can hold NeXus content can therefore hold NeXus links,
+Every format that can hold NeXus content can therefore hold content links,
 at least as copies.  For example, the
 `Zarr v3 specification <https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html>`_
 defines no storage links: every Zarr array or group exists under exactly one
-path, so a NeXus link is stored as a copy with its NeXus attribute ``target``.
+path, so a content link is stored as a copy with the Zarr attribute ``target``.
 
 .. _design.links.hdf5:
 
-Example: NeXus links in HDF5
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example: content links in HDF5
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. sidebar:: Python h5py code to make NeXus links
+.. sidebar:: Python h5py code to make content links
 
    The :ref:`Example-Python` create HDF5 links with h5py:
 
@@ -517,7 +541,7 @@ Example: NeXus links in HDF5
      (see :ref:`h5py-example-external-links`);
    * HDF5 attribute ``target``: ``obj.attrs["target"] = path``.
 
-HDF5 offers several ways to store a NeXus link: HDF5 links, virtual
+HDF5 offers several ways to store a content link: HDF5 links, virtual
 datasets and copies.  In each case, the software
 that writes the file must add the HDF5 attribute ``target``.
 
@@ -527,17 +551,17 @@ HDF5 hard and soft links
 An HDF5 hard link [#hdf5_hard_link]_ makes the same HDF5 object available
 under several paths; it is the usual choice.  An HDF5 soft link is a path
 that refers to another path, so it also shows the same object.  In both
-cases the NeXus link and the original are one object with one set of
+cases the content link and the original are one object with one set of
 HDF5 attributes: the
 HDF5 attribute ``target`` is set once, on that object, with the path of the
 original as value.
 
 HDF5 makes no distinction between the paths of a hard-linked object: the
 HDF5 attribute ``target`` is what tells NeXus which one is the original (see the
-:ref:`FAQ` question: **I'm using NeXus links to place data in two places.
-Which one should be the data and which one is the NeXus link?**).
+:ref:`FAQ` question: **I'm using content links to place data in two places.
+Which one should be the data and which one is the content link?**).
 
-To store a NeXus link as an HDF5 hard link:
+To store a content link as an HDF5 hard link:
 
 #. Get the HDF5 object (*dataset* or *group*) to be linked.
 #. If it has no HDF5 attribute ``target``, add one with its absolute path as value.
@@ -560,12 +584,12 @@ as the original, it has the same values.
 
 .. _design.external_file_link:
 
-.. index:: link; external file, NeXus link
+.. index:: link; external file, content link
 
 HDF5 external links
 """"""""""""""""""""
 
-A NeXus field or group may also have its content stored in another file.
+A content field or group may also have its content stored in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
@@ -591,17 +615,17 @@ HDF5 does not allow hard links to objects in another file: h5py raises
 *Interfile hard links are not allowed*.  In
 :ref:`Links to Data in External HDF5 Files <h5py-example-external-links>`,
 a *master* file therefore makes an HDF5 external link at each place where data
-from another file is represented.  These places are not NeXus links: none
+from another file is represented.  These places are not content links: none
 of them has an HDF5 attribute ``target``.
 
 Unlike a virtual dataset, an HDF5 external link has no HDF5 attributes of its
 own: the ones it shows are those of the object in the other file.  In
 the three examples below, ``master.h5`` has the original
-``/entry/instrument/detector/data`` and the NeXus link ``/entry/data/data``,
+``/entry/instrument/detector/data`` and the content link ``/entry/data/data``,
 and the detector writes its images to ``/entry/data/data`` in
 ``detector.h5``.
 
-**Example 1: a NeXus link stored as an HDF5 external link.**  Both paths in
+**Example 1: a content link stored as an HDF5 external link.**  Both paths in
 ``master.h5`` are HDF5 external links to the same object, as with an HDF5
 hard link within one file::
 
@@ -619,7 +643,7 @@ hard link within one file::
    file can set it.  ``detector.h5`` must also be writable, which it often
    is not.
 
-**Example 2: the original stored as an HDF5 external link, the NeXus link
+**Example 2: the original stored as an HDF5 external link, the content link
 as an HDF5 soft link.**  An HDF5 soft link has no HDF5 attributes of its own
 either: it shows the object in ``detector.h5``, so the HDF5 attribute ``target``
 is stored there, with the same caveats as in example 1::
@@ -636,9 +660,9 @@ HDF5 external link and ``/entry/instrument/detector/data`` an HDF5 soft link
 to it.  Which path is the original is set by the HDF5 attribute ``target``, not
 by the direction of the storage link.
 
-**Example 3: the original stored as an HDF5 external link, the NeXus link
+**Example 3: the original stored as an HDF5 external link, the content link
 as a virtual dataset.**  The original needs no HDF5 attribute ``target``, so
-``detector.h5`` is not changed.  The NeXus link is an object in
+``detector.h5`` is not changed.  The content link is an object in
 ``master.h5`` that carries the HDF5 attribute ``target``: a virtual dataset that
 maps the data in ``detector.h5``.  HDF5 has no hard links between files::
 
@@ -649,8 +673,8 @@ maps the data in ``detector.h5``.  HDF5 has no hard links between files::
     detector.h5
         /entry/data/data
 
-This always works for a NeXus field.  An HDF5 group cannot be a virtual dataset; a NeXus
-link to a NeXus group whose content is in another file is stored as a copy, or as
+This always works for a content field.  An HDF5 group cannot be a virtual dataset; a content
+link to a content group whose content is in another file is stored as a copy, or as
 in example 1 or 2.
 
 .. _Design-NeXusClasses:
@@ -661,11 +685,10 @@ NeXus Base Classes
 .. index:: NX; used as NX class prefix
 .. index:: rules; NX prefix
 
-Data groups often describe objects in the experiment (monitors, detectors,
-monochromators, etc.), so that the contents (both NeXus fields and/or other
-NeXus groups) comprise the properties of that object. NeXus has defined a set of standard
+Content groups often describe objects in the experiment (monitors, detectors,
+monochromators, etc.), so that their content fields and groups comprise the properties of that object. NeXus has defined a set of standard
 objects, or :ref:`base classes <base.class.definitions>`,
-out of which a NeXus file can be constructed. Each data group
+out of which a NeXus file can be constructed. Each content group
 is identified by a name and a class. The group class defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
@@ -690,13 +713,13 @@ possible classes.
 	The ``group``, ``field``, ``link`` and ``attribute`` elements of a base class
 	definition are all **optional**, with a few particular exceptions in
 	``NXentry`` and ``NXdata``, and the NeXus attribute ``NX_class``, which every
-	NeXus group must have (see :ref:`NXobject`).  They are named in the specification
+	content group must have (see :ref:`NXobject`).  They are named in the specification
 	to describe the exact spelling and usage of the term when it appears.
 
 NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the
 development of NeXus. NeXus base classes are rather dictionaries of NeXus field names and their meanings
-which are permitted in a particular NeXus group implementing the NeXus class. This sounds complicated but
+which are permitted in a particular content group implementing the NeXus class. This sounds complicated but
 becomes easy if you consider that most NeXus groups describe instrument components. Then for example, a
 NXmonochromator base class describes all the possible NeXus field names which NeXus allows to be used to describe a
 monochromator.
@@ -718,13 +741,13 @@ But there are some base classes which have special uses which need to be mention
 
 :ref:`NXcollection`
    ``NXcollection`` is used to gather together any set of terms.
-   Anything (NeXus groups, fields, or attributes) placed in
+   Anything (content groups, fields, or attributes) placed in
    an ``NXcollection`` group will not be validated.
    One use is to use this as a container class for the various
    control system variables from a beamline or instrument.
 
 :ref:`NXnote`
-   This NeXus group provides a place to store general notes, images, video or
+   This base class provides a place to store general notes, images, video or
    whatever.  A mime type is stored together with a binary blob of data.
    Please use this only for auxiliary information, for example an image
    of your sample, or a photo of your boss.
@@ -741,7 +764,7 @@ But there are some base classes which have special uses which need to be mention
 
    .. [#] see: https://github.com/nexusformat/definitions/issues/397
 
-These NeXus groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
+Content groups of these classes can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a ``NXcollection``. All of the base classes are documented in the reference manual.
 
 .. _inheritance:
@@ -770,7 +793,7 @@ should extend from ``NXobject`` unless they are being subclassed.
    see: default plot; plotting
    single: dimension scale
 
-The most notable special base class (or *NeXus group*) is ``NXdata``.
+The most notable special base class is ``NXdata``.
 ``NXdata`` is the answer to a basic motivation of NeXus to facilitate
 automatic plotting of data.
 ``NXdata`` is designed to contain the main dataset and its associated
@@ -836,7 +859,7 @@ to store the more common or general metadata, such as wavelength.
 (For wavelength, see the :ref:`Strategies-wavelength` section.)
 
 One common scheme is to store the metadata all in one
-NeXus group.  If that NeXus group is to be validated for content,
+content group.  If that content group is to be validated,
 then there are several possibilities, as shown in the next table:
 
 ==========================  ===========================================
@@ -862,7 +885,7 @@ The objects described so far provide us with the means to store data from a wide
 simulations, or processed data as resulting from data analysis. But NeXus strives to express strict standards for
 certain applications of NeXus, too. The tool which NeXus uses for the expression of such strict standards is the NeXus
 :ref:`Application Definition <application.definitions>`.
-A NeXus Application Definition describes which NeXus groups and data items have to be present in
+A NeXus Application Definition describes which content groups and data items have to be present in
 a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
 experiment.
 An application definition may also declare terms which are optional in the data file.
@@ -983,10 +1006,10 @@ In order to use coordinate transformations, several pieces of information need t
         The order of operations to apply to move a component into its place.
 
 
-NeXus Field And Attributes of a Coordinate Transformation
----------------------------------------------------------
+Content Field And Attributes of a Coordinate Transformation
+-----------------------------------------------------------
 
-NeXus chooses to encode information about each transformation as a NeXus field in an ``NXtransformations``
+NeXus chooses to encode information about each transformation as a content field in an ``NXtransformations``
 group in the following way:
 
   .. index::
@@ -994,11 +1017,11 @@ group in the following way:
      ! single: offset (field attribute)
 
   ``value``
-     This is represented in the actual data of the NeXus field or the **value** of the
+     This is represented in the actual data of the content field or the **value** of the
      transformation. Its actual name should relate to the physical device used to
      effect the transformation.
 
-     The NeXus attributes of the coordinate transformation are:
+     The content attributes of the coordinate transformation are:
 
        .. index::
          single: transformation type (field attribute)
@@ -1024,7 +1047,7 @@ group in the following way:
        ``offset`` (*NX_NUMBER*)
          This is a set of 3 values forming the offset vector for a translation to apply
          before applying the operation of the actual transformation. Without this offset
-         NeXus attribute, additional virtual translations would need to be introduced in order
+         content attribute, additional virtual translations would need to be introduced in order
          to encode mechanical offsets in the axis.
 
        .. index::
@@ -1032,29 +1055,29 @@ group in the following way:
          ! single: depends on (field attribute)
 
        ``depends_on``
-    	 The **order** is encoded through this NeXus attribute. The value is the name of the
+    	 The **order** is encoded through this content attribute. The value is the name of the
          transformation upon which the current transformation depends on.
 
          As each transformation represents possible motion by a physical device, this
          dependency expresses the attachment order; thus, the current device is attached
-         to (or mounted on) the next device referred to by the NeXus attribute.
+         to (or mounted on) the next device referred to by the content attribute.
 
          Allowed values for depends_on are:
 
            ``.``
              A dot ends the depends_on chain
            ``name``
-             The name of a NeXus field within the enclosing NeXus group
+             The name of a content field within the enclosing content group
            ``dir/name``
-             The name of a NeXus field further along the path
+             The name of a content field further along the path
            ``/dir/dir/name``
-             An absolute path to a NeXus field in another NeXus group
+             An absolute path to a content field in another content group
 
     	 In addition, for each beamline component, there is a ``depends_on`` attribute
-         that points to the NeXus field at the head of the axis dependency chain. For example,
+         that points to the content field at the head of the axis dependency chain. For example,
          consider an :index:`eulerian cradle` as used on a :index:`four-circle diffractometer`.
          Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
-    	 the ``depends_on`` NeXus field in :ref:`NXsample` would have the value ``phi``.
+    	 the ``depends_on`` content field in :ref:`NXsample` would have the value ``phi``.
 
          .. compound::
 
@@ -1071,7 +1094,7 @@ group in the following way:
 
 The type and direction of the NeXus standard operations is documented below
 in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
-The rule is to always give the NeXus attributes to make perfectly clear how the axes work. The :index:`CIF` scheme
+The rule is to always give the content attributes to make perfectly clear how the axes work. The :index:`CIF` scheme
 also allows to store and use arbitrarily named axes in a NeXus file.
 
 The CIF scheme (see :ref:`NXtransformations`) is the preferred method
@@ -1215,7 +1238,7 @@ Detector Shape Descriptions
 
 An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``detector_shape``
 can be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
-shape of the detector. Alternatively, the NeXus group can be named ``pixel_shape``
+shape of the detector. Alternatively, the content group can be named ``pixel_shape``
 and define the shape of a single pixel. In this case, ``x_pixel_offset``,
 ``y_pixel_offset`` and ``z_pixel_offset`` datasets of the ``NXdetector`` define
 how the pixel shape is tiled to form the geometry of the complete detector.

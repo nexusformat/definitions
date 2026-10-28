@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Writes a simple NeXus HDF5 file using h5py with NeXus links
+Writes a simple NeXus HDF5 file using h5py with content links
 according to the example from Figure 2.1 in the Design chapter
 """
 

@@ -65,7 +65,7 @@ simple data sets, such as a single data array and its axes, and also of highly c
 data, such as the simulation results or an entire multi-component instrument. This flexibility
 is a necessity as NeXus strives to capture data from a wild variety of applications in X-ray, muSR and
 neutron scattering. The flexibility is achieved through a <span class="target" id="index-0"></span>hierarchical
-structure, with related NeXus <em>fields</em> collected together into NeXus <em>groups</em>,
+structure, with related content <em>fields</em> collected together into content <em>groups</em>,
 making NeXus files easy to navigate, even without any
 documentation. NeXus files are self-describing, and should be easy to understand, at
 least by those familiar with the experimental technique.</p>
@@ -74,45 +74,61 @@ least by those familiar with the experimental technique.</p>
 <p>Before discussing the design of NeXus in greater detail it is necessary to define the objects and terms
 used by NeXus. These are:</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#design-groups"><span class="std std-ref">NeXus Groups</span></a></dt><dd><p>Levels in the NeXus hierarchy. May contain NeXus fields and other NeXus groups.</p>
+<dt><a class="reference internal" href="#design-groups"><span class="std std-ref">Content Groups</span></a></dt><dd><p>Levels in the NeXus hierarchy. May contain content fields and other content groups.</p>
 </dd>
-<dt><a class="reference internal" href="#design-fields"><span class="std std-ref">NeXus Fields</span></a></dt><dd><p>Multidimensional arrays and scalars representing the actual data to be stored.</p>
+<dt><a class="reference internal" href="#design-fields"><span class="std std-ref">Content Fields</span></a></dt><dd><p>Multidimensional arrays and scalars representing the actual data to be stored.</p>
 </dd>
-<dt><a class="reference internal" href="#design-attributes"><span class="std std-ref">NeXus Attributes</span></a></dt><dd><p>NeXus attributes containing additional metadata can be assigned to NeXus
+<dt><a class="reference internal" href="#design-attributes"><span class="std std-ref">Content Attributes</span></a></dt><dd><p>Content attributes containing additional metadata can be assigned to content
 groups, fields, or <a class="reference internal" href="#design-fileattributes"><span class="std std-ref">files</span></a>.</p>
 </dd>
-<dt><a class="reference internal" href="#design-links"><span class="std std-ref">NeXus Links</span></a></dt><dd><p>The same content in more than one place of the hierarchy.</p>
+<dt><a class="reference internal" href="#design-links"><span class="std std-ref">Links</span></a></dt><dd><p>The same content in more than one place of the hierarchy.</p>
 </dd>
-<dt><a class="reference internal" href="#design-nexusclasses"><span class="std std-ref">NeXus Base Classes</span></a></dt><dd><p>Dictionaries of names possible in the various types of NeXus groups.</p>
+<dt><a class="reference internal" href="#design-nexusclasses"><span class="std std-ref">NeXus Base Classes</span></a></dt><dd><p>Dictionaries of names possible in the various types of content groups.</p>
 </dd>
 <dt><a class="reference internal" href="#design-nexusapplications"><span class="std std-ref">NeXus Application Definitions</span></a></dt><dd><p>Describe the minimum content of a NeXus file for a particular usage case.</p>
 </dd>
 </dl>
 <p>In the following sections these elements of NeXus files will be defined in more detail.</p>
-<section id="terms-at-four-levels">
-<span id="design-terms"></span><h3><span class="section-number">1.2.1.1. </span>Terms at four levels<a class="headerlink" href="#terms-at-four-levels" title="Link to this heading">¶</a></h3>
+<section id="terms-at-five-levels">
+<span id="design-terms"></span><h3><span class="section-number">1.2.1.1. </span>Terms at five levels<a class="headerlink" href="#terms-at-five-levels" title="Link to this heading">¶</a></h3>
 <p>The words <em>group</em>, <em>field</em>, <em>attribute</em> and <em>link</em> each have several
-meanings.  This manual always says which one, at one of four levels:</p>
+meanings.  This manual always says which one, at one of five levels:</p>
 <ul class="simple">
 <li><p><strong>XML Schema</strong>: the grammar <a class="reference internal" href="nxdl.html#nxdl"><span class="std std-ref">nxdl.xsd</span></a>.  Its element
 declarations (<code class="docutils literal notranslate"><span class="pre">xs:element</span></code>) and attribute declarations
 (<code class="docutils literal notranslate"><span class="pre">xs:attribute</span></code>) define the elements of an NXDL file and their XML
 attributes.  A <em>model group</em> (<code class="docutils literal notranslate"><span class="pre">xs:group</span></code>, such as <code class="docutils literal notranslate"><span class="pre">groupGroup</span></code>) is a
 named set of element declarations, not an element of an NXDL file.</p></li>
-<li><p><strong>NXDL</strong>: a class definition, written in an <code class="docutils literal notranslate"><span class="pre">*.nxdl.xml</span></code> file.  Its
-<code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">field</span></code>, <code class="docutils literal notranslate"><span class="pre">attribute</span></code> and <code class="docutils literal notranslate"><span class="pre">link</span></code> elements describe NeXus
-objects; their <em>XML attributes</em>, such as <code class="docutils literal notranslate"><span class="pre">name</span></code> or <code class="docutils literal notranslate"><span class="pre">type</span></code>, say how.</p></li>
+<li><p><strong>NXDL</strong>: the <code class="docutils literal notranslate"><span class="pre">*.nxdl.xml</span></code> files, written in the NeXus Definition
+Language.  Their <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">field</span></code>, <code class="docutils literal notranslate"><span class="pre">attribute</span></code> and <code class="docutils literal notranslate"><span class="pre">link</span></code> elements
+define NeXus classes; their <em>XML attributes</em>, such as <code class="docutils literal notranslate"><span class="pre">name</span></code> or <code class="docutils literal notranslate"><span class="pre">type</span></code>,
+say how.</p></li>
+<li><p><strong>NeXus</strong>: the NeXus classes, base classes and application definitions, as
+their NXDL files define them, with what they inherit through <code class="docutils literal notranslate"><span class="pre">extends</span></code>.
+A NeXus class has <em>NeXus groups</em>, <em>NeXus fields</em>, <em>NeXus attributes</em> and
+<em>NeXus links</em>, named by
+<a class="reference internal" href="preface.html#preface-class-path-specification"><span class="std std-ref">class paths</span></a>, such as
+<code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector/data</span></code>.</p></li>
 <li><p><strong>Content</strong>: the full content of a NeXus file, values included, without
-anything specific to a file format.</p></li>
+anything specific to a file format: <em>content groups</em>, <em>content fields</em>,
+<em>content attributes</em> and <em>content links</em>, named by paths such as
+<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code>.  A NeXus class describes content: the
+NeXus field <code class="docutils literal notranslate"><span class="pre">data</span></code> of <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> describes the content field <code class="docutils literal notranslate"><span class="pre">data</span></code>
+of every content group of class <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>.</p></li>
 <li><p><strong>Storage</strong>: how a file format stores that content.</p></li>
 </ul>
 <p>For example, in <code class="docutils literal notranslate"><span class="pre">&lt;attribute</span> <span class="pre">name=&quot;units&quot;</span> <span class="pre">type=&quot;NX_CHAR&quot;/&gt;</span></code> the
-<code class="docutils literal notranslate"><span class="pre">attribute</span></code> element declares the NeXus attribute <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code>
-and <code class="docutils literal notranslate"><span class="pre">type</span></code> are XML attributes of that element.</p>
+<code class="docutils literal notranslate"><span class="pre">attribute</span></code> element defines the NeXus attribute <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code> of a NeXus field,
+which describes the content attribute <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code> of content fields.  <code class="docutils literal notranslate"><span class="pre">name</span></code>
+and <code class="docutils literal notranslate"><span class="pre">type</span></code> are XML attributes of that element.  <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> marks an attribute at
+both levels: a NeXus attribute in a class path, such as
+<code class="docutils literal notranslate"><span class="pre">/NXdata/DATA&#64;long_name</span></code>, and a content attribute, such as
+<code class="docutils literal notranslate"><span class="pre">&#64;units=&quot;eV&quot;</span></code>.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>XML Schema (<code class="docutils literal notranslate"><span class="pre">nxdl.xsd</span></code>)</p></th>
 <th class="head"><p>NXDL (<code class="docutils literal notranslate"><span class="pre">*.nxdl.xml</span></code>)</p></th>
+<th class="head"><p>NeXus (classes)</p></th>
 <th class="head"><p>Content (any file format)</p></th>
 <th class="head"><p>Storage (HDF5; Zarr)</p></th>
 </tr>
@@ -130,6 +146,11 @@ and <code class="docutils literal notranslate"><span class="pre">type</span></co
 </td>
 <td><div class="line-block">
 <div class="line">NeXus group</div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/</span><em><span class="pre">NXdetector</span></em></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">content group</div>
 <div class="line"><code class="samp docutils literal notranslate"><span class="pre">/entry/instrument/</span><em><span class="pre">detector</span></em></code></div>
 </div>
 </td>
@@ -151,6 +172,11 @@ and <code class="docutils literal notranslate"><span class="pre">type</span></co
 </td>
 <td><div class="line-block">
 <div class="line">NeXus field</div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/NXentry/NXdata/</span><em><span class="pre">data</span></em></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">content field</div>
 <div class="line"><code class="samp docutils literal notranslate"><span class="pre">/entry/data/</span><em><span class="pre">data</span></em></code></div>
 </div>
 </td>
@@ -172,12 +198,17 @@ and <code class="docutils literal notranslate"><span class="pre">type</span></co
 </td>
 <td><div class="line-block">
 <div class="line">NeXus attribute</div>
-<div class="line"><code class="samp docutils literal notranslate"><span class="pre">&#64;</span><em><span class="pre">units</span></em><span class="pre">=&quot;eV&quot;</span></code></div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/NXentry/NXdata/data&#64;</span><em><span class="pre">units</span></em></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">content attribute</div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/entry/data/data&#64;</span><em><span class="pre">units</span></em><span class="pre">=&quot;eV&quot;</span></code></div>
 </div>
 </td>
 <td><div class="line-block">
 <div class="line">HDF5 attribute; Zarr attribute</div>
-<div class="line"><code class="samp docutils literal notranslate"><em><span class="pre">units</span></em> <span class="pre">=</span> <span class="pre">&quot;eV&quot;</span></code></div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/entry/data/data:</span> <em><span class="pre">units</span></em> <span class="pre">=</span> <span class="pre">&quot;eV&quot;</span></code></div>
 </div>
 </td>
 </tr>
@@ -193,6 +224,11 @@ and <code class="docutils literal notranslate"><span class="pre">type</span></co
 </td>
 <td><div class="line-block">
 <div class="line">NeXus link</div>
+<div class="line"><code class="samp docutils literal notranslate"><span class="pre">/NXentry/NXdata/</span><em><span class="pre">data</span></em></code>, linked to <code class="docutils literal notranslate"><span class="pre">…/NXdetector/data</span></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">content link</div>
 <div class="line"><code class="samp docutils literal notranslate"><span class="pre">/entry/data/</span><em><span class="pre">data</span></em></code>, which has <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code></div>
 </div>
 </td>
@@ -213,7 +249,12 @@ and <code class="docutils literal notranslate"><span class="pre">type</span></co
 </div>
 </td>
 <td><div class="line-block">
-<div class="line">data type of the NeXus field</div>
+<div class="line">data type of a NeXus field</div>
+<div class="line"><code class="samp docutils literal notranslate"><em><span class="pre">NX_INT</span></em></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">data type of the content field</div>
 <div class="line"><code class="samp docutils literal notranslate"><em><span class="pre">integer</span></em> <span class="pre">values</span></code></div>
 </div>
 </td>
@@ -234,10 +275,6 @@ In <code class="docutils literal notranslate"><span class="pre">&lt;xs:attribute
 <code class="docutils literal notranslate"><span class="pre">xs:attribute</span></code> element.  Together they declare the XML attribute <code class="docutils literal notranslate"><span class="pre">type</span></code>,
 which an element of an NXDL file may have.  To be clear, this manual names the
 element an XML attribute belongs to.</p>
-<p>The word that gives the level may cover a list: “NeXus groups, fields and
-attributes” means NeXus groups, NeXus fields and NeXus attributes.
-In the documentation of a class definition, <em>group</em>, <em>field</em> and <em>attribute</em>
-mean the NeXus group, field and attribute that the definition describes.</p>
 <div class="admonition note" id="tree-structure">
 <p class="admonition-title">Note</p>
 <p>Notation used to describe a NeXus data file</p>
@@ -246,41 +283,41 @@ data file are described using a tree structure, such as
 in the <a class="reference internal" href="introduction.html#fig-verysimple-structure"><span class="std std-ref">Introduction</span></a>.</p>
 <p>The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.</p>
 <ul class="simple">
-<li><p>NeXus groups have a <code class="docutils literal notranslate"><span class="pre">/</span></code> appended to their name (with NeXus class name shown).</p></li>
+<li><p>Content groups have a <code class="docutils literal notranslate"><span class="pre">/</span></code> appended to their name (with NeXus class name shown).</p></li>
 <li><p>Indentation shows membership in the lesser indented parent above.</p></li>
-<li><p>NeXus fields have a data type and value appended (for arrays, this may be an abbreviated view).</p></li>
-<li><p>NeXus attributes (of NeXus groups or fields) are prefixed with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>.</p></li>
-<li><p>NeXus links are described with some sort of arrow notation such as <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code>.</p></li>
+<li><p>Content fields have a data type and value appended (for arrays, this may be an abbreviated view).</p></li>
+<li><p>Content attributes (of content groups or fields) are prefixed with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>.</p></li>
+<li><p>Content links are described with some sort of arrow notation such as <code class="docutils literal notranslate"><span class="pre">--&gt;</span></code>.</p></li>
 </ul>
 </div>
 </section>
-<section id="nexus-groups">
-<span id="design-groups"></span><span id="index-1"></span><h3><span class="section-number">1.2.1.2. </span>NeXus Groups<a class="headerlink" href="#nexus-groups" title="Link to this heading">¶</a></h3>
-<p>NeXus files consist of data groups,
-which contain NeXus fields and/or other
-data groups to form a <span class="target" id="index-2"></span>hierarchical structure.
+<section id="content-groups">
+<span id="design-groups"></span><span id="index-1"></span><h3><span class="section-number">1.2.1.2. </span>Content Groups<a class="headerlink" href="#content-groups" title="Link to this heading">¶</a></h3>
+<p>NeXus files consist of content groups,
+which contain content fields and/or other
+content groups to form a <span class="target" id="index-2"></span>hierarchical structure.
 This hierarchy is designed to make it
-easy to navigate a NeXus file by storing related NeXus fields together. Data
+easy to navigate a NeXus file by storing related content fields together. Content
 groups are identified both by a name, which must be unique within a particular
-data group, and a class. There can be multiple data groups with the same class
+content group, and a class. There can be multiple content groups with the same class
 but they must have different names (based on the <span class="target" id="index-3"></span>HDF rules).</p>
-<p>For the class names used with NeXus data groups the prefix NX is reserved. Thus all NeXus class
-names start with NX. The class of a NeXus group is stored in its NeXus attribute <code class="docutils literal notranslate"><span class="pre">NX_class</span></code>
-(see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject-nx-class-attribute"><span class="std std-ref">NXobject</span></a>; for the NeXus root group,
+<p>For the class names the prefix NX is reserved. Thus all NeXus class
+names start with NX. The class of a content group is stored in its content attribute <code class="docutils literal notranslate"><span class="pre">NX_class</span></code>
+(see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject-nx-class-attribute"><span class="std std-ref">NXobject</span></a>; for the root group,
 <a class="reference internal" href="classes/base_classes/NXroot.html#nxroot-nx-class-attribute"><span class="std std-ref">NXroot</span></a>).</p>
 <blockquote>
 <div></div></blockquote>
 </section>
-<section id="nexus-fields">
-<span id="design-fields"></span><span id="index-4"></span><h3><span class="section-number">1.2.1.3. </span>NeXus Fields<a class="headerlink" href="#nexus-fields" title="Link to this heading">¶</a></h3>
-<p>NeXus fields (also called data fields, data items or data sets)
+<section id="content-fields">
+<span id="design-fields"></span><span id="index-4"></span><h3><span class="section-number">1.2.1.3. </span>Content Fields<a class="headerlink" href="#content-fields" title="Link to this heading">¶</a></h3>
+<p>Content fields (also called data fields, data items or data sets)
 contain the essential information stored in a NeXus file. They can
 be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 2-byte, 4-byte, 8-byte) and types (integers, floats, characters). They may
 store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
-etc.). NeXus fields are identified by their names, which must be unique within the
-NeXus group in which they are stored.  Some NeXus fields have engineering units to be specified.
+etc.). Content fields are identified by their names, which must be unique within the
+content group in which they are stored.  Some content fields have engineering units to be specified.
 In some cases, such as <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata-data-field"><span class="std std-ref">/NXdata/DATA</span></a>, a NeXus field is
 expected to be an array of several dimensions.</p>
 <blockquote>
@@ -304,20 +341,20 @@ expected to be an array of several dimensions.</p>
 </div></blockquote>
 <p>See the sections <a class="reference internal" href="nxdl-types.html#nxdl-types"><span class="std std-ref">Data Types allowed in NXDL specifications</span></a> and <a class="reference internal" href="nxdl-types.html#nxdl-units"><span class="std std-ref">Unit Categories allowed in NXDL specifications</span></a> for complete lists of
 the data types and engineering units types, respectively.</p>
-<p>In the case of streaming data acquisition, when time-stamped values of data are collected, NeXus fields can be replaced with <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> structures of
+<p>In the case of streaming data acquisition, when time-stamped values of data are collected, content fields can be replaced with <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> structures of
 the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> structure.</p>
 </section>
-<section id="nexus-attributes">
-<span id="design-attributes"></span><span id="index-5"></span><h3><span class="section-number">1.2.1.4. </span>NeXus Attributes<a class="headerlink" href="#nexus-attributes" title="Link to this heading">¶</a></h3>
-<p>NeXus attributes are extra (meta-)information that are associated with particular
-NeXus groups or fields. They are used to annotate data, e.g. with physical
+<section id="content-attributes">
+<span id="design-attributes"></span><span id="index-5"></span><h3><span class="section-number">1.2.1.4. </span>Content Attributes<a class="headerlink" href="#content-attributes" title="Link to this heading">¶</a></h3>
+<p>Content attributes are extra (meta-)information that are associated with particular
+content groups or fields. They are used to annotate data, e.g. with physical
 <span class="target" id="index-6"></span>units or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses them to identify
 <span class="target" id="index-7"></span>plottable data
 and their axes, etc. In a <a class="reference internal" href="#tree-structure"><span class="std std-ref">tree structure</span></a>,
-a NeXus attribute is usually shown with a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> prefix, such as <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code>.
-NeXus attributes that every NeXus group or field may have are declared in
-<a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>, and for the NeXus root group in <a class="reference internal" href="classes/base_classes/NXroot.html#nxroot"><span class="std std-ref">NXroot</span></a>.
+a content attribute is usually shown with a <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> prefix, such as <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code>.
+Content attributes that every content group or field may have are described in
+<a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>, and for the root group in <a class="reference internal" href="classes/base_classes/NXroot.html#nxroot"><span class="std std-ref">NXroot</span></a>.
 A description of some of the many possible
 NeXus attributes can be found in the next table:</p>
 <blockquote>
@@ -331,8 +368,8 @@ must conform to the NeXus units standard.   See the
 <dt><code class="docutils literal notranslate"><span class="pre">signal</span></code> (<em>NX_CHAR</em>)</dt><dd><p>Defines which data set contains the signal
 to be <span class="target" id="index-9"></span>plotted.
 Use <code class="docutils literal notranslate"><span class="pre">signal=&quot;{dataset_name}&quot;</span></code> where <code class="docutils literal notranslate"><span class="pre">{dataset_name}</span></code>
-is the name of a NeXus field (which may be a NeXus link) in the <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> group.
-The NeXus field referred to by the NeXus attribute <em>signal</em>
+is the name of a content field (which may be a content link) in the <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> group.
+The content field referred to by the content attribute <em>signal</em>
 might be referred to as the “<span class="target" id="index-10"></span>signal data”.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">long_name</span></code> (<em>NX_CHAR</em>)</dt><dd><p>Defines title of signal data or axis label of dimension scale</p>
@@ -366,67 +403,70 @@ Allowed values include:</p>
 </div>
 </div></blockquote>
 </section>
-<section id="nexus-attributes-of-the-file">
-<span id="design-fileattributes"></span><span id="index-12"></span><h3><span class="section-number">1.2.1.5. </span>NeXus attributes of the file<a class="headerlink" href="#nexus-attributes-of-the-file" title="Link to this heading">¶</a></h3>
-<p>Finally, some NeXus attributes are defined at file level.
+<section id="content-attributes-of-the-file">
+<span id="design-fileattributes"></span><span id="index-12"></span><h3><span class="section-number">1.2.1.5. </span>Content attributes of the file<a class="headerlink" href="#content-attributes-of-the-file" title="Link to this heading">¶</a></h3>
+<p>Finally, some content attributes are defined at file level.
 They are specified in the base class <a class="reference internal" href="classes/base_classes/NXroot.html#nxroot"><span class="std std-ref">NXroot</span></a>.</p>
 </section>
-<section id="nexus-links">
-<span id="design-links"></span><h3><span class="section-number">1.2.1.6. </span>NeXus Links<a class="headerlink" href="#nexus-links" title="Link to this heading">¶</a></h3>
-<p id="index-13">A NeXus link states that a NeXus field or group in one place of the hierarchy has
-the same content as a NeXus field or group in another place.
-The NeXus definition sometimes requires the same data in different NeXus groups.
+<section id="links">
+<span id="design-links"></span><h3><span class="section-number">1.2.1.6. </span>Links<a class="headerlink" href="#links" title="Link to this heading">¶</a></h3>
+<p id="index-13">A content link states that a content field or group in one place of the hierarchy has
+the same content as a content field or group in another place.
+The NeXus definition sometimes requires the same data in different content groups.
 For example: detector data belongs in the
 <a class="reference internal" href="classes/base_classes/NXinstrument.html#nxinstrument"><span class="std std-ref">NXinstrument</span></a>/<a class="reference internal" href="classes/base_classes/NXdetector.html#nxdetector"><span class="std std-ref">NXdetector</span></a> group
 but is also needed in <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> for automatic plotting.
-A NeXus link expresses that both are the same data.
+A content link expresses that both are the same data.
 See the <a class="reference internal" href="#fig-data-linking"><span class="std std-ref">figure</span></a> for
-a more descriptive representation of the concept of NeXus links.</p>
+a more descriptive representation of the concept of content links.</p>
 <div class="compound">
 <figure class="align-default" id="id5">
 <span id="fig-data-linking"></span><a class="reference internal image-reference" href="_images/data-linking.png"><img alt="fig.data-linking" src="_images/data-linking.png" style="width: 60%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">NeXus links in a NeXus file</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Content links in a NeXus file</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </div>
-<p>What a NeXus link <em>is</em> is part of NeXus and does not depend
+<p>What a content link <em>is</em> is part of the content and does not depend
 on the file format; how it is <em>stored</em> is up to the file format and the
-software that writes the file (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>).</p>
-<p>The word <em>link</em> has three meanings (see <a class="reference internal" href="#design-terms"><span class="std std-ref">Terms at four levels</span></a>), so this manual
+software that writes the file (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing content links in a file format</span></a>).</p>
+<p>The word <em>link</em> has four meanings (see <a class="reference internal" href="#design-terms"><span class="std std-ref">Terms at five levels</span></a>), so this manual
 always says which one:</p>
 <ul class="simple">
-<li><p>an <strong>NXDL</strong> <code class="docutils literal notranslate"><span class="pre">link</span></code>: the element of a class definition that requires a
-NeXus link (see <a class="reference internal" href="#design-links-definitions"><span class="std std-ref">NeXus links in class definitions</span></a>);</p></li>
-<li><p>a <strong>NeXus link</strong>: a NeXus field or group with the same content as another one
-(see <a class="reference internal" href="#design-links-model"><span class="std std-ref">What a NeXus link is</span></a>);</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">link</span></code> <strong>element</strong>: an element of an NXDL file that defines a NeXus
+link;</p></li>
+<li><p>a <strong>NeXus link</strong>: an item of a NeXus class that, in a file, must be
+connected by a content link to a content field or group that matches the
+XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> (see <a class="reference internal" href="#design-links-definitions"><span class="std std-ref">Links of a class</span></a>);</p></li>
+<li><p>a <strong>content link</strong>: a content field or group with the same content as
+another one (see <a class="reference internal" href="#design-links-model"><span class="std std-ref">What a content link is</span></a>);</p></li>
 <li><p>a <strong>storage link</strong>: a way of a file format to make an object available
 under another path, such as an HDF5 hard, soft or external link
-(see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>).</p></li>
+(see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing content links in a file format</span></a>).</p></li>
 </ul>
-<section id="what-a-nexus-link-is">
-<span id="design-links-model"></span><span id="index-14"></span><h4>What a NeXus link is<a class="headerlink" href="#what-a-nexus-link-is" title="Link to this heading">¶</a></h4>
-<p>A <em>path</em> is the absolute location of a NeXus field or group in a NeXus file: the
-names of the NeXus groups from the root down to it, separated by <code class="docutils literal notranslate"><span class="pre">/</span></code>, such as
+<section id="what-a-content-link-is">
+<span id="design-links-model"></span><span id="index-14"></span><h4>What a content link is<a class="headerlink" href="#what-a-content-link-is" title="Link to this heading">¶</a></h4>
+<p>A <em>path</em> is the absolute location of a content field or group in a NeXus file: the
+names of the content groups from the root down to it, separated by <code class="docutils literal notranslate"><span class="pre">/</span></code>, such as
 <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/polar_angle</span></code>.</p>
-<p>The <em>content</em> of a NeXus field is its value and its NeXus attributes, except <code class="docutils literal notranslate"><span class="pre">target</span></code>.
-The content of a NeXus group is its NeXus attributes, except <code class="docutils literal notranslate"><span class="pre">target</span></code>, and the content
-of its NeXus fields and groups, under their names.  The name itself
+<p>The <em>content</em> of a content field is its value and its content attributes, except <code class="docutils literal notranslate"><span class="pre">target</span></code>.
+The content of a content group is its content attributes, except <code class="docutils literal notranslate"><span class="pre">target</span></code>, and the content
+of its content fields and groups, under their names.  The name itself
 is not part of the content.</p>
-<p>A <em>NeXus link</em> is a NeXus field or group whose content is the content of another
-one, its <em>original</em>.  It is marked by its NeXus attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>
+<p>A <em>content link</em> is a content field or group whose content is the content of another
+one, its <em>original</em>.  It is marked by its content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>
 (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>):</p>
 <ul class="simple">
 <li><p>the value is the path of the original, always as an absolute path
 (<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/polar_angle</span></code>, not <code class="docutils literal notranslate"><span class="pre">detector/polar_angle</span></code>);</p></li>
-<li><p>the original does not need a NeXus attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>; when it has one, for
-example because it is stored as the same object as the NeXus link, the
+<li><p>the original does not need a content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>; when it has one, for
+example because it is stored as the same object as the content link, the
 value is its own path;</p></li>
-<li><p>a NeXus field or group with a NeXus attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> whose value is its own path
-is not a NeXus link.</p></li>
+<li><p>a content field or group with a content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> whose value is its own path
+is not a content link.</p></li>
 </ul>
-<p>NeXus links are best understood with an example.
+<p>Content links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
 (see <a class="reference internal" href="strategies.html#strategies-wavelength"><span class="std std-ref">Strategies: The wavelength</span></a>) has been:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXcrystal</span><span class="o">/</span><span class="n">wavelength</span>
@@ -437,7 +477,7 @@ especially those not using a crystal to create monochromatic radiation:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXmonochromator</span><span class="o">/</span><span class="n">wavelength</span>
 </pre></div>
 </div>
-<p>The second NeXus field can be a NeXus link to the first:</p>
+<p>In a file, the second can be a content link to the first:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">entry</span><span class="p">:</span><span class="n">NXentry</span>
     <span class="o">...</span>
     <span class="n">instrument</span><span class="p">:</span><span class="n">NXinstrument</span>
@@ -453,7 +493,7 @@ especially those not using a crystal to create monochromatic radiation:</p>
             <span class="n">wavelength</span> <span class="o">--&gt;</span> <span class="s2">"/entry/instrument/crystal/wavelength"</span>
 </pre></div>
 </div>
-<p>A NeXus link may have a different name than the original.  One obvious use of
+<p>A content link may have a different name than the original.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
 specification of wavelength as a NeXus field named <em>lambda</em> in the entry group.
@@ -476,55 +516,55 @@ This requirement can be satisfied easily:</p>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">/entry/instrument/monochromator/wavelength</span></code> and <code class="docutils literal notranslate"><span class="pre">/entry/lambda</span></code>
-are NeXus links to the original <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>:
-all three have the value 154 and the same NeXus attribute <code class="docutils literal notranslate"><span class="pre">units</span></code>, and both
-NeXus links have <code class="docutils literal notranslate"><span class="pre">&#64;target=&quot;/entry/instrument/crystal/wavelength&quot;</span></code>.</p>
-<p>Which NeXus field or group is the original is a NeXus notion.  It has value in
+are content links to the original <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>:
+all three have the value 154 and the same content attribute <code class="docutils literal notranslate"><span class="pre">units</span></code>, and both
+content links have <code class="docutils literal notranslate"><span class="pre">&#64;target=&quot;/entry/instrument/crystal/wavelength&quot;</span></code>.</p>
+<p>Which content field or group is the original is part of the content.  It has value in
 only a few situations, such as when converting the data from one format to
 another: by identifying the original, duplicate copies of the data are not
 converted.</p>
 <p>Where the content is stored, in one file, in several files or in an object
-store, is not part of NeXus: the value of <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> is always a path in the
-NeXus tree (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing NeXus links in a file format</span></a>).</p>
+store, is not part of the content: the value of <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> is always a path in the
+content tree (see <a class="reference internal" href="#design-links-storage"><span class="std std-ref">Storing content links in a file format</span></a>).</p>
 </section>
-<section id="nexus-links-in-class-definitions">
-<span id="design-links-definitions"></span><h4>NeXus links in class definitions<a class="headerlink" href="#nexus-links-in-class-definitions" title="Link to this heading">¶</a></h4>
-<p>Any NeXus field or group may be a NeXus link, whether or not its class
-definition says so.  An application definition may also <em>require</em> a NeXus
-link, with a <code class="docutils literal notranslate"><span class="pre">link</span></code> element.  Its documentation then shows the item
-as, for example:</p>
+<section id="links-of-a-class">
+<span id="design-links-definitions"></span><h4>Links of a class<a class="headerlink" href="#links-of-a-class" title="Link to this heading">¶</a></h4>
+<p>Any content field or group may be a content link, whether or not its class
+says so.  An application definition may also <em>require</em> one: a <code class="docutils literal notranslate"><span class="pre">link</span></code>
+element defines a NeXus link, which the documentation of the class
+shows as, for example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span> <span class="n">link</span> <span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="o">/</span><span class="n">NXentry</span><span class="o">/</span><span class="n">NXinstrument</span><span class="o">/</span><span class="n">NXdetector</span><span class="o">/</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>A file satisfies this when the NeXus group contains a NeXus field or group named
-<code class="docutils literal notranslate"><span class="pre">data</span></code> with the same content as an item that matches the XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, and
-one of the two is a NeXus link to the other.  Either may be the original.
-The <code class="docutils literal notranslate"><span class="pre">link</span></code> element documents nothing else: type, units and
-dimensions are those documented for the item that the XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> matches.</p>
-<p>The XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> of a <code class="docutils literal notranslate"><span class="pre">link</span></code> element is written with class names, such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>, and
-refers to an item documented in the class definitions, not to a path in a
-file.  The path of the original does not have to match it.
-This XML attribute of the <code class="docutils literal notranslate"><span class="pre">link</span></code> element is not the NeXus attribute
-<code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> of a NeXus field or group in a data file.  It matches items in the
-file, such as the NeXus field <code class="docutils literal notranslate"><span class="pre">data</span></code> of an <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> group in the
+<p>A file satisfies this when the content group contains a content field or group named
+<code class="docutils literal notranslate"><span class="pre">data</span></code> with the same content as a content field or group that matches the XML
+attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, and one of the two is a content link to the other.  Either may
+be the original.  A NeXus link states nothing else: type, units and dimensions are
+those of the NeXus field or group that the XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> names.</p>
+<p>The XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> of a <code class="docutils literal notranslate"><span class="pre">link</span></code> element is a class path, written
+with class names such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>: it names a NeXus field or group,
+not a path in a file.  The path of the original does not have to match it.
+This XML attribute of the <code class="docutils literal notranslate"><span class="pre">link</span></code> element is not the content attribute
+<code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> of a content field or group in a data file.  It matches content fields
+and groups in the file, such as the content field <code class="docutils literal notranslate"><span class="pre">data</span></code> of an <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> group in the
 <code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code> group of the entry; it does not say at which path the
 original is.</p>
 </section>
-<section id="storing-nexus-links-in-a-file-format">
-<span id="design-links-storage"></span><h4>Storing NeXus links in a file format<a class="headerlink" href="#storing-nexus-links-in-a-file-format" title="Link to this heading">¶</a></h4>
-<p>NeXus only requires that a NeXus link has the content of its original.  A
+<section id="storing-content-links-in-a-file-format">
+<span id="design-links-storage"></span><h4>Storing content links in a file format<a class="headerlink" href="#storing-content-links-in-a-file-format" title="Link to this heading">¶</a></h4>
+<p>NeXus only requires that a content link has the content of its original.  A
 file format and the software that writes the file may realize this in any
 way the format offers: with a storage link, which makes the stored content
 available under another path, or by storing a copy.</p>
-<p>Every format that can hold NeXus content can therefore hold NeXus links,
+<p>Every format that can hold NeXus content can therefore hold content links,
 at least as copies.  For example, the
 <a class="reference external" href="https://zarr-specs.readthedocs.io/en/latest/v3/core/index.html">Zarr v3 specification</a>
 defines no storage links: every Zarr array or group exists under exactly one
-path, so a NeXus link is stored as a copy with its NeXus attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
-<section id="example-nexus-links-in-hdf5">
-<span id="design-links-hdf5"></span><h5>Example: NeXus links in HDF5<a class="headerlink" href="#example-nexus-links-in-hdf5" title="Link to this heading">¶</a></h5>
+path, so a content link is stored as a copy with the Zarr attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
+<section id="example-content-links-in-hdf5">
+<span id="design-links-hdf5"></span><h5>Example: content links in HDF5<a class="headerlink" href="#example-content-links-in-hdf5" title="Link to this heading">¶</a></h5>
 <aside class="sidebar">
-<p class="sidebar-title">Python h5py code to make NeXus links</p>
+<p class="sidebar-title">Python h5py code to make content links</p>
 <p>The <a class="reference internal" href="examples/python/index.html#example-python"><span class="std std-ref">HDF5 in Python</span></a> create HDF5 links with h5py:</p>
 <ul class="simple">
 <li><p>hard link: <code class="docutils literal notranslate"><span class="pre">group[name]</span> <span class="pre">=</span> <span class="pre">obj</span></code>
@@ -535,7 +575,7 @@ path, so a NeXus link is stored as a copy with its NeXus attribute <code class="
 <li><p>HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>: <code class="docutils literal notranslate"><span class="pre">obj.attrs[&quot;target&quot;]</span> <span class="pre">=</span> <span class="pre">path</span></code>.</p></li>
 </ul>
 </aside>
-<p>HDF5 offers several ways to store a NeXus link: HDF5 links, virtual
+<p>HDF5 offers several ways to store a content link: HDF5 links, virtual
 datasets and copies.  In each case, the software
 that writes the file must add the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
 <section id="hdf5-hard-and-soft-links">
@@ -543,15 +583,15 @@ that writes the file must add the HDF5 attribute <code class="docutils literal n
 <p>An HDF5 hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> makes the same HDF5 object available
 under several paths; it is the usual choice.  An HDF5 soft link is a path
 that refers to another path, so it also shows the same object.  In both
-cases the NeXus link and the original are one object with one set of
+cases the content link and the original are one object with one set of
 HDF5 attributes: the
 HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> is set once, on that object, with the path of the
 original as value.</p>
 <p>HDF5 makes no distinction between the paths of a hard-linked object: the
 HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> is what tells NeXus which one is the original (see the
-<a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using NeXus links to place data in two places.
-Which one should be the data and which one is the NeXus link?</strong>).</p>
-<p>To store a NeXus link as an HDF5 hard link:</p>
+<a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using content links to place data in two places.
+Which one should be the data and which one is the content link?</strong>).</p>
+<p>To store a content link as an HDF5 hard link:</p>
 <ol class="arabic simple">
 <li><p>Get the HDF5 object (<em>dataset</em> or <em>group</em>) to be linked.</p></li>
 <li><p>If it has no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, add one with its absolute path as value.</p></li>
@@ -577,7 +617,7 @@ as the original, it has the same values.</p>
 </section>
 <section id="hdf5-external-links">
 <span id="index-15"></span><span id="design-external-file-link"></span><h6>HDF5 external links<a class="headerlink" href="#hdf5-external-links" title="Link to this heading">¶</a></h6>
-<p>A NeXus field or group may also have its content stored in another file.
+<p>A content field or group may also have its content stored in another file.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
@@ -601,15 +641,15 @@ showing an HDF5 external link:</p>
 <em>Interfile hard links are not allowed</em>.  In
 <a class="reference internal" href="examples/python/external_example_write/index.html#h5py-example-external-links"><span class="std std-ref">Links to Data in External HDF5 Files</span></a>,
 a <em>master</em> file therefore makes an HDF5 external link at each place where data
-from another file is represented.  These places are not NeXus links: none
+from another file is represented.  These places are not content links: none
 of them has an HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
 <p>Unlike a virtual dataset, an HDF5 external link has no HDF5 attributes of its
 own: the ones it shows are those of the object in the other file.  In
 the three examples below, <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> has the original
-<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> and the NeXus link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code>,
+<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> and the content link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code>,
 and the detector writes its images to <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> in
 <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.</p>
-<p><strong>Example 1: a NeXus link stored as an HDF5 external link.</strong>  Both paths in
+<p><strong>Example 1: a content link stored as an HDF5 external link.</strong>  Both paths in
 <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> are HDF5 external links to the same object, as with an HDF5
 hard link within one file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">master</span><span class="o">.</span><span class="n">h5</span>
@@ -629,7 +669,7 @@ attribute <code class="docutils literal notranslate"><span class="pre">target</s
 file can set it.  <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> must also be writable, which it often
 is not.</p>
 </div>
-<p><strong>Example 2: the original stored as an HDF5 external link, the NeXus link
+<p><strong>Example 2: the original stored as an HDF5 external link, the content link
 as an HDF5 soft link.</strong>  An HDF5 soft link has no HDF5 attributes of its own
 either: it shows the object in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>, so the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>
 is stored there, with the same caveats as in example 1:</p>
@@ -645,9 +685,9 @@ is stored there, with the same caveats as in example 1:</p>
 HDF5 external link and <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> an HDF5 soft link
 to it.  Which path is the original is set by the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, not
 by the direction of the storage link.</p>
-<p><strong>Example 3: the original stored as an HDF5 external link, the NeXus link
+<p><strong>Example 3: the original stored as an HDF5 external link, the content link
 as a virtual dataset.</strong>  The original needs no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, so
-<code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> is not changed.  The NeXus link is an object in
+<code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> is not changed.  The content link is an object in
 <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> that carries the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>: a virtual dataset that
 maps the data in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.  HDF5 has no hard links between files:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">master</span><span class="o">.</span><span class="n">h5</span>
@@ -658,8 +698,8 @@ maps the data in <code class="docutils literal notranslate"><span class="pre">de
     <span class="o">/</span><span class="n">entry</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">data</span>
 </pre></div>
 </div>
-<p>This always works for a NeXus field.  An HDF5 group cannot be a virtual dataset; a NeXus
-link to a NeXus group whose content is in another file is stored as a copy, or as
+<p>This always works for a content field.  An HDF5 group cannot be a virtual dataset; a content
+link to a content group whose content is in another file is stored as a copy, or as
 in example 1 or 2.</p>
 </section>
 </section>
@@ -667,11 +707,10 @@ in example 1 or 2.</p>
 </section>
 <section id="nexus-base-classes">
 <span id="design-nexusclasses"></span><h3><span class="section-number">1.2.1.7. </span>NeXus Base Classes<a class="headerlink" href="#nexus-base-classes" title="Link to this heading">¶</a></h3>
-<p id="index-17"><span id="index-16"></span>Data groups often describe objects in the experiment (monitors, detectors,
-monochromators, etc.), so that the contents (both NeXus fields and/or other
-NeXus groups) comprise the properties of that object. NeXus has defined a set of standard
+<p id="index-17"><span id="index-16"></span>Content groups often describe objects in the experiment (monitors, detectors,
+monochromators, etc.), so that their content fields and groups comprise the properties of that object. NeXus has defined a set of standard
 objects, or <a class="reference internal" href="classes/base_classes/index.html#base-class-definitions"><span class="std std-ref">base classes</span></a>,
-out of which a NeXus file can be constructed. Each data group
+out of which a NeXus file can be constructed. Each content group
 is identified by a name and a class. The group class defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
@@ -697,13 +736,13 @@ possible classes.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">field</span></code>, <code class="docutils literal notranslate"><span class="pre">link</span></code> and <code class="docutils literal notranslate"><span class="pre">attribute</span></code> elements of a base class
 definition are all <strong>optional</strong>, with a few particular exceptions in
 <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> and <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>, and the NeXus attribute <code class="docutils literal notranslate"><span class="pre">NX_class</span></code>, which every
-NeXus group must have (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>).  They are named in the specification
+content group must have (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>).  They are named in the specification
 to describe the exact spelling and usage of the term when it appears.</p>
 </div>
 <p>NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the
 development of NeXus. NeXus base classes are rather dictionaries of NeXus field names and their meanings
-which are permitted in a particular NeXus group implementing the NeXus class. This sounds complicated but
+which are permitted in a particular content group implementing the NeXus class. This sounds complicated but
 becomes easy if you consider that most NeXus groups describe instrument components. Then for example, a
 NXmonochromator base class describes all the possible NeXus field names which NeXus allows to be used to describe a
 monochromator.</p>
@@ -721,12 +760,12 @@ Basically you give a start time,
 and arrays with a difference in seconds to the start time and the values read.</p>
 </dd>
 <dt><a class="reference internal" href="classes/base_classes/NXcollection.html#nxcollection"><span class="std std-ref">NXcollection</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">NXcollection</span></code> is used to gather together any set of terms.
-Anything (NeXus groups, fields, or attributes) placed in
+Anything (content groups, fields, or attributes) placed in
 an <code class="docutils literal notranslate"><span class="pre">NXcollection</span></code> group will not be validated.
 One use is to use this as a container class for the various
 control system variables from a beamline or instrument.</p>
 </dd>
-<dt><a class="reference internal" href="classes/base_classes/NXnote.html#nxnote"><span class="std std-ref">NXnote</span></a></dt><dd><p>This NeXus group provides a place to store general notes, images, video or
+<dt><a class="reference internal" href="classes/base_classes/NXnote.html#nxnote"><span class="std std-ref">NXnote</span></a></dt><dd><p>This base class provides a place to store general notes, images, video or
 whatever.  A mime type is stored together with a binary blob of data.
 Please use this only for auxiliary information, for example an image
 of your sample, or a photo of your boss.</p>
@@ -750,7 +789,7 @@ laboratory coordinate system or to define shapes.</p>
 </aside>
 </dd>
 </dl>
-<p>These NeXus groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
+<p>Content groups of these classes can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a <code class="docutils literal notranslate"><span class="pre">NXcollection</span></code>. All of the base classes are documented in the reference manual.</p>
 <section id="inheritance-in-nexus">
 <span id="inheritance"></span><h4>Inheritance in NeXus<a class="headerlink" href="#inheritance-in-nexus" title="Link to this heading">¶</a></h4>
@@ -764,7 +803,7 @@ should extend from <code class="docutils literal notranslate"><span class="pre">
 </section>
 <section id="nxdata-facilitates-automatic-plotting">
 <span id="nxdata-facilitates-thedefaultplot"></span><h4><code class="docutils literal notranslate"><span class="pre">NXdata</span></code> Facilitates Automatic Plotting<a class="headerlink" href="#nxdata-facilitates-automatic-plotting" title="Link to this heading">¶</a></h4>
-<p id="index-22">The most notable special base class (or <em>NeXus group</em>) is <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>.
+<p id="index-22">The most notable special base class is <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>.
 <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> is the answer to a basic motivation of NeXus to facilitate
 automatic plotting of data.
 <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> is designed to contain the main dataset and its associated
@@ -783,7 +822,7 @@ Already there are many NeXus fields in the various base classes
 to store the more common or general metadata, such as wavelength.
 (For wavelength, see the <a class="reference internal" href="strategies.html#strategies-wavelength"><span class="std std-ref">Strategies: The wavelength</span></a> section.)</p>
 <p>One common scheme is to store the metadata all in one
-NeXus group.  If that NeXus group is to be validated for content,
+content group.  If that content group is to be validated,
 then there are several possibilities, as shown in the next table:</p>
 <table class="docutils align-default">
 <thead>
@@ -816,7 +855,7 @@ then store it in a <a class="reference internal" href="classes/base_classes/NXco
 simulations, or processed data as resulting from data analysis. But NeXus strives to express strict standards for
 certain applications of NeXus, too. The tool which NeXus uses for the expression of such strict standards is the NeXus
 <a class="reference internal" href="classes/applications/index.html#application-definitions"><span class="std std-ref">Application Definition</span></a>.
-A NeXus Application Definition describes which NeXus groups and data items have to be present in
+A NeXus Application Definition describes which content groups and data items have to be present in
 a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
 experiment.
 An application definition may also declare terms which are optional in the data file.
@@ -905,16 +944,16 @@ operation: this can be studied under the condition that all other operations are
 </dd>
 </dl>
 </div></blockquote>
-<section id="nexus-field-and-attributes-of-a-coordinate-transformation">
-<h4>NeXus Field And Attributes of a Coordinate Transformation<a class="headerlink" href="#nexus-field-and-attributes-of-a-coordinate-transformation" title="Link to this heading">¶</a></h4>
-<p>NeXus chooses to encode information about each transformation as a NeXus field in an <code class="docutils literal notranslate"><span class="pre">NXtransformations</span></code>
+<section id="content-field-and-attributes-of-a-coordinate-transformation">
+<h4>Content Field And Attributes of a Coordinate Transformation<a class="headerlink" href="#content-field-and-attributes-of-a-coordinate-transformation" title="Link to this heading">¶</a></h4>
+<p>NeXus chooses to encode information about each transformation as a content field in an <code class="docutils literal notranslate"><span class="pre">NXtransformations</span></code>
 group in the following way:</p>
 <blockquote>
 <div><dl id="index-29">
-<dt><code class="docutils literal notranslate"><span class="pre">value</span></code></dt><dd><p>This is represented in the actual data of the NeXus field or the <strong>value</strong> of the
+<dt><code class="docutils literal notranslate"><span class="pre">value</span></code></dt><dd><p>This is represented in the actual data of the content field or the <strong>value</strong> of the
 transformation. Its actual name should relate to the physical device used to
 effect the transformation.</p>
-<p>The NeXus attributes of the coordinate transformation are:</p>
+<p>The content attributes of the coordinate transformation are:</p>
 <blockquote>
 <div><dl class="simple" id="index-30">
 <dt><code class="docutils literal notranslate"><span class="pre">transformation_type</span></code></dt><dd><p>This specifies the <strong>type</strong> of transformation and is either <em>rotation</em>
@@ -930,34 +969,34 @@ the direction along which the translation happens.</p>
 <dl class="simple" id="index-32">
 <dt><code class="docutils literal notranslate"><span class="pre">offset</span></code> (<em>NX_NUMBER</em>)</dt><dd><p>This is a set of 3 values forming the offset vector for a translation to apply
 before applying the operation of the actual transformation. Without this offset
-NeXus attribute, additional virtual translations would need to be introduced in order
+content attribute, additional virtual translations would need to be introduced in order
 to encode mechanical offsets in the axis.</p>
 </dd>
 </dl>
 <dl id="index-33">
-<dt><code class="docutils literal notranslate"><span class="pre">depends_on</span></code></dt><dd><p>The <strong>order</strong> is encoded through this NeXus attribute. The value is the name of the
+<dt><code class="docutils literal notranslate"><span class="pre">depends_on</span></code></dt><dd><p>The <strong>order</strong> is encoded through this content attribute. The value is the name of the
 transformation upon which the current transformation depends on.</p>
 <p>As each transformation represents possible motion by a physical device, this
 dependency expresses the attachment order; thus, the current device is attached
-to (or mounted on) the next device referred to by the NeXus attribute.</p>
+to (or mounted on) the next device referred to by the content attribute.</p>
 <p>Allowed values for depends_on are:</p>
 <blockquote>
 <div><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">.</span></code></dt><dd><p>A dot ends the depends_on chain</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">name</span></code></dt><dd><p>The name of a NeXus field within the enclosing NeXus group</p>
+<dt><code class="docutils literal notranslate"><span class="pre">name</span></code></dt><dd><p>The name of a content field within the enclosing content group</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">dir/name</span></code></dt><dd><p>The name of a NeXus field further along the path</p>
+<dt><code class="docutils literal notranslate"><span class="pre">dir/name</span></code></dt><dd><p>The name of a content field further along the path</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">/dir/dir/name</span></code></dt><dd><p>An absolute path to a NeXus field in another NeXus group</p>
+<dt><code class="docutils literal notranslate"><span class="pre">/dir/dir/name</span></code></dt><dd><p>An absolute path to a content field in another content group</p>
 </dd>
 </dl>
 </div></blockquote>
 <p>In addition, for each beamline component, there is a <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> attribute
-that points to the NeXus field at the head of the axis dependency chain. For example,
+that points to the content field at the head of the axis dependency chain. For example,
 consider an <span class="target" id="index-34"></span>eulerian cradle as used on a <span class="target" id="index-35"></span>four-circle diffractometer.
 Such a cradle has a dependency chain of <code class="docutils literal notranslate"><span class="pre">phi:chi:rotation_angle</span></code>. Then
-the <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> NeXus field in <a class="reference internal" href="classes/base_classes/NXsample.html#nxsample"><span class="std std-ref">NXsample</span></a> would have the value <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p>
+the <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> content field in <a class="reference internal" href="classes/base_classes/NXsample.html#nxsample"><span class="std std-ref">NXsample</span></a> would have the value <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p>
 <div class="compound">
 <p class="rubric">NeXus Transformation encoding</p>
 <p id="table-eulercif">Transformation encoding for an eulerian cradle on a four-circle diffractometer</p>
@@ -991,7 +1030,7 @@ the <code class="docutils literal notranslate"><span class="pre">depends_on</spa
 </div></blockquote>
 <p>The type and direction of the NeXus standard operations is documented below
 in the table: <a class="reference internal" href="#tb-table-transform"><span class="std std-ref">Actions of standard NeXus fields</span></a>.
-The rule is to always give the NeXus attributes to make perfectly clear how the axes work. The <span class="target" id="index-36"></span>CIF scheme
+The rule is to always give the content attributes to make perfectly clear how the axes work. The <span class="target" id="index-36"></span>CIF scheme
 also allows to store and use arbitrarily named axes in a NeXus file.</p>
 <p>The CIF scheme (see <a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a>) is the preferred method
 for expressing geometry in NeXus.</p>
@@ -1154,7 +1193,7 @@ define each cylinder in the <code class="docutils literal notranslate"><span cla
 <h4>Detector Shape Descriptions<a class="headerlink" href="#detector-shape-descriptions" title="Link to this heading">¶</a></h4>
 <p>An <code class="docutils literal notranslate"><span class="pre">NXoff_geometry</span></code> or <code class="docutils literal notranslate"><span class="pre">NXcylindrical_geometry</span></code> group named <code class="docutils literal notranslate"><span class="pre">detector_shape</span></code>
 can be placed in an <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> or <code class="docutils literal notranslate"><span class="pre">NXdetector_module</span></code> to define the complete
-shape of the detector. Alternatively, the NeXus group can be named <code class="docutils literal notranslate"><span class="pre">pixel_shape</span></code>
+shape of the detector. Alternatively, the content group can be named <code class="docutils literal notranslate"><span class="pre">pixel_shape</span></code>
 and define the shape of a single pixel. In this case, <code class="docutils literal notranslate"><span class="pre">x_pixel_offset</span></code>,
 <code class="docutils literal notranslate"><span class="pre">y_pixel_offset</span></code> and <code class="docutils literal notranslate"><span class="pre">z_pixel_offset</span></code> datasets of the <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> define
 how the pixel shape is tiled to form the geometry of the complete detector.</p>
@@ -1283,16 +1322,16 @@ from the motor responsible for rotating the component. This situation is shown i
     <ul>
 <li><a class="reference internal" href="#">1.2. NeXus Design</a><ul>
 <li><a class="reference internal" href="#nexus-objects-and-terms">1.2.1. NeXus Objects and Terms</a><ul>
-<li><a class="reference internal" href="#terms-at-four-levels">1.2.1.1. Terms at four levels</a></li>
-<li><a class="reference internal" href="#nexus-groups">1.2.1.2. NeXus Groups</a></li>
-<li><a class="reference internal" href="#nexus-fields">1.2.1.3. NeXus Fields</a></li>
-<li><a class="reference internal" href="#nexus-attributes">1.2.1.4. NeXus Attributes</a></li>
-<li><a class="reference internal" href="#nexus-attributes-of-the-file">1.2.1.5. NeXus attributes of the file</a></li>
-<li><a class="reference internal" href="#nexus-links">1.2.1.6. NeXus Links</a><ul>
-<li><a class="reference internal" href="#what-a-nexus-link-is">What a NeXus link is</a></li>
-<li><a class="reference internal" href="#nexus-links-in-class-definitions">NeXus links in class definitions</a></li>
-<li><a class="reference internal" href="#storing-nexus-links-in-a-file-format">Storing NeXus links in a file format</a><ul>
-<li><a class="reference internal" href="#example-nexus-links-in-hdf5">Example: NeXus links in HDF5</a><ul>
+<li><a class="reference internal" href="#terms-at-five-levels">1.2.1.1. Terms at five levels</a></li>
+<li><a class="reference internal" href="#content-groups">1.2.1.2. Content Groups</a></li>
+<li><a class="reference internal" href="#content-fields">1.2.1.3. Content Fields</a></li>
+<li><a class="reference internal" href="#content-attributes">1.2.1.4. Content Attributes</a></li>
+<li><a class="reference internal" href="#content-attributes-of-the-file">1.2.1.5. Content attributes of the file</a></li>
+<li><a class="reference internal" href="#links">1.2.1.6. Links</a><ul>
+<li><a class="reference internal" href="#what-a-content-link-is">What a content link is</a></li>
+<li><a class="reference internal" href="#links-of-a-class">Links of a class</a></li>
+<li><a class="reference internal" href="#storing-content-links-in-a-file-format">Storing content links in a file format</a><ul>
+<li><a class="reference internal" href="#example-content-links-in-hdf5">Example: content links in HDF5</a><ul>
 <li><a class="reference internal" href="#hdf5-hard-and-soft-links">HDF5 hard and soft links</a></li>
 <li><a class="reference internal" href="#virtual-datasets-and-copies">Virtual datasets and copies</a></li>
 <li><a class="reference internal" href="#hdf5-external-links">HDF5 external links</a></li>
@@ -1314,7 +1353,7 @@ from the motor responsible for rotating the component. This situation is shown i
 <li><a class="reference internal" href="#nexus-geometry">1.2.2. NeXus Geometry</a><ul>
 <li><a class="reference internal" href="#the-nexus-coordinate-system">1.2.2.1. The NeXus Coordinate System</a></li>
 <li><a class="reference internal" href="#coordinate-transformations">1.2.2.2. Coordinate Transformations</a><ul>
-<li><a class="reference internal" href="#nexus-field-and-attributes-of-a-coordinate-transformation">NeXus Field And Attributes of a Coordinate Transformation</a></li>
+<li><a class="reference internal" href="#content-field-and-attributes-of-a-coordinate-transformation">Content Field And Attributes of a Coordinate Transformation</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#shape-descriptions">1.2.2.3. Shape Descriptions</a><ul>
