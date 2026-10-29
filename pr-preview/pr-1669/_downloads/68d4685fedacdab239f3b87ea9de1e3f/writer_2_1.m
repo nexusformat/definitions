@@ -21,7 +21,7 @@ h5create(filename,'/entry/instrument/detector/counts',[length(counts)],'DataType
 h5write(filename,'/entry/instrument/detector/counts',counts);
 h5writeatt(filename,'/entry/instrument/detector/counts','units','counts');
 
-% mark the originals: the target attribute makes the HDF5 hard links below content links
+% mark the targets: the target attribute makes the HDF5 hard links below content links
 h5writeatt(filename,'/entry/instrument/detector/two_theta','target','/entry/instrument/detector/two_theta');
 h5writeatt(filename,'/entry/instrument/detector/counts','target','/entry/instrument/detector/counts');
 

@@ -116,7 +116,7 @@ The utility API comprises the following functional groups:
 * Routines to read or write data.
 * Routines to find whether or not content groups, fields, or attributes exist, and to
   find content fields with specific signal or axis content attributes, i.e. to identify valid data or axes.
-* Routines to open the other content groups that hold the originals of the content links in ``NXdata``, and to return again.
+* Routines to open the other content groups that hold the targets of the content links in ``NXdata``, and to return again.
 
 .. rubric:: line required for use with F90 API
 

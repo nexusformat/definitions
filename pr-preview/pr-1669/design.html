@@ -458,9 +458,10 @@ NeXus link;</p></li>
 <li><p>a <strong>NeXus link</strong>: a NeXus item that names another NeXus field or group,
 its target.  It describes a content field or group with the same shared
 content as one that its target describes; one of the two is a content link
-to the other (see <a class="reference internal" href="#design-links-definitions"><span class="std std-ref">Links of a class</span></a>);</p></li>
+to the other, or both are content links to the same target
+(see <a class="reference internal" href="#design-links-definitions"><span class="std std-ref">Links of a class</span></a>);</p></li>
 <li><p>a <strong>content link</strong>: a content field or group whose content attribute
-<code class="docutils literal notranslate"><span class="pre">target</span></code> is the path of another one, its original, with the same shared
+<code class="docutils literal notranslate"><span class="pre">target</span></code> is the path of another one, its target, with the same shared
 content (see <a class="reference internal" href="#design-links-model"><span class="std std-ref">What a content link is</span></a>);</p></li>
 <li><p>a <strong>storage link</strong>: a way of a file format to make an object available
 under another path, such as an HDF5 hard, soft or external link
@@ -477,12 +478,12 @@ attributes, except <code class="docutils literal notranslate"><span class="pre">
 groups, under their names.  The name of the content field or group itself is not
 part of its shared content.</p>
 <p>A <em>content link</em> is a content field or group whose content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>
-(see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>) is the path of another one, its <em>original</em>, and that has the
-same shared content as its original:</p>
+(see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>) is the path of another one, its <em>target</em>, and that has the
+same shared content as its target:</p>
 <ul class="simple">
 <li><p>the value is an absolute path
 (<code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/polar_angle</span></code>, not <code class="docutils literal notranslate"><span class="pre">detector/polar_angle</span></code>);</p></li>
-<li><p>the original does not need a content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>; when it has one, for
+<li><p>the target itself does not need a content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>; when it has one, for
 example because it is stored as the same object as the content link, the
 value is its own path;</p></li>
 <li><p>a content field or group without a content attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, or whose
@@ -515,7 +516,7 @@ especially those not using a crystal to create monochromatic radiation:</p>
             <span class="n">wavelength</span> <span class="o">--&gt;</span> <span class="s2">"/entry/instrument/crystal/wavelength"</span>
 </pre></div>
 </div>
-<p>A content link may have a different name than the original.  One obvious use of
+<p>A content link may have a different name than its target.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
 specification of wavelength as a NeXus field named <em>lambda</em> in the entry group.
@@ -538,13 +539,13 @@ This requirement can be satisfied easily:</p>
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">/entry/instrument/monochromator/wavelength</span></code> and <code class="docutils literal notranslate"><span class="pre">/entry/lambda</span></code>
-are content links to the original <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>:
+are content links to their target <code class="docutils literal notranslate"><span class="pre">/entry/instrument/crystal/wavelength</span></code>:
 all three have the value 154 and the same content attribute <code class="docutils literal notranslate"><span class="pre">units</span></code>, and both
 content links have <code class="docutils literal notranslate"><span class="pre">&#64;target=&quot;/entry/instrument/crystal/wavelength&quot;</span></code>.</p>
-<p>Which content field or group is the original is part of the content, through <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code>,
+<p>Which content field or group is the target is part of the content, through <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code>,
 but not of the shared content.  It has value in
 only a few situations, such as when converting the data from one format to
-another: by identifying the original, duplicate copies of the data are not
+another: by identifying the target, duplicate copies of the data are not
 converted.</p>
 <p>Where the content is stored, in one file, in several files or in an object
 store, is not part of the content: the value of <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> is always a path in the
@@ -562,20 +563,21 @@ shows as, for example:</p>
 <p>A file satisfies this when the content group that the enclosing NeXus group describes
 contains a content field or group named <code class="docutils literal notranslate"><span class="pre">data</span></code> with the same shared content as one
 that its target, the NeXus field <code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector/data</span></code>, describes,
-and one of the two is a content link to the other.  Either may be the original.  A
+and one of the two is a content link to the other, or both are content links to
+the same target.  Either may be the content link.  A
 NeXus link states nothing else: type, units and dimensions are those of its target.</p>
 <p>The XML attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> of an NXDL link is a class path, written
 with class names such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>: it names a NeXus field or group,
-not a path in a file.  The path of the original does not have to match it.
+not a path in a file.  The value of <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> does not have to match it.
 This XML attribute of the NXDL link is not the content attribute
 <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> of a content field or group in a data file.  The NeXus field or group it
 names describes content fields and groups in the file, such as the content field <code class="docutils literal notranslate"><span class="pre">data</span></code>
 of a content group of class <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> in the content group of class <code class="docutils literal notranslate"><span class="pre">NXinstrument</span></code>
-of the entry; it does not say at which path the original is.</p>
+of the entry; it does not say what <code class="docutils literal notranslate"><span class="pre">&#64;target</span></code> contains.</p>
 </section>
 <section id="storing-content-links-in-a-file-format">
 <span id="design-links-storage"></span><h4>Storing content links in a file format<a class="headerlink" href="#storing-content-links-in-a-file-format" title="Link to this heading">¶</a></h4>
-<p>NeXus only requires that a content link has the shared content of its original.  A
+<p>NeXus only requires that a content link has the shared content of its target.  A
 file format and the software that writes the file may realize this in any
 way the format offers: with a storage link, which makes the stored content
 available under another path, or by storing a copy.</p>
@@ -606,12 +608,12 @@ that writes the file must add the HDF5 attribute <code class="docutils literal n
 <p>An HDF5 hard link <a class="footnote-reference brackets" href="#hdf5-hard-link" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> makes the same HDF5 object available
 under several paths; it is the usual choice.  An HDF5 soft link is a path
 that refers to another path, so it also shows the same object.  In both
-cases the content link and the original are one object with one set of
+cases the content link and its target are one object with one set of
 HDF5 attributes: the
 HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> is set once, on that object, with the path of the
-original as value.</p>
+target as value.</p>
 <p>HDF5 makes no distinction between the paths of a hard-linked object: the
-HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> is what tells NeXus which one is the original (see the
+HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> is what tells NeXus which one is the content link (see the
 <a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a> question: <strong>I’m using content links to place data in two places.
 Which one should be the data and which one is the content link?</strong>).</p>
 <p>To store a content link as an HDF5 hard link:</p>
@@ -632,11 +634,11 @@ Which one should be the data and which one is the content link?</strong>).</p>
 <h6>Virtual datasets and copies<a class="headerlink" href="#virtual-datasets-and-copies" title="Link to this heading">¶</a></h6>
 <p>A virtual dataset or a copy is an object of its own, with its own
 HDF5 attributes.  Add the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code> to it, with the path of the
-original as value.  The original needs no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
+target as value.  The target itself needs no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
 <p>The same holds for an HDF5 dataset with external binary data
 (<code class="docutils literal notranslate"><span class="pre">Dataset.external</span></code> in h5py), whose values are stored in a binary file
 outside the HDF5 file.  When it reads the same bytes of the same binary file
-as the original, it has the same values.</p>
+as the target, it has the same values.</p>
 </section>
 <section id="hdf5-external-links">
 <span id="index-15"></span><span id="design-external-file-link"></span><h6>HDF5 external links<a class="headerlink" href="#hdf5-external-links" title="Link to this heading">¶</a></h6>
@@ -668,7 +670,7 @@ from another file is represented.  These places are not content links: none
 of them has an HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>.</p>
 <p>Unlike a virtual dataset, an HDF5 external link has no HDF5 attributes of its
 own: the ones it shows are those of the object in the other file.  In
-the three examples below, <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> has the original
+the three examples below, <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> has the target
 <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> and the content link <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code>,
 and the detector writes its images to <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> in
 <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.</p>
@@ -692,7 +694,7 @@ attribute <code class="docutils literal notranslate"><span class="pre">target</s
 file can set it.  <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> must also be writable, which it often
 is not.</p>
 </div>
-<p><strong>Example 2: the original stored as an HDF5 external link, the content link
+<p><strong>Example 2: the target stored as an HDF5 external link, the content link
 as an HDF5 soft link.</strong>  An HDF5 soft link has no HDF5 attributes of its own
 either: it shows the object in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>, so the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>
 is stored there, with the same caveats as in example 1:</p>
@@ -706,10 +708,9 @@ is stored there, with the same caveats as in example 1:</p>
 </div>
 <p>The HDF5 soft link may also point the other way: <code class="docutils literal notranslate"><span class="pre">/entry/data/data</span></code> the
 HDF5 external link and <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector/data</span></code> an HDF5 soft link
-to it.  Which path is the original is set by the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, not
-by the direction of the storage link.</p>
-<p><strong>Example 3: the original stored as an HDF5 external link, the content link
-as a virtual dataset.</strong>  The original needs no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, so
+to it.  The HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, not the direction of the storage link, says which path is the content link.</p>
+<p><strong>Example 3: the target stored as an HDF5 external link, the content link
+as a virtual dataset.</strong>  The target itself needs no HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>, so
 <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code> is not changed.  The content link is an object in
 <code class="docutils literal notranslate"><span class="pre">master.h5</span></code> that carries the HDF5 attribute <code class="docutils literal notranslate"><span class="pre">target</span></code>: a virtual dataset that
 maps the data in <code class="docutils literal notranslate"><span class="pre">detector.h5</span></code>.  HDF5 has no hard links between files:</p>

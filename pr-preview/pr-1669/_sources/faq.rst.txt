@@ -158,11 +158,11 @@ This is a list of commonly asked questions concerning the NeXus data format.
     Both places have the same shared content (see :ref:`Design-Links`),
     so there is no need for a preference to either location.
     The content link has the content attribute ``target``
-    (see :ref:`NXobject`), whose value is the path of the original.
-    Identifying the original has value in
+    (see :ref:`NXobject`), whose value is the path of its target.
+    Identifying the target has value in
     only a few situations such as when
     converting the data from one format to another.  By identifying
-    the original in place, duplicate copies of the data are not
+    the target in place, duplicate copies of the data are not
     converted.
 
     .. note:: HDF5 links
