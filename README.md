@@ -62,6 +62,7 @@ component                      | description
 [LGPL.txt](LGPL.txt)           | one proposed license model
 [NXDL_VERSION](NXDL_VERSION)   | the current NXDL version number
 [README.md](README.md)         | this file
+[CONTRIBUTING.md](CONTRIBUTING.md) | Guidlines for contributing to NeXus
 applications/                  | NXDL files for applications and instrument defs
 base_classes/                  | NXDL files for components
 contributed_definitions/       | NXDL files from the community
