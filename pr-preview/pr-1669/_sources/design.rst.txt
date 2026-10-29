@@ -55,8 +55,9 @@ Terms at five levels
 
 The words *group*, *field*, *attribute* and *link* each have several
 meanings.  This manual always says which one, at one of five levels.  Each
-level relates to the next by one verb: *declares*, *defines*, *describes*,
-*stores*.
+level relates to the next by one verb: ``nxdl.xsd`` *declares* the terms of
+NXDL, which *define* NeXus items, which *describe* content, which a file
+format *stores*.
 
 * **XML Schema** (XSD): the grammar :ref:`nxdl.xsd <NXDL>`.  It *declares*
   the terms of NXDL with element declarations (``xs:element``), and their XML
@@ -72,16 +73,21 @@ level relates to the next by one verb: *declares*, *defines*, *describes*,
   ``definition``, ``group``, ``field``, ``attribute`` and ``link`` elements.
   An NXDL definition *defines* a NeXus class.  An NXDL group, field, attribute
   or link *defines* a NeXus group, field, attribute or link of that class.
-  The *XML attributes* of an NXDL term, such as ``name`` or ``type``, say how.
+  The *XML attributes* of an NXDL term, such as ``name`` or ``type``, give
+  the properties of the NeXus item it defines.
 * **NeXus**: the NeXus classes (base classes and application definitions),
   with what they inherit through ``extends``.  A *NeXus item* is a NeXus
   group, field, attribute or link of a class: a name or name pattern, with
-  its type, units, dimensions and occurrence.  A NeXus item is named by its
+  the properties of its kind, such as a type, units, dimensions or
+  occurrence.  A NeXus item is named by its
   class and name, such as the NeXus field ``data`` of ``NXdetector``, or by a
   :ref:`class path <preface.Class.path.specification>`, such as
   ``/NXentry/NXinstrument/NXdetector/data``.  A NeXus item *describes*
-  content.  A NeXus attribute is an attribute of a NeXus group or field, or
-  one defined in an NXDL ``fieldAttributes``: that one describes a content
+  content.  A NeXus group has a *type*: the class of the content groups it
+  describes, such as ``NXdetector``.  A NeXus field or attribute has a *data
+  type*, such as ``NX_INT``.  The XML attribute ``type`` of the NXDL term
+  gives both.  A NeXus attribute is an attribute of a NeXus group or field,
+  or one defined in an NXDL ``fieldAttributes``: that one describes a content
   attribute of every content field directly in the content groups that the
   ``fieldAttributes`` applies to, whether or not a NeXus field describes the
   content field.
@@ -89,17 +95,18 @@ level relates to the next by one verb: *declares*, *defines*, *describes*,
   without anything specific to a file format.  It consists of *content
   groups*, *content fields* and *content attributes*, named by paths such as
   ``/entry/instrument/detector/data``; together they form the *content
-  tree*.  A content field or group can be a *content link*.  The NeXus field ``data`` of ``NXdetector`` describes
-  the content field ``data`` of every content group of class ``NXdetector``.
-  The content attribute ``@NX_class`` of a content group gives the class of
+  tree*.  A content field or group can be a *content link*.  The NeXus field
+  ``data`` of ``NXdetector`` describes the content field ``data`` of every
+  content group of class ``NXdetector``.
+  The content attribute ``@NX_class`` of a content group gives the type of
   the NeXus group that describes it.
 * **Storage**: how a file format, such as HDF5 or Zarr, *stores* the
   content: *storage groups*, *storage fields*, *storage attributes* and
   *storage links*, such as HDF5 groups, datasets, attributes and hard links.
 
 For example, in ``<attribute name="units" type="NX_CHAR"/>`` the
-NXDL attribute defines the NeXus attribute ``@units`` of a NeXus field, which
-describes the content attribute ``@units`` of content fields.  ``name`` and
+NXDL attribute defines the NeXus attribute ``@units`` of a NeXus field.  That
+NeXus attribute describes the content attribute ``@units`` of content fields.  ``name`` and
 ``type`` are XML attributes of that NXDL attribute.  ``@`` marks an attribute at
 both levels: a NeXus attribute in a class path, such as
 ``/NXdata/DATA@long_name``, and a content attribute, such as
@@ -212,7 +219,7 @@ content group, and a class. There can be multiple content groups with the same c
 but they must have different names (based on the :index:`HDF rules <rules; HDF>`).
 
 For the class names the prefix NX is reserved. Thus all NeXus class
-names start with NX. The content attribute ``NX_class`` of a content group gives the class of the
+names start with NX. The content attribute ``NX_class`` of a content group gives the type of the
 NeXus group that describes it (see :ref:`NXobject </NXobject@NX_class-attribute>`; for the root group,
 :ref:`NXroot </NXroot@NX_class-attribute>`).
 
@@ -391,7 +398,8 @@ on the file format; how it is *stored* is up to the file format and the
 software that writes the file (see :ref:`design.links.storage`).
 
 The word *link* has four meanings (see :ref:`Design-Terms`), so this manual
-always says which one:
+always says which one.  *Path* and *shared content* are defined in
+:ref:`design.links.model`.
 
 * an **NXDL link**: a ``link`` element in an NXDL file, which defines a
   NeXus link;
@@ -403,8 +411,9 @@ always says which one:
 * a **content link**: a content field or group whose content attribute
   ``target`` is the path of another one, its target, with the same shared
   content (see :ref:`design.links.model`);
-* a **storage link**: a way of a file format to make an object available
-  under another path, such as an HDF5 hard, soft or external link
+* a **storage link**: a way of a file format to make a storage field or
+  group available at another location, such as an HDF5 hard, soft or
+  external link
   (see :ref:`design.links.storage`).
 
 .. index::
@@ -420,7 +429,7 @@ always says which one:
 What a content link is
 ----------------------
 
-A *path* is the absolute location of a content field or group in a NeXus file: the
+A *path* is the absolute location of a content field or group in the content tree: the
 names of the content groups from the root down to it, separated by ``/``, such as
 ``/entry/instrument/detector/polar_angle``.
 
@@ -444,7 +453,7 @@ same shared content as its target:
   ``target`` is its own path, is not a content link.
 
 Content links are best understood with an example.
-The canonical location (expressed as a NeXus class path) to store wavelength
+The canonical class path of the NeXus field wavelength
 (see :ref:`Strategies-wavelength`) has been::
 
     /NXentry/NXinstrument/NXcrystal/wavelength
