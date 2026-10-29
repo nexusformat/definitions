@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2026 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition name="NXxas_trans" extends="NXxas" type="group" category="application"
+    xmlns="http://definition.nexusformat.org/nxdl/3.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd ">
+    <doc>
+      Application definition for X-ray absorption spectroscopy in transmission
+      geometry.
+
+      The Beer-Lambert law relates the absorbance, :math:`\mu(E)t`, to the
+      intensities of the incident and transmitted beams:
+
+      .. math:: \mu(E)t = -\ln(I/I_0)
+
+      where :math:`\mu(E)` is the absorption coefficient at the photon energy
+      :math:`E`, and :math:`t` is the sample thickness, :math:`I_0` is the
+      intensity of the incident beam and :math:`I` is the intensity of the
+      transmitted beam. 
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <doc> Official NeXus NXDL schema to which this file conforms. </doc>
+            <enumeration>
+                <item value="NXxas_trans"/>
+            </enumeration>
+        </field>
+        <field name="intensity" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                The ``type`` attribute gives the physical quantity before
+                any processing. The values can include background
+                subtraction, normalization, or scaling.
+                The :ref:`processing &lt;/NXxas/ENTRY/processing-group&gt;`
+                group can describe these steps.
+            </doc>
+            <dimensions rank="dataRank">
+                <doc>
+                    ``dataRank`` is 1 for a single spectrum, shape
+                    ``[nEnergy]``, or 2 for a stack of ``nP`` spectra,
+                    shape ``[nP, nEnergy]``.
+                </doc>
+            </dimensions>
+            <attribute name="type" type="NX_CHAR" recommended="true">
+                <enumeration open="true">
+                    <item value="absorbance">
+                        <doc>The absorbance :math:`\mu(E)t`.</doc>
+                    </item>
+                    <item value="absorption_coefficient">
+                        <doc>The absorption coefficient :math:`\mu(E)`.</doc>
+                    </item>
+                    <item value="cross_section">
+                        <doc>The absorption cross-section :math:`\sigma(E)`.</doc>
+                    </item>
+                    <item value="mass_absorption_coefficient">
+                        <doc>
+                            The mass absorption coefficient
+                            :math:`\mu(E)/\rho`.
+                        </doc>
+                    </item>
+                </enumeration>
+            </attribute>
+        </field>
+        <group type="NXinstrument" optional="true">
+            <doc>
+                The ``data`` field of each detector below holds the intensity
+                used to compute the absorbance and may already
+                include corrections. If the uncorrected values are kept, they
+                are archived in the ``NXcollection`` group and the corrections
+                are described in ``NXprocess``.
+            </doc>
+            <group type="NXdetector" name="itrans" recommended="true">
+                <doc>
+                    Detector measuring the transmitted beam intensity
+                    :math:`I`.
+                </doc>
+                <field name="data" type="NX_NUMBER">
+                    <dimensions rank="dataRank">
+                        <doc>
+                            ``dataRank`` is 1 for a single spectrum, shape
+                            ``[nEnergy]``, or 2 for a stack of ``nP`` spectra,
+                            shape ``[nP, nEnergy]``.
+                        </doc>
+                    </dimensions>
+                </field>
+            </group>
+            <group type="NXdetector" name="iref" recommended="true">
+                <doc>
+                    Detector measuring the reference intensity
+                    :math:`I_{ref}`, placed after a reference sample
+                    (typically a metal foil). Provide this detector when the
+                    reference is a simultaneous transmission channel that
+                    shares the main energy axis. For a reference that is an
+                    independent spectrum, in particular one probing a
+                    different absorbing element or absorption edge, use the
+                    :ref:`reference &lt;/NXxas/ENTRY/reference-group&gt;`
+                    subentry instead. Do not provide both for the same
+                    reference.
+                </doc>
+                <field name="data" type="NX_NUMBER">
+                    <dimensions rank="dataRank">
+                        <doc>
+                            ``dataRank`` is 1 for a single spectrum, shape
+                            ``[nEnergy]``, or 2 for a stack of ``nP`` spectra,
+                            shape ``[nP, nEnergy]``.
+                        </doc>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+    </group>
+</definition>
