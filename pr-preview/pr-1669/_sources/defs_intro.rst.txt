@@ -75,7 +75,7 @@ guidelines are strongly encouraged:
 
  		**detectorRank**: Rank of data array provided by the detector for a single measurement
 
-* the ``Symbols`` table appears early in the .nxdl file above the ``NXentry`` NXDL group
+* the ``Symbols`` table appears early in the .nxdl file above the NXDL group of type ``NXentry``
 
  example from `NXtomo.nxdl.xml <https://github.com/nexusformat/definitions/blob/main/applications/NXtomo.nxdl.xml>`_
 
@@ -241,8 +241,8 @@ attribute         [#minOccurs]_   1
 Choice
 ======
 
-The NXDL choice allows one to create a NeXus group with a defined name 
-that is one specific NXDL base class from a defined list of possibilities
+The NXDL choice defines a NeXus group with a given name
+whose type is one of a list of base classes.
 
 In some cases when creating an application definition, more than one 
 choice of base class might be used to define a particular subgroup.  

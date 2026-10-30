@@ -7,7 +7,7 @@ Rules for Structuring Information in NeXus Files
 ================================================
 
 
-All NeXus files contain one or many content groups of type ``NXentry`` at root level.
+All NeXus files contain one or many content groups of class ``NXentry`` at root level.
 Many files contain only one
 ``NXentry``
 group, then the name is ``entry``.

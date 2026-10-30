@@ -447,7 +447,7 @@ contain an NXDL doc which contains a description of the NeXus field. The
 ``dimensions`` entry specifies the dimensions of the data set.
 The XML attribute ``rank`` of the NXDL dimensions
 sets the :index:`rank <rank>`
-of the data, in this example: ``rank="1"``. In the NXDL dimensions there
+of the NeXus field, in this example: ``rank="1"``. In the NXDL dimensions there
 must be *rank* ``dim`` elements. Each ``dim`` tag holds two XML attributes:
 ``index`` determines
 to which dimension this tag belongs, the ``1`` means the first dimension.

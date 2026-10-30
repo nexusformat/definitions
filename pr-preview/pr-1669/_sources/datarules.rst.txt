@@ -460,7 +460,7 @@ match the data type specifier.
    The preferred string representation is UTF-8.
    Both fixed-length strings and variable-length strings are valid.
    String arrays cannot be used where only a string is expected
-   (title, start_time, end_time, ``NX_class`` content attribute,...).
+   (title, start_time, end_time, the NeXus attribute ``NX_class``, ...).
    NeXus fields or attributes requiring the use of string arrays will be
    clearly marked as such (like the NeXus attribute auxiliary_signals of ``NXdata``).
 
@@ -567,7 +567,7 @@ Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
 store data in any unit you find fit. However, any content field must have a
 ``units`` content attribute which describes the units. Wherever possible, SI units are
-preferred. NeXus units are written as a string content attribute (``NX_CHAR``)
+preferred. Units are given in the NeXus attribute ``units``, of data type ``NX_CHAR``,
 and describe the engineering units. The string
 should be appropriate for the value.
 Values for the NeXus units must be specified in
@@ -1034,8 +1034,8 @@ is specified using content attributes attached to the :ref:`NXdata` group.
    One entry is provided for every dimension in the *signal* field.
 
    The field(s) named as values (known as "axes") of this attribute
-   *must* exist. An axis slice is specified using a content attribute named
-   ``AXISNAME_indices`` as described below (where the text shown here
+   *must* exist. An axis slice is specified using the NeXus attribute
+   ``AXISNAME_indices`` of ``NXdata`` as described below (where the text shown here
    as ``AXISNAME`` is to be replaced by the actual field name).
 
    When no default axis is available for a particular dimension
@@ -1049,10 +1049,9 @@ is specified using content attributes attached to the :ref:`NXdata` group.
 .. AXISNAME_indices documentation will be repeated in NXdata/@AXISNAME_indices
 
 :``AXISNAME_indices``:
-   Each ``AXISNAME_indices`` content attribute indicates the dependency
-   relationship of the ``AXISNAME`` content field (where ``AXISNAME``
-   is the name of a field that exists in this ``NXdata`` group)
-   with one or more dimensions of the plottable data.
+   The NeXus attribute ``AXISNAME_indices`` indicates the dependency
+   relationship of the NeXus field ``AXISNAME`` (a field of this ``NXdata``
+   group) with one or more dimensions of the plottable data.
 
    Integer array [#aa]_ that defines the indices of the *signal* field
    (that field will be a multidimensional array)

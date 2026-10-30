@@ -207,8 +207,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
    new NeXus fields that were previously optional?
 
    Yes. That is one of the motivations to have
-   application definitions. By default, all content
-   in an application definition is required.
+   application definitions. By default, all NeXus items
+   of an application definition are required.
 
    For example, the ``radiation`` NeXus field in :ref:`NXcanSAS`
    requires 1 (and only 1) instance.

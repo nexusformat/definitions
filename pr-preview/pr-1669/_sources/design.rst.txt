@@ -87,10 +87,9 @@ format *stores*.
   describes, such as ``NXdetector``.  A NeXus field or attribute has a *data
   type*, such as ``NX_INT``.  The XML attribute ``type`` of the NXDL term
   gives both.  A NeXus attribute is an attribute of a NeXus group or field,
-  or one defined in an NXDL ``fieldAttributes``: that one describes a content
-  attribute of every content field directly in the content groups that the
-  ``fieldAttributes`` applies to, whether or not a NeXus field describes the
-  content field.
+  or one defined in an NXDL ``fieldAttributes``: that one is a NeXus
+  attribute that any field directly in the class may have, whether or not
+  the class defines that field.
 * **Content**: the full content of a NeXus file, values and names included,
   without anything specific to a file format.  It consists of *content
   groups*, *content fields* and *content attributes*, named by paths such as
@@ -255,7 +254,7 @@ be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
 etc.). Content fields are identified by their names, which must be unique within the
-content group in which they are stored.  Some content fields have engineering units to be specified.
+content group in which they are stored.  Some NeXus fields have engineering units, which a file must specify.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a NeXus field is
 expected to be an array of several dimensions.
 
@@ -308,9 +307,9 @@ strings. In addition, NeXus uses them to identify
 :index:`plottable data <plotting>`
 and their axes, etc. In a :ref:`tree structure<tree.structure>`,
 a content attribute is usually shown with a ``@`` prefix, such as ``@units``.
-Content attributes that every content group or field may have are described in
-:ref:`NXobject` (for content fields, in its ``fieldAttributes``), and for the
-root group in :ref:`NXroot`.
+:ref:`NXobject` defines the NeXus attributes that any group or field may have
+(for fields, in its ``fieldAttributes``); :ref:`NXroot` defines those of the
+root group.
 A description of some of the many possible
 NeXus attributes can be found in the next table:
 
@@ -368,11 +367,11 @@ NeXus attributes can be found in the next table:
 
 .. _Design-FileAttributes:
 
-Content attributes of the file
-==============================
+Attributes of the file
+======================
 
-Finally, some content attributes belong to the root content group, at file level.
-The NeXus attributes of the base class :ref:`NXroot` describe them.
+Finally, the base class :ref:`NXroot` defines the NeXus attributes of the root
+group, at file level.
 
 
 .. _Design-Links:
@@ -492,7 +491,7 @@ In a file, the second can be a content link to the first::
 A content link may have a different name than its target.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
-specification of wavelength as a NeXus field named *lambda* in the entry group.
+specification of wavelength as a NeXus field *lambda* of ``NXentry``.
 This requirement can be satisfied easily::
 
     entry:NXentry
@@ -552,8 +551,9 @@ This XML attribute of the NXDL link is not the content attribute
 ``@target`` of a content field or group in a data file.  The NeXus field or group it
 names describes content fields and groups in the file, such as the content field ``data``
 of a content group of class ``NXdetector`` in the content group of class ``NXinstrument``
-of the entry.  First of all, it says which content fields or groups the content
-must equal; ``@target`` only has to join the two, as above.
+of the entry.  First of all, it says which content field or group must have
+the same shared content as the one the NeXus link describes; ``@target`` only
+has to join the two, as above.
 
 .. _design.links.storage:
 
@@ -763,9 +763,9 @@ possible classes.
 
 NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the
-development of NeXus. NeXus base classes are rather dictionaries of NeXus field names and their meanings
-which are permitted in a particular content group of that class. This sounds complicated but
-becomes easy if you consider that most NeXus groups stand for instrument components. Then for example, a
+development of NeXus. NeXus base classes are rather dictionaries of the names and meanings
+of the NeXus fields of that class. This sounds complicated but
+becomes easy if you consider that most base classes stand for instrument components. Then for example, a
 NXmonochromator base class defines all the possible NeXus field names which NeXus allows to be used to describe a
 monochromator.
 
@@ -930,10 +930,10 @@ The objects described so far provide us with the means to store data from a wide
 simulations, or processed data as resulting from data analysis. But NeXus strives to express strict standards for
 certain applications of NeXus, too. The tool which NeXus uses for the expression of such strict standards is the NeXus
 :ref:`Application Definition <application.definitions>`.
-A NeXus Application Definition describes which content groups and fields have to be present in
-a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
+A NeXus Application Definition defines which NeXus groups and fields are required
+in order to properly describe an application of NeXus. For example for describing  a powder diffraction
 experiment.
-An application definition may also define NeXus items whose content is optional in the data file.
+An application definition may also define optional NeXus items.
 Typically an application definition will contain only a small subset of the many NeXus groups and fields
 defined in NeXus. NeXus application definitions are also expressed in the NeXus Definition Language (NXDL). A tool exists
 which allows one to validate a NeXus file against a given application definition.
@@ -1051,11 +1051,11 @@ In order to use coordinate transformations, several pieces of information need t
         The order of operations to apply to move a component into its place.
 
 
-Content Field And Attributes of a Coordinate Transformation
------------------------------------------------------------
+NeXus Field and Attributes of a Coordinate Transformation
+---------------------------------------------------------
 
-NeXus chooses to encode information about each transformation as a content field in an ``NXtransformations``
-group in the following way:
+NeXus chooses to encode information about each transformation as a NeXus field of ``NXtransformations``
+in the following way:
 
   .. index::
      ! single: value (transformation matrix)
@@ -1066,7 +1066,7 @@ group in the following way:
      transformation. Its actual name should relate to the physical device used to
      effect the transformation.
 
-     The content attributes of the coordinate transformation are:
+     The NeXus attributes of this field are:
 
        .. index::
          single: transformation type (field attribute)
@@ -1091,8 +1091,8 @@ group in the following way:
 
        ``offset`` (*NX_NUMBER*)
          This is a set of 3 values forming the offset vector for a translation to apply
-         before applying the operation of the actual transformation. Without this offset
-         content attribute, additional virtual translations would need to be introduced in order
+         before applying the operation of the actual transformation. Without this
+         NeXus attribute, additional virtual translations would need to be introduced in order
          to encode mechanical offsets in the axis.
 
        .. index::
@@ -1100,12 +1100,12 @@ group in the following way:
          ! single: depends on (field attribute)
 
        ``depends_on``
-    	 The **order** is encoded through this content attribute. The value is the name of the
+    	 The **order** is encoded through this NeXus attribute. Its value is the name of the
          transformation upon which the current transformation depends on.
 
          As each transformation represents possible motion by a physical device, this
          dependency expresses the attachment order; thus, the current device is attached
-         to (or mounted on) the next device referred to by the content attribute.
+         to (or mounted on) the next device referred to by this NeXus attribute.
 
          Allowed values for depends_on are:
 
@@ -1283,8 +1283,8 @@ Detector Shape Descriptions
 
 An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``detector_shape``
 can be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
-shape of the detector. Alternatively, the content group can be named ``pixel_shape``
-and define the shape of a single pixel. In this case, ``x_pixel_offset``,
+shape of the detector. Alternatively, the NeXus group ``pixel_shape``
+defines the shape of a single pixel. In this case, ``x_pixel_offset``,
 ``y_pixel_offset`` and ``z_pixel_offset`` datasets of the ``NXdetector`` define
 how the pixel shape is tiled to form the geometry of the complete detector.
 

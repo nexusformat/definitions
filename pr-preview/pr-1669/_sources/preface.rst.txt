@@ -161,5 +161,5 @@ place of the field name::
 
 	/NXobject/*@units
 
-It describes the content attribute ``units`` of every content field directly in
-the content groups that the ``fieldAttributes`` applies to.
+It is the NeXus attribute ``units`` that any field directly in the class may
+have, whether or not the class defines that field.

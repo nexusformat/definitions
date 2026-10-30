@@ -187,7 +187,7 @@ doc
 
 
 An NXDL doc can be a child of most NXDL elements.  In most cases, the
-content of the NXDL doc will also become part of the NeXus manual.
+text of the NXDL doc will also become part of the NeXus manual.
 
 :element: {any}:
 
@@ -319,9 +319,9 @@ fieldAttributes
 
 An NXDL ``fieldAttributes`` can *only* be a child of an
 NXDL definition or NXDL group.
-It defines NeXus attributes that describe the content attributes of every
-content field directly in a content group of the class (in an NXDL definition)
-or described by the NeXus group (in an NXDL group).
+It defines NeXus attributes that any field directly in the class (in an NXDL
+definition) or in the NeXus group (in an NXDL group) may have, whether or not
+that class or NeXus group defines the field.
 
 For more details, see:
 :ref:`NXDL.data.type.fieldAttributesType`
@@ -389,7 +389,8 @@ NXDL definition or NXDL group.
 It defines a :ref:`NeXus link <Design-Links>`: a NeXus item that names
 another NeXus field or group, its target.  It describes a content field or
 group with the same shared content as one that its target describes; one of
-the two is a content link to the other.
+the two is a content link to the other, or both are content links to the
+same target.
 
 For more details, see:
 :ref:`NXDL.data.type.linkType`
@@ -520,8 +521,8 @@ XML attribute recommended
 
     
 
-    A synonym for optional, but with the recommendation that the
-    content attribute, described by the NeXus attribute this NXDL attribute defines, be present.
+    A synonym for optional, but the NeXus attribute that this NXDL attribute defines
+    is recommended.
     
 
 XML attribute type
@@ -540,7 +541,7 @@ dimensions
 
     
 
-    dimensions of the NeXus attribute, when the content attributes it describes have array values
+    dimensions of the NeXus attribute, when its values are arrays
     
 
 doc
@@ -585,8 +586,8 @@ XML attribute valueFrom
 
     
 
-    The value of the content attributes that this NeXus attribute describes
-    is not fixed but comes from the NeXus group this NeXus attribute belongs to
+    The value of this NeXus attribute is not fixed but comes from the NeXus group it
+    belongs to
     (see :ref:`NXDL.data.type.valueFromType`).
     Cannot be combined with an NXDL enumeration.
     
@@ -642,7 +643,7 @@ Could contain these elements:
 * ``group``
 * ``link``
 
-Note that an NXDL definition also includes the declarations of the 
+Unlike ``fieldType`` and ``linkType``, ``definitionType`` does not extend the
 ``basicComponent`` complex type.
 (The ``definitionType`` complex type is used internally in the NXDL schema 
 to declare elements and XML attributes to be used in NXDL files.)
@@ -681,7 +682,7 @@ XML attribute extends
     
 
     The XML attribute ``extends`` allows this definition
-    to *subclass* from another NXDL,
+    to *subclass* from another NeXus class,
     otherwise ``extends="NXobject"`` should be used.
     
 
@@ -690,7 +691,7 @@ XML attribute ignoreExtraAttributes
 
     
 
-    Only validate known content attributes; do not not warn about unknowns.
+    Only validate known content attributes; do not warn about unknowns.
     The XML attribute ``ignoreExtraAttributes`` is a flag to the process of
     validating NeXus data files.  By setting ``ignoreExtraAttributes="true"``,
     presence of any content attributes that no NeXus attribute describes, in a content group of this class, will not generate warnings
@@ -707,7 +708,7 @@ XML attribute ignoreExtraFields
 
     
 
-    Only validate known content fields; do not not warn about unknowns.
+    Only validate known content fields; do not warn about unknowns.
     The XML attribute ``ignoreExtraFields`` is a flag to the process of
     validating NeXus data files.  By setting ``ignoreExtraFields="true"``,
     presence of any content fields that no NeXus field describes, in a content group of this class, will not generate warnings
@@ -724,7 +725,7 @@ XML attribute ignoreExtraGroups
 
     
 
-    Only validate known content groups; do not not warn about unknowns.
+    Only validate known content groups; do not warn about unknowns.
     The XML attribute ``ignoreExtraGroups`` is a flag to the process of
     validating NeXus data files.  By setting ``ignoreExtraGroups="true"``,
     presence of any content groups that no NeXus group describes, in a content group of this class, will not generate warnings
@@ -741,7 +742,8 @@ XML attribute name
 
     
 
-    The ``name`` of this NXDL file (case sensitive without the file extension).
+    The name of the NeXus class that this NXDL definition defines; also the NXDL
+    file name without the file extension (case sensitive).
     The name must be unique amongst all the NeXus base class, application,
     and contributed definitions.  For the class to be adopted by the NIAC,
     the first two letters must be "``NX``" (in uppercase).  Any other use
@@ -788,8 +790,8 @@ fieldAttributes
 
     
 
-    Defines NeXus attributes that describe the content attributes of
-    every content field directly in a content group of this class.
+    Defines NeXus attributes that any field directly in this class may have, whether
+    or not the class defines that field.
     Like the other NeXus items of a class, they are inherited
     by the classes that extend it.
     
@@ -940,8 +942,8 @@ XML attribute ref
         
         The dimension specification is the same as
         that of the NeXus field the XML attribute ``ref`` names, specified either by a relative path,
-        such as ``polar_angle`` or ``../Qvec`` or absolute path, such as
-        ``/entry/path/to/follow/to/ref/field``.
+        such as ``polar_angle`` or ``../Qvec`` or absolute class path, such as
+        ``/NXentry/NXinstrument/NXdetector/polar_angle``.
         
 
 XML attribute refindex
@@ -1153,9 +1155,8 @@ That NeXus field describes content fields, which are stored as an HDF4 SDS
 
 The XML attributes ``long_name``, ``signal``, ``axes``, ``axis``,
 ``primary``, ``interpretation``, ``stride`` and ``data_offset``
-of an NXDL field give the value of the content attribute
-with that name of the content fields that the NeXus field describes, for
-example ``signal="1"``; their declarations below constrain only the NXDL file.
+of an NXDL field give the value of the NeXus attribute with that name of
+the NeXus field, for example ``signal="1"``; their declarations below constrain only the NXDL file.
 The XML attribute ``units`` gives the units
 category or an example of the units, not the value of ``@units``.
 Other NeXus attributes of the NeXus field are defined with
@@ -1199,15 +1200,15 @@ XML attribute axis
     
 
     NOTE: Use of this XML attribute is discouraged.  It is for legacy support.
-    You should use the NeXus group
-    attribute ``@axes`` (such as in NXdata) instead.
+    You should use the NeXus attribute ``@axes`` of the NeXus group (such as in
+    NXdata) instead.
     
     Presence of the XML attribute ``axis`` means this NeXus field is an abscissa.
     
     The XML attribute value is an integer indicating this
     NeXus field as an axis that is part of the data set.
-    The data set is a NeXus field in the same NeXus group whose
-    content fields have the content attribute ``@signal=1``.
+    The data set is the NeXus field in the same NeXus group whose NeXus attribute
+    ``@signal`` is 1.
     The value can range from 1 up to the number of
     independent axes (abscissae) in the data set.
     
@@ -1233,9 +1234,9 @@ XML attribute data_offset
     
 
     Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
-    attribute that describes the content attribute in a data file.  The
+    attribute ``@data_offset`` of every field.  The
     declaration of this XML attribute constrains only the NXDL file: its
-    type and default never applied to the content attribute in a data file.
+    type and default never applied to that NeXus attribute.
     
     The XML attributes ``stride`` and ``data_offset``
     are used together to index the array of data items in a
@@ -1267,9 +1268,9 @@ XML attribute interpretation
     
 
     Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
-    attribute that describes the content attribute in a data file.  The
+    attribute ``@interpretation`` of every field.  The
     declaration of this XML attribute constrains only the NXDL file: its
-    type and default never applied to the content attribute in a data file.
+    type and default never applied to that NeXus attribute.
     
     This instructs the consumer of the data what the last dimensions
     of the data are. It allows plotting software to work
@@ -1303,9 +1304,9 @@ XML attribute long_name
     
 
     Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
-    attribute that describes the content attribute in a data file.  The
+    attribute ``@long_name`` of every field.  The
     declaration of this XML attribute constrains only the NXDL file: its
-    type and default never applied to the content attribute in a data file.
+    type and default never applied to that NeXus attribute.
     
     Descriptive name for this NeXus field (may include whitespace and engineering units).
     Often, the long_name (when defined) will be used as the axis label on a plot.
@@ -1316,8 +1317,7 @@ XML attribute maxOccurs
 
     
 
-    Maximum number of content fields, described by the NeXus field that
-    this NXDL field defines, in one parent content group.  Its
+    Maximum occurrence of the NeXus field that this NXDL field defines.  Its
     value is confined to zero or greater.  Must be greater than or equal to
     the value for the XML attribute ``minOccurs``.
     A value of "unbounded" is allowed.
@@ -1328,8 +1328,7 @@ XML attribute minOccurs
 
     
 
-    Minimum number of content fields, described by the NeXus field that
-    this NXDL field defines, in one parent content group.  Its
+    Minimum occurrence of the NeXus field that this NXDL field defines.  Its
     value is confined to zero or greater.  Must be less than or equal to
     the value for the XML attribute ``maxOccurs``.
     
@@ -1360,8 +1359,8 @@ XML attribute recommended
 
     
 
-    A synonym for optional, but with the recommendation that the
-    content field, described by the NeXus field this NXDL field defines, be present.
+    A synonym for optional, but the NeXus field that this NXDL field defines is
+    recommended.
     
 
 XML attribute signal
@@ -1388,9 +1387,9 @@ XML attribute stride
     
 
     Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
-    attribute that describes the content attribute in a data file.  The
+    attribute ``@stride`` of every field.  The
     declaration of this XML attribute constrains only the NXDL file: its
-    type and default never applied to the content attribute in a data file.
+    type and default never applied to that NeXus attribute.
     
     The XML attributes ``stride`` and ``data_offset``
     are used together to index the array of data items in a 
@@ -1427,7 +1426,7 @@ XML attribute type
 
     
 
-    Defines the type of the NeXus field as allowed by NeXus.
+    Defines the data type of the NeXus field as allowed by NeXus.
     
     See :ref:`here<Design-DataTypes>` and :ref:`elsewhere<nxdl-types>` for the complete list of allowed types.
     
@@ -1496,25 +1495,24 @@ fieldAttributesType
 
 
 
-An NXDL ``fieldAttributes`` defines NeXus attributes that describe the
-content attributes of every content field directly in a content group,
-whether or not a NeXus field describes it.  Content fields in nested content groups are not affected.
+An NXDL ``fieldAttributes`` defines NeXus attributes that any field directly in
+a class or NeXus group may have, whether or not that class or NeXus group
+defines the field. Fields in nested NeXus groups are not affected.
 
 * As a child of the NXDL definition of a base class, it applies to every
-  content field directly in a content group of that class, and is
-  inherited by the classes that extend it (see :ref:`NXobject`).
+  field directly in that class, and is inherited by the classes that
+  extend it (see :ref:`NXobject`).
   An application definition has no content groups of its own class, so
   it may not have ``fieldAttributes`` as a direct child (checked by the
   repository's Python syntax check, not by ``nxdl.xsd``).
-* As a child of an NXDL group, it applies to every content field directly
-  in the content groups described by the NeXus group that this NXDL group
-  defines, in addition to the ``fieldAttributes`` of the class of that
-  NeXus group.
+* As a child of an NXDL group, it applies to every field directly in the
+  NeXus group that this NXDL group defines, in addition to the
+  ``fieldAttributes`` of the type of that NeXus group.
 
 An NXDL attribute of an NXDL field always takes
 precedence over one with the same name in ``fieldAttributes``.
 When several ``fieldAttributes`` contain an NXDL attribute with the
-same name, the one closest to the NXDL field takes precedence: the
+same name, the one closest to the field takes precedence: the
 enclosing NXDL group, then the same NXDL group in the application
 definitions that its NXDL definition extends (closest first), then the
 NXDL definition of the type of its NeXus group, then the classes that
@@ -1538,7 +1536,7 @@ attribute
 
     
 
-    A NeXus attribute that describes a content attribute of every content field directly in the content groups that ``fieldAttributes`` applies to.
+    An NXDL attribute that defines a NeXus attribute that any field directly in the class or NeXus group that ``fieldAttributes`` applies to may have.
     
 
 doc
@@ -1589,7 +1587,7 @@ group
 
     
 
-    NeXus base class that could be used here.
+    An NXDL group whose type is a base class that could be used here.
     The NXDL group will take the XML attribute ``name``
     of the parent NXDL choice
     so do not specify the XML attribute ``name`` of
@@ -1609,8 +1607,8 @@ groupType
 
 
 
-An NXDL group refers to the definition of 
-an existing NX object or a locally-defined component.
+An NXDL group defines a NeXus group of the class or NeXus group being defined;
+its type is an existing class.
 Could contain these elements:
 
 * ``attribute``
@@ -1620,8 +1618,8 @@ Could contain these elements:
 * ``group``
 * ``link``
 
-Note that an NXDL group also includes the declarations of the 
-``basicComponent`` complex type.
+Unlike ``fieldType`` and ``linkType``, ``groupType`` does not extend the
+``basicComponent`` complex type: its XML attribute ``name`` is optional.
 (The ``groupType`` complex type is used internally in the NXDL schema 
 to declare elements and XML attributes to be used in NXDL files.)
 
@@ -1634,8 +1632,7 @@ XML attribute maxOccurs
 
     
 
-    Maximum number of content groups, described by the NeXus group that this
-    NXDL group defines, in one parent content group.  Note each NXDL group must have
+    Maximum occurrence of the NeXus group that this NXDL group defines.  Note each NXDL group must have
     an XML attribute ``name`` that is unique among all NXDL groups and NXDL fields
     within a common parent element.
     
@@ -1645,8 +1642,7 @@ XML attribute minOccurs
 
     
 
-    Minimum number of content groups, described by the NeXus group that this
-    NXDL group defines, in one parent content group.  Note each NXDL group must have
+    Minimum occurrence of the NeXus group that this NXDL group defines.  Note each NXDL group must have
     an XML attribute ``name`` that is unique among all NXDL groups and NXDL fields
     within a common parent element.
     
@@ -1691,8 +1687,8 @@ XML attribute recommended
 
     
 
-    A synonym for optional, but with the recommendation that the
-    content group, described by the NeXus group this NXDL group defines, be present.
+    A synonym for optional, but the NeXus group that this NXDL group defines is
+    recommended.
     
 
 XML attribute type
@@ -1713,7 +1709,7 @@ fieldAttributes
 
     
 
-    Defines NeXus attributes that describe the content attributes of every content field directly in the content groups described by the NeXus group this NXDL group defines.
+    Defines NeXus attributes that any field directly in the NeXus group this NXDL group defines may have, whether or not that NeXus group defines the field.
     
 
 Model groups of groupType
@@ -1757,8 +1753,8 @@ Either of the two may be the content link.
 
 An NXDL link defines no type, units, dimensions or NeXus attributes
 of its own: those of its target apply.
-An NXDL link has no occurrence XML attributes, so it is required
-in an application definition.
+An NXDL link has no occurrence XML attributes, so the NeXus link it defines is
+required in an application definition.
 
 A content field or group may be a content link in a data file without a
 NeXus link describing it.
@@ -1847,7 +1843,7 @@ symbol
 
     
 
-    When multiple NXDL fields share the same dimensions, such as the dimension scales
+    When multiple NeXus fields share the same dimensions, such as the dimension scales
     associated with plottable data in an ``NXdata`` group, the length of each
     dimension written in a NeXus data file should be something that can be tested by the
     data file validation process.
@@ -1972,8 +1968,8 @@ validNXClassName
 
 
 Used for allowed names of NX class types (e.g. NXdetector).
-Note this is *not* the instance name (e.g. ``bank1``)
-which is covered by ``validItemName``.
+Note this is *not* the name of a NeXus group (e.g. ``bank1``), which is covered
+by ``validItemName``.
 (This data type is used internally in the NXDL schema 
 to define a data type.)
 
@@ -2010,7 +2006,7 @@ Because it is written with class names, it names a NeXus item,
 not a path in a data file.
 Currently it must be an absolute path; we may want to consider
 allowing "``..``" (parent of directory) at some point.
-Must also consider use of the XML attribute ``name`` in resolving NXDL link targets.
+Must also consider use of the XML attribute ``name`` in resolving the targets of NeXus links.
 (This data type is used internally in the NXDL schema 
 to define a data type.)
 
@@ -2067,8 +2063,8 @@ valueFromType
 
 
 
-Where the value of a content attribute of a content group in a data file comes from,
-as used by the XML attribute ``valueFrom`` of an NXDL attribute.
+Where the value of a NeXus attribute of a NeXus group comes from, as given by
+the XML attribute ``valueFrom`` of the NXDL attribute that defines it.
 
 (This simple type is used internally in the NXDL schema.)
 
@@ -2078,9 +2074,10 @@ one from this list only:
 
 * ``class``
 
-  The type of the NeXus group that describes the content group, the name of a class:
-  the XML attribute ``type`` of the NXDL group that defines it, or the XML
-  attribute ``name`` of the NXDL definition, for a NeXus group of that class.
+  The type of the NeXus group that the NeXus attribute belongs to, the name of a
+  class: the XML attribute ``type`` of the NXDL group that defines that NeXus
+  group, or the XML attribute ``name`` of the NXDL definition, for a NeXus
+  attribute that the class itself has.
   For a NeXus attribute inherited from another class, such as
   :ref:`NXobject`, it is the type of that NeXus group, not the class
   that defines the NeXus attribute.
