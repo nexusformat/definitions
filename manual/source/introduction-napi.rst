@@ -47,7 +47,7 @@ The API uses a very simple *state*
 model to navigate through a NeXus file.
 When you open a file,
 the API provides a file *handle*, which stores the
-current location, i.e. which group and/or field is currently open. 
+current location, i.e. which content group and/or field is currently open. 
 Read and write operations then act on the currently open entity.
 Following the simple example titled
 :ref:`Example structure of a simple data file <fig.simple-example>`,
@@ -94,30 +94,30 @@ we walk through a schematic of NeXus program written in C
         is contained within an :ref:`NXdata`
         group, which must also be created and opened.
     #. line 12:
-        To create a field, call ``NXmakedata()``, specifying the
+        To create a content field, call ``NXmakedata()``, specifying the
         data name, type (``NX_FLOAT32``), :index:`rank <rank>`
         (in this case, ``1``), and length of the array
         (``n``).  Then, it can be opened for writing. [#]_
     #. line 14:
         Write the data using ``NXputdata()``.
     #. line 15:
-        With the field still open, we can also add some field
+        With the content field still open, we can also add some field
         :index:`attributes <field attribute>`,
         such as the :index:`data units <units>`, [#]_ [#]_
         which are specified as a character string (``type="NX_CHAR"`` [#]_)
         that is 7 bytes long.
     #. line 16:
-        Then we close the field before opening another.
+        Then we close the content field before opening another.
         In fact, the API will do this automatically if you
         attempt to open another field, but it is
         better style to close it yourself.
     #. line 17:
-        The remaining fields in this group are added in a similar
-        fashion. Note that the indentation whenever a new field or
+        The remaining content fields in this group are added in a similar
+        fashion. Note that the indentation whenever a new content field or
         group are opened is just intended to make the structure of
         the NeXus file more transparent.
     #. line 20:
-        Finally, close the groups (``NXdata`` and
+        Finally, close the content groups (``NXdata`` and
         ``NXentry``) before closing the file itself.
 
 .. _Introduction-HowToRead:
@@ -180,13 +180,13 @@ is an example session of :index:`nxbrowse`
         line and open file ``lrcs3701.nxs`` from
         IPNS/LRMECS.
     #. line 8:
-		List the contents of the current group.
+		List the contents of the current content group.
     #. line 11:
-        Open the NeXus group ``Histogram1``.
+        Open the content group ``Histogram1``.
     #. line 23:
         Print the contents of the NeXus data labeled ``title``.
     #. line 41:
-        Close the current group.
+        Close the current content group.
     #. line 43:
         Quits ``nxbrowse``.
 

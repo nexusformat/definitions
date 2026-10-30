@@ -30,8 +30,8 @@ had a substantial user community. HDF was developed and maintained
 initially by the National Center for Supercomputing Applications (NCSA)
 at the University of Illinois at Urbana-Champaign (UIUC) and later spun 
 off into its own group called The HDF Group (THG: http://www.hdfgroup.org/). 
-Rather then developing its own unique physical file format, the NeXus group 
-choose to build NeXus on top of HDF.
+Rather then developing its own unique physical file format, the NeXus developers 
+chose to build NeXus on top of HDF.
 
 HDF (now HDF5) is provided with
 software to read and write data (this is the application-programmer interface, or API)
@@ -53,18 +53,19 @@ Mapping NeXus into HDF
 
 
 NeXus data structures map directly to HDF structures.
-NeXus *groups* are HDF5 *groups* and
-NeXus *fields* (or data sets) are HDF5 *datasets*.
-Attributes map directly to HDF group or dataset attributes.
-The NeXus class is stored as an attribute to the HDF5 group 
-with the name ``NX_class`` with value of the NeXus class name.
-(For legacy NeXus data files using HDF4, groups are HDF4 *vgroups*
-and fields are HDF4 *SDS (scientific data sets)*.  HDF4 does 
-not support group attributes.  HDF4 supports a group class
+Content *groups* are stored as HDF5 *groups*,
+content *fields* (or data sets) as HDF5 *datasets*
+and content attributes as HDF5 attributes of HDF5 groups or datasets.
+The content attribute ``NX_class``, the type of the NeXus group that describes
+the content group, is stored as an HDF5 attribute of the HDF5 group.
+(For legacy NeXus data files using HDF4, content groups are stored as HDF4 *vgroups*
+and content fields as HDF4 *SDS (scientific data sets)*.  HDF4 does
+not support attributes on HDF4 vgroups.  HDF4 supports a group class
 which is set with the ``Vsetclass()`` call
 and read with ``VGetclass()``.)
 
-A NeXus ``link`` directly maps to the HDF hard link mechanisms.
+In HDF5, a :ref:`content link <Design-Links>` is usually stored as an HDF5 hard link
+(see :ref:`design.links.hdf5`).
 
 .. note:: **Examples** are provided in the :ref:`Examples` chapter.
           These examples include software to write and read NeXus data files using the NAPI, as
@@ -86,14 +87,14 @@ at the data structure.  For this, we use the ``h5dump`` command-line
 utility provided with the HDF5 support libraries.  Short examples are provided for the
 basic NeXus data components:
 
-- :ref:`group <h5dump_group>`:
+- :ref:`content group <h5dump_group>`:
   created in C NAPI by:
   
   .. code-block:: c
 
 	  NXmakegroup (fileID, "entry", "NXentry");
 
-- :ref:`field <h5dump_field>`:
+- :ref:`content field <h5dump_field>`:
   created in C NAPI by:
   
   .. code-block:: c
@@ -102,14 +103,14 @@ basic NeXus data components:
 	    NXopendata (fileID, "two_theta");
 	  NXputdata (fileID, tth);
 
-- :ref:`attribute <h5dump_attribute>`:
+- :ref:`content attribute <h5dump_attribute>`:
   created in C NAPI by:
   
   .. code-block:: c
 
 	  NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
 
-- :ref:`link <h5dump_link>`
+- :ref:`content link <h5dump_link>`, stored as an HDF5 hard link,
   created in C NAPI by:
   
   .. code-block:: c
@@ -120,7 +121,7 @@ basic NeXus data components:
 
 .. compound::
 
-    .. rubric:: ``h5dump`` of a NeXus ``NXentry`` group
+    .. rubric:: ``h5dump`` of an ``NXentry`` content group
     
     .. _h5dump_group:
 
@@ -131,7 +132,7 @@ basic NeXus data components:
 
 .. compound::
 
-    .. rubric:: ``h5dump`` of a NeXus field (HDF5 dataset)
+    .. rubric:: ``h5dump`` of a content field (HDF5 dataset)
     
     .. _h5dump_field:
 
@@ -142,7 +143,7 @@ basic NeXus data components:
 
 .. compound::
 
-    .. rubric:: ``h5dump`` of a NeXus attribute
+    .. rubric:: ``h5dump`` of a content attribute
     
     .. _h5dump_attribute:
 
@@ -153,7 +154,7 @@ basic NeXus data components:
 
 .. compound::
 
-    .. rubric:: ``h5dump`` of a NeXus link
+    .. rubric:: ``h5dump`` of a content link
     
     .. _h5dump_link:
 

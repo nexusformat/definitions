@@ -1,9 +1,9 @@
 .. _h5py-example-external-links:
 
-Write a NeXuS HDF5 File with links to external data
-###################################################
+Write a NeXus HDF5 File with HDF5 external links to external data
+#################################################################
 
-HDF5 files may contain links to data (or groups) in other files.  
+HDF5 files may contain HDF5 external links to data (or groups) in other files.  
 This can be used to advantage to refer to data in existing HDF5 files
 and create NeXus-compliant data files.  Here, we show such an example, 
 using the same ``counts`` v. ``two_theta`` data from the examples above.
@@ -14,7 +14,7 @@ We use the *HDF5 external file* links with NeXus data files.
 
   f[local_addr] = h5py.ExternalLink(external_file_name, external_addr)
 
-where ``f`` is an open ``h5py.File()`` object in which we will create the new link,
+where ``f`` is an open ``h5py.File()`` object in which we will create the new HDF5 external link,
 ``local_addr`` is an HDF5 path address, ``external_file_name`` is the name 
 (relative or absolute) of an existing HDF5 file, and ``external_addr`` is the
 HDF5 path address of the existing data in the ``external_file_name`` to be linked.
@@ -67,9 +67,9 @@ without making a copy of the data files themselves.
    links to work properly.`  
 
 To be a valid NeXus file, it must contain a :ref:`NXentry` group.
-For the files above, it is simple to make a master file that links to
+For the files above, it is simple to make a master file with HDF5 external links to
 the data we desire, from structure that we create.  We then add the
-group attributes that describe the default plottable data:
+content attributes of the content group that describe the default plottable data:
 
 .. code-block:: text
 
@@ -97,7 +97,7 @@ source code: external_example_write.py
 ======================================
 
 Here is the complete code of a Python program, using ``h5py``
-to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
+to write a NeXus-compliant HDF5 file with HDF5 external links to data in other HDF5 files.
 
 .. compound::
 
@@ -135,8 +135,8 @@ file                                               description
 :download:`external_counts_h5dump.txt`             *h5dump* analysis of *external_counts.hdf5*
 :download:`external_counts.hdf5`                   HDF5 file written by *external_example_write*
 :download:`external_counts_structure.txt`          *punx tree* analysis of *external_counts.hdf5*
-:download:`external_example_write.py`              h5py code to write external linking examples
-:download:`nexusformat/external_example_write.py`  nexusformat code to write external linking examples
+:download:`external_example_write.py`              h5py code to write HDF5 external link examples
+:download:`nexusformat/external_example_write.py`  nexusformat code to write HDF5 external link examples
 :download:`external_master_h5dump.txt`             *h5dump* analysis of *external_master.hdf5*
 :download:`external_master.hdf5`                   NeXus file written by *external_example_write*
 :download:`external_master_structure.txt`          *punx tree* analysis of *external_master.hdf5*

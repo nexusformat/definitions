@@ -13,8 +13,8 @@ Definitions of NeXus classes. These are split into base_classes (low level objec
 application definitions (groupings of objects for a particular technique) and 
 contributed_definitions (proposed definitions from the community)
 
-The complete :index:`!vocabulary` of terms used in NeXus NXDL files (names of
-groups, fields, attributes, and links) is available for :ref:`download
+The complete :index:`!vocabulary` of names used in the NXDL files (names of
+NXDL groups, fields, attributes, and links) is available for :ref:`download
 <classes.vocabulary.downloads>`.
 
 .. rubric:: :styleh2:`Base classes`
@@ -27,9 +27,9 @@ that are used to construct a data file.
 Base class definitions are permissive rather than restrictive.
 While the terms defined aim to cover most possible use cases,
 and to codify the spelling and meaning of such terms,
-the class specifications cannot list all acceptable groups and fields.
+the classes cannot define a NeXus group or field for everything a file may contain.
 To be able to progress the NeXus standard, additional data
-(groups, fields, attributes) are acceptable in NeXus HDF5 data files.
+(content groups, fields, attributes) are acceptable in NeXus HDF5 data files.
 
 Users are encouraged to find the best *defined* location in which 
 to place their information.  It is understood there is not a 
@@ -53,9 +53,10 @@ data files that incorporate or adhere to application definitions.
 
 .. index:: link
 
-Use NeXus links liberally in data files to reduce duplication of data.
+Use content links liberally in data files.  Stored as storage links, such as
+HDF5 hard links, they reduce duplication of data.
 In application definitions involving raw data,
-write the raw data in the :ref:`NXinstrument` tree and then link to it
+write the raw data in the :ref:`NXinstrument` tree and then make content links to it
 from the location(s) defined in the relevant application definition.
 See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>`
 for an example.
@@ -64,7 +65,7 @@ for an example.
 
 To write a data file with an application definition, start with either
 a :ref:`NXentry` (or :ref:`NXsubentry`) group and write the name of the
-application definition in the ``definition`` field.  Then write data into 
+application definition in the ``definition`` content field.  Then write data into 
 this group according to the specifications of the application definition.
 
 For data files involving just an application definition, use

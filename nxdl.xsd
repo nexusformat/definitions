@@ -50,9 +50,10 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:element name="definition" type="nx:definitionType">
 		<xs:annotation>
 			<xs:documentation>
-				A ``definition`` element
-				is the ``group`` at the
-				root of every NXDL specification.
+				An NXDL definition
+				is the element at the
+				root of every NXDL specification;
+				it defines a NeXus class.
 				It may *only* appear
 				at the root of an NXDL file and must only appear 
 				**once** for the NXDL to be *well-formed*.
@@ -65,7 +66,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:simpleType name="validItemName">
 		<xs:annotation>
 			<xs:documentation>
-				Used for allowed names of elements and attributes.  
+				Used for allowed values of the XML attribute ``name`` of elements:
+				the names of NeXus groups, fields and attributes.
 				Note: No ``-`` characters (among others) are allowed
 				and you cannot start or end with a period (``.``).
 				HDF4 had a 64 character limit on names 
@@ -91,8 +93,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:annotation>
 			<xs:documentation>
 			  Used for allowed names of NX class types (e.g. NXdetector).
-			  Note this is *not* the instance name (e.g. ``bank1``)
-			  which is covered by ``validItemName``.
+			  Note this is *not* the name of a NeXus group (e.g. ``bank1``), which is covered
+			  by ``validItemName``.
 			  (This data type is used internally in the NXDL schema 
 			  to define a data type.)
 			</xs:documentation>  
@@ -105,17 +107,21 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:simpleType name="validTargetName">
 		<xs:annotation>
 			<xs:documentation>
-				This is a valid link target - currently it must be an absolute path
-				made up of valid names with the ``/`` character delimiter.  But we may
-				want to consider allowing "``..``" (parent of directory) at some point.
-				If the ``name`` attribute is helpful, then use it in the path 
-				with the syntax of *name:type* as in these examples::
+				An absolute :ref:`class path &lt;preface.Class.path.specification&gt;` naming a
+				NeXus field or group, used as the XML attribute ``target`` of an NXDL link.
+				Each ``/``-separated segment is the class of a NeXus group (``NXcrystal``),
+				the name and class of a NeXus group (``analyzer:NXcrystal``), or the name of
+				a NeXus field (``ef``)::
 				
 					/NXentry/NXinstrument/analyzer:NXcrystal/ef
 					/NXentry/NXinstrument/monochromator:NXcrystal/ei
 					/NX_other
 				
-				Must also consider use of ``name`` attribute in resolving ``link`` targets.
+				Because it is written with class names, it names a NeXus item,
+				not a path in a data file.
+				Currently it must be an absolute path; we may want to consider
+				allowing "``..``" (parent of directory) at some point.
+				Must also consider use of the XML attribute ``name`` in resolving the targets of NeXus links.
 				(This data type is used internally in the NXDL schema 
 				to define a data type.)
 			</xs:documentation>  
@@ -133,7 +139,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					is written: ``/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+``.
 					Note that HDF5 also permits relative path names, such as:
 					``GroupA/GroupB/Dataset1``
-					but this is not permitted in the matching regular expression and not supported in NAPI.
+					but this is not permitted in the matching regular expression.
 				</xs:documentation>
 			</xs:annotation>
 			<xs:pattern value="(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+" />
@@ -146,20 +152,20 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="deprecated" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The presence of the ``deprecated`` attribute 
+					The presence of the XML attribute ``deprecated`` 
 					indicates to the data file validation process that
-					an advisory message (specified as the content of the
-					``deprecated`` attribute) will be reported.  
+					an advisory message (specified as the value of the
+					XML attribute ``deprecated``) will be reported.  
 					Future versions of the NXDL file might
-					not define (or even re-use) the component marked with this attribute.
+					not define (or even re-use) the NeXus item that the marked NXDL element defines.
 					
-					The value of the attribute will be printed in the documentation.
+					The value of the XML attribute will be printed in the documentation.
 					Make it descriptive (limited to no line breaks).
 					For example::
 					
 					  deprecated="as of release MAJOR.MINOR"
 					
-					Note: because ``deprecated`` is an attribute, 
+					Note: because ``deprecated`` is an XML attribute, 
 					the XML rules do not permit it to have any 
 					element content.
 				</xs:documentation>
@@ -176,12 +182,12 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="nameType" use="optional" default="specified">
 			<xs:annotation>
 				<xs:documentation>
-					This interprets the ``name`` attribute as:
+					This interprets the XML attribute ``name`` as:
 
 					* ``"specified"`` = Exactly this name.
 					  Note that if no ``name`` and ``nameType`` are provided 
-					  for a group, ``nameType="any"`` becomes the default.
-					* ``"any"`` = Any name not already used in group.
+					  for an NXDL group, ``nameType="any"`` becomes the default.
+					* ``"any"`` = Any name not already used in the content group.
 					* ``"partial"`` = The capital letters are substitutable
 					  (empty string allowed) and the lower case letters
 					  (and other allowed symbols, such as ``_``) are not.
@@ -207,23 +213,24 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				It may *only* appear at the root of an NXDL file and must only 
 				appear **once** for the NXDL to be *well-formed*.
 
-				The ``definitionType`` defines the documentation, 
-				attributes, fields, and groups that will be used
-				as children of the ``definition`` element.
+				The ``definitionType`` declares the XML attributes of the NXDL definition
+				and the NXDL docs, attributes, fields and groups
+				that will be used as its children.
 				Could contain these elements:
 				
 				* ``attribute``
 				* ``doc``
 				* ``field``
+				* ``fieldAttributes``
 				* ``group``
 				* ``link``
 
-				Note that a ``definition`` element also includes the definitions of the 
-				``basicComponent`` data type.
-				(The ``definitionType`` data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				Unlike ``fieldType`` and ``linkType``, ``definitionType`` does not extend the
+				``basicComponent`` complex type.
+				(The ``definitionType`` complex type is used internally in the NXDL schema 
+				to declare elements and XML attributes to be used in NXDL files.)
 				
-				Note that the first line of text in a ``doc`` element in a ``definition``
+				Note that the first line of text in an NXDL doc in an NXDL definition
 				is used as a summary in the manual.  Follow the pattern as shown
 				in the base class NXDL files.
 			</xs:documentation>
@@ -242,16 +249,27 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:annotation>
 					<xs:documentation>
 						In addition to an optional ``symbols`` list,
-						a ``definition`` may contain any of the items
-						allowed in a ``group``.
+						an NXDL definition may contain any of the elements
+						allowed in an NXDL group.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:group>
+			<xs:element name="fieldAttributes" type="nx:fieldAttributesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Defines NeXus attributes that any field directly in this class may have, whether
+						or not the class defines that field.
+						Like the other NeXus items of a class, they are inherited
+						by the classes that extend it.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
 				<xs:documentation>
-					The ``name`` of this NXDL file (case sensitive without the file extension).
+					The name of the NeXus class that this NXDL definition defines; also the NXDL
+					file name without the file extension (case sensitive).
 					The name must be unique amongst all the NeXus base class, application,
 					and contributed definitions.  For the class to be adopted by the NIAC,
 					the first two letters must be "``NX``" (in uppercase).  Any other use
@@ -268,8 +286,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="extends" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The ``extends`` attribute allows this definition
-					to *subclass* from another NXDL,
+					The XML attribute ``extends`` allows this definition
+					to *subclass* from another NeXus class,
 					otherwise ``extends="NXobject"`` should be used.
 				</xs:documentation>
 			</xs:annotation>
@@ -277,11 +295,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="restricts" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The ``restricts`` attribute is a flag to the data validation.
+					The XML attribute ``restricts`` is a flag to the data validation.
 					When ``restricts="1"``, any non-standard component found
 					(and checked for validity against this NXDL specification)
 					in a NeXus data file will be flagged as an error.  If the
-					``restricts`` attribute is not present, any such situations
+					XML attribute ``restricts`` is not present, any such situations
 					will produce a warning.
 				</xs:documentation>
 			</xs:annotation>
@@ -298,13 +316,14 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="category" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					NXDL ``base`` definitions define the dictionary
-					of terms to use for these components.
-					All terms in a ``base`` definition are optional.
+					NXDL ``base`` definitions define the NeXus items
+					to use for these components.
+					All NeXus items of a base class are optional, except the
+					NeXus attribute ``@NX_class`` of a NeXus group (see :ref:`NXobject`).
 					NXDL ``application`` definitions define what is
 					required for a scientific interest.
-					All terms in an ``application`` definition
-					are required.
+					All NeXus items of an application definition
+					are required, unless their XML attributes say otherwise.
 					NXDL ``contributed`` definitions may be
 					considered either base or applications.
 					Contributed definitions <emphasis>must</emphasis> indicate
@@ -322,48 +341,48 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="ignoreExtraGroups" use="optional" type="nx:NX_BOOLEAN" default="false">
 			<xs:annotation>
 				<xs:documentation>
-					Only validate known groups; do not not warn about unknowns.
-					The ``ignoreExtraGroups`` attribute is a flag to the process of
+					Only validate known content groups; do not warn about unknowns.
+					The XML attribute ``ignoreExtraGroups`` is a flag to the process of
 					validating NeXus data files.  By setting ``ignoreExtraGroups="true"``,
-					presence of any undefined groups in this class will not generate warnings
-					during validation.  Normally, validation will check all the groups against
-					their definition in the NeXus base classes and
-					application definitions.  Any items found that do not match the definition
-					in the NXDL will generate a warning message.
+					presence of any content groups that no NeXus group describes, in a content group of this class, will not generate warnings
+					during validation.  Normally, validation will check all the content groups against
+					the NeXus items of the base classes and
+					application definitions that describe them.  Any content that no
+					NeXus item describes will generate a warning message.
 					
-					The ``ignoreExtraGroups`` attribute should be used sparingly!
+					The XML attribute ``ignoreExtraGroups`` should be used sparingly!
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="ignoreExtraFields" use="optional" type="nx:NX_BOOLEAN" default="false">
 			<xs:annotation>
 				<xs:documentation>
-					Only validate known fields; do not not warn about unknowns.
-					The ``ignoreExtraFields`` attribute is a flag to the process of
+					Only validate known content fields; do not warn about unknowns.
+					The XML attribute ``ignoreExtraFields`` is a flag to the process of
 					validating NeXus data files.  By setting ``ignoreExtraFields="true"``,
-					presence of any undefined fields in this class will not generate warnings
-					during validation.  Normally, validation will check all the fields against
-					their definition in the NeXus base classes and
-					application definitions.  Any items found that do not match the definition
-					in the NXDL will generate a warning message.
+					presence of any content fields that no NeXus field describes, in a content group of this class, will not generate warnings
+					during validation.  Normally, validation will check all the content fields against
+					the NeXus items of the base classes and
+					application definitions that describe them.  Any content that no
+					NeXus item describes will generate a warning message.
 					
-					The ``ignoreExtraFields`` attribute should be used sparingly!
+					The XML attribute ``ignoreExtraFields`` should be used sparingly!
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="ignoreExtraAttributes" use="optional" type="nx:NX_BOOLEAN" default="false">
 			<xs:annotation>
 				<xs:documentation>
-					Only validate known attributes; do not not warn about unknowns.
-					The ``ignoreExtraAttributes`` attribute is a flag to the process of
+					Only validate known content attributes; do not warn about unknowns.
+					The XML attribute ``ignoreExtraAttributes`` is a flag to the process of
 					validating NeXus data files.  By setting ``ignoreExtraAttributes="true"``,
-					presence of any undefined attributes in this class will not generate warnings
-					during validation.  Normally, validation will check all the attributes
-					against their definition in the NeXus base classes and
-					application definitions.  Any items found that do not match the definition
-					in the NXDL will generate a warning message.
+					presence of any content attributes that no NeXus attribute describes, in a content group of this class, will not generate warnings
+					during validation.  Normally, validation will check all the content attributes
+					against the NeXus items of the base classes and
+					application definitions that describe them.  Any content that no
+					NeXus item describes will generate a warning message.
 					
-					The ``ignoreExtraAttributes`` attribute should be used sparingly!
+					The XML attribute ``ignoreExtraAttributes`` should be used sparingly!
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -373,7 +392,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:simpleType name="definitionTypeAttr">
 		<xs:annotation>
 			<xs:documentation>
-				Prescribes the allowed values for ``definition`` ``type`` attribute.
+				Prescribes the allowed values for the XML attribute ``type`` of the NXDL definition.
 				(This data type is used internally in the NXDL schema
 				to define a data type.)
 			</xs:documentation>
@@ -383,26 +402,83 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:enumeration value="definition" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="fieldAttributesType">
+		<xs:annotation>
+			<xs:documentation>
+				An NXDL ``fieldAttributes`` defines NeXus attributes that any field directly in
+				a class or NeXus group may have, whether or not that class or NeXus group
+				defines the field. Fields in nested NeXus groups are not affected.
+
+				* As a child of the NXDL definition of a base class, it applies to every
+				  field directly in that class, and is inherited by the classes that
+				  extend it (see :ref:`NXobject`).
+				  An application definition has no content groups of its own class, so
+				  it may not have ``fieldAttributes`` as a direct child (checked by the
+				  repository's Python syntax check, not by ``nxdl.xsd``).
+				* As a child of an NXDL group, it applies to every field directly in the
+				  NeXus group that this NXDL group defines, in addition to the
+				  ``fieldAttributes`` of the type of that NeXus group.
+
+				An NXDL attribute of an NXDL field always takes
+				precedence over one with the same name in ``fieldAttributes``.
+				When several ``fieldAttributes`` contain an NXDL attribute with the
+				same name, the one closest to the field takes precedence: the
+				enclosing NXDL group, then the same NXDL group in the application
+				definitions that its NXDL definition extends (closest first), then the
+				NXDL definition of the type of its NeXus group, then the classes that
+				class extends.
+				The NXDL attribute that takes precedence replaces the others, as a
+				subclass overrides an inherited NeXus item (see :ref:`inheritance`).
+				Could contain these elements:
+
+				* ``attribute``
+				* ``doc``
+
+				(This complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Describe these NeXus attributes.
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						An NXDL attribute that defines a NeXus attribute that any field directly in the class or NeXus group that ``fieldAttributes`` applies to may have.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
 	<xs:complexType name="choiceType">
 		<xs:annotation>
 			<xs:documentation>
-				A ``choice`` element is used when a named group might take one
+				An NXDL choice is used when a named NeXus group might be of one
 				of several possible NeXus base classes.  Logically, it must
-				have at least two group children.
+				contain at least two NXDL groups.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 		  <xs:element name="group" type="nx:groupType" minOccurs="2" maxOccurs="unbounded">
 		  	<xs:annotation>
 		  		<xs:documentation>
-		  			NeXus base class that could be used here.
-		  			The group will take the ``@name`` attribute 
-		  			defined by the parent ``choice`` element
-		  			so do not specify the ``@name`` attribute of
-		  			the group here.
+		  			An NXDL group whose type is a base class that could be used here.
+		  			The NXDL group will take the XML attribute ``name``
+		  			of the parent NXDL choice
+		  			so do not specify the XML attribute ``name`` of
+		  			the NXDL group here.
 		  		</xs:documentation>
 		  		<!-- TODO: How to enforce the name rule in the schema? -->
 		  	</xs:annotation>
@@ -411,9 +487,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
 				<xs:documentation>
-					The name to be applied to the selected child group.  
-					None of the child groups should define a 
-					``@name`` attribute.
+					The name of the NeXus group that the selected child NXDL group defines.
+					None of the child NXDL groups should have an
+					XML attribute ``name``.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -424,33 +500,43 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="groupType">
 		<xs:annotation>
 			<xs:documentation>
-				A group element refers to the definition of 
-				an existing NX object or a locally-defined component.
+				An NXDL group defines a NeXus group of the class or NeXus group being defined;
+				its type is an existing class.
 				Could contain these elements:
 				
 				* ``attribute``
 				* ``doc``
 				* ``field``
+				* ``fieldAttributes``
 				* ``group``
 				* ``link``
 				
-				Note that a ``group`` element also includes the definitions of the 
-				``basicComponent`` data type.
-				(The ``groupType`` data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				Unlike ``fieldType`` and ``linkType``, ``groupType`` does not extend the
+				``basicComponent`` complex type: its XML attribute ``name`` is optional.
+				(The ``groupType`` complex type is used internally in the NXDL schema 
+				to declare elements and XML attributes to be used in NXDL files.)
 			</xs:documentation>
 		</xs:annotation>
-		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
-			<xs:annotation>
-				<xs:documentation>
-					A ``group`` may be contained within another ``group``.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:group>
+		<xs:sequence>
+			<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						An NXDL group may be contained within another NXDL group.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:element name="fieldAttributes" type="nx:fieldAttributesType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Defines NeXus attributes that any field directly in the NeXus group this NXDL group defines may have, whether or not that NeXus group defines the field.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 		<xs:attribute name="type" use="required" type="nx:validNXClassName">
 			<xs:annotation>
 				<xs:documentation>
-					The ``type`` attribute *must* 
+					The XML attribute ``type`` *must* 
 					contain the name of a 
 					NeXus base class, application definition, or contributed definition.
 				</xs:documentation>
@@ -460,9 +546,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:annotation>
 				<xs:documentation>
 					A particular scientific application may expect
-					a name of a ``group`` element. It is helpful but not
-					required to specify the ``name``
-					attribute in the NXDL file.
+					a name of a NeXus group. It is helpful but not
+					required to specify the XML attribute
+					``name`` in the NXDL file.
 					It is suggested to always specify a ``name``
 					to avoid ambiguity.  It is also suggested to 
 					derive the ``name`` from the 
@@ -484,18 +570,17 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="minOccurs" use="optional" default="0" type="nx:nonNegativeUnbounded">
 			<xs:annotation>
 				<xs:documentation>
-					Minimum number of times this ``group`` is allowed to be present within its
-					parent group.  Note each ``group`` must have a ``name`` attribute
-					that is unique among all ``group`` and ``field``
-					declarations within a common parent group.
+					Minimum occurrence of the NeXus group that this NXDL group defines.  Note each NXDL group must have
+					an XML attribute ``name`` that is unique among all NXDL groups and NXDL fields
+					within a common parent element.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="recommended" use="optional" type="nx:NX_BOOLEAN" default="false" >
 			<xs:annotation>
 				<xs:documentation>
-					A synonym for optional, but with the recommendation that this
-					``group`` be specified.
+					A synonym for optional, but the NeXus group that this NXDL group defines is
+					recommended.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -510,10 +595,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="maxOccurs" use="optional" type="nx:nonNegativeUnbounded" default="unbounded">
 			<xs:annotation>
 				<xs:documentation>
-					Maximum number of times this ``group`` is allowed to be present within its
-					parent ``group``.  Note each ``group`` must have a ``name`` attribute
-					that is unique among all ``group`` and ``field``
-					declarations within a common parent ``group``.
+					Maximum occurrence of the NeXus group that this NXDL group defines.  Note each NXDL group must have
+					an XML attribute ``name`` that is unique among all NXDL groups and NXDL fields
+					within a common parent element.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -524,15 +608,15 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:group name="groupGroup">
 		<xs:annotation>
 			<xs:documentation>
-				A ``groupGroup`` defines the allowed children of a 
-				``group`` specification.
+				A ``groupGroup`` declares the allowed children of an 
+				NXDL group.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						Describe the purpose of this ``group``. 
+						Describe the purpose of this NXDL group.
 						This documentation will go into the manual.
 						The first line should summarize as a complete
 						sentence with no line break. (The automatic
@@ -544,18 +628,18 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="attribute" type="nx:groupAttributeType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						Use an ``attribute`` if additional information 
-						needs to be associated with a ``group``.
+						Use an NXDL attribute if additional information
+						needs to be associated with a NeXus group.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="choice" type="nx:choiceType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						Use a ``choice`` if a named group could be either
+						Use an NXDL choice if a named NeXus group could be either
 						of a defined list of base classes.
 					</xs:documentation>
 				</xs:annotation>
@@ -563,39 +647,31 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:element name="group" type="nx:groupType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						A ``group`` may contain ``group``s.
+						An NXDL group may contain NXDL groups.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="field" type="nx:fieldType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						A ``group`` may contain ``field`` elements (datasets).
+						An NXDL group may contain NXDL fields, which define NeXus fields.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="link" type="nx:linkType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						Use a ``link`` to refer locally to 
-						information placed elsewhere else in the data storage hierarchy.
-						The ``name`` attribute uniquely identifies
-						the element in this ``group``.
-						The ``target`` attribute
-						(added automatically in a data file by the NAPI)
-						identifies the original location of this data in the
-						data storage hierarchy.
-						In an NXDL specification, the ``target`` attribute
-						indicates a link to be made by the software that writes the data file.
-						The value, as written in the NXDL file, will be a suggestion of
-						the path to the source of the link.
-						For example::
+						Defines a :ref:`NeXus link &lt;Design-Links&gt;` of the NeXus group, named by
+						the XML attribute ``name``: a NeXus item that names another NeXus field or
+						group, its target.  It describes a content field or group with the same
+						shared content as one that its target describes; one of the two is a
+						content link to the other, or both are content links to the same target.
+						The XML attribute ``name`` uniquely identifies
+						the element in this NXDL group.  For example::
 						
-							<link name="data" target="/NXentry/NXinstrument/NXdetector/data"/>
+							&lt;link name="data" target="/NXentry/NXinstrument/NXdetector/data"/&gt;
 						
-						The value of ``target`` is written using
-						the NeXus class names since this is a suggestion and does not actually use
-						the element names from a particular data file.
+						See :ref:`NXDL.data.type.linkType` for what this enforces.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -607,11 +683,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="basicComponent">
 			<xs:annotation>
 				<xs:documentation>
-					A ``basicComponent`` defines the allowed name
-					format and attributes common to all ``field``
-					and ``group`` specifications.
-					(This data type is used internally in the NXDL schema
-					to define elements and attributes to be used by users in NXDL specifications.)
+					A ``basicComponent`` declares the allowed name
+					format and XML attributes common to all NXDL fields
+					and NXDL groups.
+					(This complex type is used internally in the NXDL schema
+					to declare elements and XML attributes to be used in NXDL files.)
 				</xs:documentation>
 			</xs:annotation>
 		<xs:sequence>
@@ -627,10 +703,10 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
 				<xs:documentation>
-					The ``name`` attribute is the
+					The XML attribute ``name`` is the
 					identifier string for this entity.
 					It is required that ``name`` must be unique
-					within the enclosing ``group``.
+					within the enclosing NXDL group.
 					The name must match the regular expression
 					defined by ``validItemName``.
 					(Historical note:
@@ -649,19 +725,28 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="fieldType">
 		<xs:annotation>
 			<xs:documentation>
-				A ``field`` declares a new element in the component being defined.
-				A ``field`` is synonymous with the HDF4 SDS (Scientific Data Set) and
-				the HDF5 *dataset* terms.   Could contain these elements:
+				An NXDL field defines a NeXus field of the class or NeXus group being defined.
+				That NeXus field describes content fields, which are stored as an HDF4 SDS
+				(Scientific Data Set) or an HDF5 *dataset*.   Could contain these elements:
 				
 				* ``attribute``
 				* ``dimensions``
 				* ``doc``
 				* ``enumeration``
 				
-				Note that a ``field`` element also includes the definitions of the
-				``basicComponent`` data type.
-				(The ``fieldType`` data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				The XML attributes ``long_name``, ``signal``, ``axes``, ``axis``,
+				``primary``, ``interpretation``, ``stride`` and ``data_offset``
+				of an NXDL field give the value of the NeXus attribute with that name of
+				the NeXus field, for example ``signal="1"``; their declarations below constrain only the NXDL file.
+				The XML attribute ``units`` gives the units
+				category or an example of the units, not the value of ``@units``.
+				Other NeXus attributes of the NeXus field are defined with
+				NXDL attributes.
+
+				Note that an NXDL field also includes the declarations of the
+				``basicComponent`` complex type.
+				(The ``fieldType`` complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -670,21 +755,21 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					<xs:element name="dimensions" type="nx:dimensionsType" minOccurs="0" maxOccurs="1">
 						<xs:annotation>
 							<xs:documentation>
-								dimensions of a data element in a NeXus file
+								dimensions of the NeXus field
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:documentation>
-								attributes to be used with this field
+								NeXus attributes to be used with this NeXus field
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="enumeration" type="nx:enumerationType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>
-								A field can specify which values are to be used
+								An NXDL field can specify which values are to be used
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
@@ -697,7 +782,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 
 							* If a unit is not provided by the list of NeXus 
 							  unit categories, instead of providing a category, 
-							  a field element can include an example of the 
+							  an NXDL field can include an example of the 
 							  units directly.
 
 							* The example does not constrain the scale of the 
@@ -718,7 +803,12 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="long_name" type="nx:NX_CHAR">
 					<xs:annotation>
 						<xs:documentation>
-							Descriptive name for this field (may include whitespace and engineering units).
+							Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
+							attribute ``@long_name`` of every field.  The
+							declaration of this XML attribute constrains only the NXDL file: its
+							type and default never applied to that NeXus attribute.
+
+							Descriptive name for this NeXus field (may include whitespace and engineering units).
 							Often, the long_name (when defined) will be used as the axis label on a plot.
 						</xs:documentation>
 					</xs:annotation>
@@ -726,9 +816,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="signal" type="nx:NX_POSINT">
 					<xs:annotation>
 						<xs:documentation>
-							Presence of the ``signal`` attribute means this field is an ordinate.
+							Presence of the XML attribute ``signal`` means this NeXus field is an ordinate.
 							
-							Integer marking this field as plottable data (ordinates).
+							Integer marking this NeXus field as plottable data (ordinates).
 							The value indicates the priority of selection or interest.
 							Some facilities only use ``signal=1``
 							while others use ``signal=2`` to indicate
@@ -736,65 +826,65 @@ https://stackoverflow.com/a/48980995/1046449 -->
 							Higher numbers are possible but not common
 							and interpretation is not standard.
 							
-							A field with a ``signal`` attribute should not have an ``axis`` attribute.
+							An NXDL field with an XML attribute ``signal`` should not have an XML attribute ``axis``.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="axes" type="nx:NX_CHAR">
 					<xs:annotation>
 						<xs:documentation>
-							NOTE: Use of the ``axes`` attribute for a
-							*field* is discouraged.  It is for legacy
-							support. You should use the ``axes`` group
-							attribute (such as in NXdata) instead.
+							NOTE: Use of the XML attribute ``axes`` for an
+							NXDL field is discouraged.  It is for legacy
+							support. You should use the NeXus attribute
+							``@axes`` of the NeXus group (such as in NXdata) instead.
 							
-							This attribute contains a string array that
-							defines the independent data fields used in
+							This XML attribute contains a string array that
+							defines the independent NeXus fields used in
 							the default plot for all of the dimensions
 							of the *signal* field (the *signal* field is
-							the field in this group that is named by the
-							``signal`` attribute of this group).
+							the NeXus field in this NeXus group that is named by the
+							NeXus attribute ``@signal`` of this NeXus group).
 
 							When there is only one item in the string array,
 							it is acceptable to set the value to the one string.
 							In such case, it is not necessary to make it
 							an array of one string.
 
-							Presence of the ``axes`` attribute means
-							this field is an ordinate.
+							Presence of the XML attribute ``axes`` means
+							this NeXus field is an ordinate.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="axis" type="nx:NX_POSINT">
 					<xs:annotation>
 						<xs:documentation>
-							NOTE: Use of this attribute is discouraged.  It is for legacy support.
-							You should use the ``axes`` group
-							attribute (such as in NXdata) instead.
+							NOTE: Use of this XML attribute is discouraged.  It is for legacy support.
+							You should use the NeXus attribute ``@axes`` of the NeXus group (such as in
+							NXdata) instead.
 							
-							Presence of the ``axis`` attribute means this field is an abscissa.
+							Presence of the XML attribute ``axis`` means this NeXus field is an abscissa.
 							
-							The attribute value is an integer indicating this
-							field as an axis that is part of the data set.
-							The data set is a field with the attribute
-							``signal=1`` in the same group.
+							The XML attribute value is an integer indicating this
+							NeXus field as an axis that is part of the data set.
+							The data set is the NeXus field in the same NeXus group whose NeXus attribute
+							``@signal`` is 1.
 							The value can range from 1 up to the number of
 							independent axes (abscissae) in the data set.
 							
-							A value of ``axis=1``" indicates that this field
+							A value of ``axis="1"`` indicates that this NeXus field
 							contains the data for the first independent axis.
 							For example, the X axis in an XY data set.
 							
-							A value of ``axis=2`` indicates that this field
+							A value of ``axis=2`` indicates that this NeXus field
 							contains the data for the second independent axis.
 							For example, the Y axis in a 2-D data set.
 							
-							A value of ``axis=3`` indicates that this field
+							A value of ``axis=3`` indicates that this NeXus field
 							contains the data for the third independent axis.
 							For example, the Z axis in a 3-D data set.
 							
-							A field with an ``axis`` attribute should
-							not have a ``signal`` attribute.
+							An NXDL field with an XML attribute ``axis`` should
+							not have an XML attribute ``signal``.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -802,17 +892,17 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					<xs:annotation>
 						<xs:documentation>
 							Integer indicating the priority of selection
-							of this field for plotting (or visualization) as an axis.
+							of this NeXus field for plotting (or visualization) as an axis.
 							
-							Presence of the ``primary`` attribute means this
-							field is an abscissa.
+							Presence of the XML attribute ``primary`` means this
+							NeXus field is an abscissa.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
 					<xs:annotation>
 						<xs:documentation>
-							Defines the type of the element as allowed by NeXus.
+							Defines the data type of the NeXus field as allowed by NeXus.
 
 							See :ref:`here&lt;Design-DataTypes&gt;` and :ref:`elsewhere&lt;nxdl-types&gt;` for the complete list of allowed types.
 						</xs:documentation>
@@ -821,17 +911,17 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="minOccurs" use="optional" default="0" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
 						<xs:documentation>
-							Defines the minimum number of times this ``field`` may be used.  Its
+							Minimum occurrence of the NeXus field that this NXDL field defines.  Its
 							value is confined to zero or greater.  Must be less than or equal to
-							the value for the "maxOccurs" attribute.
+							the value for the XML attribute ``maxOccurs``.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="recommended" use="optional" type="nx:NX_BOOLEAN" default="false" >
 					<xs:annotation>
 						<xs:documentation>
-							A synonym for optional, but with the recommendation that this
-							``field`` be specified.
+							A synonym for optional, but the NeXus field that this NXDL field defines is
+							recommended.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -846,9 +936,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="maxOccurs" use="optional" default="unbounded" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
 						<xs:documentation>
-							Defines the maximum number of times this element may be used.  Its
+							Maximum occurrence of the NeXus field that this NXDL field defines.  Its
 							value is confined to zero or greater.  Must be greater than or equal to
-							the value for the "minOccurs" attribute.
+							the value for the XML attribute ``minOccurs``.
 							A value of "unbounded" is allowed.
 						</xs:documentation>
 					</xs:annotation>
@@ -856,7 +946,12 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="stride" use="optional"  default="1" type="nx:NX_INT">
 					<xs:annotation>
 						<xs:documentation>
-							The ``stride`` and ``data_offset`` attributes
+							Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
+							attribute ``@stride`` of every field.  The
+							declaration of this XML attribute constrains only the NXDL file: its
+							type and default never applied to that NeXus attribute.
+
+							The XML attributes ``stride`` and ``data_offset``
 							are used together to index the array of data items in a 
 							multi-dimensional array.  They may be used as an alternative
 							method to address a data array that is not stored in the standard NeXus
@@ -877,7 +972,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 							or *4. Dataspace Selection Operations* in
 							https://portal.hdfgroup.org/display/HDF5/Dataspaces
 							
-							The ``stride`` attribute contains a
+							The XML attribute ``stride`` contains a
 							comma-separated list of integers.
 							(In addition to the required comma delimiter,
 							whitespace is also allowed to improve readability.)
@@ -894,13 +989,18 @@ https://stackoverflow.com/a/48980995/1046449 -->
 							see: https://github.com/nexusformat/definitions/issues/330#issuecomment-232074420
 							-->
 						<xs:documentation>
-							The ``stride`` and ``data_offset`` attributes
+							Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
+							attribute ``@data_offset`` of every field.  The
+							declaration of this XML attribute constrains only the NXDL file: its
+							type and default never applied to that NeXus attribute.
+
+							The XML attributes ``stride`` and ``data_offset``
 							are used together to index the array of data items in a
 							multi-dimensional array.  They may be used as an alternative
 							method to address a data array that is not stored in the standard NeXus
 							method of "C" order.
 							
-							The ``data_offset`` attribute
+							The XML attribute ``data_offset``
 							determines the starting coordinates of the data array
 							for each dimension.
 							
@@ -908,7 +1008,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 							or *4. Dataspace Selection Operations* in
 							https://portal.hdfgroup.org/display/HDF5/Dataspaces
 							
-							The ``data_offset`` attribute contains a
+							The XML attribute ``data_offset`` contains a
 							comma-separated list of integers.
 							(In addition to the required comma delimiter,
 							whitespace is also allowed to improve readability.)
@@ -922,6 +1022,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="interpretation" use="optional">
 					<xs:annotation>
 						<xs:documentation>
+							Deprecated: not used by any NeXus definition; :ref:`NXobject` defines the NeXus
+							attribute ``@interpretation`` of every field.  The
+							declaration of this XML attribute constrains only the NXDL file: its
+							type and default never applied to that NeXus attribute.
+
 							This instructs the consumer of the data what the last dimensions
 							of the data are. It allows plotting software to work
 							out the natural way of displaying the data.
@@ -971,7 +1076,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="attributeType">
 		<xs:annotation>
 			<xs:documentation>
-				Any new group or field may expect or require some common attributes.
+				Any new NeXus group or field may expect or require some common NeXus attributes.
 				
 				..
 					Could contain these elements:
@@ -979,15 +1084,15 @@ https://stackoverflow.com/a/48980995/1046449 -->
 					* ``doc``
 					* ``enumeration``
 				
-				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				(This complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="doc" type="nx:docType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
-						Description of this ``attribute``.
+						Description of this NXDL attribute.
 						This documentation will go into the manual.
 					</xs:documentation>
 				</xs:annotation>
@@ -1003,7 +1108,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:element name="dimensions" type="nx:dimensionsType" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						dimensions of an attribute with data value(s) in a NeXus file
+						dimensions of the NeXus attribute, when its values are arrays
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -1011,32 +1116,29 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
 				<xs:documentation>
-					Name of the attribute (unique within the enclosing group).
+					Name of the NeXus attribute (unique among the NeXus attributes of its NeXus group or field).
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
 			<xs:annotation>
 				<xs:documentation>
-					Type of the attribute.
-					For ``group`` specifications, the class name.
-					For ``field`` or ``attribute`` specifications,
-					the NXDL field type.
+					Data type of the NeXus attribute, such as ``NX_CHAR``.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="recommended" use="optional" type="nx:NX_BOOLEAN" default="false" >
 			<xs:annotation>
 				<xs:documentation>
-					A synonym for optional, but with the recommendation that this
-					attribute be specified.
+					A synonym for optional, but the NeXus attribute that this NXDL attribute defines
+					is recommended.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="optional" type="nx:NX_BOOLEAN" default="true">
 			<xs:annotation>
 				<xs:documentation>
-					Is this attribute *optional* (if **true**)
+					Is this NeXus attribute *optional* (if **true**)
 					or *required* (if **false**)?
 				</xs:documentation>
 			</xs:annotation>
@@ -1044,6 +1146,62 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		<xs:attributeGroup ref="nx:deprecatedAttributeGroup"/>
 		<xs:attributeGroup ref="nx:nameTypeAttributeGroup"/>
 	</xs:complexType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="groupAttributeType">
+		<xs:annotation>
+			<xs:documentation>
+				An NXDL attribute of an NXDL group or NXDL definition: an
+				``attributeType`` that may also have the XML attribute ``valueFrom``.
+
+				(This complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="nx:attributeType">
+				<xs:attribute name="valueFrom" use="optional" type="nx:valueFromType">
+					<xs:annotation>
+						<xs:documentation>
+							The value of this NeXus attribute is not fixed but comes from the NeXus group it
+							belongs to
+							(see :ref:`NXDL.data.type.valueFromType`).
+							Cannot be combined with an NXDL enumeration.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:simpleType name="valueFromType">
+		<xs:annotation>
+			<xs:documentation>
+				Where the value of a NeXus attribute of a NeXus group comes from, as given by
+				the XML attribute ``valueFrom`` of the NXDL attribute that defines it.
+
+				(This simple type is used internally in the NXDL schema.)
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="class">
+				<xs:annotation>
+					<xs:documentation>
+						The type of the NeXus group that the NeXus attribute belongs to, the name of a
+						class: the XML attribute ``type`` of the NXDL group that defines that NeXus
+						group, or the XML attribute ``name`` of the NXDL definition, for a NeXus
+						attribute that the class itself has.
+						For a NeXus attribute inherited from another class, such as
+						:ref:`NXobject`, it is the type of that NeXus group, not the class
+						that defines the NeXus attribute.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:simpleType name="nonNegativeUnbounded">
 		<xs:annotation>
@@ -1071,10 +1229,33 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="linkType">
 		<xs:annotation>
 			<xs:documentation>
-				A link to another item.  Use a link to avoid
-				needless repetition of information.
-				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				An NXDL link defines a :ref:`NeXus link &lt;Design-Links&gt;`: a NeXus item
+				that names another NeXus field or group, its target.  It describes a content
+				field or group with the same shared content as one that its target describes;
+				one of the two is a content link to the other, or both are content links to
+				the same target.
+				Use it to avoid needless repetition of information.
+
+				In a data file this requires that
+
+				* the content group described by the enclosing NeXus group contains a content
+				  field or group whose name is the value of the XML attribute ``name``;
+				* it and a content field or group that the target describes have the same shared content;
+				* one of the two is a content link to the other, or both are content links
+				  to the same target: the content attribute ``@target`` (see :ref:`NXobject`)
+				  of one is the path of the other, or both have the same ``@target``.
+
+				Either of the two may be the content link.
+
+				An NXDL link defines no type, units, dimensions or NeXus attributes
+				of its own: those of its target apply.
+				An NXDL link has no occurrence XML attributes, so the NeXus link it defines is
+				required in an application definition.
+
+				A content field or group may be a content link in a data file without a
+				NeXus link describing it.
+				(This complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -1082,45 +1263,40 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:attribute name="target" use="required" type="nx:validTargetName">
 					<xs:annotation>
 						<xs:documentation>
-							Declares the absolute HDF5 address of an existing field or group.
+							Class path of the target: the NeXus field or group whose content
+							fields or groups must have the same shared content
+							(see :ref:`NXDL.data.type.validTargetName`).  It is written with
+							class names, so it names a NeXus item, not a path in a data file.
 							
-							The target attribute is added for NeXus to distinguish the
-							HDF5 path to the original dataset.
+							NXDL does not require that the value of the content attribute ``@target`` matches this path.
 							
-							Could contain these elements:
+							This XML attribute is not the content attribute ``@target`` of a
+							content field or group in a data file (see :ref:`NXobject`).
 							
-							* ``doc``
+							For example, an NXDL group of type ``NXdata`` that contains::
 							
-							Matching regular expression::
+								&lt;link name="polar_angle" target="/NXentry/NXinstrument/NXdetector/polar_angle"/&gt;
 							
-								(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+
-								
-							For example, given a
-							``/entry/instrument/detector/polar_angle`` field,
-							link it into the ``NXdata`` group
-							(at ``/entry/data/polar_angle``).
-							This would be the NeXus data file structure::
+							is satisfied by this data, where both content fields have the same shared content::
 							
-								/: NeXus/HDF5 data file
-									/entry:NXentry
-										/data:NXdata
-											/polar_angle:NX_NUMBER
+								entry:NXentry
+									data:NXdata
+										polar_angle:NX_NUMBER
+											@target="/entry/instrument/detector/polar_angle"
+									instrument:NXinstrument
+										detector:NXdetector
+											polar_angle:NX_NUMBER
 												@target="/entry/instrument/detector/polar_angle"
-										/instrument:NXinstrument
-											/detector:NXdetector
-												/polar_angle:NX_NUMBER
-													@target="/entry/instrument/detector/polar_angle"
-											
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="napimount" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-							Group attribute that provides a URL to a group in another file.
-							More information is described in the *NeXus Programmers Reference*.
-							
-							https://github.com/nexusformat/code/blob/master/doc/api/NeXusIntern.pdf
+							Deprecated: not used by any NeXus definition.
+							URL of an HDF5 group in another file
+							(see :ref:`design.external_file_link`).
+							NXDL enforces nothing about it.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -1131,8 +1307,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="docType" mixed="true">
 		<xs:annotation>
 			<xs:documentation>
-				NXDL allows for documentation on most elements using the ``doc``
-				element. The documentation is useful in several contexts. The documentation will be
+				NXDL allows for documentation on most elements using an NXDL
+				doc. The documentation is useful in several contexts. The documentation will be
 				rendered in the manual. Documentation, is provided as tooltips
 				by some XML editors when editing NXDL files.
 				Simple documentation can be typed directly in the NXDL::
@@ -1150,11 +1326,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				
 				* *any*
 				
-				(This data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				(This complex type is used internally in the NXDL schema 
+				to declare elements and XML attributes to be used in NXDL files.)
 
 				Note:
-				For documentation of ``definition`` elements,
+				For documentation of NXDL definitions,
 				the first line of text in a ``doc``
 				is used as a summary in the manual.
 				Follow the pattern as shown
@@ -1169,7 +1345,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="symbolsType" mixed="true">
 		<xs:annotation>
 			<xs:documentation>
-				Each ``symbol`` has a ``name`` and optional documentation.
+				Each ``symbol`` element has an XML attribute ``name`` and optional documentation.
 				Please provide documentation that indicates what each symbol represents.
 				For example::
 				
@@ -1192,7 +1368,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:element name="symbol" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						When multiple ``field`` elements share the same dimensions, such as the dimension scales
+						When multiple NeXus fields share the same dimensions, such as the dimension scales
 						associated with plottable data in an ``NXdata`` group, the length of each
 						dimension written in a NeXus data file should be something that can be tested by the
 						data file validation process.
@@ -1203,7 +1379,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 						<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
 							<xs:annotation>
 								<xs:documentation>
-									Describe the purpose of the parent ``symbol``.
+									Describe the purpose of the parent ``symbol`` element.
 									This documentation will go into the manual.
 								</xs:documentation>
 							</xs:annotation>
@@ -1224,7 +1400,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 	<xs:complexType name="enumerationType">
 		<xs:annotation>
 			<xs:documentation>
-				An ``enumeration`` restricts the values allowed for a specification.
+				An NXDL enumeration restricts the values allowed for a NeXus field or attribute.
 				Each value is specified using an ``item`` element, such as:
 				``&lt;item value="Synchrotron X-ray Source" />``.
 				Could contain these elements:
@@ -1232,8 +1408,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* ``doc``
 				* ``item``
 				
-				(This data type is used internally in the NXDL schema 
-				to define elements and attributes to be used by users in NXDL specifications.)
+				(This complex type is used internally in the NXDL schema 
+				to declare elements and XML attributes to be used in NXDL files.)
 		
 				::
 				
@@ -1250,23 +1426,23 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				values are the only ones allowed for a specification. An open enumeration is one 
 				where the list of values is incomplete and additional values other than those listed
 				are allowed. Open enumerations should be used sparingly as the designer of the enumeration
-				should try to find all possible values for a given field/attribute.
+				should try to find all possible values for a given NeXus field or attribute.
 
 				In case an open enumeration is used and the data provider wants to declare that the provided
 				value deliberately not from the given list of values, the data provider should,
 
-				* for fields, set the attribute ``@custom=True``.
-				* for attributes, set an additional attribute ``@my_attribute_custom=True``, where
-				  ``my_attribute`` is the name of the attribute with the open enumeration.
+				* for content fields, set the content attribute ``@custom=True``.
+				* for content attributes, set an additional content attribute ``@my_attribute_custom=True``, where
+				  ``my_attribute`` is the name of the content attribute with the open enumeration.
 
-				Such attributes can be used deliberately to suppress warnings in NeXus validators.
+				Such content attributes can be used deliberately to suppress warnings in NeXus validators.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="item" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						One of the prescribed values.  Use the ``value`` attribute.
+						One of the prescribed values.  Use the XML attribute ``value``.
 
 						Defines the value of one selection for an ``enumeration`` list.
 						Each enumerated item must have a value (it cannot have an empty text node).
@@ -1288,7 +1464,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 						<xs:annotation>
 							<xs:documentation>
 								The value of ``value`` of an ``enumItem``
-								is defined as an attribute rather than a name.
+								is defined as an XML attribute rather than a name.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
@@ -1311,9 +1487,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 		-->
 		<xs:annotation>
 			<xs:documentation>
-				dimensions of a data element in a NeXus file
-				(This data type is used internally in the NXDL schema
-				to define elements and attributes to be used by users in NXDL specifications.)
+				dimensions of a NeXus field or attribute
+				(This complex type is used internally in the NXDL schema
+				to declare elements and XML attributes to be used in NXDL files.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -1321,15 +1497,15 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				<xs:annotation>
 					<xs:documentation>
 						Documentation might be necessary to describe how the parts
-						of the ``dimensions`` element are to be used.
+						of the NXDL dimensions are to be used.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						Specify the parameters for each index of the ``dimensions``
-						element with a ``dim`` element.
+						Specify the parameters for each index of the NXDL dimensions
+						with a ``dim`` element.
 						The number of ``dim`` entries should be equal to
 						the ``rank`` of the array.
 						For example, these terms
@@ -1343,9 +1519,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 								<dim index="2" value="nwl"/>
 							</dimensions>
 
-						The ``value`` attribute is used by NXDL and also by
+						The XML attribute ``value`` is used by NXDL and also by
 						the NeXus data file validation tools to associate and coordinate the
-						same array length across multiple fields in a group.
+						same array length across multiple NeXus fields in a group.
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -1377,9 +1553,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 								(https://github.com/nexusformat/definitions/issues/330)
 								
 								The dimension specification is the same as
-								that in the ``ref`` field, specified either by a relative path,
-								such as ``polar_angle`` or ``../Qvec`` or absolute path, such as
-								``/entry/path/to/follow/to/ref/field``.
+								that of the NeXus field the XML attribute ``ref`` names, specified either by a relative path,
+								such as ``polar_angle`` or ``../Qvec`` or absolute class path, such as
+								``/NXentry/NXinstrument/NXdetector/polar_angle``.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
@@ -1390,8 +1566,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 								(https://github.com/nexusformat/definitions/issues/330)
 								
 								The dimension specification is the same as
-								the ``refindex`` axis within the ``ref`` field.
-								Requires ``ref`` attribute to be present.
+								the ``refindex`` axis within the NeXus field ``ref``.
+								Requires the XML attribute ``ref`` to be present.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
@@ -1402,9 +1578,9 @@ https://stackoverflow.com/a/48980995/1046449 -->
 								(https://github.com/nexusformat/definitions/issues/330)
 								
 								The dimension specification is related to
-								the ``refindex`` axis within the ``ref`` field by an
-								offset of ``incr``.  Requires ``ref`` and ``refindex``
-								attributes to be present.
+								the ``refindex`` axis within the NeXus field ``ref`` by an
+								offset of ``incr``.  Requires the XML attributes ``ref`` and ``refindex``
+								to be present.
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>

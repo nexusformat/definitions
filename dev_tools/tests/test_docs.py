@@ -5,6 +5,7 @@ from ..docs import NXClassDocGenerator
 from ..docs import XSDDocGenerator
 from ..docs import nxdl_indices
 from ..globals.directories import get_xsd_file
+from ..nxdl import find_definition
 from ..nxdl import iter_definitions
 from .utils import pytest_path_param_id
 
@@ -57,3 +58,25 @@ def test_nxdl_indices():
 def test_xsd_generate_doc():
     generator = XSDDocGenerator()
     assert generator(get_xsd_file())
+
+
+def test_nxdl_generate_doc_field_attributes(doc_generator):
+    rst = "".join(doc_generator(find_definition("NXobject")))
+    assert "**Attributes of every field**:" in rst
+    assert ".. _/NXobject/fieldAttributes@target-attribute:" in rst
+
+
+def test_nxdl_generate_doc_value_from(doc_generator):
+    rst = "".join(doc_generator(find_definition("NXroot")))
+    assert "Obligatory value: ``NXroot``" in rst
+
+
+def test_nxdl_generate_doc_inherited_value_from(doc_generator):
+    rst = "".join(doc_generator(find_definition("NXdetector")))
+    assert ".. _/NXdetector@NX_class-attribute:" in rst
+    assert "Obligatory value: ``NXdetector``" in rst
+
+
+def test_nxdl_generate_doc_link(doc_generator):
+    rst = "".join(doc_generator(find_definition("NXtomo")))
+    assert ".. _/NXtomo/ENTRY/data/image_key-link:" in rst
