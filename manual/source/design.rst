@@ -55,47 +55,58 @@ Terms at five levels
 
 The words *group*, *field*, *attribute* and *link* each have several
 meanings.  This manual always says which one, at one of five levels.  Each
-level relates to the next by one verb: *declares*, *defines*, *describes*,
-*stores*.
+level relates to the next by one verb: ``nxdl.xsd`` *declares* the terms of
+NXDL, which *define* NeXus items, which *describe* content, which a file
+format *stores*.
 
 * **XML Schema** (XSD): the grammar :ref:`nxdl.xsd <NXDL>`.  It *declares*
   the terms of NXDL with element declarations (``xs:element``), and their XML
-  attributes with attribute declarations (``xs:attribute``, *XSD
-  attributes*).  A *model group* (``xs:group``, an *XSD group*, such as
-  ``groupGroup``) is a named set of element declarations, and an
-  ``xs:attributeGroup`` a named set of attribute declarations.  Neither is a
-  term of NXDL.  XML itself only has elements and XML attributes; XSD is
-  written in XML.
+  attributes with *attribute declarations* (``xs:attribute``).  A *model
+  group* (``xs:group``, such as ``groupGroup``) is a named set of element
+  declarations, and an ``xs:attributeGroup`` a named set of attribute
+  declarations.  Neither is a term of NXDL.  An attribute declaration does
+  not declare an NXDL attribute, and a model group is not an NXDL group.
+  XML itself only has elements and XML attributes; XSD is written in XML.
 * **NXDL**: the NXDL files (``*.nxdl.xml``), written in the NeXus Definition
   Language.  Its terms, such as *NXDL definitions*, *NXDL groups*, *NXDL
   fields*, *NXDL attributes* and *NXDL links*, are written as
   ``definition``, ``group``, ``field``, ``attribute`` and ``link`` elements.
   An NXDL definition *defines* a NeXus class.  An NXDL group, field, attribute
   or link *defines* a NeXus group, field, attribute or link of that class.
-  The *XML attributes* of an NXDL term, such as ``name`` or ``type``, say how.
+  The *XML attributes* of an NXDL term, such as ``name`` or ``type``, give
+  the properties of the NeXus item it defines.
 * **NeXus**: the NeXus classes (base classes and application definitions),
   with what they inherit through ``extends``.  A *NeXus item* is a NeXus
   group, field, attribute or link of a class: a name or name pattern, with
-  its type, units, dimensions and occurrence.  A NeXus item is named by its
+  the properties of its kind, such as a type, units, dimensions or
+  occurrence.  A NeXus item is named by its
   class and name, such as the NeXus field ``data`` of ``NXdetector``, or by a
   :ref:`class path <preface.Class.path.specification>`, such as
   ``/NXentry/NXinstrument/NXdetector/data``.  A NeXus item *describes*
-  content.
+  content.  A NeXus group has a *type*: the class of the content groups it
+  describes, such as ``NXdetector``.  A NeXus field or attribute has a *data
+  type*, such as ``NX_INT``.  The XML attribute ``type`` of the NXDL term
+  gives both.  A NeXus attribute is an attribute of a NeXus group or field,
+  or one defined in an NXDL ``fieldAttributes``: that one describes a content
+  attribute of every content field directly in the content groups that the
+  ``fieldAttributes`` applies to, whether or not a NeXus field describes the
+  content field.
 * **Content**: the full content of a NeXus file, values and names included,
   without anything specific to a file format.  It consists of *content
-  groups*, *content fields*, *content attributes* and *content links*, named
-  by paths such as ``/entry/instrument/detector/data``; together they form
-  the *content tree*.  The NeXus field ``data`` of ``NXdetector`` describes
-  the content field ``data`` of every content group of class ``NXdetector``.
-  The content attribute ``@NX_class`` of a content group gives the class of
+  groups*, *content fields* and *content attributes*, named by paths such as
+  ``/entry/instrument/detector/data``; together they form the *content
+  tree*.  A content field or group can be a *content link*.  The NeXus field
+  ``data`` of ``NXdetector`` describes the content field ``data`` of every
+  content group of class ``NXdetector``.
+  The content attribute ``@NX_class`` of a content group gives the type of
   the NeXus group that describes it.
-* **Storage**: how a file format, such as HDF5, Zarr or XML, *stores* the
+* **Storage**: how a file format, such as HDF5 or Zarr, *stores* the
   content: *storage groups*, *storage fields*, *storage attributes* and
   *storage links*, such as HDF5 groups, datasets, attributes and hard links.
 
 For example, in ``<attribute name="units" type="NX_CHAR"/>`` the
-NXDL attribute defines the NeXus attribute ``@units`` of a NeXus field, which
-describes the content attribute ``@units`` of content fields.  ``name`` and
+NXDL attribute defines the NeXus attribute ``@units`` of a NeXus field.  That
+NeXus attribute describes the content attribute ``@units`` of content fields.  ``name`` and
 ``type`` are XML attributes of that NXDL attribute.  ``@`` marks an attribute at
 both levels: a NeXus attribute in a class path, such as
 ``/NXdata/DATA@long_name``, and a content attribute, such as
@@ -108,7 +119,7 @@ both levels: a NeXus attribute in a class path, such as
      - NXDL (``*.nxdl.xml``)
      - NeXus (classes)
      - Content (any file format)
-     - Storage (any file format)
+     - Storage (per file format)
    * - | declaration of the NXDL group
        | :samp:`<xs:element name="{group}"/>`
      - | NXDL group
@@ -148,6 +159,16 @@ both levels: a NeXus attribute in a class path, such as
      - | content link
        | :samp:`/entry/data/{data}`, which has ``@target``
      - | storage link: HDF5 hard, soft or external link; Zarr: none
+       | :samp:`/entry/data/{data}`
+   * - | declaration of the XML attribute ``name``
+       | :samp:`<xs:attribute name="{name}"/>`
+     - | XML attribute ``name`` of an NXDL field
+       | :samp:`<field {name}="data"/>`
+     - | name of a NeXus field
+       | :samp:`/NXentry/NXdata/{data}`
+     - | name of the content field
+       | :samp:`/entry/data/{data}`
+     - | storage name: HDF5 link name; Zarr node name
        | :samp:`/entry/data/{data}`
    * - | declaration of the XML attribute ``type``
        | :samp:`<xs:attribute name="{type}"/>`
@@ -208,7 +229,7 @@ content group, and a class. There can be multiple content groups with the same c
 but they must have different names (based on the :index:`HDF rules <rules; HDF>`).
 
 For the class names the prefix NX is reserved. Thus all NeXus class
-names start with NX. The content attribute ``NX_class`` of a content group gives the class of the
+names start with NX. The content attribute ``NX_class`` of a content group gives the type of the
 NeXus group that describes it (see :ref:`NXobject </NXobject@NX_class-attribute>`; for the root group,
 :ref:`NXroot </NXroot@NX_class-attribute>`).
 
@@ -288,7 +309,8 @@ strings. In addition, NeXus uses them to identify
 and their axes, etc. In a :ref:`tree structure<tree.structure>`,
 a content attribute is usually shown with a ``@`` prefix, such as ``@units``.
 Content attributes that every content group or field may have are described in
-:ref:`NXobject`, and for the root group in :ref:`NXroot`.
+:ref:`NXobject` (for content fields, in its ``fieldAttributes``), and for the
+root group in :ref:`NXroot`.
 A description of some of the many possible
 NeXus attributes can be found in the next table:
 
@@ -386,18 +408,22 @@ on the file format; how it is *stored* is up to the file format and the
 software that writes the file (see :ref:`design.links.storage`).
 
 The word *link* has four meanings (see :ref:`Design-Terms`), so this manual
-always says which one:
+always says which one.  *Path* and *shared content* are defined in
+:ref:`design.links.model`.
 
 * an **NXDL link**: a ``link`` element in an NXDL file, which defines a
   NeXus link;
 * a **NeXus link**: a NeXus item that names another NeXus field or group,
   its target.  It describes a content field or group with the same shared
   content as one that its target describes; one of the two is a content link
-  to the other (see :ref:`design.links.definitions`);
-* a **content link**: a content field or group with the same shared content
-  as another one, its original (see :ref:`design.links.model`);
-* a **storage link**: a way of a file format to make an object available
-  under another path, such as an HDF5 hard, soft or external link
+  to the other, or both are content links to the same target
+  (see :ref:`design.links.definitions`);
+* a **content link**: a content field or group whose content attribute
+  ``target`` is the path of another one, its target, with the same shared
+  content (see :ref:`design.links.model`);
+* a **storage link**: a way of a file format to make a storage field or
+  group available at another location, such as an HDF5 hard, soft or
+  external link
   (see :ref:`design.links.storage`).
 
 .. index::
@@ -413,7 +439,7 @@ always says which one:
 What a content link is
 ----------------------
 
-A *path* is the absolute location of a content field or group in a NeXus file: the
+A *path* is the absolute location of a content field or group in the content tree: the
 names of the content groups from the root down to it, separated by ``/``, such as
 ``/entry/instrument/detector/polar_angle``.
 
@@ -423,20 +449,21 @@ attributes, except ``target``, and the shared content of its content fields and
 groups, under their names.  The name of the content field or group itself is not
 part of its shared content.
 
-A *content link* is a content field or group with the same shared content as another
-one, its *original*.  It is marked by its content attribute ``target``
-(see :ref:`NXobject`):
+A *content link* is a content field or group whose content attribute ``target``
+(see :ref:`NXobject`) is the path of another one, its *target*, and that has the
+same shared content as its target:
 
-* the value is the path of the original, always as an absolute path
+* the value is an absolute path
   (``/entry/instrument/detector/polar_angle``, not ``detector/polar_angle``);
-* the original does not need a content attribute ``target``; when it has one, for
+* the target is not a content link itself;
+* the target itself does not need a content attribute ``target``; when it has one, for
   example because it is stored as the same object as the content link, the
   value is its own path;
-* a content field or group with a content attribute ``target`` whose value is its own path
-  is not a content link.
+* a content field or group without a content attribute ``target``, or whose
+  ``target`` is its own path, is not a content link.
 
 Content links are best understood with an example.
-The canonical location (expressed as a NeXus class path) to store wavelength
+The canonical class path of the NeXus field wavelength
 (see :ref:`Strategies-wavelength`) has been::
 
     /NXentry/NXinstrument/NXcrystal/wavelength
@@ -462,7 +489,7 @@ In a file, the second can be a content link to the first::
                 ...
                 wavelength --> "/entry/instrument/crystal/wavelength"
 
-A content link may have a different name than the original.  One obvious use of
+A content link may have a different name than its target.  One obvious use of
 this capability is to adapt to a specific requirement of an application
 definition.  For example, suppose some application definition required the
 specification of wavelength as a NeXus field named *lambda* in the entry group.
@@ -485,14 +512,14 @@ This requirement can be satisfied easily::
         lambda --> "/entry/instrument/crystal/wavelength"
 
 Here ``/entry/instrument/monochromator/wavelength`` and ``/entry/lambda``
-are content links to the original ``/entry/instrument/crystal/wavelength``:
+are content links to their target ``/entry/instrument/crystal/wavelength``:
 all three have the value 154 and the same content attribute ``units``, and both
 content links have ``@target="/entry/instrument/crystal/wavelength"``.
 
-Which content field or group is the original is part of the content, through ``@target``,
+Which content field or group is the target is part of the content, through ``@target``,
 but not of the shared content.  It has value in
 only a few situations, such as when converting the data from one format to
-another: by identifying the original, duplicate copies of the data are not
+another: by identifying the target, duplicate copies of the data are not
 converted.
 
 Where the content is stored, in one file, in several files or in an object
@@ -514,24 +541,26 @@ shows as, for example::
 A file satisfies this when the content group that the enclosing NeXus group describes
 contains a content field or group named ``data`` with the same shared content as one
 that its target, the NeXus field ``/NXentry/NXinstrument/NXdetector/data``, describes,
-and one of the two is a content link to the other.  Either may be the original.  A
+and one of the two is a content link to the other, or both are content links to
+the same target.  Either may be the content link.  A
 NeXus link states nothing else: type, units and dimensions are those of its target.
 
 The XML attribute ``target`` of an NXDL link is a class path, written
 with class names such as ``NXdetector``: it names a NeXus field or group,
-not a path in a file.  The path of the original does not have to match it.
+not a path in a file.  The value of ``@target`` does not have to match it.
 This XML attribute of the NXDL link is not the content attribute
 ``@target`` of a content field or group in a data file.  The NeXus field or group it
 names describes content fields and groups in the file, such as the content field ``data``
 of a content group of class ``NXdetector`` in the content group of class ``NXinstrument``
-of the entry; it does not say at which path the original is.
+of the entry.  First of all, it says which content fields or groups the content
+must equal; ``@target`` only has to join the two, as above.
 
 .. _design.links.storage:
 
 Storing content links in a file format
 --------------------------------------
 
-NeXus only requires that a content link has the shared content of its original.  A
+NeXus only requires that a content link has the shared content of its target.  A
 file format and the software that writes the file may realize this in any
 way the format offers: with a storage link, which makes the stored content
 available under another path, or by storing a copy.
@@ -568,13 +597,13 @@ HDF5 hard and soft links
 An HDF5 hard link [#hdf5_hard_link]_ makes the same HDF5 object available
 under several paths; it is the usual choice.  An HDF5 soft link is a path
 that refers to another path, so it also shows the same object.  In both
-cases the content link and the original are one object with one set of
+cases the content link and its target are one object with one set of
 HDF5 attributes: the
 HDF5 attribute ``target`` is set once, on that object, with the path of the
-original as value.
+target as value.
 
 HDF5 makes no distinction between the paths of a hard-linked object: the
-HDF5 attribute ``target`` is what tells NeXus which one is the original (see the
+HDF5 attribute ``target`` is what tells NeXus which one is the content link (see the
 :ref:`FAQ` question: **I'm using content links to place data in two places.
 Which one should be the data and which one is the content link?**).
 
@@ -592,12 +621,12 @@ Virtual datasets and copies
 
 A virtual dataset or a copy is an object of its own, with its own
 HDF5 attributes.  Add the HDF5 attribute ``target`` to it, with the path of the
-original as value.  The original needs no HDF5 attribute ``target``.
+target as value.  The target itself needs no HDF5 attribute ``target``.
 
 The same holds for an HDF5 dataset with external binary data
 (``Dataset.external`` in h5py), whose values are stored in a binary file
 outside the HDF5 file.  When it reads the same bytes of the same binary file
-as the original, it has the same values.
+as the target, it has the same values.
 
 .. _design.external_file_link:
 
@@ -637,7 +666,7 @@ of them has an HDF5 attribute ``target``.
 
 Unlike a virtual dataset, an HDF5 external link has no HDF5 attributes of its
 own: the ones it shows are those of the object in the other file.  In
-the three examples below, ``master.h5`` has the original
+the three examples below, ``master.h5`` has the target
 ``/entry/instrument/detector/data`` and the content link ``/entry/data/data``,
 and the detector writes its images to ``/entry/data/data`` in
 ``detector.h5``.
@@ -660,7 +689,7 @@ hard link within one file::
    file can set it.  ``detector.h5`` must also be writable, which it often
    is not.
 
-**Example 2: the original stored as an HDF5 external link, the content link
+**Example 2: the target stored as an HDF5 external link, the content link
 as an HDF5 soft link.**  An HDF5 soft link has no HDF5 attributes of its own
 either: it shows the object in ``detector.h5``, so the HDF5 attribute ``target``
 is stored there, with the same caveats as in example 1::
@@ -674,11 +703,10 @@ is stored there, with the same caveats as in example 1::
 
 The HDF5 soft link may also point the other way: ``/entry/data/data`` the
 HDF5 external link and ``/entry/instrument/detector/data`` an HDF5 soft link
-to it.  Which path is the original is set by the HDF5 attribute ``target``, not
-by the direction of the storage link.
+to it.  The HDF5 attribute ``target``, not the direction of the storage link, says which path is the content link.
 
-**Example 3: the original stored as an HDF5 external link, the content link
-as a virtual dataset.**  The original needs no HDF5 attribute ``target``, so
+**Example 3: the target stored as an HDF5 external link, the content link
+as a virtual dataset.**  The target itself needs no HDF5 attribute ``target``, so
 ``detector.h5`` is not changed.  The content link is an object in
 ``master.h5`` that carries the HDF5 attribute ``target``: a virtual dataset that
 maps the data in ``detector.h5``.  HDF5 has no hard links between files::

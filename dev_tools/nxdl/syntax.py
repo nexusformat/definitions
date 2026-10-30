@@ -36,6 +36,7 @@ def validate_definition(
     with _handle_xml_error(xml_path, lxml.etree.DocumentInvalid):
         xml_schema.assertValid(xml_tree)
     _validate_value_from(xml_path, xml_tree)
+    _validate_field_attributes(xml_path, xml_tree)
 
 
 def _validate_value_from(xml_path: str, xml_tree: lxml.etree._ElementTree) -> None:
@@ -46,6 +47,20 @@ def _validate_value_from(xml_path: str, xml_tree: lxml.etree._ElementTree) -> No
         raise errors.NXDLSyntaxError(
             f"\n  {xml_path}\n  line {node.sourceline}: attribute"
             f" '{node.get('name')}' has both 'valueFrom' and an 'enumeration'"
+        )
+
+
+def _validate_field_attributes(
+    xml_path: str, xml_tree: lxml.etree._ElementTree
+) -> None:
+    """Raise when an application definition has ``fieldAttributes`` as a direct child."""
+    for node in xml_tree.xpath(
+        "/nx:definition[@category='application']/nx:fieldAttributes",
+        namespaces={"nx": NXDL_NAMESPACE},
+    ):
+        raise errors.NXDLSyntaxError(
+            f"\n  {xml_path}\n  line {node.sourceline}: 'fieldAttributes' is not"
+            " allowed directly in an application definition"
         )
 
 

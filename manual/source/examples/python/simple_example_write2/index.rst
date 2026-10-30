@@ -81,11 +81,11 @@ the first time (alphabetically) it is called.  In our case, that is within the
 has been made and shows the HDF5 path to the description.
 
 HDF5 makes no distinction between the two paths of a hard-linked object.
-NeXus does: the ``target`` content attribute holds the path of the original, so
-``NXdata/two_theta`` is a :ref:`content link <Design-Links>` to the original in
+NeXus does: the ``target`` content attribute holds the path of the target, so
+``NXdata/two_theta`` is a :ref:`content link <Design-Links>` to its target in
 the ``NXdetector`` group.
 The :ref:`punx tree <punx>` tool knows about the ``target`` attribute and
-shows the data in its original location, in the ``NXdetector`` group.
+shows the data at its target, in the ``NXdetector`` group.
 
 .. literalinclude:: simple_example_write2_structure.txt
     :tab-width: 4

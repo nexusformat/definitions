@@ -76,7 +76,7 @@ Some words on the notation:
   and is not part of the attribute name.
 
 - :ref:`Content links <Design-Links>` are shown with a text arrow ``-->``
-  followed by the path of the original (the sequence of *names*).
+  followed by the path of the target (the sequence of *names*).
 
 Line 1 shows that there is one content group at the root level of the file named
 ``entry``.  This group is of type ``NXentry``
@@ -155,3 +155,11 @@ needed to specify both the path and class name, you may
 find this equivalent path::
 
 	/entry:NXentry/instrument:NXinstrument/crystal:NXcrystal/wavelength
+
+A NeXus attribute defined in an NXDL ``fieldAttributes`` is named with ``*`` in
+place of the field name::
+
+	/NXobject/*@units
+
+It describes the content attribute ``units`` of every content field directly in
+the content groups that the ``fieldAttributes`` applies to.

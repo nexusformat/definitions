@@ -157,6 +157,41 @@ def test_get_inherited_nodes_field_attributes(nxdl_path, nx_name, expected):
     ] == expected
 
 
+def test_get_inherited_nodes_field_attributes_extended_application(
+    tmp_path, monkeypatch
+):
+    # No application definition in the repository has fieldAttributes in an
+    # NXDL group, so the definitions are read from tmp_path.
+    for folder in ("base_classes", "contributed_definitions"):
+        (tmp_path / folder).symlink_to(nexus.nexus_def_path / folder)
+    (tmp_path / "applications").mkdir()
+    for name, extends, field_attributes in (
+        (
+            "NXparent",
+            "NXobject",
+            '<fieldAttributes><attribute name="units"/></fieldAttributes>',
+        ),
+        ("NXchild", "NXparent", ""),
+    ):
+        (tmp_path / "applications" / f"{name}.nxdl.xml").write_text(
+            f'<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" name="{name}"'
+            f' extends="{extends}" type="group" category="application">'
+            '<group type="NXentry"><group type="NXmonitor" name="monitor">'
+            f'<field name="data"/>{field_attributes}</group></group></definition>'
+        )
+    monkeypatch.setattr(nexus, "nexus_def_path", tmp_path)
+    _, _, elist = nexus.get_inherited_nodes(
+        nxdl_path="/ENTRY/monitor/data/units", nx_name="NXchild"
+    )
+    assert [
+        f"{Path(e.get('nxdlbase')).name.split('.')[0]}:{e.get('nxdlpath')}"
+        for e in elist
+    ] == [
+        "NXparent:/ENTRY/monitor/fieldAttributes/units",
+        "NXobject:/fieldAttributes/units",
+    ]
+
+
 @pytest.mark.parametrize(
     "hdf_name,concept_name, name_type, should_fit",
     [

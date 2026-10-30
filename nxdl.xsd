@@ -411,9 +411,12 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				content attributes of every content field directly in a content group,
 				whether or not a NeXus field describes it.  Content fields in nested content groups are not affected.
 
-				* As a child of an NXDL definition, it applies to every content field
-				  directly in a content group of that class, and is inherited by
-				  the classes that extend it (see :ref:`NXobject`).
+				* As a child of the NXDL definition of a base class, it applies to every
+				  content field directly in a content group of that class, and is
+				  inherited by the classes that extend it (see :ref:`NXobject`).
+				  An application definition has no content groups of its own class, so
+				  it may not have ``fieldAttributes`` as a direct child (checked by the
+				  repository's Python syntax check, not by ``nxdl.xsd``).
 				* As a child of an NXDL group, it applies to every content field directly
 				  in the content groups described by the NeXus group that this NXDL group
 				  defines, in addition to the ``fieldAttributes`` of the class of that
@@ -423,8 +426,12 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				precedence over one with the same name in ``fieldAttributes``.
 				When several ``fieldAttributes`` contain an NXDL attribute with the
 				same name, the one closest to the NXDL field takes precedence: the
-				enclosing NXDL group, then the NXDL definition of the class of its
-				NeXus group, then the classes that class extends.
+				enclosing NXDL group, then the same NXDL group in the application
+				definitions that its NXDL definition extends (closest first), then the
+				NXDL definition of the type of its NeXus group, then the classes that
+				class extends.
+				The NXDL attribute that takes precedence replaces the others, as a
+				subclass overrides an inherited NeXus item (see :ref:`inheritance`).
 				Could contain these elements:
 
 				* ``attribute``
@@ -660,7 +667,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 						the XML attribute ``name``: a NeXus item that names another NeXus field or
 						group, its target.  It describes a content field or group with the same
 						shared content as one that its target describes; one of the two is a
-						content link to the other.
+						content link to the other, or both are content links to the same target.
 						The XML attribute ``name`` uniquely identifies
 						the element in this NXDL group.  For example::
 						
@@ -1188,11 +1195,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 			<xs:enumeration value="class">
 				<xs:annotation>
 					<xs:documentation>
-						The name of the class of the NeXus group that describes the content group:
+						The type of the NeXus group that describes the content group, the name of a class:
 						the XML attribute ``type`` of the NXDL group that defines it, or the XML
 						attribute ``name`` of the NXDL definition, for a NeXus group of that class.
 						For a NeXus attribute inherited from another class, such as
-						:ref:`NXobject`, it is the class of that NeXus group, not the class
+						:ref:`NXobject`, it is the type of that NeXus group, not the class
 						that defines the NeXus attribute.
 					</xs:documentation>
 				</xs:annotation>
@@ -1229,7 +1236,8 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				An NXDL link defines a :ref:`NeXus link &lt;Design-Links&gt;`: a NeXus item
 				that names another NeXus field or group, its target.  It describes a content
 				field or group with the same shared content as one that its target describes;
-				one of the two is a content link to the other.
+				one of the two is a content link to the other, or both are content links to
+				the same target.
 				Use it to avoid needless repetition of information.
 
 				In a data file this requires that
@@ -1237,10 +1245,11 @@ https://stackoverflow.com/a/48980995/1046449 -->
 				* the content group described by the enclosing NeXus group contains a content
 				  field or group whose name is the value of the XML attribute ``name``;
 				* it and a content field or group that the target describes have the same shared content;
-				* one of the two is a content link to the other: its content attribute
-				  ``@target`` (see :ref:`NXobject`) is the path of the other.
+				* one of the two is a content link to the other, or both are content links
+				  to the same target: the content attribute ``@target`` (see :ref:`NXobject`)
+				  of one is the path of the other, or both have the same ``@target``.
 
-				Either of the two may be the original.
+				Either of the two may be the content link.
 
 				An NXDL link defines no type, units, dimensions or NeXus attributes
 				of its own: those of its target apply.
@@ -1263,8 +1272,7 @@ https://stackoverflow.com/a/48980995/1046449 -->
 							(see :ref:`NXDL.data.type.validTargetName`).  It is written with
 							class names, so it names a NeXus item, not a path in a data file.
 							
-							NXDL does not require that the path of the original
-							(the value of the content attribute ``@target``) matches this path.
+							NXDL does not require that the value of the content attribute ``@target`` matches this path.
 							
 							This XML attribute is not the content attribute ``@target`` of a
 							content field or group in a data file (see :ref:`NXobject`).

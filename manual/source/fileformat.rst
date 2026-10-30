@@ -56,8 +56,8 @@ NeXus data structures map directly to HDF structures.
 Content *groups* are stored as HDF5 *groups*,
 content *fields* (or data sets) as HDF5 *datasets*
 and content attributes as HDF5 attributes of HDF5 groups or datasets.
-The NeXus class is stored as an HDF5 attribute to the HDF5 group
-with the name ``NX_class`` with value of the NeXus class name.
+The content attribute ``NX_class``, the type of the NeXus group that describes
+the content group, is stored as an HDF5 attribute of the HDF5 group.
 (For legacy NeXus data files using HDF4, content groups are stored as HDF4 *vgroups*
 and content fields as HDF4 *SDS (scientific data sets)*.  HDF4 does
 not support attributes on HDF4 vgroups.  HDF4 supports a group class
@@ -184,13 +184,13 @@ basic NeXus data components:
 	:ref:`Introduction` chapter as
 	Example :ref:`A very simple NeXus Data file (in XML) <fig.simple-data-file-xml>`.
 
-	Content groups are encoded into XML as elements with the
+	NeXus groups are encoded into XML as elements with the
 	name of the NeXus class and an XML attribute ``name`` which defines the
 	NeXus name of the group. Further group attributes become XML attributes. An example:
 
 	.. compound::
 
-		.. rubric:: Content group element in XML
+		.. rubric:: NeXus group element in XML
 
 		.. literalinclude:: examples/mapping1.xml.txt
 			:tab-width: 4
@@ -232,11 +232,11 @@ basic NeXus data components:
 	``tth_indices="NX_POSINT:1"``.
 
 
-	:index:`Content links <link>` are stored in a NeXus XML file as XML elements
-	with the :index:`name <NAPIlink>`  ``NAPIlink``.
-	The XML attribute ``target`` of that element stores the content attribute
-	``target``, the path of the original.  If the content link has
-	a different name, then this name is stored as the XML attribute ``name`` of
+	:index:`NeXus links <link>` are stored in XML as XML elements
+	with the :index:`name <NAPIlink>`  ``NAPIlink``
+	and a XML attribute ``target`` which stores the path to the linked
+	entity in the file.  If the item is linked under
+	a different name, then this name is specified as a XML attribute name to
 	the element ``NAPIlink``.
 
 	The authors of the NeXus API worked with the author of the miniXML XML library to
@@ -264,20 +264,19 @@ basic NeXus data components:
 	   ! single: link target (internal attribute)
 
 	**target**
-		The absolute path of the original of a
-		:ref:`content link <Design-Links>` (see :ref:`NXobject`).
+		This attribute is automatically created when items get linked.
+		The target attribute contains a text string with
+		the path to the source of the item linked.
 
 	.. index::
 	   ! single: napimount (internal attribute)
 	   see: linking (external); napimount (internal attribute)
 
 	**napimount**
-		Deprecated: see :ref:`design.external_file_link` for content stored
-		in another file.
-		The HDF5 attribute ``napimount`` was used by the NAPI to implement
-		storage links to external files.
+		The ``napimount`` attribute is used to implement
+		external linking in NeXus.
 		The string is a URL to the file and group in the
-		external file. The system is meant to be extended.
+		external file to link too. The system is meant to be extended.
 		But as of now, the only format supported is:
 		
 		.. code-block:: text
@@ -292,8 +291,8 @@ basic NeXus data components:
 	   see: linking (internal); NAPIlink (internal attribute)
 
 	**NAPIlink**
-		A content link may be in another group and have another name.
-		The NAPI stores them natively only in HDF5, as HDF5 hard links.
+		NeXus supports linking items in another group under another name.
+		This is only supported natively in HDF5.
 		For HDF-4 and XML a crutch is needed.
 		This crutch is a special class name or attribute
 		``NAPIlink`` combined with the

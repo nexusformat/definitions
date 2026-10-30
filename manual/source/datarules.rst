@@ -1251,7 +1251,7 @@ attribute for the other scales is optional.
    In general the method using the ``axes`` attribute on the multi dimensional
    data set should be preferred. This leaves the actual axis describing data sets
    unannotated and allows them to be used as an axis for other multi dimensional
-   data.  This is especially a concern as an axis describing a content field may be the original of a content link
+   data.  This is especially a concern as an axis describing a content field may be the target of a content link
    in another content group where it may describe a
    :index:`completely different dimension <dimension; data set>`
    of another data set.

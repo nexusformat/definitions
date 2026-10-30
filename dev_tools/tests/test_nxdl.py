@@ -70,21 +70,29 @@ _FIELD_ATTRIBUTES = """<fieldAttributes>
 
 
 @pytest.mark.parametrize(
-    "group_content,definition_content",
+    "category,group_content,definition_content,valid",
     [
-        ("", _FIELD_ATTRIBUTES),
-        ('<field name="x"/>' + _FIELD_ATTRIBUTES, ""),
+        ("base", "", _FIELD_ATTRIBUTES, True),
+        ("base", '<field name="x"/>' + _FIELD_ATTRIBUTES, "", True),
+        ("application", "", _FIELD_ATTRIBUTES, False),
+        ("application", '<field name="x"/>' + _FIELD_ATTRIBUTES, "", True),
     ],
-    ids=["definition", "group"],
+    ids=["definition", "group", "application-definition", "application-group"],
 )
-def test_field_attributes(tmp_path, xml_schema, group_content, definition_content):
+def test_field_attributes(
+    tmp_path, xml_schema, category, group_content, definition_content, valid
+):
     nxdl_file = tmp_path / "NXtest_field_attributes.nxdl.xml"
     nxdl_file.write_text(
         _FIELD_ATTRIBUTES_NXDL.format(
             group_content=group_content, definition_content=definition_content
-        )
+        ).replace('category="base"', f'category="{category}"')
     )
-    validate_definition(nxdl_file, xml_schema)
+    if valid:
+        validate_definition(nxdl_file, xml_schema)
+    else:
+        with pytest.raises(errors.XMLSyntaxError):
+            validate_definition(nxdl_file, xml_schema)
 
 
 def test_field_attributes_must_be_last(tmp_path, xml_schema):

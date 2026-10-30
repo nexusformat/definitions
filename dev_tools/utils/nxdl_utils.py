@@ -895,38 +895,43 @@ def _get_field_attributes(
 ) -> List[ET._Element]:
     """Returns the ``fieldAttributes`` attributes named html_name that apply to
     fields, from high to low priority."""
-    result = []
-    seen = set()
+    # The NXDL groups of all fields (those of extended application definitions
+    # included) take precedence over any class.
+    groups = []
+    definitions = []
     for field in fields:
         parent = field.getparent()
-        nxdlbase = field.get("nxdlbase", "")
-        nxdlpath = field.get("nxdlpath", "").rpartition("/")[0]
-        containers = [(parent, nxdlbase, nxdlpath)]
-        base_class = (
-            parent.get("type")
-            if xml_utils.get_local_name(parent) == "group"
-            else parent.get("extends")
+        container = (
+            parent,
+            field.get("nxdlbase", ""),
+            field.get("nxdlpath", "").rpartition("/")[0],
         )
+        if xml_utils.get_local_name(parent) == "group":
+            groups.append(container)
+            base_class = parent.get("type")
+        else:
+            definitions.append(container)
+            base_class = parent.get("extends")
         if base_class:
-            definitions = []
-            add_base_classes(definitions, base_class)
-            containers.extend((d, d.get("nxdlbase"), "") for d in definitions)
-        for container, container_base, container_path in containers:
-            for attribute in container.iterfind(
-                "nx:fieldAttributes/nx:attribute", namespaces=_NS
-            ):
-                if attribute.get("name") != html_name or attribute in seen:
-                    continue
-                seen.add(attribute)
-                attribute.set("nxdlbase", container_base)
-                attribute.set(
-                    "nxdlbase_class",
-                    container.getroottree().getroot().get("category", ""),
-                )
-                attribute.set(
-                    "nxdlpath", f"{container_path}/fieldAttributes/{html_name}"
-                )
-                result.append(attribute)
+            classes = []
+            add_base_classes(classes, base_class)
+            definitions.extend((d, d.get("nxdlbase"), "") for d in classes)
+    result = []
+    seen = set()
+    for container, container_base, container_path in groups + definitions:
+        for attribute in container.iterfind(
+            "nx:fieldAttributes/nx:attribute", namespaces=_NS
+        ):
+            if attribute.get("name") != html_name or attribute in seen:
+                continue
+            seen.add(attribute)
+            attribute.set("nxdlbase", container_base)
+            attribute.set(
+                "nxdlbase_class",
+                container.getroottree().getroot().get("category", ""),
+            )
+            attribute.set("nxdlpath", f"{container_path}/fieldAttributes/{html_name}")
+            result.append(attribute)
     return result
 
 
