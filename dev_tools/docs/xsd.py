@@ -352,7 +352,7 @@ For more details, see:
                 """,
     "doc": """
 An NXDL doc can be a child of most NXDL elements.  In most cases, the
-content of the NXDL doc will also become part of the NeXus manual.
+text of the NXDL doc will also become part of the NeXus manual.
 
 :element: {any}:
 
@@ -388,9 +388,9 @@ For more details, see:
     "fieldAttributes": """
 An NXDL ``fieldAttributes`` can *only* be a child of an
 NXDL definition or NXDL group.
-It defines NeXus attributes that describe the content attributes of every
-content field directly in a content group of the class (in an NXDL definition)
-or described by the NeXus group (in an NXDL group).
+It defines NeXus attributes that any field directly in the class (in an NXDL
+definition) or in the NeXus group (in an NXDL group) may have, whether or not
+that class or NeXus group defines the field.
 
 For more details, see:
 :ref:`NXDL.data.type.fieldAttributesType`
@@ -422,7 +422,8 @@ NXDL definition or NXDL group.
 It defines a :ref:`NeXus link <Design-Links>`: a NeXus item that names
 another NeXus field or group, its target.  It describes a content field or
 group with the same shared content as one that its target describes; one of
-the two is a content link to the other.
+the two is a content link to the other, or both are content links to the
+same target.
 
 For more details, see:
 :ref:`NXDL.data.type.linkType`

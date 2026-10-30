@@ -363,7 +363,7 @@ to the community.
 
 These instrument definitions are formalized as XML files, using 
 :ref:`NXDL <NXDL>`,
-to specify the names of NeXus fields, and other NeXus data objects.
+to specify the names of NeXus fields and other NeXus items.
 The following is an example of such a file for
 the simple NeXus file shown above.
 

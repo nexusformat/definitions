@@ -27,7 +27,7 @@ that are used to construct a data file.
 Base class definitions are permissive rather than restrictive.
 While the terms defined aim to cover most possible use cases,
 and to codify the spelling and meaning of such terms,
-the class specifications cannot list all acceptable content groups and fields.
+the classes cannot define a NeXus group or field for everything a file may contain.
 To be able to progress the NeXus standard, additional data
 (content groups, fields, attributes) are acceptable in NeXus HDF5 data files.
 
