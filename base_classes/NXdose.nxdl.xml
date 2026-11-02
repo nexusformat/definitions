@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+  # NeXus - Neutron and X-ray Common Data Format
+  #
+  # Copyright (C) 2008-2026 NeXus International Advisory Committee (NIAC)
+  #
+  # This library is free software; you can redistribute it and/or
+  # modify it under the terms of the GNU Lesser General Public
+  # License as published by the Free Software Foundation; either
+  # version 3 of the License, or (at your option) any later version.
+  #
+  # This library is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  # Lesser General Public License for more details.
+  #
+  # You should have received a copy of the GNU Lesser General Public
+  # License along with this library; if not, write to the Free Software
+  # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  #
+  # For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" category="base"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
+	name="NXdose" 
+	type="group" extends="NXobject"
+	>
+
+	<symbols>
+		<doc>Symbolic array dimensions</doc>
+		<symbol name="n_points"><doc>Number of points in the dose trajectory series</doc></symbol>
+		<symbol name="n_resolutions"><doc>Number of resolution shells for relative diffraction efficiency</doc></symbol>
+	</symbols>
+
+	<doc>
+		Absorbed radiation dose and radiation damage modeling on the sample.
+		Applicable across macromolecular crystallography (MX), BioSAXS, cryo-tomography, and serial imaging.
+	</doc>
+
+	<field name="average_absorbed_dose" type="NX_FLOAT" units="NX_ANY">
+		<doc>Mean absorbed dose across the illuminated sample volume (typically in Gy or MGy).</doc>
+	</field>
+
+	<field name="max_absorbed_dose" type="NX_FLOAT" units="NX_ANY">
+		<doc>Peak absorbed dose in the highest-dose voxel (typically in Gy or MGy), useful as a conservative safety threshold.</doc>
+	</field>
+
+	<field name="dose_rate" type="NX_FLOAT" units="NX_ANY">
+		<doc>Instantaneous or average absorbed dose rate (typically in Gy/s or MGy/s).</doc>
+	</field>
+
+	<field name="dose_target" type="NX_FLOAT" units="NX_ANY">
+		<doc>
+			The dose ceiling this measurement was planned against, chosen before the data
+			were collected (typically in Gy or MGy).
+
+			This is a statement of intent rather than a property of the sample: it records
+			the budget the exposure was designed to satisfy, and so explains why the
+			exposure was what it was. It may be a general limit, or chosen per specimen
+			from the diffracting power or signal expected of it, a specimen expected to
+			perform poorly being given a larger budget than one with more to lose.
+
+			Distinct from ``dose_threshold``. A measurement may be planned well below a
+			damage threshold, or knowingly exceed one.
+		</doc>
+	</field>
+
+	<field name="dose_threshold" type="NX_FLOAT" units="NX_ANY">
+		<doc>
+			The dose at which radiation damage becomes significant (typically in Gy or MGy).
+
+			In macromolecular crystallography this may be a general experimental limit such
+			as the Garman limit (30 MGy for cryo-cooled crystals) or the Henderson limit
+			(20 MGy). In BioSAXS it may be the onset of radiation-induced aggregation. It
+			may also be a value determined for this specimen by analysis of an earlier
+			measurement, which is generally not available while the measurement being
+			described is still running.
+
+			Distinct from ``dose_target``, which records the ceiling a measurement was
+			planned against rather than where damage is expected.
+		</doc>
+	</field>
+
+	<field name="absorbed_dose_series" type="NX_FLOAT" units="NX_ANY">
+		<doc>Accumulated absorbed dose trajectory over time/frames.</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_points"/>
+		</dimensions>
+	</field>
+
+	<field name="time" type="NX_FLOAT" units="NX_TIME">
+		<doc>
+			Time coordinate corresponding to each point in the series.
+
+			The times are relative to the ``start`` attribute and in the units given by
+			the ``units`` attribute, following the same convention as :ref:`NXlog`.
+			The ``scaling_factor``, when present, has to be applied to the values in
+			order to arrive at the units specified in the ``units`` attribute.
+
+			Either this field or ``angle`` may be used as the coordinate of the series,
+			depending on which is the natural independent variable of the measurement.
+			A rotation experiment is normally indexed by ``angle``.
+		</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_points"/>
+		</dimensions>
+		<attribute name="start" type="NX_DATE_TIME" />
+		<attribute name="scaling_factor" type="NX_NUMBER" />
+	</field>
+
+	<field name="frame_number" type="NX_INT">
+		<doc>
+			Frame or image sequence index corresponding to each trajectory point.
+			Optional and unnecessary if the series is sequential and continuous with image frames,
+			but useful if the series is sampled on a different grid or if frames are discontinuous.
+		</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_points"/>
+		</dimensions>
+	</field>
+
+	<field name="diffraction_weighted_dose" type="NX_FLOAT" units="NX_ANY">
+		<doc>
+			Diffraction-weighted dose (DWD) for the whole wedge (typically in Gy or MGy).
+			Weights local absorbed dose by where diffraction actually originates.
+		</doc>
+	</field>
+
+	<field name="diffraction_weighted_dose_series" type="NX_FLOAT" units="NX_ANY">
+		<doc>Accumulated diffraction-weighted dose trajectory per image or rotation step.</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_points"/>
+		</dimensions>
+	</field>
+
+	<field name="angle" type="NX_FLOAT" units="NX_ANGLE">
+		<doc>Goniometer rotation angle corresponding to each trajectory point.</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_points"/>
+		</dimensions>
+	</field>
+
+	<field name="relative_diffraction_efficiency" type="NX_FLOAT" units="NX_UNITLESS">
+		<doc>
+			Predicted survival fraction of diffraction intensity (0.0 to 1.0) as a function
+			of trajectory point and resolution shell.
+		</doc>
+		<dimensions rank="2">
+			<dim index="1" value="n_points"/>
+			<dim index="2" value="n_resolutions"/>
+		</dimensions>
+	</field>
+
+	<field name="resolution" type="NX_FLOAT" units="NX_LENGTH">
+		<doc>
+			Resolution shells corresponding to the columns of
+			``relative_diffraction_efficiency``, given as d-spacing
+			(e.g. [1.0, 2.0, 3.0, 4.0] Angstroms).
+		</doc>
+		<dimensions rank="1">
+			<dim index="1" value="n_resolutions"/>
+		</dimensions>
+	</field>
+
+	<field name="calculation_method" type="NX_CHAR">
+		<doc>Method used to obtain dose values.</doc>
+		<enumeration>
+			<item value="simulated"/>
+			<item value="analytical"/>
+			<item value="measured"/>
+		</enumeration>
+	</field>
+
+	<field name="composition_source" type="NX_CHAR">
+		<doc>
+			Provenance of the sample composition that the absorbed dose was computed from.
+
+			Absorbed dose depends on the elemental composition of the sample through its
+			X-ray absorption coefficient, and that composition is often not known at the
+			time the dose is calculated. A dose computed from a stand-in composition is
+			not comparable with one computed from the real composition of the sample, and
+			an archived value that does not say which was used cannot be interpreted
+			afterwards. This field records that distinction; ``input_parameters`` may
+			carry the detail.
+
+			* ``supplied``: the composition was provided for this specific sample, for
+			  example as a sequence, a unit cell or a declared heavy-atom content.
+			* ``derived``: part or all of the composition was inferred from other
+			  information about this specific sample, for example from the unit cell
+			  contents or from analysis of a sequence. Use this where some components
+			  were provided and others inferred, which is the common case: it records
+			  that an inference the reader may wish to check was involved.
+			* ``assumed``: a standard or default composition was used in place of an
+			  unknown one. The dose is then a scale factor for a typical specimen rather
+			  than a statement about this sample. The assumed composition itself should
+			  be recorded in ``input_parameters``, since a reader cannot otherwise tell
+			  which standard was used or correct for it later.
+			* ``unknown``: the provenance of the composition was not recorded.
+		</doc>
+		<enumeration>
+			<item value="supplied"/>
+			<item value="derived"/>
+			<item value="assumed"/>
+			<item value="unknown"/>
+		</enumeration>
+	</field>
+
+	<field name="program" type="NX_CHAR">
+		<doc>Name and version of the program used to calculate dose (e.g. "RADDOSE-3D 4.0 via microdose").</doc>
+	</field>
+
+	<field name="input_parameters" type="NX_CHAR">
+		<doc>
+			A record of the inputs the dose was computed from, sufficient to interpret
+			or reproduce the calculation afterwards. Typically the engine and its
+			version, the sample composition actually used, and the beam conditions
+			assumed.
+
+			Record the composition that the absorption calculation consumed: the
+			elemental content and the number of residues or monomer units. This is both
+			the reproducible record, being what determines the absorption coefficient,
+			and a safe one. Sample composition may be commercially or
+			personally sensitive, and a file written at a facility is frequently
+			archived or published later, but an elemental composition cannot be read
+			back as the identity of the specimen.
+
+			A biological sequence is therefore not required and is discouraged here:
+			what the absorption calculation takes from one is its elemental content,
+			and recording that instead loses no ability to reproduce the dose. Where a
+			sequence was used and a link back to it is wanted, a checksum of it may be
+			given in addition to the composition, never in place of it.
+		</doc>
+	</field>
+
+</definition>
