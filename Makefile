@@ -16,7 +16,7 @@ YCONTRIB_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildca
 YAPPDEF_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(APPDEF_DIR)/nyaml/*.yaml)))
 
 
-.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nxdl nyaml
+.PHONY: help install style autoformat test docdiff clean prepare html pdf impatient-guide all local nxdl nyaml
 
 help ::
 	@echo ""
@@ -27,6 +27,8 @@ help ::
 	@echo "make style              Check python coding style."
 	@echo "make autoformat         Format all files to the coding style conventions."
 	@echo "make test               Run NXDL syntax and documentation tests."
+	@echo "make docdiff            Diff the generated documentation between two git"
+	@echo "                        references. Default: REFS=\"HEAD~1 HEAD\"."
 	@echo "make clean              Remove all build files."
 	@echo "make prepare            (Re)create all build files."
 	@echo "make html               Build HTML version of manual. Requires prepare first."
@@ -57,6 +59,10 @@ autoformat ::
 
 test ::
 	$(PYTHON) -m pytest dev_tools
+
+# for example: make docdiff REFS="HEAD~3 ." NXCLASS="-c NXstress"
+docdiff ::
+	$(PYTHON) -m dev_tools docdiff $(NXCLASS) $(REFS)
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
