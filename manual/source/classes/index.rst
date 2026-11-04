@@ -13,8 +13,8 @@ Definitions of NeXus classes. These are split into base_classes (low level objec
 application definitions (groupings of objects for a particular technique) and 
 contributed_definitions (proposed definitions from the community)
 
-The complete :index:`!vocabulary` of names used in the NXDL files (names of
-NXDL groups, fields, attributes, and links) is available for :ref:`download
+The complete :index:`!vocabulary` that the classes define (the names of their
+NeXus groups, fields, attributes and links) is available for :ref:`download
 <classes.vocabulary.downloads>`.
 
 .. rubric:: :styleh2:`Base classes`
