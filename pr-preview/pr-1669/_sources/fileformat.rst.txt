@@ -59,10 +59,10 @@ and content attributes as HDF5 attributes of HDF5 groups or datasets.
 The content attribute ``NX_class``, the type of the NeXus group that describes
 the content group, is stored as an HDF5 attribute of the HDF5 group.
 (For legacy NeXus data files using HDF4, content groups are stored as HDF4 *vgroups*
-and content fields as HDF4 *SDS (scientific data sets)*.  HDF4 does
-not support attributes on HDF4 vgroups.  HDF4 supports a group class
-which is set with the ``Vsetclass()`` call
-and read with ``VGetclass()``.)
+and content fields as HDF4 *SDS (scientific data sets)*.  The class of a
+content group is the class of its vgroup, set with ``Vsetclass()`` and read
+with ``Vgetclass()``, not an HDF4 attribute, although HDF4 supports
+attributes on vgroups since HDF 4.1r1 (1997).)
 
 In HDF5, a :ref:`content link <Design-Links>` is usually stored as an HDF5 hard link
 (see :ref:`design.links.hdf5`).
