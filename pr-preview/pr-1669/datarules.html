@@ -156,7 +156,7 @@ In such cases lowercase words are connected by underscores.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>number_of_lenses
 </pre></div>
 </div>
-<p>For all content fields, only names from the NeXus base class dictionaries should be used.
+<p>For all fields, only the names of NeXus fields that the base classes define should be used.
 If a NeXus field name or even a complete component is missing,
 please suggest the addition to the <a class="reference internal" href="niac.html#niac"><span class="std std-ref">NIAC: The NeXus International Advisory Committee</span></a>. The addition will usually be
 accepted provided it is not a duplication of an existing NeXus field and
@@ -171,7 +171,7 @@ Terms with other names are permitted but might not be recognized by standard sof
 Rather than persist in using names not specified in the standard, please suggest additions to the <a class="reference internal" href="niac.html#niac"><span class="std std-ref">NIAC: The NeXus International Advisory Committee</span></a>.</p>
 </div>
 </div></blockquote>
-<p id="target-value">The data stored in content fields must be <em>readback</em> values.
+<p id="target-value">The values of a NeXus field are <em>readback</em> values.
 This means values as read from the detector, other hardware, etc.
 There are occasions where it is sensible to store the target value
 the variable was supposed to have. In such cases, the
@@ -331,12 +331,12 @@ you are supposed to divide <code class="docutils literal notranslate"><span clas
 </section>
 <section id="variants">
 <span id="design-variants"></span><h2>Variants<a class="headerlink" href="#variants" title="Link to this heading">¶</a></h2>
-<p>Sometimes it is necessary to store alternate values of a content field
+<p>Sometimes it is necessary to store alternate values of a field
 in a NeXus file. A common example may be the beam center of which a
 rough value is available at data acquisition. But later on, a better beam
 center is calculated as part of the data reduction. In order to store
-this without losing the historical information, the content field with the best value can be given a content attribute <code class="docutils literal notranslate"><span class="pre">variant</span></code> that points to
-a new field containing the obsolete value. If even better values
+this without losing the historical information, the field with the best value can have the NeXus attribute <code class="docutils literal notranslate"><span class="pre">&#64;variant</span></code>
+(defined in <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>), which names a new field that holds the obsolete value. If even better values
 become available, further fields can be inserted into the chain of variant attributes
 pointing to the preceeding value for the field. A reader can thus
 keep the best value in the pre-defined field, and also be able to
@@ -358,10 +358,9 @@ data reduction will be written instead.</p>
 <span id="design-uncertainties"></span><h2>Uncertainties or Errors<a class="headerlink" href="#uncertainties-or-errors" title="Link to this heading">¶</a></h2>
 <p>It is desirable to store experimental errors (also known as
 <em>uncertainties</em>) together with the data. NeXus supports this through
-a convention: uncertainties or experimental errors on data are
-stored in a separate content field which has a name consisting of the
-original name of the data with <code class="docutils literal notranslate"><span class="pre">_errors</span></code> appended to it.
-These uncertainties fields have the same shape as the original data field.</p>
+a convention: <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a> defines the NeXus field <code class="docutils literal notranslate"><span class="pre">FIELDNAME_errors</span></code>
+for the uncertainties or experimental errors of the NeXus field
+<code class="docutils literal notranslate"><span class="pre">FIELDNAME</span></code>.  It has the same shape as <code class="docutils literal notranslate"><span class="pre">FIELDNAME</span></code>.</p>
 <p>An example, from NXdetector:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>data
 <span class="linenos">2</span>data_errors
@@ -388,10 +387,10 @@ storage order causes unnecessary latency.  This case presents a
 good reason to make an exception to the standard rule.</p>
 <section id="non-c-storage-order">
 <span id="design-noncstorageorder"></span><span id="index-11"></span><h3>Non C Storage Order<a class="headerlink" href="#non-c-storage-order" title="Link to this heading">¶</a></h3>
-<p>In order to indicate that the storage order is different from C storage order two
-additional content attributes of the content field, <code class="docutils literal notranslate"><span class="pre">data_offset</span></code> and <code class="docutils literal notranslate"><span class="pre">stride</span></code>, have to be stored which together define the storage
-layout of the data (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>). They contain rank numbers according to the rank of the multidimensional
-content field. <code class="docutils literal notranslate"><span class="pre">data_offset</span></code> gives the position of the first stored value in each dimension. <code class="docutils literal notranslate"><span class="pre">stride</span></code> gives the step to
+<p>In order to indicate that the storage order is different from C storage order, a field
+has the two NeXus attributes <code class="docutils literal notranslate"><span class="pre">&#64;data_offset</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;stride</span></code> that <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a> defines, which together define the storage
+layout of the data. They contain rank numbers according to the rank of the multidimensional
+field. <code class="docutils literal notranslate"><span class="pre">data_offset</span></code> gives the position of the first stored value in each dimension. <code class="docutils literal notranslate"><span class="pre">stride</span></code> gives the step to
 make when incrementing the dimension. This is best explained by some examples.</p>
 <div class="compound">
 <p class="rubric">Offset and Stride for 1 D data:</p>
@@ -626,8 +625,9 @@ format specifier for this is “<code class="docutils literal notranslate"><span
 <span id="design-units"></span><span id="index-24"></span><h2>NeXus Data Units<a class="headerlink" href="#nexus-data-units" title="Link to this heading">¶</a></h2>
 <p>Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
-store data in any unit you find fit. However, any content field must have a
-<code class="docutils literal notranslate"><span class="pre">units</span></code> content attribute which describes the units. Wherever possible, SI units are
+store data in any unit you find fit. However, a content field described by a
+NeXus field with a units category (such as <code class="docutils literal notranslate"><span class="pre">units=&quot;NX_LENGTH&quot;</span></code>) must have the
+content attribute <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code>, with units of that category. Wherever possible, SI units are
 preferred. Units are given in the NeXus attribute <code class="docutils literal notranslate"><span class="pre">units</span></code>, of data type <code class="docutils literal notranslate"><span class="pre">NX_CHAR</span></code>,
 and describe the engineering units. The string
 should be appropriate for the value.
@@ -997,8 +997,8 @@ Only the first method is recommended now, the other two (older methods) are now 
 <p>The recommended method uses the content attribute <code class="docutils literal notranslate"><span class="pre">axes</span></code> applied to the <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a> group
 to specify the names of each
 <span class="target" id="index-41"></span>dimension scale.
-A prerequisite is that the content fields describing the axes of the plottable data
-are stored together with the plottable data in the same content group.
+A prerequisite is that the NeXus fields of the axes are in the same <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a>
+group as the plottable data.
 If this leads to data duplication, use <a class="reference internal" href="design.html#design-links"><span class="std std-ref">content links</span></a>.</p>
 <hr class="docutils" />
 <section id="associating-plottable-data-using-content-attributes-applied-to-the-nxdata-group">
@@ -1214,8 +1214,8 @@ would contain:</p>
 </pre></div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">axis</span></code> content attribute must
-be defined for each dimension scale.
+<p>Each field of a dimension scale must have
+the NeXus attribute <code class="docutils literal notranslate"><span class="pre">&#64;axis</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">primary</span></code> attribute is unique to this method.</p>
 <p>There are limited circumstances in which more
 than one <span class="target" id="index-47"></span>dimension scale

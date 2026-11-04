@@ -122,7 +122,8 @@ class and name, such as the NeXus field <code class="docutils literal notranslat
 <a class="reference internal" href="preface.html#preface-class-path-specification"><span class="std std-ref">class path</span></a>, such as
 <code class="docutils literal notranslate"><span class="pre">/NXentry/NXinstrument/NXdetector/data</span></code>.  A NeXus item <em>describes</em>
 content.  A NeXus group has a <em>type</em>: the class of the content groups it
-describes, such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>.  A NeXus field or attribute has a <em>data
+describes, such as <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code>.  The type is always a base class, never
+an application definition.  A NeXus field or attribute has a <em>data
 type</em>, such as <code class="docutils literal notranslate"><span class="pre">NX_INT</span></code>.  The XML attribute <code class="docutils literal notranslate"><span class="pre">type</span></code> of the NXDL term
 gives both.  A NeXus attribute is an attribute of a NeXus group or field,
 or one defined in an NXDL <code class="docutils literal notranslate"><span class="pre">fieldAttributes</span></code>: that one is a NeXus
@@ -352,9 +353,13 @@ groups are identified both by a name, which must be unique within a particular
 content group, and a class. There can be multiple content groups with the same class
 but they must have different names (based on the <span class="target" id="index-3"></span>HDF rules).</p>
 <p>For the class names the prefix NX is reserved. Thus all NeXus class
-names start with NX. The content attribute <code class="docutils literal notranslate"><span class="pre">NX_class</span></code> of a content group gives the type of the
-NeXus group that describes it (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject-nx-class-attribute"><span class="std std-ref">NXobject</span></a>; for the root group,
-<a class="reference internal" href="classes/base_classes/NXroot.html#nxroot-nx-class-attribute"><span class="std std-ref">NXroot</span></a>).</p>
+names start with NX. The class of a content group is given by its content attribute
+<code class="docutils literal notranslate"><span class="pre">&#64;NX_class</span></code>: the type of the NeXus group that describes it.
+Every content group in a NeXus file, the root included, must have the content
+attribute <code class="docutils literal notranslate"><span class="pre">&#64;NX_class</span></code>, whether or not a NeXus group describes it.
+This file rule comes on top of the classes, which define the NeXus attribute
+<code class="docutils literal notranslate"><span class="pre">NX_class</span></code> as required (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject-nx-class-attribute"><span class="std std-ref">NXobject</span></a>;
+for the root group, <a class="reference internal" href="classes/base_classes/NXroot.html#nxroot-nx-class-attribute"><span class="std std-ref">NXroot</span></a>).</p>
 <blockquote>
 <div></div></blockquote>
 </section>
@@ -367,7 +372,8 @@ be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
 etc.). Content fields are identified by their names, which must be unique within the
-content group in which they are stored.  Some NeXus fields have engineering units, which a file must specify.
+content group in which they are stored.  A content field described by a NeXus field with a units category
+(such as <code class="docutils literal notranslate"><span class="pre">units=&quot;NX_LENGTH&quot;</span></code>) must have the content attribute <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code>.
 In some cases, such as <a class="reference internal" href="classes/base_classes/NXdata.html#nxdata-data-field"><span class="std std-ref">/NXdata/DATA</span></a>, a NeXus field is
 expected to be an array of several dimensions.</p>
 <blockquote>
@@ -391,7 +397,7 @@ expected to be an array of several dimensions.</p>
 </div></blockquote>
 <p>See the sections <a class="reference internal" href="nxdl-types.html#nxdl-types"><span class="std std-ref">Data Types allowed in NXDL specifications</span></a> and <a class="reference internal" href="nxdl-types.html#nxdl-units"><span class="std std-ref">Unit Categories allowed in NXDL specifications</span></a> for complete lists of
 the data types and engineering units types, respectively.</p>
-<p>In the case of streaming data acquisition, when time-stamped values of data are collected, content fields can be replaced with <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> structures of
+<p>In the case of streaming data acquisition, when time-stamped values of data are collected, any NeXus field can be replaced by a NeXus group of type <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> with
 the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a <a class="reference internal" href="classes/base_classes/NXlog.html#nxlog"><span class="std std-ref">NXlog</span></a> structure.</p>
 </section>
 <section id="content-attributes">
@@ -796,9 +802,10 @@ possible classes.</p>
 <p class="admonition-title">Note</p>
 <p>All NeXus items of a base class are <strong>optional</strong>, with a few particular
 exceptions in <code class="docutils literal notranslate"><span class="pre">NXentry</span></code> and <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>, and the NeXus attribute <code class="docutils literal notranslate"><span class="pre">NX_class</span></code>,
-which describes a content attribute every content group must have (see
-<a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>).  They are listed to give the exact spelling and use of each
-name in a file.</p>
+which is required (see <a class="reference internal" href="classes/base_classes/NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a>).  Every content group, the root
+included, must have the content attribute <code class="docutils literal notranslate"><span class="pre">&#64;NX_class</span></code> (see
+<a class="reference internal" href="#design-groups"><span class="std std-ref">Content Groups</span></a>).  The NeXus items are listed to give the exact spelling
+and use of each name in a file.</p>
 </div>
 <p>NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the

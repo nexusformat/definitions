@@ -84,7 +84,8 @@ format *stores*.
   :ref:`class path <preface.Class.path.specification>`, such as
   ``/NXentry/NXinstrument/NXdetector/data``.  A NeXus item *describes*
   content.  A NeXus group has a *type*: the class of the content groups it
-  describes, such as ``NXdetector``.  A NeXus field or attribute has a *data
+  describes, such as ``NXdetector``.  The type is always a base class, never
+  an application definition.  A NeXus field or attribute has a *data
   type*, such as ``NX_INT``.  The XML attribute ``type`` of the NXDL term
   gives both.  A NeXus attribute is an attribute of a NeXus group or field,
   or one defined in an NXDL ``fieldAttributes``: that one is a NeXus
@@ -228,9 +229,13 @@ content group, and a class. There can be multiple content groups with the same c
 but they must have different names (based on the :index:`HDF rules <rules; HDF>`).
 
 For the class names the prefix NX is reserved. Thus all NeXus class
-names start with NX. The content attribute ``NX_class`` of a content group gives the type of the
-NeXus group that describes it (see :ref:`NXobject </NXobject@NX_class-attribute>`; for the root group,
-:ref:`NXroot </NXroot@NX_class-attribute>`).
+names start with NX. The class of a content group is given by its content attribute
+``@NX_class``: the type of the NeXus group that describes it.
+Every content group in a NeXus file, the root included, must have the content
+attribute ``@NX_class``, whether or not a NeXus group describes it.
+This file rule comes on top of the classes, which define the NeXus attribute
+``NX_class`` as required (see :ref:`NXobject </NXobject@NX_class-attribute>`;
+for the root group, :ref:`NXroot </NXroot@NX_class-attribute>`).
 
     .. index::
       ! single: field
@@ -254,7 +259,8 @@ be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
 etc.). Content fields are identified by their names, which must be unique within the
-content group in which they are stored.  Some NeXus fields have engineering units, which a file must specify.
+content group in which they are stored.  A content field described by a NeXus field with a units category
+(such as ``units="NX_LENGTH"``) must have the content attribute ``@units``.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a NeXus field is
 expected to be an array of several dimensions.
 
@@ -285,7 +291,7 @@ expected to be an array of several dimensions.
 See the sections :ref:`nxdl-types` and :ref:`nxdl-units` for complete lists of
 the data types and engineering units types, respectively.
 
-In the case of streaming data acquisition, when time-stamped values of data are collected, content fields can be replaced with :ref:`NXlog` structures of 
+In the case of streaming data acquisition, when time-stamped values of data are collected, any NeXus field can be replaced by a NeXus group of type :ref:`NXlog` with
 the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a :ref:`NXlog` structure.  
 
 
@@ -757,9 +763,10 @@ possible classes.
 .. note::
 	All NeXus items of a base class are **optional**, with a few particular
 	exceptions in ``NXentry`` and ``NXdata``, and the NeXus attribute ``NX_class``,
-	which describes a content attribute every content group must have (see
-	:ref:`NXobject`).  They are listed to give the exact spelling and use of each
-	name in a file.
+	which is required (see :ref:`NXobject`).  Every content group, the root
+	included, must have the content attribute ``@NX_class`` (see
+	:ref:`Design-Groups`).  The NeXus items are listed to give the exact spelling
+	and use of each name in a file.
 
 NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the

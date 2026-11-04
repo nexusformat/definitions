@@ -188,8 +188,10 @@ When the name is allowed to be *flexible* (the exact name given
 by this NXDL specification is not required but is set
 at the time the HDF file is written), the flexible
 part of the name will be written in all capital letters.
-For example, in the :ref:`NXdata` group, the ``DATA``,
+For example, in the base class :ref:`NXdata`, the ``DATA``,
 ``VARIABLE``, and ``VARIABLE_errors`` NeXus fields are *flexible*.
+A NeXus item whose NXDL term has ``nameType="any"`` stands for any name that
+no other NeXus item of the same NeXus group defines: a specified name wins.
 
 NeXus data type
 ===============

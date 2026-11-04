@@ -120,7 +120,7 @@ In such cases lowercase words are connected by underscores.
 
     number_of_lenses
 
-For all content fields, only names from the NeXus base class dictionaries should be used.
+For all fields, only the names of NeXus fields that the base classes define should be used.
 If a NeXus field name or even a complete component is missing,
 please suggest the addition to the :ref:`NIAC`. The addition will usually be
 accepted provided it is not a duplication of an existing NeXus field and
@@ -135,7 +135,7 @@ adequately documented.
 
 .. _target_value:
 
-The data stored in content fields must be *readback* values.
+The values of a NeXus field are *readback* values.
 This means values as read from the detector, other hardware, etc.
 There are occasions where it is sensible to store the target value
 the variable was supposed to have. In such cases, the
@@ -266,12 +266,12 @@ suffix               reference                                  meaning
 Variants
 #########
 
-Sometimes it is necessary to store alternate values of a content field
+Sometimes it is necessary to store alternate values of a field
 in a NeXus file. A common example may be the beam center of which a
 rough value is available at data acquisition. But later on, a better beam
 center is calculated as part of the data reduction. In order to store
-this without losing the historical information, the content field with the best value can be given a content attribute ``variant`` that points to
-a new field containing the obsolete value. If even better values
+this without losing the historical information, the field with the best value can have the NeXus attribute ``@variant``
+(defined in :ref:`NXobject`), which names a new field that holds the obsolete value. If even better values
 become available, further fields can be inserted into the chain of variant attributes
 pointing to the preceeding value for the field. A reader can thus
 keep the best value in the pre-defined field, and also be able to
@@ -301,10 +301,9 @@ Uncertainties or Errors
 
 It is desirable to store experimental errors (also known as
 *uncertainties*) together with the data. NeXus supports this through
-a convention: uncertainties or experimental errors on data are
-stored in a separate content field which has a name consisting of the
-original name of the data with ``_errors`` appended to it.
-These uncertainties fields have the same shape as the original data field.
+a convention: :ref:`NXobject` defines the NeXus field ``FIELDNAME_errors``
+for the uncertainties or experimental errors of the NeXus field
+``FIELDNAME``.  It has the same shape as ``FIELDNAME``.
 
 An example, from NXdetector:
 
@@ -351,10 +350,10 @@ good reason to make an exception to the standard rule.
 Non C Storage Order
 ===================
 
-In order to indicate that the storage order is different from C storage order two
-additional content attributes of the content field, ``data_offset`` and ``stride``, have to be stored which together define the storage
-layout of the data (see :ref:`NXobject`). They contain rank numbers according to the rank of the multidimensional
-content field. ``data_offset`` gives the position of the first stored value in each dimension. ``stride`` gives the step to
+In order to indicate that the storage order is different from C storage order, a field
+has the two NeXus attributes ``@data_offset`` and ``@stride`` that :ref:`NXobject` defines, which together define the storage
+layout of the data. They contain rank numbers according to the rank of the multidimensional
+field. ``data_offset`` gives the position of the first stored value in each dimension. ``stride`` gives the step to
 make when incrementing the dimension. This is best explained by some examples.
 
 .. compound::
@@ -565,8 +564,9 @@ NeXus Data Units
 
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
-store data in any unit you find fit. However, any content field must have a
-``units`` content attribute which describes the units. Wherever possible, SI units are
+store data in any unit you find fit. However, a content field described by a
+NeXus field with a units category (such as ``units="NX_LENGTH"``) must have the
+content attribute ``@units``, with units of that category. Wherever possible, SI units are
 preferred. Units are given in the NeXus attribute ``units``, of data type ``NX_CHAR``,
 and describe the engineering units. The string
 should be appropriate for the value.
@@ -983,8 +983,8 @@ Only the first method is recommended now, the other two (older methods) are now 
 The recommended method uses the content attribute ``axes`` applied to the :ref:`NXdata` group
 to specify the names of each
 :index:`dimension scale <dimension; dimension scales>`.
-A prerequisite is that the content fields describing the axes of the plottable data
-are stored together with the plottable data in the same content group.
+A prerequisite is that the NeXus fields of the axes are in the same :ref:`NXdata`
+group as the plottable data.
 If this leads to data duplication, use :ref:`content links <Design-Links>`.
 
 -----------
@@ -1204,8 +1204,8 @@ would contain:
         :linenos:
         :language: text
 
-The ``axis`` content attribute must
-be defined for each dimension scale.
+Each field of a dimension scale must have
+the NeXus attribute ``@axis``.
 The ``primary`` attribute is unique to this method.
 
 There are limited circumstances in which more
