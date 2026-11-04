@@ -107,6 +107,25 @@ def test_field_attributes_must_be_last(tmp_path, xml_schema):
         validate_definition(nxdl_file, xml_schema)
 
 
+@pytest.mark.parametrize(
+    "group_type,valid",
+    [("NXsample", True), ("NXmx", False)],
+    ids=["base-class", "application-definition"],
+)
+def test_group_type(tmp_path, xml_schema, group_type, valid):
+    nxdl_file = tmp_path / "NXtest_field_attributes.nxdl.xml"
+    nxdl_file.write_text(
+        _FIELD_ATTRIBUTES_NXDL.format(group_content="", definition_content="").replace(
+            'type="NXsample"', f'type="{group_type}"'
+        )
+    )
+    if valid:
+        validate_definition(nxdl_file, xml_schema)
+    else:
+        with pytest.raises(errors.XMLSyntaxError):
+            validate_definition(nxdl_file, xml_schema)
+
+
 _ENUMERATION = '<enumeration><item value="NXsample"/></enumeration>'
 
 
