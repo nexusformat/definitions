@@ -59,9 +59,12 @@ level relates to the next by one verb: ``nxdl.xsd`` *declares* the terms of
 NXDL, which *define* NeXus items, which *describe* content, which a file
 format *stores*.
 
-* **XML Schema** (XSD): the grammar :ref:`nxdl.xsd <NXDL>`.  It *declares*
-  the terms of NXDL with element declarations (``xs:element``), and their XML
-  attributes with *attribute declarations* (``xs:attribute``).  A *model
+* **XML Schema** (XSD): the language that :ref:`nxdl.xsd <NXDL>` is written
+  in.  ``nxdl.xsd`` *declares* the grammar of NXDL: the terms of NXDL with
+  element declarations (``xs:element``), and their XML attributes with
+  *attribute declarations* (``xs:attribute``).  With ``nxdlTypes.xsd``,
+  which it includes, it also declares the vocabulary of NXDL: the values
+  those XML attributes may take, such as the data type ``NX_FLOAT``.  A *model
   group* (``xs:group``, such as ``groupGroup``) is a named set of element
   declarations, and an ``xs:attributeGroup`` a named set of attribute
   declarations.  Neither is a term of NXDL.  An attribute declaration does
