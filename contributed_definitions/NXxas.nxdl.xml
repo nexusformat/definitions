@@ -31,14 +31,16 @@
         </doc>
         <symbol name="nP">
             <doc>
-                Number of spectra (scan points). For a stack, this is the growable
-                first dimension of ``intensity``: data could be appended along it
-                during acquisition. For a single spectrum, ``nP`` is 1, but
-                ``intensity`` has no ``nP`` dimension.
+                Number of spectra (scan points). For a stack, ``nP`` is the
+                length of the first dimension of ``intensity``. Spectra can
+                be appended along this dimension during the measurement.
+                For a single
+                spectrum, ``nP`` is 1, and ``intensity`` has no ``nP``
+                dimension.
             </doc>
         </symbol>
         <symbol name="nEnergy">
-            <doc>Number of energy data points</doc>
+            <doc>Number of energy points.</doc>
         </symbol>
         <symbol name="dataRank">
             <doc>
@@ -76,17 +78,15 @@
         </field>
         <group type="NXelement" name="element">
             <doc>
-                The element being probed by the incident X-rays.
+                The absorbing element.
             </doc>
             <field name="symbol"/>
         </group>
         <group type="NXabsorption_edge" name="edge">
             <doc>
-                The absorption edge being probed, defined by the principal
-                quantum number and orbital symmetry of the photoionized
-                electron (for example ``K``, ``L1``, ``L2``, or ``L3``).
-                Together with the element, it uniquely
-                identifies the probed electronic transition.
+                The absorption edge (for example ``K``, ``L1``, ``L2``, or
+                ``L3``). Together with the absorbing element, it uniquely identifies
+                the probed electronic transition.
             </doc>
             <field name="name"></field>
         </group>
@@ -100,9 +100,8 @@
         </field>
         <field name="intensity" type="NX_FLOAT" units="NX_ANY">
             <doc>
-                The intensity of the spectrum. The precise definition of what is
-                meant by intensity depends on the acquisition mode, and will be
-                specified by each subclass application definition.
+                The intensity of the spectrum. The physical quantity
+                in ``intensity`` depends on the acquisition mode.
             </doc>
             <dimensions rank="dataRank">
                 <doc>
@@ -113,10 +112,10 @@
             </dimensions>
             <attribute name="type" type="NX_CHAR" recommended="true">
                 <doc>
-                    The physical quantity that ``intensity`` represents
-                    before any processing. The values can be processed, for example
-                    normalized. Each technique-specific application
-                    definition lists the allowed values.
+                    The physical quantity that ``intensity`` represents before
+                    any processing (for example, background subtraction,
+                    normalization, or scaling). Each technique-specific
+                    application definition lists the allowed values.
                 </doc>
             </attribute>
             <attribute name="provenance" type="NX_CHAR" optional="false">
@@ -178,7 +177,7 @@
         <group type="NXinstrument" optional="true">
             <doc>
                 Instrument used to measure the spectrum. Omit for calculated
-                spectra.
+                or reconstructed spectra.
             </doc>
             <group type="NXsource" recommended="true">
                 <field name="type"/>
@@ -196,8 +195,8 @@
                     </field>
                     <field name="type">
                         <doc>
-                            Type or material of monochromating substance
-                            (Si, Ge, Multilayer).
+                            Crystal material or dispersing element (for
+                            example Si, Ge, or multilayer).
                         </doc>
                     </field>
                     <field name="reflection" type="NX_INT" units="NX_UNITLESS">
@@ -224,7 +223,8 @@
                             Minimum distinguishable energy separation
                             :math:`\Delta E` of the incident X-rays. If only
                             the resolving power :math:`E/\Delta E` is known,
-                            give :math:`\Delta E` at the edge energy.
+                            give :math:`\Delta E` at the absorption edge
+                            energy.
                         </doc>
                     </field>
                 </group>
@@ -253,23 +253,23 @@
                 </enumeration>
             </attribute>
             <doc>
-                Plot of the X-ray absorption ``intensity`` versus ``energy``.
-                The ``energy`` and ``intensity`` links are required. Additional
-                coordinate links are allowed.
+                Plot of ``intensity`` versus ``energy``. The ``energy`` and
+                ``intensity`` links are required. Additional coordinate
+                links are allowed.
 
                 For a single spectrum, ``energy`` spans dimension 0
                 (``@energy_indices = 0``). For a stack, ``energy`` has
                 ``@energy_indices = 1`` and the quantity that varies across the
-                stack (a time series, a spatial map, an operando series, ...)
+                stack (for example time, spatial position, or sample state)
                 is the leading axis with ``@AXISNAME_indices = 0``.
 
-                That quantity is stored in its standard NeXus location (for
+                Store that quantity in its standard NeXus location (for
                 example ``NXsample/temperature``, ``NXsample/electric_field``,
                 an ``NXsample/NXtransformations`` axis, or an ``NXbeam``
-                polarization field) and linked here. The application definition
-                does not enumerate these coordinates: any of them, including
-                ones not listed, is declared by adding the field in its
-                base-class location and wiring it into this group.
+                polarization field) and link it here. This application definition lists
+                only the ``energy`` coordinate. Add any other coordinate
+                field in its base-class group and link it to this
+                ``NXdata`` group.
             </doc>
             <link name="energy" target="/NXentry/energy"/>
             <link name="intensity" target="/NXentry/intensity"/>
@@ -300,7 +300,7 @@
                 &lt;/NXxas/ENTRY/intensity-field&gt;`.
 
                 For measured spectra, include all processing steps from
-                measured data to the reported spectrum. For calculated
+                raw data to the spectrum in ``intensity``. For calculated
                 spectra, describe the calculation. For reconstructed spectra,
                 identify the reference components and their weights.
 
@@ -341,14 +341,15 @@
         </group>
         <group type="NXsubentry" name="reference" optional="true">
             <doc>
-                An independent reference spectrum, for example a metal-foil
-                standard used for energy calibration. Store the reference
-                here when it is a complete spectrum in its own right, in
-                particular when it probes a different absorbing element or
-                absorption edge, or when it is measured in a different
-                acquisition mode than the main spectrum (for example a foil
-                measured in transmission while the sample is measured in
-                fluorescence).
+                An independent reference spectrum, for example from a
+                reference sample (such as a metal foil) used for energy
+                calibration. Store the reference spectrum here when it is a
+                complete spectrum in its own right, in particular when it
+                probes a different absorbing element or absorption edge, or
+                when it is measured in a different acquisition mode than the
+                sample spectrum (for example a reference sample measured in
+                transmission mode while the sample is measured in
+                fluorescence mode).
             </doc>
             <field name="definition">
                 <doc>NeXus NXDL schema to which this subentry conforms</doc>
