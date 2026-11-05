@@ -68,8 +68,10 @@ that may be written) and *semantics* (what is written means).
   *attribute declarations* (``xs:attribute``).  With ``nxdlTypes.xsd``,
   which it includes, it also declares the vocabulary of NXDL: the values
   those XML attributes may take, such as the data type ``NX_FLOAT``.  It
-  declares no semantics: what NXDL means is stated in prose, in this manual
-  and in the documentation of ``nxdl.xsd``.  A *model
+  declares no semantics.  What an NXDL file means is the NeXus classes it
+  defines; the rules for reading it that way, such as what ``minOccurs`` or
+  ``nameType`` mean, are prose, in this manual and in the documentation of
+  ``nxdl.xsd``.  A *model
   group* (``xs:group``, such as ``groupGroup``) is a named set of element
   declarations, and an ``xs:attributeGroup`` a named set of attribute
   declarations.  Neither is a term of NXDL.  An attribute declaration does
@@ -83,8 +85,8 @@ that may be written) and *semantics* (what is written means).
   or link *defines* a NeXus group, field, attribute or link of that class.
   The *XML attributes* of an NXDL term, such as ``name`` or ``type``, give
   the properties of the NeXus item it defines.  The NXDL files use the
-  grammar and vocabulary that ``nxdl.xsd`` declares, with the semantics that
-  this manual states.
+  grammar and vocabulary that ``nxdl.xsd`` declares; this manual states how
+  to read them as NeXus classes.
 * **NeXus**: the NeXus classes (base classes and application definitions),
   with what they inherit through ``extends``.  A *NeXus item* is a NeXus
   group, field, attribute or link of a class: a name or name pattern, with
