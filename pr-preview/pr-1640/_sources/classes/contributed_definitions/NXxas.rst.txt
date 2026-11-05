@@ -33,9 +33,9 @@ NXxas
       The symbol(s) listed here will be used below to coordinate datasets
       with the same shape.
 
-  **nP**: Number of spectra (scan points). For a stack, this is the growable first dimension of ``intensity``: data could be appended along it during acquisition. For a single spectrum, ``nP`` is 1, but ``intensity`` has no ``nP`` dimension.
+  **nP**: Number of spectra (scan points). For a stack, ``nP`` is the length of the first dimension of ``intensity``. Spectra can be appended along this dimension during the measurement. For a single spectrum, ``nP`` is 1, and ``intensity`` has no ``nP`` dimension.
 
-  **nEnergy**: Number of energy data points
+  **nEnergy**: Number of energy points.
 
   **dataRank**: Rank of the ``intensity`` field: 1 for a single spectrum ``[nEnergy]`` or 2 for a stack of spectra ``[nP, nEnergy]``.
 
@@ -94,7 +94,7 @@ NXxas
 
     **element**: (required) :ref:`NXelement` 
 
-      The element being probed by the incident X-rays.
+      The absorbing element.
 
       .. _/NXxas/ENTRY/element/symbol-field:
 
@@ -107,13 +107,11 @@ NXxas
 
     **edge**: (required) :ref:`NXabsorption_edge` 
 
-      .. collapse:: The absorption edge being probed, defined by the principal ...
+      .. collapse:: The absorption edge (for example ``K``, ``L1``, ``L2``, or ...
 
-          The absorption edge being probed, defined by the principal
-          quantum number and orbital symmetry of the photoionized
-          electron (for example ``K``, ``L1``, ``L2``, or ``L3``).
-          Together with the element, it uniquely
-          identifies the probed electronic transition.
+          The absorption edge (for example ``K``, ``L1``, ``L2``, or
+          ``L3``). Together with the absorbing element, it uniquely identifies
+          the probed electronic transition.
 
       .. _/NXxas/ENTRY/edge/name-field:
 
@@ -136,11 +134,10 @@ NXxas
 
     **intensity**: (required) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: dataRank) {units=\ :ref:`NX_ANY <NX_ANY>`} 
 
-      .. collapse:: The intensity of the spectrum. The precise definition of what is ...
+      .. collapse:: The intensity of the spectrum. The physical quantity ...
 
-          The intensity of the spectrum. The precise definition of what is
-          meant by intensity depends on the acquisition mode, and will be
-          specified by each subclass application definition.
+          The intensity of the spectrum. The physical quantity
+          in ``intensity`` depends on the acquisition mode.
 
       .. _/NXxas/ENTRY/intensity@type-attribute:
 
@@ -148,12 +145,12 @@ NXxas
 
       **@type**: (recommended) :ref:`NX_CHAR <NX_CHAR>` 
 
-        .. collapse:: The physical quantity that ``intensity`` represents ...
+        .. collapse:: The physical quantity that ``intensity`` represents before ...
 
-            The physical quantity that ``intensity`` represents
-            before any processing. The values can be processed, for example
-            normalized. Each technique-specific application
-            definition lists the allowed values.
+            The physical quantity that ``intensity`` represents before
+            any processing (for example, background subtraction,
+            normalization, or scaling). Each technique-specific
+            application definition lists the allowed values.
 
       .. _/NXxas/ENTRY/intensity@provenance-attribute:
 
@@ -216,7 +213,7 @@ NXxas
       .. collapse:: Instrument used to measure the spectrum. Omit for calculated ...
 
           Instrument used to measure the spectrum. Omit for calculated
-          spectra.
+          or reconstructed spectra.
 
       .. _/NXxas/ENTRY/INSTRUMENT/SOURCE-group:
 
@@ -270,10 +267,10 @@ NXxas
 
           **type**: (required) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXcrystal/type-field>`
 
-            .. collapse:: Type or material of monochromating substance ...
+            .. collapse:: Crystal material or dispersing element (for ...
 
-                Type or material of monochromating substance
-                (Si, Ge, Multilayer).
+                Crystal material or dispersing element (for
+                example Si, Ge, or multilayer).
 
           .. _/NXxas/ENTRY/INSTRUMENT/monochromator/crystal/reflection-field:
 
@@ -320,7 +317,8 @@ NXxas
                 Minimum distinguishable energy separation
                 :math:`\Delta E` of the incident X-rays. If only
                 the resolving power :math:`E/\Delta E` is known,
-                give :math:`\Delta E` at the edge energy.
+                give :math:`\Delta E` at the absorption edge
+                energy.
 
       .. _/NXxas/ENTRY/INSTRUMENT/i0-group:
 
@@ -342,25 +340,25 @@ NXxas
 
     :bolditalic:`DATA`: (required) :ref:`NXdata` :ref:`⤆ </NXentry/DATA-group>`
 
-      .. collapse:: Plot of the X-ray absorption ``intensity`` versus ``energy``. ...
+      .. collapse:: Plot of ``intensity`` versus ``energy``. The ``energy`` and ...
 
-          Plot of the X-ray absorption ``intensity`` versus ``energy``.
-          The ``energy`` and ``intensity`` links are required. Additional
-          coordinate links are allowed.
+          Plot of ``intensity`` versus ``energy``. The ``energy`` and
+          ``intensity`` links are required. Additional coordinate
+          links are allowed.
 
           For a single spectrum, ``energy`` spans dimension 0
           (``@energy_indices = 0``). For a stack, ``energy`` has
           ``@energy_indices = 1`` and the quantity that varies across the
-          stack (a time series, a spatial map, an operando series, ...)
+          stack (for example time, spatial position, or sample state)
           is the leading axis with ``@AXISNAME_indices = 0``.
 
-          That quantity is stored in its standard NeXus location (for
+          Store that quantity in its standard NeXus location (for
           example ``NXsample/temperature``, ``NXsample/electric_field``,
           an ``NXsample/NXtransformations`` axis, or an ``NXbeam``
-          polarization field) and linked here. The application definition
-          does not enumerate these coordinates: any of them, including
-          ones not listed, is declared by adding the field in its
-          base-class location and wiring it into this group.
+          polarization field) and link it here. This application definition lists
+          only the ``energy`` coordinate. Add any other coordinate
+          field in its base-class group and link it to this
+          ``NXdata`` group.
 
       .. _/NXxas/ENTRY/DATA@signal-attribute:
 
@@ -437,7 +435,7 @@ NXxas
           </NXxas/ENTRY/intensity-field>`.
 
           For measured spectra, include all processing steps from
-          measured data to the reported spectrum. For calculated
+          raw data to the spectrum in ``intensity``. For calculated
           spectra, describe the calculation. For reconstructed spectra,
           identify the reference components and their weights.
 
@@ -511,16 +509,17 @@ NXxas
 
     **reference**: (optional) :ref:`NXsubentry` :ref:`⤆ </NXentry/SUBENTRY-group>`
 
-      .. collapse:: An independent reference spectrum, for example a metal-foil ...
+      .. collapse:: An independent reference spectrum, for example from a ...
 
-          An independent reference spectrum, for example a metal-foil
-          standard used for energy calibration. Store the reference
-          here when it is a complete spectrum in its own right, in
-          particular when it probes a different absorbing element or
-          absorption edge, or when it is measured in a different
-          acquisition mode than the main spectrum (for example a foil
-          measured in transmission while the sample is measured in
-          fluorescence).
+          An independent reference spectrum, for example from a
+          reference sample (such as a metal foil) used for energy
+          calibration. Store the reference spectrum here when it is a
+          complete spectrum in its own right, in particular when it
+          probes a different absorbing element or absorption edge, or
+          when it is measured in a different acquisition mode than the
+          sample spectrum (for example a reference sample measured in
+          transmission mode while the sample is measured in
+          fluorescence mode).
 
       .. _/NXxas/ENTRY/reference/definition-field:
 
@@ -533,6 +532,14 @@ NXxas
             NeXus NXDL schema to which this subentry conforms
 
             Obligatory value: ``NXxas``
+
+      .. _/NXxas/ENTRY/reference/reference-group:
+
+      .. rst-class:: nxdl-not-allowed
+
+      **reference**: :nxdl-not-allowed:`(not allowed)` :ref:`NXsubentry` 
+
+        A reference spectrum cannot contain another reference spectrum.
 
 
 Hypertext Anchors
@@ -586,6 +593,7 @@ attributes, and links defined in this class.
 * :ref:`/NXxas/ENTRY/raw_data-group </NXxas/ENTRY/raw_data-group>`
 * :ref:`/NXxas/ENTRY/reference-group </NXxas/ENTRY/reference-group>`
 * :ref:`/NXxas/ENTRY/reference/definition-field </NXxas/ENTRY/reference/definition-field>`
+* :ref:`/NXxas/ENTRY/reference/reference-group </NXxas/ENTRY/reference/reference-group>`
 * :ref:`/NXxas/ENTRY/SAMPLE-group </NXxas/ENTRY/SAMPLE-group>`
 * :ref:`/NXxas/ENTRY/SAMPLE/name-field </NXxas/ENTRY/SAMPLE/name-field>`
 * :ref:`/NXxas/ENTRY/SAMPLE/temperature-field </NXxas/ENTRY/SAMPLE/temperature-field>`
