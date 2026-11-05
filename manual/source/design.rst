@@ -57,21 +57,18 @@ The words *group*, *field*, *attribute* and *link* each have several
 meanings.  This manual always says which one, at one of five levels.  Each
 level relates to the next by one verb: ``nxdl.xsd`` *declares* the terms of
 NXDL, which *define* NeXus items, which *describe* content, which a file
-format *stores*.  Each level defines or uses a *grammar* (what may be
-written, inside what, and how often), a *vocabulary* (the names and values
-that may be written) and *semantics* (what is written means).
+format *stores*.  Each level defines or uses a *vocabulary* (the names and
+values that may be written), a *grammar* (how they may be combined: inside
+what, and how often) and *semantics* (what is written means).
 
 * **XML Schema** (XSD): the language that :ref:`nxdl.xsd <NXDL>` is written
-  in, with its own grammar, vocabulary and semantics (a W3C standard).
-  ``nxdl.xsd`` *declares* the grammar of NXDL: the terms of NXDL with
-  element declarations (``xs:element``), and their XML attributes with
-  *attribute declarations* (``xs:attribute``).  With ``nxdlTypes.xsd``,
-  which it includes, it also declares the vocabulary of NXDL: the values
-  those XML attributes may take, such as the data type ``NX_FLOAT``.  It
-  declares no semantics.  What an NXDL file means is the NeXus classes it
-  defines; the rules for reading it that way, such as what ``minOccurs`` or
-  ``nameType`` mean, are prose, in this manual and in the documentation of
-  ``nxdl.xsd``.  A *model
+  in, with its own vocabulary, grammar and semantics (a W3C standard).
+  ``nxdl.xsd`` *declares* the vocabulary and grammar of NXDL: the terms of
+  NXDL with element declarations (``xs:element``), their XML attributes with
+  *attribute declarations* (``xs:attribute``), and, with ``nxdlTypes.xsd``,
+  which it includes, the values those XML attributes may take, such as the
+  data type ``NX_FLOAT``.  It declares no semantics: this manual gives the
+  semantics of NXDL, in prose.  A *model
   group* (``xs:group``, such as ``groupGroup``) is a named set of element
   declarations, and an ``xs:attributeGroup`` a named set of attribute
   declarations.  Neither is a term of NXDL.  An attribute declaration does
@@ -85,8 +82,7 @@ that may be written) and *semantics* (what is written means).
   or link *defines* a NeXus group, field, attribute or link of that class.
   The *XML attributes* of an NXDL term, such as ``name`` or ``type``, give
   the properties of the NeXus item it defines.  The NXDL files use the
-  grammar and vocabulary that ``nxdl.xsd`` declares; this manual states how
-  to read them as NeXus classes.
+  vocabulary and grammar that ``nxdl.xsd`` declares.
 * **NeXus**: the NeXus classes (base classes and application definitions),
   with what they inherit through ``extends``.  A *NeXus item* is a NeXus
   group, field, attribute or link of a class: a name or name pattern, with
@@ -102,11 +98,11 @@ that may be written) and *semantics* (what is written means).
   gives both.  A NeXus attribute is an attribute of a NeXus group or field,
   or one defined in an NXDL ``fieldAttributes``: that one is a NeXus
   attribute that any field directly in the class may have, whether or not
-  the class defines that field.  The classes define the grammar of content
-  (which content groups, fields, attributes and links a content group of a
-  class may or must have, how often, with which data type and dimensions),
-  its vocabulary (the names of the classes and of their NeXus items, and
-  enumerated values) and its semantics (the documentation of each class and
+  the class defines that field.  The classes define the vocabulary of
+  content (the names of the classes and of their NeXus items, and enumerated
+  values), its grammar (which content groups, fields, attributes and links a
+  content group of a class may or must have, how often, with which data type
+  and dimensions) and its semantics (the documentation of each class and
   NeXus item).
 * **Content**: the full content of a NeXus file, values and names included,
   without anything specific to a file format.  It consists of *content
@@ -116,13 +112,13 @@ that may be written) and *semantics* (what is written means).
   ``data`` of ``NXdetector`` describes the content field ``data`` of every
   content group of class ``NXdetector``.
   The content attribute ``@NX_class`` of a content group gives the type of
-  the NeXus group that describes it.  Content uses the grammar, vocabulary
+  the NeXus group that describes it.  Content uses the vocabulary, grammar
   and semantics that the classes define, and may contain more than they
   define.
 * **Storage**: how a file format, such as HDF5 or Zarr, *stores* the
   content: *storage groups*, *storage fields*, *storage attributes* and
   *storage links*, such as HDF5 groups, datasets, attributes and hard links.
-  Each file format has its own grammar, vocabulary and semantics; the
+  Each file format has its own vocabulary, grammar and semantics; the
   :ref:`File Format <Fileformat>` chapter states how content is stored in
   it.
 
