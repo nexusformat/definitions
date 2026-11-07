@@ -108,7 +108,13 @@ what, and how often) and *semantics* (what is written means).
   without anything specific to a file format.  It consists of *content
   groups*, *content fields* and *content attributes*, named by paths such as
   ``/entry/instrument/detector/data``; together they form the *content
-  tree*.  A content field or group can be a *content link*.  The NeXus field
+  tree*.  Each content item has *properties*: a content group has a name; a
+  content field has a name, a value, a data type and a shape; a content
+  attribute has a name and a value.  Content attributes, such as
+  ``@default``, are not properties: a content group or field may have them.
+  The units of a NeXus field describe the content attribute ``@units`` of a
+  content field, not one of its properties.  A content field or group can be
+  a *content link*.  The NeXus field
   ``data`` of ``NXdetector`` describes the content field ``data`` of every
   content group of class ``NXdetector``.
   The content attribute ``@NX_class`` of a content group gives the type of
