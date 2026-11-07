@@ -260,9 +260,9 @@ between a data provider (such as the beam line control system) and a
 data consumer (such as a data analysis program for a scientific technique)
 that describes the information is certain to be available in a data file.
 
-Use NeXus links liberally in data files to reduce duplication of data.
+Use content links liberally in data files to reduce duplication of data.
 In application definitions involving raw data,
-write the raw data in the :ref:`NXinstrument` tree and then link to it
+write the raw data in the :ref:`NXinstrument` tree and then make content links to it
 from the location(s) defined in the relevant application definition.
 
 Application definitions provide a data processing interface to raw data

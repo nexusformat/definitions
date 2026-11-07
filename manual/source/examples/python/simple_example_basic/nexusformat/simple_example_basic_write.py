@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Writes a NeXus HDF5 file using h5py and numpy"""
+"""Writes a NeXus HDF5 file using nexusformat and numpy"""
 
 from pathlib import Path
 

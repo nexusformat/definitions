@@ -102,6 +102,7 @@ html_sidebars = {
 def setup(app):
     app.add_css_file("details_summary_hide.css")
     app.add_css_file("nxdl_not_allowed.css")
+    app.add_css_file("samp_bold.css")
 
 
 # The name of an image file (within the static path) to use as favicon of the

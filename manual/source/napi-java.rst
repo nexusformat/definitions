@@ -254,7 +254,7 @@ And reading:
         :language: java
 
 The aforementioned holds for all strings written as SDS content or as an
-attribute. SDS or vGroup names do not need this treatment.
+HDF4 attribute. SDS or vGroup names do not need this treatment.
 
 .. _NAPI-java-general-datarw-inquiry:
 
@@ -288,7 +288,7 @@ Thus ``args`` in the ``getinfo()`` method holds the
 rank and datatype information passed in separate items in the C-API version.
 For resolving which one is which, consult a debugger or the API-reference.
 
-The attribute and vGroup search routines have been simplified
+The HDF4 attribute and vGroup search routines have been simplified
 using Hashtables. The ``Hashtable`` returned by ``groupdir()``
 holds the name of the item as a key and the classname or the string SDS as the
 stored object for the key. Thus the code for a vGroup search looks like this:
@@ -302,13 +302,13 @@ stored object for the key. Thus the code for a vGroup search looks like this:
         :linenos:
         :language: java
 
-For an attribute search both at global or SDS level the returned Hashtable
+For an HDF4 attribute search both at global or SDS level the returned Hashtable
 will hold the name as the key and a little class holding the type and size
 information as value. Thus an attribute search looks like this in the Java-API:
 
 .. compound::
 
-    .. rubric:: attribute search
+    .. rubric:: HDF4 attribute search
 
     .. literalinclude:: examples/napi/napi-java-inquiry2.java
         :tab-width: 4

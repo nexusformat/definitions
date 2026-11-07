@@ -13,7 +13,7 @@ NeXus [#]_ is an effort by an international group of scientists
 to define a common data exchange format for neutron, X-ray, and muon experiments.  
 NeXus is built on top of the scientific data format HDF5 and adds 
 domain-specific rules for organizing data within HDF5 files in addition 
-to a dictionary of well-defined domain-specific field names. The NeXus 
+to a dictionary of well-defined domain-specific NeXus field names. The NeXus 
 data format has three purposes:
 
 #. *raw data*:
@@ -110,26 +110,26 @@ A Set of Design Principles
 
 .. index:: design principles
 
-NeXus data files contain four types of entity:
-groups,
-fields,
-attributes, and
-links.
+NeXus data files contain three types of entity:
+Content groups,
+fields, and
+attributes.
+A content field or group can also be a content link to another one.
 
 .. index::
    single: group
 
 :ref:`Design-Groups`
-    Groups are like folders that can contain a number of fields
+    Content groups are like folders that can contain a number of fields
     and/or other groups.
 
     .. index::
       single: field
 
 :ref:`Design-Fields`
-    Fields can be scalar values or multidimensional arrays of a
+    Content fields can be scalar values or multidimensional arrays of a
     variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
-    (characters, integers, floats).  Fields are
+    (characters, integers, floats).  Content fields are
     represented as HDF5 *datasets*.
     
 .. index::
@@ -138,9 +138,9 @@ links.
 
 :ref:`Design-Attributes`
     Extra information required to
-    describe a particular group or field,
+    describe a particular content group or field,
     such as the data units,
-    can be stored as a data attribute.  Attributes can also 
+    can be stored as a content attribute.  Content attributes can also 
     be given at the file level of an HDF5 file.
 
 .. index::
@@ -148,11 +148,12 @@ links.
    plotting
    
 :ref:`Design-Links`
-    Links are used to represent the same information in different places.
+    A content link is a content field or group with the same shared content as
+    one in another place.
 
 In fact, a NeXus file can be viewed as a computer file system. Just as files
-are stored in folders (or subdirectories) to make them easy to locate, so NeXus
-fields are stored in groups. The group :index:`hierarchy <hierarchy>`
+are stored in folders (or subdirectories) to make them easy to locate, so content
+fields are stored in groups. The content group :index:`hierarchy <hierarchy>`
 is designed to make it easy
 to navigate a NeXus file.
 
@@ -178,13 +179,13 @@ tree structure.
       :width: 80%
 
 
-Note that each field is identified by a name, such as ``counts``,
+Note that each content field is identified by a name, such as ``counts``,
 but each group is identified both by a name and, after a colon as a
 delimiter, the class type, e.g., ``monitor:NXmonitor``).
 The class types, which all begin with
-``NX``, define the sort of fields that the group should contain, in this
-case, counts from a beamline monitor. The hierarchical design, with data
-items nested in groups, makes it easy to identify information if you are
+``NX``, define the NeXus fields that describe the content fields of the group, in this
+case, counts from a beamline monitor. The hierarchical design, with content
+fields nested in content groups, makes it easy to identify information if you are
 browsing through a file.
 
 .. _Introduction-ImportantClasses:
@@ -205,12 +206,12 @@ the :ref:`all.class.definitions` chapter.
 
 :ref:`NXentry`
     *Required:*
-    The top level of any NeXus file contains one or more groups with the 
+    The top level of any NeXus file contains one or more content groups with the 
     class ``NXentry``. 
     These contain all the data that is required to
     describe an experimental run or scan. Each
     ``NXentry`` typically contains a number of
-    groups describing sample information (class
+    content groups describing sample information (class
     ``NXsample``), instrument details (class
     ``NXinstrument``), and monitor counts (class
     ``NXmonitor``).
@@ -230,7 +231,7 @@ the :ref:`all.class.definitions` chapter.
 .. index:: NXsample (base class)
 
 :ref:`NXsample`
-    A ``NXentry`` group will often contain a group with 
+    A ``NXentry`` group will often contain a content group with 
     class ``NXsample``. 
     This group contains information pertaining to
     the sample, such as its chemical composition, mass, and
@@ -240,7 +241,7 @@ the :ref:`all.class.definitions` chapter.
 .. index:: NXinstrument (base class)
 
 :ref:`NXinstrument`
-   There might also be a group with 
+   There might also be a content group with 
    class ``NXinstrument``. This is designed to encapsulate all the
    instrumental information that might be relevant to a
    measurement, such as flight paths, collimation, chopper
@@ -256,7 +257,7 @@ the :ref:`all.class.definitions` chapter.
          :width: 50%
    
    Since an instrument can include several beamline components each
-   defined by several parameters, the components are each specified by a separate group.
+   defined by several parameters, the components are each specified by a separate content group.
    This hides the complexity from generic file browsers, but makes the
    information available in an intuitively obvious way if it is required.
 
@@ -362,7 +363,7 @@ to the community.
 
 These instrument definitions are formalized as XML files, using 
 :ref:`NXDL <NXDL>`,
-to specify the names of fields, and other NeXus data objects.
+to specify the names of NeXus fields and other NeXus items.
 The following is an example of such a file for
 the simple NeXus file shown above.
 
