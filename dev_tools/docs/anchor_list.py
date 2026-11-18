@@ -118,7 +118,7 @@ class AnchorRegistry:
                 datetime=utcnow,
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, "
-                "attributes, and links.",
+                "attributes, links, and symbols.",
                 version=get_nxdl_version(),
             ),
             terms=self._registry,

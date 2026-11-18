@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from .apps import dir_app
+from .apps import docdiff_app
 from .apps import impatient_app
 from .apps import manual_app
 from .apps import nxclass_app
@@ -35,6 +36,12 @@ def main(argv=None):
     test_app.nxtest_args(nxtest_parser)
     dir_app.dir_args(nxtest_parser)
 
+    docdiff_parser = subparsers.add_parser(
+        "docdiff", help="Diff the generated documentation of two git references"
+    )
+    docdiff_app.docdiff_args(docdiff_parser)
+    dir_app.dir_args(docdiff_parser)
+
     if argv is None:
         argv = sys.argv
     args = parser.parse_args(argv[1:])
@@ -44,6 +51,7 @@ def main(argv=None):
         "manual": manual_app.manual_exec,
         "impatient": impatient_app.impatient_exec,
         "nxtest": test_app.nxtest_exec,
+        "docdiff": docdiff_app.docdiff_exec,
     }.get(args.command)
 
     if app_exec is None:
