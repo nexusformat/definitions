@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2026 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition name="NXxas_pfy" extends="NXxas" type="group" category="application"
+    xmlns="http://definition.nexusformat.org/nxdl/3.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd ">
+        <symbols>
+        <doc>
+		    The symbol(s) listed here will be used below to coordinate datasets
+		    with the same shape.
+        </doc>
+        <symbol name="nEnergy">
+            <doc>Number of energy data points</doc>
+        </symbol>
+        <symbol name="nChannels">
+            <doc>
+                Number of selected detector channels within the
+                emission energy window
+            </doc>
+        </symbol>
+        <symbol name="nY">
+            <doc>
+                Number of pixel rows in the region of interest (ROI)
+                on the grating-based spectrometer
+            </doc>
+        </symbol>
+        <symbol name="nX">
+            <doc>
+                Number of pixel columns in the region of interest (ROI)
+                on the grating-based spectrometer
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+      In partial fluorescence yield (PFY), only a selected portion of the
+      fluorescence emission is detected, typically around a specific
+      fluorescence line of the absorbing element (e.g. :math:`K\alpha`).
+      Experimentally, this energy selectivity can be achieved in several ways:
+
+      * **Energy-dispersive detector** (e.g. silicon-drift diode,
+        high-purity Ge detector, superconducting tunnel junction, etc.):
+        the detector bins photons by emission energy into channels; the
+        fluorescence line is isolated by selecting a channel range.
+      * **Grating spectrometer**: a diffraction grating disperses the
+        emitted photons by energy onto a 2D detector, providing
+        higher energy resolution.
+
+      The top-level :ref:`intensity &lt;/NXxas/ENTRY/intensity-field&gt;`
+      field stores the ratio :math:`I_f/I_0`, where :math:`I_f` is the
+      selected fluorescence intensity and :math:`I_0` is the incident beam
+      intensity. This ratio is proportional to the absorption coefficient:
+
+      .. math:: \mu(E) \propto I_f/I_0
+
+      PFY may be affected by detector dead-time and self-absorption effects.
+
+      When the raw detector data and processing steps are available, they can be
+      stored in the optional ``NXinstrument``, ``NXcollection``, and
+      ``NXprocess`` groups, enabling full reproducibility of the data reduction.
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <doc> Official NeXus NXDL schema to which this file conforms. </doc>
+            <enumeration>
+                <item value="NXxas_pfy"/>
+            </enumeration>
+        </field>
+        <field name="intensity" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                The ratio :math:`I_f/I_0`, where :math:`I_f` is the selected
+                fluorescence intensity and :math:`I_0` is the incident beam
+                intensity. 
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="nEnergy" />
+            </dimensions>
+        </field>
+        <group name="LINE_emission_line" nameType="partial" type="NXemission_line" minOccurs="1" maxOccurs="unbounded">
+            <doc>
+                The emission line(s) selected for the partial fluorescence
+                yield measurement, whether via a channel range or a
+                grating-based spectrometer. For multiple lines use one
+                group per line (e.g. ``ka1_emission_line``,
+                ``kb1_emission_line``).
+            </doc>
+            <field name="name"/>
+        </group>
+        <field name="emission_energy_window" type="NX_FLOAT" units="NX_ENERGY">
+            <doc>
+                The lower and upper bounds :math:`[e_{min}, e_{max}]` of the
+                detected emission energy window. This is the energy range
+                over which fluorescence photons are accepted, whether
+                defined by a detector channel range or a spectrometer
+                region of interest.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2" />
+            </dimensions>
+        </field>
+        <group name="beamline_coordinate_system" type="NXcoordinate_system" optional="true">
+            <doc>
+                Beamline coordinate system with the sample at the origin:
+                x along the beam, y horizontal, z opposite to gravity.
+            </doc>
+            <field name="origin">
+                <enumeration>
+                    <item value="sample"/>
+                </enumeration>
+            </field>
+            <field name="x_direction">
+                <enumeration>
+                    <item value="along incident beam"/>
+                </enumeration>
+            </field>
+            <field name="y_direction">
+                <enumeration>
+                    <item value="horizontal perpendicular to beam"/>
+                </enumeration>
+            </field>
+            <field name="z_direction">
+                <enumeration>
+                    <item value="opposite to gravity"/>
+                </enumeration>
+            </field>
+            <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                <enumeration>
+                    <item value="[1, 0, 0]"/>
+                </enumeration>
+            </field>
+            <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                <enumeration>
+                    <item value="[0, 1, 0]"/>
+                </enumeration>
+            </field>
+            <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                <enumeration>
+                    <item value="[0, 0, 1]"/>
+                </enumeration>
+            </field>
+            <field name="depends_on" type="NX_CHAR">
+                <doc>
+                    Should point to
+                    ``transformations/beam``.
+                </doc>
+            </field>
+            <group name="transformations" type="NXtransformations">
+                <doc>
+                    Two rotations relating the beamline frame to
+                    the NeXus laboratory frame, plus direction
+                    vectors labeling beam and gravity.
+                </doc>
+                <field name="beam" type="NX_NUMBER" units="NX_UNITLESS">
+                    <doc>
+                        Direction of the incident beam in the beamline
+                        coordinate system.
+                    </doc>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[1, 0, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="gravity"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="gravity" type="NX_NUMBER" units="NX_UNITLESS">
+                    <doc>
+                        Direction of gravity in the beamline coordinate
+                        system.
+                    </doc>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 0, -1]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="rotate_gravity_to_minus_y"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="rotate_gravity_to_minus_y" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                        Active rotation moving gravity from the
+                        beamline direction (-z) to the NeXus direction (-y).
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[1, 0, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="rotate_beam_to_plus_z"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+                <field name="rotate_beam_to_plus_z" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                        Active rotation moving the beam from the
+                        beamline direction (+x) to the NeXus direction (+z).
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 1, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <doc>
+                            Should point to ``.`` (the NeXus laboratory
+                            frame).
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
+        </group>
+        <group type="NXsample">
+            <field name="depends_on" type="NX_CHAR" optional="true">
+                <doc>
+                    The sample is at the origin of the beamline
+                    coordinate system, rotated about the vertical
+                    axis. Should point to
+                    ``transformations/sample_rotation``.
+                </doc>
+            </field>
+            <group name="transformations" type="NXtransformations" optional="true">
+                <doc>
+                    Orientation of the sample in the beamline
+                    coordinate system.
+                </doc>
+                <field name="sample_rotation" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                        Rotation of the sample about the vertical axis,
+                        orienting the sample surface between the incident beam
+                        and the fluorescence detector.
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector" type="NX_NUMBER">
+                        <enumeration>
+                            <item value="[0, 0, 1]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <doc>
+                            Should point to
+                            ``/entry/beamline_coordinate_system``.
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
+        </group>
+        <group type="NXinstrument" optional="true">
+            <doc>
+                The ``data`` field of each detector below holds the intensity
+                used in the analysis and may already include corrections (for
+                example dead-time, self-absorption, or detector-channel or ROI
+                integration). If the uncorrected values are kept, they are
+                archived in the ``NXcollection`` group and the corrections are
+                described in ``NXprocess``.
+            </doc>
+            <group name="beam" type="NXbeam" optional="true">
+                <doc>The incident X-ray beam.</doc>
+                <field name="depends_on" optional="true">
+                    <doc>
+                        Should point to
+                        ``transformations/beam_direction``.
+                    </doc>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <field name="beam_direction" type="NX_NUMBER" units="NX_UNITLESS">
+                        <doc>
+                            Beam direction in the beamline coordinate
+                            system. The beam travels along +x.
+                        </doc>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[1, 0, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Should point to
+                                ``/entry/beamline_coordinate_system``.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <group type="NXdetector" name="i0" recommended="true">
+                <doc>
+                    Detector measuring the incident beam intensity :math:`I_0`.
+                </doc>
+                <field name="data" type="NX_NUMBER">
+                    <dimensions rank="1">
+                        <dim index="1" value="nEnergy" />
+                    </dimensions>
+                </field>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Should point to
+                        ``transformations/i0_distance``.
+                    </doc>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <field name="i0_distance" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Distance from the sample to the I0 detector,
+                            measured upstream along the beam (negative x
+                            direction in the beamline frame).
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[-1, 0, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Should point to
+                                ``/entry/beamline_coordinate_system``.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <group type="NXgrating" name="grating" optional="true">
+                <doc>
+                    Diffraction grating used to select the emission energy
+                    in a grating-based spectrometer. Present only when a grating
+                    spectrometer is used instead of an energy-dispersive
+                    detector.
+
+                    The grating lies on the line connecting the sample and
+                    the fluorescence detector (``if``): the azimuthal and
+                    polar angles must therefore match those of
+                    ``if/transformations``, and only the distance differs.
+                </doc>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Should point to the last transformation in the
+                        chain, i.e.
+                        ``transformations/grating_distance``.
+                    </doc>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <doc>
+                        Transformation chain placing the grating relative
+                        to the sample. The azimuthal and polar angles must
+                        be equal to those of the fluorescence detector
+                        (``if``) to ensure colinearity.
+                    </doc>
+                    <field name="grating_distance" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Distance from the sample to the grating along
+                            the sample-to-detector direction.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[1, 0, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="grating_polar_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="grating_polar_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Polar (elevation) angle of the grating above
+                            the horizontal beam plane. Must equal
+                            ``if/transformations/if_polar_angle``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, -1, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="grating_azimuthal_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="grating_azimuthal_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Azimuthal (horizontal) angle of the grating
+                            from the incident beam direction. Must equal
+                            ``if/transformations/if_azimuthal_angle``.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 0, 1]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Should point to
+                                ``/entry/beamline_coordinate_system``.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <group type="NXdetector" name="ifluor" recommended="true">
+                <doc>
+                    Fluorescence detector measuring :math:`I_f`. When using an
+                    energy-dispersive detector, ``data`` holds the intensity
+                    integrated over the selected detector channels. When using a
+                    grating-based spectrometer, ``data`` holds the ROI integrated 
+                    on the spectrometer detector. In both cases the data may be 
+                    corrected for dead-time and self-absorption.
+                </doc>
+                <field name="data" type="NX_NUMBER">
+                    <dimensions rank="1">
+                        <dim index="1" value="nEnergy" />
+                    </dimensions>
+                </field>
+                <field name="dead_time" type="NX_FLOAT" units="NX_TIME" optional="true">
+                    <doc>Detector dead time per energy point.</doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="nEnergy" />
+                    </dimensions>
+                </field>
+                <field name="count_time" type="NX_FLOAT" units="NX_TIME" optional="true">
+                    <doc>
+                        Detector live time per energy point.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="nEnergy" />
+                    </dimensions>
+                </field>
+                <field name="depends_on" type="NX_CHAR" optional="true">
+                    <doc>
+                        Should point to the last transformation in the
+                        chain, i.e.
+                        ``transformations/if_distance``.
+                    </doc>
+                </field>
+                <group name="transformations" type="NXtransformations" optional="true">
+                    <doc>
+                        Transformation chain placing the fluorescence
+                        detector relative to the sample: azimuthal angle,
+                        polar angle, then distance. These angles are
+                        required to compute self-absorption corrections.
+                    </doc>
+                    <field name="if_distance" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                            Distance from the sample to the fluorescence
+                            detector (or spectrometer entrance).
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="translation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[1, 0, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="if_polar_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="if_polar_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Polar (elevation) angle of the detector above
+                            the horizontal beam plane. A value of 0 means
+                            the detector is in the horizontal plane; 90
+                            degrees means it is directly above the sample.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, -1, 0]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <enumeration>
+                                <item value="if_azimuthal_angle"/>
+                            </enumeration>
+                        </attribute>
+                    </field>
+                    <field name="if_azimuthal_angle" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                            Azimuthal (horizontal) angle of the detector
+                            from the incident beam direction. Rotation
+                            around the vertical z-axis. Typically around
+                            90 degrees to minimize elastic scattering
+                            background.
+                        </doc>
+                        <attribute name="transformation_type">
+                            <enumeration>
+                                <item value="rotation"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="vector" type="NX_NUMBER">
+                            <enumeration>
+                                <item value="[0, 0, 1]"/>
+                            </enumeration>
+                        </attribute>
+                        <attribute name="depends_on">
+                            <doc>
+                                Should point to
+                                ``/entry/beamline_coordinate_system``.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <group type="NXcollection" optional="true">
+            <doc>
+                Raw data as written by the acquisition software,
+                preserved without modification to allow independent
+                reprocessing. Either ``detector_channels`` or ``detector_roi``
+                will be present depending on the detector type used;
+                not both simultaneously.
+            </doc>
+            <field name="detector_channels" type="NX_FLOAT" optional="true">
+                <doc>
+                    Raw channel counts per incident energy point for the
+                    selected channels of an energy-dispersive detector.
+                    Only the channels within the emission energy window
+                    are stored. Axis 0 is the energy scan axis; axis 1
+                    enumerates the selected channels. Each value is the
+                    count in that channel for one energy point.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="nEnergy" />
+                    <dim index="2" value="nChannels" />
+                </dimensions>
+            </field>
+            <field name="detector_roi" type="NX_FLOAT" optional="true">
+                <doc>
+                    Raw detector image within the ROI per incident energy point.
+                    Axis 0 is the energy scan axis; axes 1 and 2 span the 2D
+                    pixel grid of the downstream detector (nY rows, nX columns).
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="nEnergy" />
+                    <dim index="2" value="nY" />
+                    <dim index="3" value="nX" />
+                </dimensions>
+            </field>
+        </group>
+        <group type="NXprocess" optional="true">
+            <doc>
+                Description of how :ref:`intensity
+                &lt;/NXxas/ENTRY/intensity-field&gt;` was obtained from
+                the raw detector data (i0, if), including any applied correction,
+                e.g., dead-time or self-absorption.
+            </doc>
+            <field name="program" type="NX_CHAR" optional="true">
+                <doc>Name of the program used for processing.</doc>
+            </field>
+            <field name="version" type="NX_CHAR" optional="true">
+                <doc>Version of the program used for processing.</doc>
+            </field>
+            <field name="date" type="NX_DATE_TIME" optional="true">
+                <doc>Date and time of processing.</doc>
+            </field>
+        </group>
+    </group>
+</definition>
