@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Writes the simplest NeXus HDF5 file using h5py
+Writes the simplest NeXus HDF5 file using nexusformat
 
 Uses method accepted at 2014NIAC
 according to the example from Figure 1.3

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Writes a simple NeXus HDF5 file using h5py with links
+Writes a simple NeXus HDF5 file using h5py with content links
 according to the example from Figure 2.1 in the Design chapter
 """
 
@@ -44,12 +44,10 @@ with h5py.File("simple_example_write2.hdf5", "w") as f:  # create the HDF5 NeXus
 
     source_addr = "/entry/instrument/detector/two_theta"  # existing data
     target_addr = "two_theta"  # new location
-    ds_tth.attrs["target"] = source_addr  # a NeXus API convention for links
-    nxdata[target_addr] = f[source_addr]  # hard link
-    # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
+    ds_tth.attrs["target"] = source_addr  # path of the target
+    nxdata[target_addr] = f[source_addr]  # HDF5 hard link
 
     source_addr = "/entry/instrument/detector/counts"  # existing data
     target_addr = "counts"  # new location
-    ds_counts.attrs["target"] = source_addr  # a NeXus API convention for links
-    nxdata[target_addr] = f[source_addr]  # hard link
-    # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
+    ds_counts.attrs["target"] = source_addr  # path of the target
+    nxdata[target_addr] = f[source_addr]  # HDF5 hard link

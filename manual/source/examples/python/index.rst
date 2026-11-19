@@ -12,7 +12,7 @@ series of alignment scans by the Advanced Photon Source USAXS instrument during 
 beam line 32ID. We will show how to read and write this data in Python using both the 
 ``nexusformat`` [#]_ and ``h5py`` [#]_ packages.  The ``nexusformat`` package provides a simplified syntax for 
 reading and writing NeXus-compliant files by automatically handling some of the features required by the 
-NeXus standard, such as the attributes that define group classes and plottable data. However, it also uses 
+NeXus standard, such as the content attributes that give the class of each content group and select the plottable data. However, it also uses 
 the ``h5py`` package to read/write the HDF5 files on disk. We provide tabbed examples showing 
 how to produce equivalent files either using ``nexusformat`` or directly in ``h5py``.
 

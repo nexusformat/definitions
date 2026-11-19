@@ -56,12 +56,12 @@ Consider this prototype example:
 Some words on the notation:
 
 - Hierarchy is represented by indentation. Objects on the same indentation level
-  are in the same group
+  are in the same content group
 
-- The combination ``name:NXclass`` denotes a NeXus group with name ``name``
+- The combination ``name:NXclass`` denotes a content group with name ``name``
   and class ``NXclass``.
 
-- A simple name (no following class) denotes a field.
+- A simple name (no following class) denotes a content field.
   An equal sign is used to show the value, where this is important to the example.
 
 - Sometimes, a data type is specified and possibly a set of dimensions.
@@ -71,14 +71,14 @@ Some words on the notation:
   (either integer or floating point)
   of length ``NE``.
 
-- Attributes are noted as @name="value" pairs.
-  The ``@`` symbol only indicates this is an attribute
+- Content attributes are noted as @name="value" pairs.
+  The ``@`` symbol only indicates this is a content attribute
   and is not part of the attribute name.
 
-- Links are shown with a text arrow ``-->`` indicating the
-  source of the link (using HDF5 notation listing the sequence of *names*).
+- :ref:`Content links <Design-Links>` are shown with a text arrow ``-->``
+  followed by the path of the target (the sequence of *names*).
 
-Line 1 shows that there is one group at the root level of the file named
+Line 1 shows that there is one content group at the root level of the file named
 ``entry``.  This group is of type ``NXentry``
 which means it conforms to the specification of the ``NXentry``
 NeXus base class.  Using the HDF5 nomenclature, we would refer to this
@@ -97,7 +97,7 @@ The indication of ``data:\[]`` says that ``data`` is an
 array of unspecified dimension(s).
 
 Line 5:
-There is one attribute of ``/entry/instrument/detector/data``:
+There is one content attribute of ``/entry/instrument/detector/data``:
 ``long_name``.  This attribute *might* be used by a
 plotting program as the axis title.
 
@@ -105,7 +105,7 @@ Line 6 (reading ``bins:\[0, 1, 2, ... 1023]``) shows that
 ``bins`` is a 1-D array of length presumably 1024.  A small,
 representative selection of values are shown.
 
-Line 7: an attribute that shows a descriptive name of
+Line 7: a content attribute that shows a descriptive name of
 ``/entry/instrument/detector/bins``.  This attribute
 might be used by a NeXus client while plotting the data.
 
@@ -115,13 +115,13 @@ how a string value is represented.
 Line 11 says that the default data to be plotted is called ``data``.
 
 Line 12 says that each axis *dimension scale* of ``data`` is described
-by the field called ``bins``.
+by the content field called ``bins``.
 
 Line 13 says that ``bins`` will be used for axis 0 and axis 1 of ``data``.
 
 Lines 14-15:
 The ``/entry/data``) group has two datasets that are actually
-linked as shown to data sets in a different group.  
+content links, as shown, to content fields in a different content group.  
 (As you will see later, the ``NXdata`` group
 enables NeXus clients to easily determine what to
 offer for display on a default plot.)
@@ -136,16 +136,17 @@ using the class types rather than names.  For example::
 
 	/NXentry/NXinstrument/NXcrystal/wavelength
 
-identifies a dataset called ``wavelength`` that is inside a 
-group of type ``NXcrystal`` ... 
+names the NeXus field ``wavelength`` of the NeXus group of class
+``NXcrystal`` ... 
 
 As it turns out, this syntax is the 
-syntax used in NXDL :ref:`link` specifications. This syntax is also 
-used when the exact name of each group is either unimportant 
-or not specified.
+syntax used in the XML attribute ``target`` of an NXDL :ref:`link`.  A class path
+names a NeXus item; it describes every content field or group whose path matches it,
+whatever the names of the content groups, so it is also used when these names are
+either unimportant or not specified.
 
 If default names are taken for each class, then the 
-above class path is expressed as this equivalent HDF5 path::
+above class path describes this path in the content tree::
 
 	/entry/instrument/crystal/wavelength
 
@@ -154,3 +155,11 @@ needed to specify both the path and class name, you may
 find this equivalent path::
 
 	/entry:NXentry/instrument:NXinstrument/crystal:NXcrystal/wavelength
+
+A NeXus attribute defined in an NXDL ``fieldAttributes`` is named with ``*`` in
+place of the field name::
+
+	/NXobject/*@units
+
+It is the NeXus attribute ``units`` that any field directly in the class may
+have, whether or not the class defines that field.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Writes a NeXus HDF5 file using h5py with links to data in other HDF5 files.
+Writes a NeXus HDF5 file using h5py with HDF5 external links to data in other HDF5 files.
 
 This example is based on ``writer_2_1``.
 """
@@ -38,7 +38,7 @@ with h5py.File(FILE_HDF5_COUNTS, "w") as f:
     nxdetector.attrs["NX_class"] = "NXdetector"
     ds = nxdetector.create_dataset("counts", data=countsData)
     ds.attrs["units"] = "counts"
-    # link the "two_theta" data stored in separate file
+    # HDF5 external link to the "two_theta" data stored in separate file
     local_addr = nxdetector.name + "/two_theta"
     f[local_addr] = h5py.ExternalLink(FILE_HDF5_ANGLES, "/angles")
 
@@ -51,13 +51,13 @@ with h5py.File(FILE_HDF5_MASTER, "w") as f:
     nxdata = nxentry.create_group("data")
     nxdata.attrs["NX_class"] = "NXdata"
 
-    # link in the signal data
+    # HDF5 external link to the signal data
     local_addr = "/entry/data/counts"
     external_addr = "/entry/instrument/detector/counts"
     f[local_addr] = h5py.ExternalLink(FILE_HDF5_COUNTS, external_addr)
     nxdata.attrs["signal"] = "counts"
 
-    # link in the axes data
+    # HDF5 external link to the axes data
     local_addr = "/entry/data/two_theta"
     f[local_addr] = h5py.ExternalLink(FILE_HDF5_ANGLES, "/angles")
     nxdata.attrs["axes"] = "two_theta"

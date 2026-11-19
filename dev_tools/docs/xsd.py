@@ -13,7 +13,7 @@ from ..utils.types import PathLike
 
 class XSDDocGenerator:
     """
-    Read the NXDL field types specification and find
+    Read the NXDL data types specification and find
     all the valid data types.  Write a restructured
     text (.rst) document for use in the NeXus manual in
     the NXDL chapter.
@@ -27,6 +27,7 @@ class XSDDocGenerator:
         "validNXClassName": """/xs:schema//xs:simpleType[@name='validNXClassName']""",
         "validTargetName": """/xs:schema//xs:simpleType[@name='validTargetName']""",
         "nonNegativeUnbounded": """/xs:schema//xs:simpleType[@name='nonNegativeUnbounded']""",
+        "valueFromType": """/xs:schema//xs:simpleType[@name='valueFromType']""",
     }
 
     def __init__(self) -> None:
@@ -62,6 +63,7 @@ class XSDDocGenerator:
 
         path_list = (
             "/xs:schema/xs:complexType[@name='attributeType']",
+            "/xs:schema/xs:complexType[@name='groupAttributeType']",
             "/xs:schema/xs:element[@name='definition']",
             "/xs:schema/xs:complexType[@name='definitionType']",
             "/xs:schema/xs:simpleType[@name='definitionTypeAttr']",
@@ -69,6 +71,7 @@ class XSDDocGenerator:
             "/xs:schema/xs:complexType[@name='docType']",
             "/xs:schema/xs:complexType[@name='enumerationType']",
             "/xs:schema/xs:complexType[@name='fieldType']",
+            "/xs:schema/xs:complexType[@name='fieldAttributesType']",
             "/xs:schema/xs:complexType[@name='choiceType']",
             "/xs:schema/xs:complexType[@name='groupType']",
             "/xs:schema/xs:complexType[@name='linkType']",
@@ -78,6 +81,7 @@ class XSDDocGenerator:
             "/xs:schema/xs:simpleType[@name='validNXClassName']",
             "/xs:schema/xs:simpleType[@name='validTargetName']",
             "/xs:schema/xs:simpleType[@name='nonNegativeUnbounded']",
+            "/xs:schema/xs:simpleType[@name='valueFromType']",
         )
         for path in path_list:
             nodes = self.pick_nodes_from_xpath(tree, path)
@@ -122,7 +126,7 @@ class XSDDocGenerator:
         # <varlistentry> ...
         name = parent_name  # + ' data type'
         if simple_tag == "attribute":
-            name = "@" + name
+            name = "XML attribute " + name
 
         if indentLevel == 0 and simple_tag not in ("attribute"):
             self._print(f".. index:: ! {name} (NXDL data type)\n")
@@ -133,13 +137,13 @@ class XSDDocGenerator:
         self.print_docs(parent, indentLevel)
 
         if len(parent.xpath("xs:attribute", namespaces=self.ns)) > 0:
-            self.print_title("Attributes of " + name, indentLevel + 1)
+            self.print_title("XML attributes of " + name, indentLevel + 1)
             self.apply_templates(parent, "xs:attribute", indentLevel + 1)
 
         node_list = parent.xpath("xs:restriction", namespaces=self.ns)
         if len(node_list) > 0:
             # print_title("Restrictions of "+name, indentLevel+1)
-            self.restriction_handler(node_list[0], indentLevel + 1)
+            self.restriction_handler(node_list[0], indentLevel)
         node_list = parent.xpath(
             "xs:simpleType/xs:restriction/xs:enumeration", namespaces=self.ns
         )
@@ -148,7 +152,7 @@ class XSDDocGenerator:
             self.apply_templates(
                 parent,
                 "xs:simpleType/xs:restriction",
-                indentLevel + 1,
+                indentLevel,
                 handler=self.restriction_handler,
             )
 
@@ -158,7 +162,7 @@ class XSDDocGenerator:
 
         node_list = parent.xpath("xs:sequence/xs:group", namespaces=self.ns)
         if len(node_list) > 0:
-            self.print_title("Groups under " + name, indentLevel + 1)
+            self.print_title("Model groups of " + name, indentLevel + 1)
             self.print_docs(node_list[0], indentLevel + 1)
 
         self.apply_templates(parent, "xs:simpleType", indentLevel + 1)
@@ -184,7 +188,7 @@ class XSDDocGenerator:
         if not self._tag_match(parent, ("restriction",)):
             return
         self.print_docs(parent, indentLevel)
-        self._print("\n")
+        self._print_blank_line()
         self._print(self._indent(indentLevel) + "The value may be any")
         base = parent.get("base")
         pattern_nodes = parent.xpath("xs:pattern", namespaces=self.ns)
@@ -211,18 +215,23 @@ class XSDDocGenerator:
             self._print(self._indent(indentLevel) + "one from this list only:\n")
             for node in enumeration_nodes:
                 self.enumeration_handler(node, indentLevel)
-                self.print_docs(parent, indentLevel)
             self._print(self._indent(indentLevel))
         else:
             self._print("@" + base)
-        self._print("\n")
+        self._print_blank_line()
 
     def enumeration_handler(self, parent=None, indentLevel=0):
         """Handle XSD enumeration nodes like the former XSLT template"""
         if not self._tag_match(parent, ["enumeration"]):
             return
-        self._print(self._indent(indentLevel) + "* ``%s``" % parent.get("value"))
-        self.print_docs(parent, indentLevel)
+        indent = self._indent(indentLevel)
+        self._print(indent + "* ``%s``" % parent.get("value"))
+        docs = self.get_doc_from_node(parent)
+        if docs is not None:
+            self._print("")
+            for line in docs.splitlines():
+                self._print(indent + "  " + line if line else "")
+            self._print("")
 
     def apply_templates(self, parent, path, indentLevel, handler=None):
         """iterate the nodes found on the supplied XPath expression"""
@@ -306,21 +315,27 @@ class XSDDocGenerator:
         # TODO: change instances of \t to proper indentation
         self._rst_lines.append(" ".join(args) + end)
 
+    def _print_blank_line(self) -> None:
+        """Print an empty line unless the output already ends with one."""
+        if self._rst_lines and not self._rst_lines[-1].strip():
+            return
+        self._print("")
+
 
 ELEMENT_DICT = {
     "attribute": """
-An ``attribute`` element can *only* be a child of a
-``field`` or ``group`` element.
-It is used to define *attribute* elements to be used and their data types
+An NXDL attribute can *only* be a child of an
+NXDL definition, NXDL field, NXDL ``fieldAttributes`` or NXDL group.
+It is used to define NeXus attributes to be used and their data types
 and possibly an enumeration of allowed values.
 
 For more details, see:
 :ref:`NXDL.data.type.attributeType`
                 """,
     "definition": """
-A ``definition`` element can *only* be used
+An NXDL definition can *only* be used
 at the root level of an NXDL specification.
-Note:  Due to the large number of attributes of the ``definition`` element,
+Note:  Due to the large number of XML attributes of the NXDL definition,
 they have been omitted from the figure below.
 
 For more details, see:
@@ -329,29 +344,29 @@ For more details, see:
 :ref:`NXDL.data.type.definitionTypeAttr`
                 """,
     "dimensions": """
-The ``dimensions`` element describes the *shape* of an array.
-It is used *only* as a child of a ``field`` element.
+NXDL dimensions describe the *shape* of an array.
+It is used *only* as a child of an NXDL field.
 
 For more details, see:
 :ref:`NXDL.data.type.dimensionsType`
                 """,
     "doc": """
-A ``doc`` element can be a child of most NXDL elements.  In most cases, the
-content of the ``doc`` element will also become part of the NeXus manual.
+An NXDL doc can be a child of most NXDL elements.  In most cases, the
+text of the NXDL doc will also become part of the NeXus manual.
 
 :element: {any}:
 
 In documentation, it may be useful to
 use an element that is not directly specified by the NXDL language.
 The *any* element here says that one can use any element
-at all in a ``doc`` element and NXDL will not process it but pass it through.
+at all in an NXDL doc and NXDL will not process it but pass it through.
 
 For more details, see:
 :ref:`NXDL.data.type.docType`
                 """,
     "enumeration": """
-An ``enumeration`` element can *only* be a child of a
-``field`` or ``attribute`` element.
+An NXDL enumeration can *only* be a child of an
+NXDL field or NXDL attribute.
 It is used to restrict the available choices to a predefined list,
 such as to control varieties in spelling of a controversial word (such as
 *metre* vs. *meter*).
@@ -360,28 +375,40 @@ For more details, see:
 :ref:`NXDL.data.type.enumerationType`
                 """,
     "field": """
-The ``field`` element provides the value of a named item.  Many different attributes
-are available to further define the ``field``.  Some of the attributes are not
+The NXDL field defines a NeXus field, which describes content fields.  Many
+different XML attributes are available to further define the NXDL field.
+Some of the XML attributes are not
 allowed to be used together (such as ``axes`` and ``axis``); see the documentation
 of each for details.
-It is used *only* as a child of a ``group`` element.
+It is used *only* as a child of an NXDL group.
 
 For more details, see:
 :ref:`NXDL.data.type.fieldType`
                 """,
+    "fieldAttributes": """
+An NXDL ``fieldAttributes`` can *only* be a child of an
+NXDL definition or NXDL group.
+It defines NeXus attributes that any field directly in the class (in an NXDL
+definition) or in the NeXus group (in an NXDL group) may have, whether or not
+that class or NeXus group defines the field.
+
+For more details, see:
+:ref:`NXDL.data.type.fieldAttributesType`
+                """,
     "choice": """
-A ``choice`` element is used when a named group might take one
+An NXDL choice is used when a named NeXus group might take one
 of several possible NeXus base classes.  Logically, it must
-have at least two group children.
+contain at least two NXDL groups.
 
 For more details, see:
 :ref:`NXDL.data.type.choiceType`
                 """,
     "group": """
-A ``group`` element can *only* be a child of a
-``definition`` or ``group`` element.
-It describes a common level of organization in a NeXus data file, similar
-to a subdirectory in a file directory tree.
+An NXDL group can *only* be a child of an
+NXDL definition or NXDL group.
+It defines a NeXus group, which describes content groups: levels of
+organization in a NeXus data file, similar to subdirectories in a file
+directory tree.
 
 For more details, see:
 :ref:`NXDL.data.type.groupType`
@@ -390,20 +417,21 @@ For more details, see:
 .. index::
     single: link target
 
-A ``link`` element can *only* be a child of a
-``definition``,
-``field``, or ``group`` element.
-It describes the path to the original source of the parent
-``definition``,
-``field``, or ``group``.
+An NXDL link can *only* be a child of an
+NXDL definition or NXDL group.
+It defines a :ref:`NeXus link <Design-Links>`: a NeXus item that names
+another NeXus field or group, its target.  It describes a content field or
+group with the same shared content as one that its target describes; one of
+the two is a content link to the other, or both are content links to the
+same target.
 
 For more details, see:
 :ref:`NXDL.data.type.linkType`
                 """,
     "symbols": """
-A ``symbols`` element can *only* be a child of a ``definition`` element.
+NXDL symbols can *only* be a child of an NXDL definition.
 It defines the array index symbols to be used when defining arrays as
-``field`` elements with common dimensions and lengths.
+NXDL fields with common dimensions and lengths.
 
 For more details, see:
 :ref:`NXDL.data.type.symbolsType`
@@ -419,9 +447,8 @@ NXDL Elements and Field Types
 The documentation in this section has been obtained directly
 from the NXDL Schema file:  *nxdl.xsd*.
 First, the basic elements are defined in alphabetical order.
-Attributes to an element are indicated immediately following the element
-and are preceded with an "@" symbol, such as
-**@attribute**.
+XML attributes of an element are indicated immediately following the element,
+such as **XML attribute name**.
 Then, the common data types used within the NXDL specification are defined.
 Pay particular attention to the rules for *validItemName*
 and  *validNXClassName*.
@@ -437,7 +464,6 @@ and  *validNXClassName*.
     Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
 
 .. index::
-    see:attribute; NXDL attribute
     ! single: NXDL elements
 
 .. _NXDL.elements:
