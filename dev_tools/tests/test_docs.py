@@ -4,6 +4,7 @@ from ..docs import AnchorRegistry
 from ..docs import NXClassDocGenerator
 from ..docs import XSDDocGenerator
 from ..docs import nxdl_indices
+from ..globals.directories import get_nxdl_root
 from ..globals.directories import get_xsd_file
 from ..nxdl import iter_definitions
 from .utils import pytest_path_param_id
@@ -46,6 +47,15 @@ def test_nxdl_anchor_list(nxdl_file, doc_generator, anchor_registry):
 )
 def test_nxdl_anchor_write_list(nxdl_file, doc_generator, anchor_registry_write):
     assert doc_generator(nxdl_file, anchor_registry=anchor_registry_write)
+
+
+@pytest.mark.parametrize(
+    ("definition", "marker"),
+    [("NXobject", "@type_custom=True"), ("NXsource", "@custom=True")],
+)
+def test_open_enumeration_marker(doc_generator, definition, marker):
+    nxdl_file = get_nxdl_root() / "base_classes" / f"{definition}.nxdl.xml"
+    assert any(f"also set {marker}" in line for line in doc_generator(nxdl_file))
 
 
 def test_nxdl_indices():

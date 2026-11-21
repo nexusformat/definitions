@@ -522,8 +522,19 @@ class NXClassDocGenerator:
             return ""
 
         if parent.attrib.get("open", "false") == "true":
+            marker = "@custom=True"
+            owner = parent.getparent()
+            if xml_utils.get_local_name(owner) == "attribute":
+                if owner.get("nameType", "specified") == "specified":
+                    marker = f"@{owner.attrib['name']}_custom=True on the same object"
+                else:
+                    marker = (
+                        "``@<attribute-name>_custom=True`` on the same object, "
+                        "using the attribute name in the data file"
+                    )
             self._print(
-                f"{indent}Any of these values or a custom value (if you use a custom value, also set @custom=True):",
+                f"{indent}Any of these values or a custom value "
+                f"(if you use a custom value, also set {marker}):",
                 end="",
             )
         else:
